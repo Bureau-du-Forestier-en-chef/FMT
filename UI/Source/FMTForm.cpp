@@ -1,17 +1,41 @@
 #include "stdafx.h"
 #include "FMTForm.h"
-#include "FMTModelParser.h"
 
 #include <msclr/marshal_cppstd.h>
+#include <vcclr.h>
 
-#include "FMTScheduleParser.h"
-#include "FMTFormCache.h"
-#include "FMTModel.h"
-#include "FMTTheme.h"
-#include "Tools.h"
+#include "Controller.h"
+#include "Conversions.h"
 
 namespace Wrapper
 {
+	namespace
+	{
+		// Built here rather than in a method of FMTForm: cl refuses a local class in a
+		// member function of a managed class (C3923). gcroot keeps the form reachable for
+		// the Core, which holds the subscriber.
+		FMTWrapper::Backend::EventHandler makeEventHandler(FMTForm^ p_form)
+		{
+			gcroot<FMTForm^> form(p_form);
+
+			return [form](const FMTWrapper::Backend::Event& p_event)
+			{
+				if (const FMTWrapper::Backend::LogEvent* log =
+					std::get_if<FMTWrapper::Backend::LogEvent>(&p_event))
+				{
+					form->_toFeedback(log->message.c_str());
+				}
+				else if (const FMTWrapper::Backend::ErrorEvent* error =
+					std::get_if<FMTWrapper::Backend::ErrorEvent>(&p_event))
+				{
+					form->_toErrorFeedback(error->errorStack.c_str());
+				}
+
+				// An event the interface does not know yet is ignored.
+			};
+		}
+	}
+
 
 	void FMTForm::SetErrorsToWarnings(
 		System::Collections::Generic::List<int>^ listeWarnings,
@@ -19,24 +43,16 @@ namespace Wrapper
 	{
 		try
 		{
-			int defaultwarnings = 10;
-
-			if (maxWarnings > 0)
-			{
-				defaultwarnings = maxWarnings;
-			}
-
-			std::vector<Exception::FMTexc> listeExceptions;
+			std::vector<int> listeExceptions;
 
 			for each (int valeur in listeWarnings)
 			{
-				listeExceptions.push_back(
-					static_cast<Exception::FMTexc>(valeur));
+				listeExceptions.push_back(valeur);
 			}
 
-			FMTFormCache::GetInstance()->InitializeExceptionHandler(
-				defaultwarnings,
-				listeExceptions);
+			FMTWrapper::Backend::Controller::setErrorsToWarnings(
+				listeExceptions,
+				maxWarnings);
 		}
 		catch (...)
 		{
@@ -53,7 +69,7 @@ namespace Wrapper
 		System::Collections::Generic::List<int>^ errors = gcnew System::Collections::Generic::List<int>();
 		try
 		{
-			for (int error : FMTWrapperCore::Tools::getErrorsToIgnore())
+			for (int error : FMTWrapper::Backend::Controller::getErrorsToIgnore())
 			{
 				errors->Add(error);
 			}
@@ -74,7 +90,7 @@ namespace Wrapper
 		System::Collections::Generic::List<int>^ listeWarnings,
 		int maxWarnings)
 	{
-		// Alias retrocompatible : le UI .NET externe appelle encore cette methode.
+		// Backward-compatible alias: the external .NET UI still calls this method.
 		SetErrorsToWarnings(
 			listeWarnings,
 			maxWarnings);
@@ -84,21 +100,9 @@ namespace Wrapper
 	{
 		try
 		{
-			// Recree un delegue manage frais : apres un crash, l'ancien pointeur
-			// de fonction peut etre invalide.
-
-			m_managedFeed =
-				gcnew ManagedFeed(
-					this,
-					&FMTForm::_toFeedback);
-
-			m_unmanagedFeed =
-				System::Runtime::InteropServices::Marshal::
-				GetFunctionPointerForDelegate(
-					m_managedFeed);
-
-			FMTFormCache::GetInstance()->RecoverLoggerAndHandler(
-				m_unmanagedFeed);
+			// The subscription survives a crash: only the logger and the exception
+			// handler are rebuilt.
+			FMTWrapper::Backend::Controller::recoverLoggerAndHandler();
 		}
 		catch (...)
 		{
@@ -115,23 +119,18 @@ namespace Wrapper
 	{
 		try
 		{
-			m_managedFeed =
-				gcnew ManagedFeed(
-					this,
-					&FMTForm::_toFeedback);
-
-			m_unmanagedFeed =
-				System::Runtime::InteropServices::Marshal::
-				GetFunctionPointerForDelegate(
-					m_managedFeed);
+			if (m_eventSubscription == 0)
+			{
+				m_eventSubscription =
+					FMTWrapper::Backend::Controller::subscribe(
+						makeEventHandler(this));
+			}
 
 			const std::string filename =
-				msclr::interop::marshal_as<std::string>(
+				Conversions::toStdString(
 					nomFichierLogger);
 
-			FMTFormCache::GetInstance()->InitializeLogger(
-				filename,
-				m_unmanagedFeed);
+			FMTWrapper::Backend::Controller::initializeLogger(filename);
 		}
 		catch (...)
 		{
@@ -150,29 +149,20 @@ namespace Wrapper
 		try
 		{
 			std::string fichierPri =
-				msclr::interop::marshal_as<std::string>(
+				Conversions::toStdString(
 					fichierPriSystem);
 
 			std::vector<std::string> scenarios;
 
 			std::string scenario =
-				msclr::interop::marshal_as<std::string>(
+				Conversions::toStdString(
 					scenarioSystem);
 
 			scenarios.push_back(scenario);
 
-			Parser::FMTModelParser Modelparser;
-
-			const std::vector<Models::FMTModel> models =
-				Modelparser.readproject(
-					fichierPri,
-					scenarios);
-
-			for (const Models::FMTModel& model : models)
-			{
-				FMTFormCache::GetInstance()->push_back(
-					model);
-			}
+			FMTWrapper::Backend::Controller::addScenarios(
+				fichierPri,
+				scenarios);
 
 			return true;
 		}
@@ -193,7 +183,7 @@ namespace Wrapper
 	{
 		try
 		{
-			FMTFormCache::GetInstance()->erase(
+			FMTWrapper::Backend::Controller::removeScenario(
 				indexScenario);
 
 			return true;
@@ -214,7 +204,7 @@ namespace Wrapper
 	{
 		try
 		{
-			FMTFormCache::GetInstance()->clear();
+			FMTWrapper::Backend::Controller::clearScenarios();
 		}
 		catch (...)
 		{

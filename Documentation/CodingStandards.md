@@ -801,7 +801,7 @@ class FMTAction;
 C++17 nested namespace syntax may be used where it improves clarity:
 
 ```cpp
-namespace FMTWrapper::Core
+namespace FMTWrapper::Backend
 {
 class Controller;
 }

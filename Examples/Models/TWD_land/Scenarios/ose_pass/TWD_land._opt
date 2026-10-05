@@ -1,0 +1,12 @@
+
+*OBJECTIVE
+_MAX oVolRec 1.._LENGTH
+
+*CONSTRAINTS
+
+Burnedarea = 0 1.._LENGTH
+
+;contrainte spatiale
+_ADJACENCY(coupetotale,1) >= 1 1.._LENGTH
+
+*FORMAT MOSEK

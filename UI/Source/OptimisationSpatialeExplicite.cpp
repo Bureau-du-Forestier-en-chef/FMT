@@ -1,25 +1,16 @@
 #include "stdafx.h"
-#include <sstream>
-#include "FMTForest.h"
-#include "FMTModelParser.h"
-#include "FMTSaModel.h"
-#include "FMTAreaParser.h"
-#include "FMTScheduleParser.h"
 #include <msclr\marshal_cppstd.h>
-#include "FMTFormLogger.h"
+
 #include "FMTForm.h"
-#include "FMTModel.h"
-#include "FMTFormCache.h"
-#include "FMTDefaultLogger.h"
-#include "SES.h"
+#include "Controller.h"
+#include "Conversions.h"
 
 namespace Wrapper
 {
     namespace {
 
-        FMTWrapperCore::SAParameters ConvertirParametresOptimisation(
+        FMTWrapper::Backend::SAParameters ConvertirParametresOptimisation(
             System::String^ cheminRasters,
-            int scenario,
             System::Collections::Generic::List<System::String^>^ contraintes,
             int periodes,
             int p_MaxMoves,
@@ -33,18 +24,17 @@ namespace Wrapper
             System::String^ cheminSorties,
             bool indGenererEvents,
             bool indSortiesSpatiales,
-            System::String^ providerGdal,
-            const std::string& scenarioName) 
+            System::String^ providerGdal)
         {
-            FMTWrapperCore::SAParameters params;
+            FMTWrapper::Backend::SAParameters params;
 
-            // Conversion des chemins
-            params.rastersPath = msclr::interop::marshal_as<std::string>(cheminRasters);
-            params.outputPath = msclr::interop::marshal_as<std::string>(cheminSorties);
-            params.gdalProvider = msclr::interop::marshal_as<std::string>(providerGdal);
-            params.scenarioName = scenarioName;
+            // Path conversion. scenarioName stays empty: the Core logs the name
+            // of the scenario the controller resolved.
+            params.rastersPath = Conversions::toStdString(cheminRasters);
+            params.outputPath = Conversions::toStdString(cheminSorties);
+            params.gdalProvider = Conversions::toStdString(providerGdal);
 
-            // Paramètres numériques
+            // Numeric parameters
             params.numberOfPeriods = periodes;
             params.maxMoves = p_MaxMoves;
             params.maxAcceptedMoves = p_MaxAcceptedMoves;
@@ -53,39 +43,16 @@ namespace Wrapper
             params.outputMinPeriod = etanduSortiesMin;
             params.outputMaxPeriod = etanduSortiesMax;
 
-
-
-            // Options booléennes
+            // Boolean options
             params.useStanlock = indicateurStanlock;
             params.generateEvents = indGenererEvents;
             params.generateSpatialOutputs = indSortiesSpatiales;
 
-            // Conversion des listes C# → C++
-            for each (System::String ^ constraint in contraintes)
-            {
-                params.constraintNames.push_back(msclr::interop::marshal_as<std::string>(constraint));
-            }
-
-            for each (System::String ^ output in outputs)
-            {
-                params.outputNames.push_back(msclr::interop::marshal_as<std::string>(output));
-            }
+            // C# to C++ list conversions
+            params.constraintNames = Conversions::toStdVector(contraintes);
+            params.outputNames = Conversions::toStdVector(outputs);
 
             return params;
-        }
-
-        void EnvoyerResultatsOptimisation(
-            const FMTWrapperCore::SAResults& results,
-            FMTFormLogger* logger)
-        {
-            // Logging des outputs
-            for (const auto& result : results.outputsData.results)
-            {
-                for (const auto& periodValue : result.periodValues)
-                {
-                    *logger << "outputs;" + result.outputName + ";" + std::to_string(periodValue.second) << "\n";
-                }
-            }
         }
 
     }
@@ -111,44 +78,17 @@ namespace Wrapper
     {
         try
         {
-            FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-            *logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
-
-            const Models::FMTModel& BASE_MODEL = FMTFormCache::GetInstance()->getModel(scenario);
-            const std::string scenarioName = BASE_MODEL.getName();
-
-           
-
-            FMTWrapperCore::SAParameters params = ConvertirParametresOptimisation(
-                cheminRasters, scenario, contraintes, periodes,
+            const FMTWrapper::Backend::SAParameters PARAMS = ConvertirParametresOptimisation(
+                cheminRasters, contraintes, periodes,
                 p_MaxMoves, p_MaxAcceptedMoves, p_MaxCycleMoves,
                 outputs, indicateurStanlock, outputLevel,
                 etanduSortiesMin, etanduSortiesMax, cheminSorties,
-                indGenererEvents, indSortiesSpatiales, providerGdal,
-                scenarioName);
+                indGenererEvents, indSortiesSpatiales, providerGdal);
 
+            const FMTWrapper::Backend::SAResults RESULTS =
+                FMTWrapper::Backend::Controller::runSpatialOptimization(PARAMS, scenario);
 
-            
-
-            *logger << "FMT -> Traitement pour le scénario : " + scenarioName << "\n";
-
-            *logger << "FMT -> Démarrage de l'optimisation" << "\n";
-
-            FMTWrapperCore::SAResults results =
-                FMTWrapperCore::SES::RunOptimization(params, BASE_MODEL);
-
-            if (!results.success)
-            {
-                *logger << "FMT -> Erreur d'optimisation: " + results.errorMessage << "\n";
-                return false;
-            }
-
-            *logger << "FMT -> Optimisation terminée avec succès" << "\n";
-
-            *logger << "FMT -> Exportations des sorties " << "\n";
-            EnvoyerResultatsOptimisation(results, logger);
-
-            return true;
+            return RESULTS.success;
         }
         catch (...)
         {
@@ -156,5 +96,4 @@ namespace Wrapper
             return false;
         }
     }
-
 }

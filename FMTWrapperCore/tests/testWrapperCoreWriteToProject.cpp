@@ -2,7 +2,7 @@
 #include <string>
 #include "FMTModel.h"
 #include "FMTModelParser.h"
-#include "Tools.h"
+#include "ModelQuery.h"
 #include <boost/filesystem.hpp>
 
 int main(int argc, char* argv[])
@@ -44,8 +44,8 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 	ModelParser.setErrorsToWarnings(errors);
 
-	// On lit le projet puis on fabrique plusieurs models pour simuler une cache
-	// contenant un model de base + des sc�narios d�riv�s (noms distincts).
+	// Read the project, then build several models to simulate a cache
+	// holding a base model + derived scenarios (distinct names).
 	const Models::FMTModel BASE_MODEL = ModelParser.readproject(primary_path, { scenarioName }).at(0);
 	const std::string SCENARIO_A = "writetoproject_test_A";
 	const std::string SCENARIO_B = "writetoproject_test_B";
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 	models.push_back(scenarioModelA);
 	models.push_back(scenarioModelB);
 
-	FMTWrapperCore::Tools::writeToProject(models, output_directory);
+	FMTWrapper::Backend::ModelQuery::writeToProject(models, output_directory);
 
 	const std::string BASENAME = models.front().getName();
 	const boost::filesystem::path OUTPUT_DIR = boost::filesystem::path(output_directory);

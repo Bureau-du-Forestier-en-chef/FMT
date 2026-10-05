@@ -29,7 +29,10 @@ if (FMTWRAPPERCORE_SOURCES)
 
     target_include_directories(FMTWrapperCore PRIVATE ${Boost_INCLUDE_DIRS})
     target_link_libraries(FMTWrapperCore PRIVATE ${Boost_LIBRARIES})
-    #target_compile_definitions(FMTWrapper PRIVATE "-DFMTLIBIMPORT")
+    # Obligatoire : sans FMTLIBIMPORT, FMTEXPORT est vide et les donnees statiques
+    # de FMTlib (ex. FMTExceptionHandler::m_mainthreadid) ne peuvent pas se resoudre
+    # a travers l'import library. Tous les autres consommateurs de FMTlib le definissent.
+    target_compile_definitions(FMTWrapperCore PRIVATE "-DFMTLIBIMPORT")
     target_include_directories(FMTWrapperCore PRIVATE ${WrapperCoreINCLUDEDIR})
 	SetBinaryLocation(FMTWrapperCore)
     #target_link_libraries(FMTWrapperCore PRIVATE "${FMTliblocation}/${CMAKE_SHARED_LIBRARY_PREFIX}${BUILD_TYPE}/FMTlib${CMAKE_STATIC_LIBRARY_SUFFIX}")

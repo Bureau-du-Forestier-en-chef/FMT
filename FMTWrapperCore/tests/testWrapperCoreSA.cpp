@@ -13,10 +13,10 @@
 
 int main(int argc, char* argv[])
 {
-	FMTWrapperCore::SAParameters params;
+	FMTWrapper::Backend::SAParameters params;
 
-	// SAParameters ne contient pas le chemin du .pri; on le garde localement
-	// car il est requis pour readproject (mais pas pour RunOptimization).
+	// SAParameters does not hold the .pri path; it is kept locally
+	// because readproject needs it (but RunOptimization does not).
 	std::string primaryFilePath;
 
 	if (argc > 1)
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		// TODO: à remplir avec un jeu de données SA valide
+		// TODO: fill in with a valid SA dataset
 		primaryFilePath = "TODO_PATH.pri";
 		params.rastersPath = "TODO_RASTERS";
 		params.outputPath = "TODO_OUTPUT";
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 		params.maxAcceptedMoves = 0;     // TODO
 		params.maxCycleMoves = 0;        // TODO
 		params.useStanlock = false;
-		//outputLevel: STRATE = 3, TH�MATIQUE = 1, TOTALE = 2
+		//outputLevel: STRATE (stratum) = 3, THÉMATIQUE (thematic) = 1, TOTALE (total) = 2
 		params.outputLevel = 2;
 		params.outputMinPeriod = 1;      // TODO
 		params.outputMaxPeriod = 1;      // TODO
@@ -110,10 +110,10 @@ int main(int argc, char* argv[])
 			"testWrapperCoreSA", __LINE__, primaryFilePath);
 	}
 
-	FMTWrapperCore::SAResults results;
+	FMTWrapper::Backend::SAResults results;
 	try
 	{
-		results = FMTWrapperCore::SES::RunOptimization(
+		results = FMTWrapper::Backend::SES::RunOptimization(
 			params,
 			selectedModel);
 	}
@@ -163,9 +163,9 @@ int main(int argc, char* argv[])
 		}
 		catch (const std::exception& e)
 		{
-			// La comparaison a levé une FMTException (valeurs différentes). On la capture ICI
-			// pour faire échouer le test proprement (return != 0) au lieu de la laisser sortir
-			// de main : sinon std::terminate déclenche le dump de pile de FMTObject::_terminate.
+			// The comparison raised an FMTException (different values). It is caught HERE
+			// to make the test fail cleanly (return != 0) instead of letting it leave
+			// main: otherwise std::terminate triggers the stack dump of FMTObject::_terminate.
 			std::cerr << e.what() << std::endl;
 			return 1;
 		}

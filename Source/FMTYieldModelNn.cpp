@@ -229,7 +229,6 @@ namespace Core {
 					inputs[i] = static_cast<float>(value);
 					++i;
 				}
-				std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
 				removeNans(inputs);
 				std::vector<int64_t> inputShape = m_sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
 				std::vector<float> stdInput = _standardize(inputs, _getStandardParamMeans(), _getStandardParamVars());

@@ -11,7 +11,7 @@
          - "## [Unreleased]" -> mode ACCUMULATION (commit + push seulement, aucun tag).
       C. en mode version : valide (version > dernier tag ; tag et branche pas deja existants) ;
       D. apres confirmation : git add -A, commit, puis (mode version) tag, branche
-         archive/vX.Y.Z si mineure+, bump CMakeLists/vcpkg, puis push origin.
+         archive/vX.Y.Z si mineure+, bump CMakeLists/vcpkg/Doxygen, puis push origin.
     Aucune action git n'est faite sans la confirmation [o/N].
 
 .PARAMETER Push
@@ -47,6 +47,9 @@ function Sync-VersionFile {
         [int]$MaxReplace = 0
     )
     if (-not (Test-Path $Path)) { return $null }
+    # Chemin absolu : les methodes .NET resolvent un chemin relatif depuis le repertoire
+    # du PROCESSUS, pas depuis Set-Location (echec si le .bat est lance d'ailleurs).
+    $Path = (Resolve-Path -LiteralPath $Path).ProviderPath
     $enc   = [System.Text.Encoding]::GetEncoding(28591)   # ISO-8859-1 / Latin-1
     $text  = $enc.GetString([System.IO.File]::ReadAllBytes($Path))
     $re    = [regex]$PatternStr
@@ -147,7 +150,7 @@ if ($label -match '^(unreleased|non[\s-]*publi|in[\s-]*dev|in[\s-]*progress|wip)
 elseif ($label -match '^v?(\d+)\.(\d+)\.(\d+)$') {
     $maj = [int]$Matches[1]; $min = [int]$Matches[2]; $pat = [int]$Matches[3]
     $version = "v$maj.$min.$pat"
-    $numericVersion = "$maj.$min.$pat"   # sans le prefixe 'v', pour CMake / vcpkg
+    $numericVersion = "$maj.$min.$pat"   # sans le prefixe 'v', pour CMake / vcpkg / Doxygen
 }
 else {
     Write-Error "Le titre du haut '[$label]' n'est ni une version [vX.Y.Z] ni [Unreleased]. Corrigez-le."
@@ -158,6 +161,9 @@ else {
 $versionFiles = @(
     @{ Path = 'CMakeLists.txt'; Pattern = '(?<pre>project\s*\(\s*FMT\s+VERSION\s+)(?<ver>\d+(?:\.\d+)*)'; Max = 0 }
     @{ Path = 'vcpkg.json';     Pattern = '(?<pre>"version"\s*:\s*")(?<ver>\d+(?:\.\d+)*)';               Max = 1 }
+    # Doxygen : ligne "PROJECT_NUMBER = X.Y.Z" en debut de ligne (les commentaires "#" sont
+    # exclus) ; [ \t] plutot que \s pour ne jamais deborder sur la ligne suivante.
+    @{ Path = 'Documentation/FMTdoxygenconfig'; Pattern = '(?m)(?<pre>^[ \t]*PROJECT_NUMBER[ \t]*=[ \t]*"?v?)(?<ver>\d+(?:\.\d+)*)'; Max = 1 }
 )
 
 $currentBranch = (& git rev-parse --abbrev-ref HEAD).Trim()
@@ -250,7 +256,7 @@ Write-Host "  A committer (git add -A) :"
 & git status --short | ForEach-Object { Write-Host "     $_" }
 Write-Host ""
 Write-Host "  Actions :"
-if (-not $isUnreleased) { Write-Host "    maj version -> $numericVersion dans CMakeLists.txt / vcpkg.json" }
+if (-not $isUnreleased) { Write-Host "    maj version -> $numericVersion dans $(($versionFiles | ForEach-Object { $_.Path }) -join ' / ')" }
 Write-Host "    git add -A"
 Write-Host "    git commit -m `"$msg`""
 if (-not $isUnreleased) { Write-Host "    git tag -a $version -m `"$msg`"" }

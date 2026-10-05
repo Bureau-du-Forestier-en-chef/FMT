@@ -2,7 +2,7 @@
 #include <string>
 #include "FMTModel.h"
 #include "FMTModelParser.h"
-#include "Tools.h"
+#include "ModelQuery.h"
 
 int main(int argc, char* argv[])
 {
@@ -39,10 +39,10 @@ int main(int argc, char* argv[])
 
 
 	const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
-	const double maxAge = FMTWrapperCore::Tools::getMaxAge(MODELS.at(0));
+	const double maxAge = FMTWrapper::Backend::ModelQuery::getMaxAge(MODELS.at(0));
 	std::cout << "MaxAge: " << maxAge << std::endl;
 
-	// on fait des vérifications sur le nombre renvoyer
+	// Checks on the returned number
 	if (maxAge < 1)
 	{
 		throw "Error: The age is empty or negative";

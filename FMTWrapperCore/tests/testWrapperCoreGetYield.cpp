@@ -1,11 +1,18 @@
+#include <algorithm>
+#include <cmath>
 #include <vector>
 #include <string>
 #include "FMTModel.h"
 #include "FMTLpModel.h"
 #include "FMTModelParser.h"
-#include "Tools.h"
+#include "ModelQuery.h"
 #include "FMTFreeExceptionHandler.h"
 
+// Test of FMTWrapper::Backend::ModelQuery::getYield, registered in basetests.csv (TWD_land)
+// and BFECtests.csv.
+//   argv[1] = "<.pri file>|<scenario>|<yield>|<mask>"
+//   argv[2] = "<age>|<expected value>"
+// Without arguments, it falls back on a private model.
 int main(int argc, char* argv[])
 {
 	std::string pathPri;
@@ -28,7 +35,7 @@ int main(int argc, char* argv[])
 		const std::string vals2 = argv[2];
 		boost::split(ageResult, vals2, boost::is_any_of("|"));
 		age = std::stoi(ageResult.at(0));
-		result = std::stoi(ageResult.at(1));
+		result = std::stod(ageResult.at(1));
 	}
 	else
 	{
@@ -63,12 +70,13 @@ int main(int argc, char* argv[])
 
 	const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
 
-	const double yield = FMTWrapperCore::Tools::getYield(MODELS.at(0), mask, yieldName, age);
+	const double yield = FMTWrapper::Backend::ModelQuery::getYield(MODELS.at(0), mask, yieldName, age);
 	std::cout << "Yield: " << yield << std::endl;
 
-	// on fait des v�rifications sur le nombre renvoyer
-	if (yield != result) {
-		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Nombre de yield n'est pas égal au résultat attendu",
+	// Checks on the returned number, within a relative tolerance: equation yields are
+	// computed, not read.
+	if (std::abs(yield - result) > 1e-6 * std::max(1.0, std::abs(result))) {
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "The yield does not match the expected result",
 			"TestWrapperCoreGetYield", __LINE__, __FILE__);
 	}
 

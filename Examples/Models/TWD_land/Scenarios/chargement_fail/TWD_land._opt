@@ -1,0 +1,10 @@
+
+*OBJECTIVE
+_MAXMIN oVolRec 1.._LENGTH
+
+*CONSTRAINTS
+
+; oVolumeInexistant n'est pas un output du modele : le scenario ne se lit pas.
+oVolumeInexistant >= 0 1.._LENGTH
+
+*FORMAT MOSEK

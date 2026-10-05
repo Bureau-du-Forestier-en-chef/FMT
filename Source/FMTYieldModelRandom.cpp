@@ -82,7 +82,7 @@ namespace Core
 	{
 		double choice = 0;
 		try {
-			std::discrete_distribution<double> distribution(p_distribution.cbegin(), p_distribution.cend());
+			std::discrete_distribution<int> distribution(p_distribution.cbegin(), p_distribution.cend());
 			choice = distribution(*m_modelPtr->getGeneratorPtr());
 		}catch (...)
 		{

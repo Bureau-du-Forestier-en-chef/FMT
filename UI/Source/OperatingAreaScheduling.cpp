@@ -1,22 +1,12 @@
 #include "stdafx.h"
-#include <sstream>
-#include "FMTLpModel.h"
-#include "FMTOutputNode.h"
-#include "FMTMask.h"
-#include "FMTModelParameters.h"
-#include "FMTOperatingAreaScheduler.h"
-#include "FMTTaskHandler.h"
-#include "FMTAreaParser.h"
-#include "FMTOpAreaSchedulerTask.h"
 #include <msclr\marshal_cppstd.h>
-#include "FMTFormLogger.h"
+
 #include "FMTForm.h"
-#include "FMTFormCache.h"
-#include "FMTDefaultLogger.h"
+#include "Controller.h"
+#include "Conversions.h"
 
 namespace Wrapper
 {
-
 	bool FMTForm::OperatingAreaScheduling(
 		System::String^ fichierPri,
 		int scenario,
@@ -35,98 +25,34 @@ namespace Wrapper
 		int periodeMiseAjour,
 		System::String^ returnTimeOutput)
 	{
+		// fichierPri has never been used: it stays in the public signature,
+		// which the .NET UI depends on.
 		try
 		{
-			FMTFormLogger* logger = FMTFormCache::GetInstance()->GetFormLogger();
-			*logger << Logging::FMTDefaultLogger().getLogStamp() << "\n";
-			*logger << "Préparation du modèle" << "\n";
-			Models::FMTLpModel optimizationmodel(FMTFormCache::GetInstance()->getModel(scenario), static_cast<Models::FMTSolverInterface>(solver));
-			*logger << "FMT -> Traitement pour le scénario : " + optimizationmodel.getName() << "\n";
-			optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, nombrePeriodes);
-			optimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-			optimizationmodel.setParameter(Models::FMTintmodelparameters::UPDATE, periodeMiseAjour);
-			const int startingperiod = optimizationmodel.getParameter(Models::FMTintmodelparameters::UPDATE);
-			const std::string Agg_name = "~BFECOPTOUTPUTYOUVERT~";
-			std::vector<Core::FMTAction> newactions;
-			int youvert = 0;
-			for (Core::FMTAction& action : optimizationmodel.getActions())
-			{
-				if (action.useYield("YOUVERT"))
-				{
-					youvert += 1;
-					std::vector<std::string> agg = action.getAggregates();
-					if (std::count(agg.begin(), agg.end(), Agg_name))
-					{
-						*logger << "L'utilisateur à utiliser le nom ~BFECOPTOUTPUTYOUVERT~ dans ses outputs." << "\n";
-						return false;
-					}
+			FMTWrapper::Backend::OperatingAreaParameters params;
+			params.vectorFilePath = Conversions::toStdString(fichierShp);
+			params.solver = solver;
+			params.numberOfPeriods = nombrePeriodes;
+			params.numberOfThreads = nombreThread;
+			params.themeNumber = numeroTheme;
+			params.maximumTime = tempsMaximum;
+			params.numberOfIterations = nombreIteration;
+			params.ageField = Conversions::toStdString(nomChampAge);
+			params.areaField = Conversions::toStdString(nomChampSuperficie);
+			params.lockField = Conversions::toStdString(nomChampStanlock);
+			params.parametersFilePath = Conversions::toStdString(cheminParametres);
+			params.resultFolder = Conversions::toStdString(nomFichierResultat);
+			params.updatePeriod = periodeMiseAjour;
 
-					action.pushAggregate(Agg_name);
-				}
+			// The return time output is optional: an empty name means "none".
+			params.returnTimeOutputName = Conversions::toStdString(returnTimeOutput);
 
-				newactions.push_back(action);
-			}
-
-			if (youvert < 1)
-			{
-				*logger << "Aucune action dans le modèle n'a de yield youvert" << "\n";
-				return false;
-			}
-
-			optimizationmodel.setActions(newactions);
-			const std::vector<Core::FMTTheme> themes = optimizationmodel.getThemes();
-			std::string stringMask = "";
-			for (int i = 1; i <= themes.size(); i++)
-			{
-				if (stringMask == "")
-				{
-					stringMask += "?";
-				}
-				else
-				{
-					stringMask += " ?";
-				}
-			}
-
-			Core::FMTMask fmtMask = Core::FMTMask(stringMask, themes);
-			Core::FMTOutputNode nodeofoutput = Core::FMTOutputNode(fmtMask, Agg_name);
-			//Fin createBFECoptaggregate
-			/*Besoin de change la signature de fonction, les arguments suivants ne sont plus nécessaire :
-			selectedmask
-			presolvedtheme
-			renommer postsolvedtheme par model themes car peut porter a confusion, mais les themes du modèles sont nécessaire.
-			*/
-
-			Parser::FMTAreaParser areaparser;
-			std::vector<Heuristics::FMTOperatingAreaScheme> opeareas = areaparser.getOperatingArea(
-				msclr::interop::marshal_as<std::string>(fichierShp),
-				optimizationmodel.getThemes(), numeroTheme,
-				startingperiod, msclr::interop::marshal_as<std::string>(nomChampAge),
-				msclr::interop::marshal_as<std::string>(nomChampSuperficie),
-				msclr::interop::marshal_as<std::string>(nomChampStanlock),
-				msclr::interop::marshal_as<std::string>(cheminParametres));
-			*logger << "Résolution du modèle" << "\n";
-			Parallel::FMTOpAreaSchedulerTask maintask(
-				optimizationmodel,
-				opeareas,
-				nodeofoutput,
-				msclr::interop::marshal_as<std::string>(nomFichierResultat) + "\\Retour",
-				"YOUVERT",
-				nombreIteration,
-				tempsMaximum,
-				_ObtenirOutputSelectionnee(optimizationmodel.getOutputs(),
-					returnTimeOutput));
-			Parallel::FMTTaskHandler handler(maintask, nombreThread);
-			*logger << "Génération du calendrier de COS" << "\n";
-			handler.conccurentRun();
+			return FMTWrapper::Backend::Controller::scheduleOperatingAreas(params, scenario).success;
 		}
 		catch (...)
 		{
 			_raiseFromCatch("", "FMTForm::OperatingAreaScheduling", __LINE__, __FILE__);
 			return false;
 		}
-
-		return true;
 	}
-
 }

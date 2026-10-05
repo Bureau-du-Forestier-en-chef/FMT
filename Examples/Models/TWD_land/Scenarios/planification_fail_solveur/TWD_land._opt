@@ -1,0 +1,13 @@
+
+*OBJECTIVE
+_MAXMIN oVolRec 1.._LENGTH
+
+*CONSTRAINTS
+
+Burnedarea = 0 1.._LENGTH
+
+;La foret entiere ne porte pas 1 000 000 de m3. La matrice, elle, est coherente : seul le
+;solveur s'en apercoit, et FMT le journalise sans lever.
+oVolRec >= 1000000 1.._LENGTH
+
+*FORMAT MOSEK

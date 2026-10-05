@@ -1,0 +1,16 @@
+
+*OBJECTIVE
+_MAXMIN oVolRec 1.._LENGTH
+
+*CONSTRAINTS
+
+Burnedarea = 0 1.._LENGTH
+;La foret entiere ne porte pas 1 000 000 de m3 : la contrainte reste brisee.
+oVolRec >= 1000000 1.._LENGTH
+
+;spatial constraint
+_SIZE(coupetotale,4) >= 2 1.._LENGTH
+_SIZE(coupetotale,4) <= 2 1.._LENGTH
+_ADJACENCY(coupetotale,1) >= 1 1.._LENGTH
+
+*FORMAT MOSEK
