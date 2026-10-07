@@ -112,14 +112,13 @@ except ImportError:
 
 def generate_YieldPredModels(base_dir="YieldPredModels"):
     base = Path(__file__).parent / base_dir
-    patterns = []
+    package_root = Path(__file__).parent
 
-    for path in base.rglob("*"):
-        if path.is_dir() and any(path.iterdir()):
-            rel = path.relative_to(Path(__file__).parent)
-            patterns.append(rel.as_posix() + "/*")
-
-    return patterns
+    return [
+        path.relative_to(package_root).as_posix()
+        for path in base.rglob("*")
+        if path.is_file()
+    ]
 
 
 setup(
