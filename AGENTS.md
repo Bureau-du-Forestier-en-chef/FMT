@@ -45,6 +45,18 @@ Scripted entry points exist for the usual configurations: `CMakeFMTVS2022vcpkg.b
 on Windows, `CMakeFMTMSYS2rcran45.sh` for the MSYS2 build of the R package. Configuring with
 `-DWITHOUT_TESTING=ON` skips test registration entirely.
 
+The executables that CMake builds (examples, tests, benchmarks) run on the C runtime heap, like FMT in
+Python, Excel and the .NET interface, so that the tests and the benchmarks see what the users get. With
+MSVC, configuring with `-DWITH_MIMALLOC=ON` links mimalloc first into every executable, so that mimalloc
+replaces the C runtime heap of its process: such a build measures what mimalloc would bring, and is not
+for testing (see [The allocator](Documentation/PerformanceTesting.md#the-allocator)). mimalloc can take
+over only before the C runtime starts: FMTlib does not load it, and the processes that load FMTlib later
+keep the C runtime heap. In such a build, `MIMALLOC_DISABLE_REDIRECT=1` keeps the executables on the C
+runtime heap for one run, as a heap debugger such as the page heap of gflags needs, since it only sees
+the heap of Windows. Why the interface cannot use mimalloc is one of the points to consider for a
+reworked interface, gathered in
+[FMTWrapperCore/INTERFACE_MIGRATION.md](FMTWrapperCore/INTERFACE_MIGRATION.md) (in French).
+
 ## Testing
 
 ```bash

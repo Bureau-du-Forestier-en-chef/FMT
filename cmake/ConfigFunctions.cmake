@@ -38,6 +38,15 @@ function(createexecutable executablecpplocation executablename)
   message("Generating build for ${executablename}")
   SET(executablename "${executablename}" PARENT_SCOPE)
   add_executable(${executablename} ${newprojectsourcefiles})
+  #The executables run on the C runtime heap, like FMT in Python, Excel and the .NET interface, which load
+  #FMTlib.dll too late for mimalloc. WITH_MIMALLOC puts them on mimalloc, to measure what it would bring.
+  #mimalloc replaces the C runtime heap only when mimalloc-redirect.dll starts before ucrtbase.dll, that is
+  #when mimalloc.dll is the first import of the executable: it is linked before anything else, and
+  #mi_version is referenced so that the linker keeps it.
+  if (MSVC AND TARGET mimalloc AND WITH_MIMALLOC)
+    target_link_libraries(${executablename} PRIVATE mimalloc)
+    target_link_options(${executablename} PRIVATE "/INCLUDE:mi_version")
+  endif(MSVC AND TARGET mimalloc AND WITH_MIMALLOC)
   target_include_directories(${executablename} PRIVATE ${Boost_INCLUDE_DIRS})
   target_link_libraries(${executablename} PRIVATE ${Boost_LIBRARIES})
   target_compile_definitions(${executablename} PRIVATE "-DFMTLIBIMPORT")

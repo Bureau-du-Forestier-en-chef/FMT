@@ -152,6 +152,25 @@ if (NOT WITHOUT_TESTING)
 				LABELS "${labels}"
 				)
 	endforeach()
+	# Regression test of #361, in a build configured with -DWITH_MIMALLOC=ON: the benchmarks must then run
+	# on mimalloc, which needs mimalloc.dll to stay the first import of the executable. The test runs one
+	# quick benchmark and reads the allocator in the header it prints. It has no label, so that a
+	# measurement leaves it out, and it fails, as it should, under MIMALLOC_DISABLE_REDIRECT=1.
+	get_target_property(FMTPERFORMANCElinks FMTPerformanceTests LINK_LIBRARIES)
+	if ("mimalloc" IN_LIST FMTPERFORMANCElinks)
+		add_test(
+				NAME "FMTPerformanceTests.Mimalloc"
+				COMMAND FMTPerformanceTests --benchmark Mask.IsSubsetOf
+					--model "${FMTPERFORMANCEroot}/Examples/Models/TWD_land/TWD_land.pri"
+					--expectations "${FMTPERFORMANCEcsv}"
+					--output "${CMAKE_BINARY_DIR}/tests/allocator/Mask.IsSubsetOf.json"
+				WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+				)
+		set_tests_properties("FMTPerformanceTests.Mimalloc" PROPERTIES
+				PASS_REGULAR_EXPRESSION "MSVC [0-9]+, mimalloc [0-9]"
+				FIXTURES_REQUIRED ExamplesModels
+				)
+	endif()
 	# The private benchmarks: rows of performance-private.csv, a local file that git ignores, on
 	# models outside the source tree. Each row gives the arguments of its benchmark after its
 	# bounds; the first argument is the primary file of the model. That model must be on T:\, like

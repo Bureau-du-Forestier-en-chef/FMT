@@ -189,12 +189,34 @@ a call are exact whatever the allocator. On the C runtime heap, that size is the
 for a request of zero bytes; under mimalloc, it is the size of the class of the block, 16 bytes for 10
 asked for. The allocated bytes stay the sizes asked for, and compare from one allocator to another.
 
+## The allocator
+
+The benchmarks run on the C runtime heap, the heap of FMT in production: Python, Excel and the .NET
+interface load FMTlib after the C runtime has started, and mimalloc can only replace that heap before.
+
+With MSVC, a build configured with `-DWITH_MIMALLOC=ON` links mimalloc first into every executable, the
+benchmarks included, and mimalloc then serves `malloc` in their processes (see
+[AGENTS.md, Building](../AGENTS.md#building)). Such a build measures what mimalloc would bring, and is
+not for testing: most flows exceed their memory bounds there. To measure the C runtime heap with its
+binaries, run with `MIMALLOC_DISABLE_REDIRECT=1`. In PowerShell, set it with
+`$env:MIMALLOC_DISABLE_REDIRECT="1"` first.
+
+```bash
+MIMALLOC_DISABLE_REDIRECT=1 FMT_BENCHMARK_MODE=full ctest --test-dir build/release -C Release -L performance
+```
+
+The `allocator` field of the results then reads `CRT heap (mimalloc 2.1.2 loaded, not redirected)`.
+
+Such a build also has the ctest test `FMTPerformanceTests.Mimalloc`, which checks that the benchmarks do
+run on mimalloc: it runs one benchmark and fails when the allocator in its header is not mimalloc, as
+happens when mimalloc is no longer the first import of the executable. It has no label, so a measurement
+leaves it out, and it fails, as it should, under `MIMALLOC_DISABLE_REDIRECT=1`.
+
 The counts do not depend on the allocator: when mimalloc redirects `malloc`, the calls still go through
 the redirected imports, and the benchmarks count the same allocations. Durations, peaks and retained
 bytes do depend on it, which is why every result records the allocator of its run. Under mimalloc, the
 peak of a process of the benchmarks rises from about 22 MB to 54 MB: the peak bounds, and the
-retained-memory bounds that are not 0, hold for the C runtime heap and must be measured again when the
-allocator changes.
+retained-memory bounds that are not 0, hold for the C runtime heap only.
 
 ## Results
 
@@ -208,7 +230,7 @@ and 2.
 | --- | --- |
 | `fmtVersion`, `fmtBuildDate` | Version and build date of `FMTlib`. |
 | `features` | Optional components of `FMTlib`, as reported by `Version::FMTVersion::hasFeature`. |
-| `allocator` | Allocator that serves `malloc` in the process: `CRT heap`, or `mimalloc <version>` when mimalloc redirects the C runtime. |
+| `allocator` | Allocator that serves `malloc` in the process: `CRT heap` without mimalloc, `mimalloc <version>` when mimalloc redirects the C runtime, in a build configured with `-DWITH_MIMALLOC=ON`, and `CRT heap (mimalloc <version> loaded, not redirected)` when mimalloc is loaded but does not serve `malloc`, as with `MIMALLOC_DISABLE_REDIRECT=1`. |
 | `commit`, `dirty` | Commit of the sources when the benchmarks were built, and whether the working tree then differed from it (modified or untracked files). |
 | `buildType`, `optimized` | Configuration of the build, and whether it was compiled with `NDEBUG`. |
 | `compiler`, `compilerVersion` | Compiler of the benchmarks. |
@@ -268,7 +290,9 @@ of the same commit differ by up to 8 % on the machine where the suite was writte
 reports; nothing fails on a change.
 
 To show the effect of a change, measure the commit before it, keep the results out of the build folder,
-measure the commit with it, and compare.
+measure the commit with it, and compare. To show the effect of the allocator, measure a build configured
+with `-DWITH_MIMALLOC=ON` with and without `MIMALLOC_DISABLE_REDIRECT=1`, in turns, and compare: the
+warning on the allocators then names the very thing measured.
 
 ## Adding a benchmark
 
