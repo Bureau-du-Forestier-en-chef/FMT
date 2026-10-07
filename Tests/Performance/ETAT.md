@@ -151,9 +151,10 @@ Prises le 2026-09-25, sauf mention d'une autre date.
 6. **Le commit est lu à chaque build**, pas seulement à la configuration, pour qu'un résultat
    ne porte jamais un commit périmé.
 7. **L'allocateur de chaque mesure est noté** (champ `allocator` de l'environnement).
-   *Pourquoi* : FMTlib est lié à mimalloc sans le charger (section 2.6). Actif, mimalloc change de 23 à
-   38 % les durées des yields complexes : deux mesures faites sous deux allocateurs ne se
-   comparent pas. Le champ est entré avant le premier commit du banc : le schéma reste 1.
+   *Pourquoi* : un build peut tourner sous mimalloc (`-DWITH_MIMALLOC=ON`, décision 17). Actif,
+   mimalloc change de 23 à 38 % les durées des yields complexes : deux mesures faites sous deux
+   allocateurs ne se comparent pas. Le champ est entré avant le premier commit du banc : le schéma
+   reste 1.
 8. **Un groupe privé de benchmarks pour les flux, aux lots 3 et 4**, sur des modèles de
    `BFECtests.csv`. *Pourquoi* : TWD_land est trop petit pour un flux, ses coûts fixes
    dominent ; et un test BFEC tel quel ne donne que la durée de son processus, souvent sous
@@ -179,9 +180,24 @@ Prises le 2026-09-25, sauf mention d'une autre date.
 14. **Un flux borne le pic mémoire de son processus** (2026-10-02) : le plus haut pic de deux
     mesures dans chaque mode, plus 10 %. *Pourquoi* : en production, la mémoire est déjà près de
     la limite ; un changement qui la fait exploser doit faire échouer un benchmark.
+15. **Le défaut du journal de FMT donne une issue** (section 2.12), selon la règle 10 : c'est
+    #363, publiée le 2026-10-05.
+16. **#361 passe avant le lot 4** (2026-10-05) : Gabriel met le chantier en pause pour faire #361
+    (mimalloc) d'abord. Le banc devait y servir pour la première fois à juger un changement de FMT
+    (abandonné, décision 17) ; le lot 4 reprend ensuite.
+17. **mimalloc reste hors du build par défaut** (#361, 2026-10-06). Chargé tard, mimalloc ne peut
+    pas remplacer le tas du CRT (section 2.6) : l'interface, Excel et Python, qui chargent FMTlib,
+    restent sur ce tas. Les exécutables de CMake y restent aussi ; `-DWITH_MIMALLOC=ON` les lie à
+    mimalloc en premier, pour mesurer ce qu'il apporterait. Les bornes ne changent pas, et la
+    référence de #348 (section 7.1) reste valable. *Pourquoi* : Gabriel l'a d'abord voulu actif par
+    défaut (2026-10-05), puis a jugé inutile un état que les utilisateurs n'auront pas ; les tests
+    et le banc doivent voir ce que voient les utilisateurs. Les mesures avant et après prévues pour
+    #361 sont abandonnées (2026-10-07) : le build par défaut ne change pas d'allocateur, et une
+    mesure sous mimalloc vieillirait avec #348. Le banc servira pour la première fois à juger un
+    changement de FMT avec #348.
 
-Les choix de conception de chaque lot sont en section 3 ; ceux des lots 1 et 2 sont validés
-(2026-09-29 et 2026-09-30), ceux du lot 3 attendent la relecture (section 3.3).
+Les choix de conception de chaque lot sont en section 3 ; ceux des lots 1, 2 et 3 sont validés
+(2026-09-29, 2026-09-30 et 2026-10-05).
 
 ### 1.4 Règles
 
@@ -341,7 +357,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
 - **Ici** : le champ `features` des résultats ne contient jamais `ONNXRUNTIME`.
 - Pas corrigé (règle 10) : issue #362, publiée le 2026-09-29.
 
-### 2.6 mimalloc est lié à FMTlib mais n'est jamais chargé (démontré au lot 1)
+### 2.6 mimalloc est lié à FMTlib mais n'est jamais chargé (démontré au lot 1, réglé par #361)
 
 - **Cause** : `CMakeLists.txt:141-148` lie FMTlib à mimalloc et affiche « mimalloc was found
   successfully! », mais aucun code de FMT n'appelle une fonction de mimalloc. L'éditeur de liens
@@ -391,7 +407,58 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
     replanification retient 5 242 144 octets, ses blocs comptant leur taille de classe, au-delà
     de sa borne de 5 Mo. Changer d'allocateur demande de mesurer de nouveau les bornes de pic et
     les bornes de mémoire retenue non nulles.
-- **Issue** : #361, publiée le 2026-09-29.
+- **#361** (2026-10-05 au 2026-10-07, décision 17) :
+  - **Chargé tard, mimalloc ne redirige pas.** `mimalloc-redirect.dll` refuse de basculer s'il
+    démarre après `ucrtbase.dll` (« seems to be initialized after ucrtbase.dll », puis « standard
+    malloc is _not_ redirected »). Le refus ne s'affiche qu'avec `MIMALLOC_VERBOSE=1`, et rien ne
+    plante. Démontré dans Python 3.10.7 et dans un hôte .NET 10. L'interface (.NET 8), Excel et
+    Python chargent FMTlib tard : ils restent sur le tas du CRT, quoi que fasse FMTlib.
+  - **Le correctif d'abord proposé ne suffit pas.** Une FMTlib liée avec `/INCLUDE:mi_version` ne
+    redirige pas non plus dans le banc, qui importe Boost avant FMTlib. Elle ne se chargerait plus
+    dans la version 1.4.1, qui ne livre pas `mimalloc.dll`. La 1.4.2 livre `mimalloc.dll` et
+    `mimalloc-redirect.dll`, mais aucun de ses binaires ne les importe.
+  - **Ce qui marche** : lier mimalloc en premier à l'exécutable, avec `/INCLUDE:mi_version`
+    (`mimalloc.dll` en tête de `dumpbin /DEPENDENTS`).
+  - **Mécanisme retenu** : FMTlib ne lie plus mimalloc. Avec `-DWITH_MIMALLOC=ON`,
+    `createexecutable` le lie en premier à chaque exécutable ; `MIMALLOC_DISABLE_REDIRECT=1` coupe
+    alors la redirection pour un passage, et le test `FMTPerformanceTests.Mimalloc` vérifie que le
+    banc tourne sous mimalloc. Par défaut, rien ne change. Vérifié le 2026-10-06 sur le build de
+    Gabriel : aucun exécutable n'importe mimalloc, le banc affiche `CRT heap`, et la suite base
+    passe (254 tests, 239 verts et 15 désactivés).
+  - **Ordres de grandeur sous mimalloc**, pour une future interface. Mesurés le 2026-10-06 sur un
+    build lié à mimalloc, compilé avant le commit. Les nombres d'allocations ne changent pas, et la
+    suite base passe, sauf une borne de mémoire sur chacun des six flux publics. Pics en Mo : sur le
+    tas du CRT, le plus haut des mesures complètes de la section 7.5 ; sous mimalloc, le plus haut
+    de quatre passages seuls, deux courts et deux complets. Sous `-j 8`, les pics sous mimalloc
+    montent jusqu'à 7 % plus haut.
+
+    | Flux | Tas du CRT | mimalloc 2.1.2 |
+    |---|---|---|
+    | `Flow.Optimize` | 28,7 | 51,7 |
+    | `Flow.Optimize.Long` | 62,5 | 79,7 |
+    | `Flow.Replay` | 24,2 | 51,8 |
+    | `Flow.Outputs` | 23,2 | 51,7 |
+    | `Flow.Simulate` | 28,5 | 55,6 |
+    | `Flow.Replanning` | 76,0 | 82,8 |
+    | `Flow.Optimize.Bfec` | 582,4 | 705,0 |
+    | `Flow.Replay.Bfec` | 942,7 | 961,4 |
+    | `Flow.Outputs.Bfec` | 220,9 | 248,1 |
+    | `Flow.Replanning.Bfec` | 348,5 | 416,1 |
+    | `Yield.Model.Bfec` | 206,2 | 211,2 |
+
+    Mémoire retenue sous mimalloc, en tailles de classe : 5 242 144 octets par replanification
+    (4 737 039 sur le tas du CRT). Au pire cas du cache : 22 128 octets pour `Flow.Outputs` (19 987
+    sur le tas du CRT), 7 476 848 pour `Flow.Optimize.Bfec`, 51 040 pour `Flow.Replay.Bfec`,
+    25 468 176 pour `Flow.Outputs.Bfec` et 12 747 648 pour `Flow.Replanning.Bfec`.
+  - **Le mimalloc de MOSEK brouille `MIMALLOC_VERBOSE=1`** : ses lignes « mimalloc: » s'affichent
+    même sans le mimalloc de vcpkg. Seules les lignes « mimalloc-redirect: » parlent de ce dernier.
+  - **Risque d'un build lié à mimalloc** : un logiciel de sécurité qui injecte une DLL avant
+    mimalloc, et qui alloue avant la bascule, fait planter le démarrage. C'est l'issue 1221 de
+    mimalloc, sur mimalloc 3.0.3 ; non démontré avec la 2.1.2, à revoir si vcpkg passe à mimalloc 3.
+    `MIMALLOC_DISABLE_REDIRECT=1` le contourne.
+  - **Pour l'interface**, les pistes et leurs risques sont dans
+    `FMTWrapperCore/INTERFACE_MIGRATION.md`.
+- **Issue** : #361, publiée le 2026-09-29, réglée par le commit de #361 (décision 17).
 
 ### 2.7 Threads (à examiner au lot 4)
 
@@ -552,7 +619,7 @@ sans verrou. Le lien avec la course connue des caches de yields
   `handler.setQuietLogger()` en commentaire.
 - **Dans le banc** : `quietFmt()` règle le journal une seule fois par processus, avant tout modèle
   (règle 14). La replanification passe alors dans 12 processus sur 12. Le défaut donne une issue
-  (règle 10) : texte remis à Gabriel le 2026-10-02.
+  (règle 10) : #363, publiée le 2026-10-05.
 
 ### 2.13 La replanification retient 4,7 Mo par exécution (à démontrer)
 
@@ -820,7 +887,6 @@ Trois demandes de #349 sur les yields complexes dépendent de #348 :
 | Modèle synthétique « moyen » | lot 5 | pour la suite publique seulement, si l'horizon de TWD_land ne suffit pas (lot 3) ; la taille réelle passe par le groupe privé (décision 8) |
 | Compteur d'allocations hors Windows | lot 5 | lié à la demande de portabilité de #350 |
 | Mesurer et comparer en un geste | lot 5 | un `.bat` ou une cible du projet Visual Studio qui lance la mesure complète, garde ses JSON et les compare à la référence de la machine |
-| Ordre de #361 (mimalloc), du lot 4 et de #348 | avant #361 | Gabriel veut se servir de #361 pour éprouver le banc (2026-10-05). La référence de #348 (section 7.1) et les bornes valent pour le tas du CRT (section 2.6) ; le gain et le coût mémoire de mimalloc se jugent surtout sur la replanification à 5 fils (lot 4) |
 | Mesurer le pire cas du cache depuis le banc | lot 5 | une option du harnais qui ralentit les allocations de `FMTComplexYieldHandler::get` pendant les appels comptés ; aujourd'hui, un moniteur de diagnostic hors du dépôt (section 2.16) |
 
 ### 4.4 Fermer #349
@@ -1135,20 +1201,22 @@ Validation de la correction sous mimalloc (2026-10-05, compilée par Gabriel, pa
 
 ## 6. Prochain lot
 
-Les lots 1 à 3 sont validés et commités (sections 5.2 à 5.4).
+Les lots 1 à 3 sont validés et commités (sections 5.2 à 5.4 ; dernier commit du banc `f9061c93`).
+Le chantier, en pause depuis le 2026-10-05 pour #361 (décision 16), reprend au lot 4 : #361 est
+fait, sans changer l'allocateur par défaut ni les bornes (décision 17, section 2.6).
 
 ### 6.1 Fait : la mémoire retenue sous mimalloc
 
 Le 2026-10-05, Gabriel a compilé la correction de `AllocationMonitorWindows.cpp` (section 2.8), et
 Claude a relancé les étiquettes et la suite base : sous le tas du CRT, aucune valeur stable ne
-change (section 5.4). Reste à Gabriel : commiter la correction, et publier l'issue du journal de FMT
-(section 2.12), si ce n'est déjà fait.
+change (section 5.4). Correction commitée (`f9061c93`) ; l'issue du journal de FMT est #363.
 
-### 6.2 Ensuite : lot 4
+### 6.2 À la reprise : lot 4
 
-Threads : la replanification à 5 fils, comme en production (section 4.2), effort `xhigh`. Gabriel
-veut aussi entamer #361 (mimalloc) pour éprouver le banc : l'ordre de #361, du lot 4 et de #348
-est à décider (section 4.3).
+Threads : la replanification à 5 fils, comme en production (section 4.2), effort `xhigh`. Elle se
+mesure sur le tas du CRT, comme la production (décision 17). Un passage dans un build configuré
+avec `-DWITH_MIMALLOC=ON` reste possible, pour l'ordre de grandeur qu'attendrait une future
+interface (section 2.6) ; ses bornes de mémoire y échouent, c'est attendu.
 
 ## 7. Mesures
 
