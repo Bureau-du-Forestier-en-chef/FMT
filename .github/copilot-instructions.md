@@ -1,3 +1,1 @@
 At the beginning of every task in this repository, read the complete `AGENTS.md` file at the repository root before planning, searching, or editing. Follow all instructions in it throughout the task. Do not rely on prior summaries or memory; reread the file when starting a new task.
-
-Also read and follow `.github/prompts/copilot-instructions.md`.
