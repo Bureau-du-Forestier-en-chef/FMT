@@ -50,9 +50,10 @@ allocations.
 
 Le lot 1 mesure donc l'état actuel des yields complexes : temps et allocations par appel, sur
 le code d'aujourd'hui. **La référence doit être prise sur un commit antérieur à tout changement
-de #348** : celle de la section 7.1 a été prise le 2026-09-30, sur le build de Gabriel du commit
-`9a5001df`, sous le tas du CRT ; la première, du 2026-09-29 (`47d4ea45`), est en section 7.4. Une
-mesure « après » se prend sur la même machine, avec le même allocateur.
+de #348** : celle de la section 7.1 a été prise le 2026-10-08, sur le build de Gabriel du commit
+`6850228c` (lot 4), sous le tas du CRT ; les précédentes, du 2026-09-30 (`9a5001df`) et du 2026-09-29
+(`47d4ea45`), sont en sections 7.7 et 7.4. Une mesure « après » se prend sur la même machine, avec le
+même allocateur, le même jour qu'une nouvelle mesure de ce commit (section 6.2).
 
 ### 0.3 Lien avec #350 et le chantier des tests
 
@@ -189,15 +190,34 @@ Prises le 2026-09-25, sauf mention d'une autre date.
     pas remplacer le tas du CRT (section 2.6) : l'interface, Excel et Python, qui chargent FMTlib,
     restent sur ce tas. Les exécutables de CMake y restent aussi ; `-DWITH_MIMALLOC=ON` les lie à
     mimalloc en premier, pour mesurer ce qu'il apporterait. Les bornes ne changent pas, et la
-    référence de #348 (section 7.1) reste valable. *Pourquoi* : Gabriel l'a d'abord voulu actif par
+    référence de #348 (section 7.7) reste valable. *Pourquoi* : Gabriel l'a d'abord voulu actif par
     défaut (2026-10-05), puis a jugé inutile un état que les utilisateurs n'auront pas ; les tests
     et le banc doivent voir ce que voient les utilisateurs. Les mesures avant et après prévues pour
     #361 sont abandonnées (2026-10-07) : le build par défaut ne change pas d'allocateur, et une
     mesure sous mimalloc vieillirait avec #348. Le banc servira pour la première fois à juger un
     changement de FMT avec #348.
+18. **La référence de #348 est reprise avec le harnais du lot 4** (2026-10-08), sur le commit du lot 4,
+    `6850228c`, toujours antérieur à #348. *Pourquoi* : depuis le lot 4, tous les fils tournent sur les
+    cœurs performants, et `CompareResults.cmake` avertissait que les durées ne se comparaient plus avec
+    la référence du 2026-09-30, désormais en section 7.7.
+19. **Mesurer et comparer en une commande : `tools/performance/Measure_Performance.bat`** (2026-10-08),
+    comme les autres outils du dépôt, sa logique dans `Measure-Performance.ps1`, en ASCII : Windows
+    PowerShell 5.1 lit un script UTF-8 sans BOM comme du cp1252. `CompareResults.cmake` compare
+    plusieurs passages de chaque côté (section 3.5).
+20. **Quatre attentes de #349 écartées** (2026-10-08), écrites dans l'issue avec leur raison :
+    - l'intégration continue : le dépôt n'en a pas, et une durée mesurée sur une machine partagée ne
+      vaut rien ; #356 (builds de version automatisés) pourrait la porter ;
+    - le modèle synthétique « moyen » : le groupe privé mesure la taille réelle (décision 8), et
+      TWD_land suffit à la suite publique ;
+    - le compteur d'allocations hors Windows : rien pour le tester ici ; il relève de la portabilité
+      de #350, et ailleurs les lignes bornées rendent 77 ;
+    - la mesure du pire cas du cache depuis le banc : elle reste un outil de diagnostic hors du dépôt
+      (section 2.16) ; #348 doit rendre le cache déterministe ou le remplacer.
+21. **La fusion de `new_test` dans `master` attend la fin du chantier des tests** (2026-10-08) : la
+    branche porte aussi #350. Le banc rejoindra `master` avec elle.
 
-Les choix de conception de chaque lot sont en section 3 ; ceux des lots 1, 2 et 3 sont validés
-(2026-09-29, 2026-09-30 et 2026-10-05).
+Les choix de conception de chaque lot sont en section 3 ; ceux des lots 1 à 4 sont validés
+(2026-09-29, 2026-09-30, 2026-10-05 et 2026-10-07).
 
 ### 1.4 Règles
 
@@ -302,7 +322,7 @@ démontrer » : lu dans le code, sans démonstration.
   chaque appel. Exemple, `_getShift` (`Source/FMTComplexYieldHandler.cpp:736-754`) : une copie
   du `FMTDevelopment`, deux appels à `getValues()` et un à `getSources()` qui rendent chacun
   un vecteur, puis `_getData` et `_toMap`.
-- **Mesuré** (requête déjà préparée, sondes du lot 1 et section 7.1) :
+- **Mesuré** (requête déjà préparée, sondes du lot 1 et section 7.7) :
 
   | Chemin | Allocations par appel | Durée |
   |---|---|---|
@@ -317,7 +337,7 @@ démontrer » : lu dans le code, sans démonstration.
 
   Même servie par le cache, une valeur coûte donc 2 allocations : la clé. #348 devra s'en
   occuper si le cache reste.
-- **Mesuré au lot 2** (section 7.1) :
+- **Mesuré au lot 2** (section 7.7) :
 
   | Chemin | Allocations par appel | Durée |
   |---|---|---|
@@ -539,7 +559,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
   - Depuis le 2026-09-30, une mesure complète attend 250 ms avant son premier benchmark
     (`BenchmarkSuite.cpp`). Le mode court n'attend pas : ses temps ne sont pas une mesure.
 - **Deux mesures complètes du même commit** diffèrent de quelques pour cent (de -2,0 % à
-  +0,8 % au lot 1, jusqu'à 8 % pour la référence de la section 7.1) : un écart de cet ordre n'est
+  +0,8 % au lot 1, jusqu'à 8 % pour la référence de la section 7.7) : un écart de cet ordre n'est
   pas un changement. Une mesure entière peut aussi se décaler : le 2026-10-05, la deuxième de trois
   mesures publiques était plus lente de 6 à 22 % sur les micro-benchmarks, sans cause trouvée. Une
   boucle qui lance un processus chaque seconde n'en est pas la cause : elle ne change aucune
@@ -958,10 +978,30 @@ lot par lot, les choix qui ne se lisent pas dans le code. Chacun attend la relec
 - **Écarts au plan** : pas de planification parallèle (`FMTPlanningTask`), puisque les calculs qui
   durent des jours sont des replanifications ; 5 et 10 fils au lieu de 4 et 8 ; pas de compteurs par
   fil dans le moniteur.
-- **Un dossier par appel** (ajouté à la validation, à relire ; section 2.20) : chaque replanification
-  écrit dans `call<N>`, sous le dossier du benchmark, que `prepare` vide hors mesure en réessayant
-  pendant une seconde. Aucun appel mesuré ne supprime plus de fichiers : la suppression comptait dans
-  la phase de préparation des replanifications, `Flow.Replanning` compris.
+- **Un dossier par appel** (ajouté à la validation, section 2.20 ; validé avec le commit du lot 4) :
+  chaque replanification écrit dans `call<N>`, sous le dossier du benchmark, que `prepare` vide hors
+  mesure en réessayant pendant une seconde. Aucun appel mesuré ne supprime plus de fichiers : la
+  suppression comptait dans la phase de préparation des replanifications, `Flow.Replanning` compris.
+
+### 3.5 Choix du lot 5 (à relire)
+
+- **Un outil, deux fichiers** : `tools/performance/Measure_Performance.bat` passe ses arguments à
+  `Measure-Performance.ps1`, comme `Changelog_Generate.bat` à ses scripts. Sans argument, depuis
+  l'Explorateur : trois passages des benchmarks publics, sans comparaison, puis une pause.
+- **Passages** : 3 par défaut, sans `-j`, avec `FMT_BENCHMARK_MODE=full` ; l'étiquette `performance` par
+  défaut, `-Label bfec-perf` pour le groupe privé, `-Regex` pour restreindre.
+- **Rangement** : chaque passage dans `<sortie>\<date>_<commit>[-modified]_<étiquette>_<n>`, avec ses
+  JSON et le journal de ctest. Le commit est celui de l'en-tête du build mesuré, pas celui de l'arbre.
+  Sortie par défaut : `perf-references`, à côté du dépôt, hors du build et hors de git.
+- **Comparaison** : `-Baseline` accepte des jokers (`..._performance_*`) ; le rapport s'affiche et va à
+  côté des passages (`..._comparison.txt`). L'outil rend 1 quand un passage échoue.
+- **`CompareResults.cmake` à plusieurs passages** : chaque côté prend une liste de passages. Le rapport
+  compare les valeurs du milieu (la médiane des passages, la moyenne des deux du milieu pour un nombre
+  pair), donne l'étendue de leurs médianes et dit quand tous les passages candidats tombent sous ou
+  au-dessus de celle de la référence. Un compte qui varie d'un passage à l'autre s'écrit en intervalle.
+  Avec un passage de chaque côté, la sortie ne change pas.
+- **Documentation** : la section « Measuring a change » de `Documentation/PerformanceTesting.md` décrit
+  le déroulement avant et après un changement, pour #348.
 
 ## 4. Feuille de route et fermeture de #349
 
@@ -971,21 +1011,21 @@ lot par lot, les choix qui ne se lisent pas dans le code. Chacun attend la relec
 |---|---|---|
 | Une suite de performance séparée des tests fonctionnels | 1 | fait |
 | Benchmarks en Release | 1 | fait (type de build et optimisation notés dans chaque résultat) |
-| Jeux de données stables et versionnés | 1, 3, 5 | `perfyields` fait ; groupe privé fait au lot 3, hors dépôt, avec l'empreinte SHA-256 des modèles (décision 8) ; modèle public moyen éventuel au lot 5 |
+| Jeux de données stables et versionnés | 1, 3, 5 | `perfyields` fait ; groupe privé fait au lot 3, hors dépôt, avec l'empreinte SHA-256 des modèles (décision 8) ; modèle public moyen écarté (décision 20) |
 | Temps mesuré de façon constante | 1 | fait |
-| Nombre d'allocations et octets alloués | 1 | fait (Windows) |
+| Nombre d'allocations et octets alloués | 1, 5 | fait sous Windows ; ailleurs, écarté vers #350 (décision 20) |
 | Pic mémoire, là où c'est possible | 1, 2, 3 | fait : pic du tas et du processus, mémoire retenue par appel (lot 2), borne de pic des flux (lot 3) |
 | Mise à l'échelle multithread | 4 | fait : famille `Flow.Replanning.Threads<N>` et `ScalingReport.cmake` (accélération, efficacité, mémoire par worker) |
 | Environnement dans chaque résultat | 1 | fait |
 | Format lisible par une machine | 1 à 4 | fait (JSON, schéma 4 depuis le lot 4) |
-| Comparaison avec une référence | 1, 5 | script fait ; rapport à finaliser au lot 5 |
+| Comparaison avec une référence | 1, 5 | fait : plusieurs passages de chaque côté, mesure et comparaison en une commande (lot 5) |
 | Chemins sans allocation vérifiés à zéro | 1, 2 | fait : `Yield.Age` et `Mask.IsSubsetOf`, bornés à 0 (lot 2) |
 | Chaque benchmark valide son calcul | 1 | fait |
 | Cibles CMake et ctest | 1 | fait |
 | Groupes lancés séparément | 1 | fait (`--filter`, étiquettes) |
 | Lancement local par les développeurs | 1 | fait (documentation) |
-| Rapports publiés par l'intégration continue | 5 | hors périmètre, décision au lot 5 |
-| Documentation pour ajouter et lancer un benchmark | 1, 5 | faite, à compléter au lot 5 |
+| Rapports publiés par l'intégration continue | 5 | écarté (décision 20) |
+| Documentation pour ajouter et lancer un benchmark | 1, 5 | faite, avec le déroulement avant et après un changement (lot 5) |
 | Premier jeu : yields complexes | 1 | fait |
 | Premier jeu : lecture des yields | 2 | fait |
 | Premier jeu : lecture d'un projet | 2 | fait |
@@ -1008,7 +1048,7 @@ Trois demandes de #349 sur les yields complexes dépendent de #348 :
 - **Lot 1 : socle et yields complexes** : fait, validé le 2026-09-29 (section 5.2) ; première
   référence en section 7.4.
 - **Lot 2 : lecture des yields, masques, lecture d'un projet** : fait, validé et commité le
-  2026-09-30 (`9a5001df`, section 5.3) ; référence de #348 reprise en section 7.1.
+  2026-09-30 (`9a5001df`, section 5.3) ; référence de #348 reprise (section 7.7).
   - `Yield.Age`, `Yield.Age.NewRequest`, `Mask.IsSubsetOf`, `Mask.FromString`,
     `Parser.ReadProject` et `Parser.ReadProject.TwoScenarios`.
   - Mémoire retenue par appel, réglages par benchmark, `ProcessorPolicy` (section 3.2).
@@ -1018,29 +1058,24 @@ Trois demandes de #349 sur les yields complexes dépendent de #348 :
     gros modèle (section 3.3).
   - Phases, borne de pic mémoire, groupe privé, empreinte des modèles, schéma JSON 3.
 - **Lot 4 : threads** : livré le 2026-10-07 ; validé le 2026-10-08 sur le build de Gabriel, avec la
-  correction trouvée à sa validation (section 2.20) ; à commiter (section 6.1). Mesure complète en
-  section 7.6.
+  correction trouvée à sa validation (section 2.20), et commité le même jour (`6850228c`). Mesure
+  complète en section 7.6.
   - `Flow.Replanning.Threads1`, `2`, `5` et `10` sur TWD_land, `Flow.Replanning.Threads5.Bfec` dans le
     groupe privé : la replanification lancée comme l'interface (section 3.4).
   - Accélération, efficacité et mémoire par worker par `ScalingReport.cmake` ; résultats vérifiés
     contre un fil.
   - Constats : un fil par réplicat et 4,7 Mo par fil dans MOSEK (section 2.17), attente active
     (section 2.18) : issue #366.
-- **Lot 5 : jeux de données et clôture**, effort `high`.
-  - Modèle synthétique « moyen » sous `Examples/Performance/`, si le lot 3 le montre utile.
-  - Rapport de comparaison finalisé, documentation complète.
-  - Décision sur l'intégration continue, écrite dans l'issue.
+- **Lot 5 : clôture** : livré le 2026-10-08, à relire et commiter (section 5.6).
+  - `tools/performance/Measure_Performance.bat`, et `CompareResults.cmake` à plusieurs passages
+    (section 3.5).
+  - Déroulement avant et après un changement dans la documentation ; référence « avant #348 » reprise
+    sur `6850228c` (section 7.1).
+  - Attentes écartées de #349 (décision 20) et commentaire de clôture ; fusion reportée (décision 21).
 
 ### 4.3 Décisions encore ouvertes
 
-| Décision | Quand | Remarque |
-|---|---|---|
-| Intégration continue | lot 5 | le dépôt n'en a pas ; #356 (builds de version automatisés) pourrait la porter |
-| Modèle synthétique « moyen » | lot 5 | pour la suite publique seulement, si l'horizon de TWD_land ne suffit pas (lot 3) ; la taille réelle passe par le groupe privé (décision 8) |
-| Compteur d'allocations hors Windows | lot 5 | lié à la demande de portabilité de #350 |
-| Mesurer et comparer en un geste | lot 5 | un `.bat` ou une cible du projet Visual Studio qui lance la mesure complète, garde ses JSON et les compare à la référence de la machine |
-| Reprendre la référence « avant #348 » | lot 5 | depuis le lot 4, tous les fils tournent sur les cœurs performants : `CompareResults.cmake` avertit que les durées ne se comparent plus avec la référence du 2026-09-30 (section 7.1), même si les benchmarks à un fil restent dans le bruit (section 7.6). La reprendre sur le commit du lot 4, comme la décision 12 l'a fait au lot 2 |
-| Mesurer le pire cas du cache depuis le banc | lot 5 | une option du harnais qui ralentit les allocations de `FMTComplexYieldHandler::get` pendant les appels comptés ; aujourd'hui, un moniteur de diagnostic hors du dépôt (section 2.16) |
+Aucune : les dernières ont été tranchées le 2026-10-08 (décisions 18 à 21).
 
 ### 4.4 Fermer #349
 
@@ -1051,6 +1086,10 @@ L'issue peut être fermée quand, ensemble :
 - chaque attente du tableau ci-dessus est faite, ou écartée dans l'issue en disant pourquoi ;
 - la référence « avant #348 » est consignée en section 7.1 ;
 - `Documentation/PerformanceTesting.md` explique comment lancer et ajouter un benchmark.
+
+Ces conditions sont remplies avec le lot 5, une fois publié le commentaire de clôture (section 6.1). Le
+banc vit sur `new_test` jusqu'à sa fusion dans `master` (décision 21) : Gabriel décide s'il ferme #349
+avant, et le commentaire le dit.
 
 ## 5. Journal des lots
 
@@ -1180,7 +1219,7 @@ recompilé par Gabriel après le commit :
 ### 5.3 Lot 2 : lecture des yields, masques, lecture d'un projet (2026-09-29)
 
 **Statut** : livré le 2026-09-29 ; validé, relu et commité par Gabriel le 2026-09-30 (`b789dd76`
-pour `AGENTS.md`, `9a5001df` pour le reste). Référence de #348 reprise (section 7.1).
+pour `AGENTS.md`, `9a5001df` pour le reste). Référence de #348 reprise (section 7.7).
 
 - **Benchmarks**, 6 lignes de plus, 13 en tout :
   - `YieldBenchmarks.h/.cpp` : `Yield.Age`, `Yield.Age.NewRequest` ;
@@ -1255,7 +1294,7 @@ Validation finale (2026-09-30), sur le commit `9a5001df`, compilé par Gabriel a
 - **Suite base** (`-E "T:/" -j 8`) : 248 tests, 233 verts, 15 désactivés, aucun échec, 14,0 s
   réelles.
 - **Référence** (décision 12) : trois mesures complètes à la suite, la machine au repos
-  (section 7.1). Comparée à celle du lot 1, elle donne des médianes de -1,2 à +3,5 % sur les
+  (section 7.7). Comparée à celle du lot 1, elle donne des médianes de -1,2 à +3,5 % sur les
   yields complexes, avec les mêmes allocations.
 - **#349** : texte d'un commentaire remis à Gabriel (décision 11).
 
@@ -1419,69 +1458,125 @@ Validation après la correction (2026-10-08, build de Gabriel recompilé, en-tê
   `Flow.Replanning.Threads5.Bfec` y formait une famille « Flow.Replanning.Bfec », qu'on pouvait
   confondre avec le benchmark de ce nom. Script et documentation seulement, rien à compiler.
 
+### 5.6 Lot 5 : clôture (2026-10-08)
+
+**Statut** : livré le 2026-10-08, à relire et commiter par Gabriel. Rien à compiler : un outil, deux
+scripts CMake, la documentation et deux ETAT.
+
+- **Référence « avant #348 »** reprise sur le build de Gabriel recompilé après le commit du lot 4
+  (`6850228c`, non modifié), avec l'outil du lot : trois mesures publiques et deux privées, toutes
+  vertes (section 7.1).
+- **Outil** : `tools/performance/Measure_Performance.bat` et `Measure-Performance.ps1` (section 3.5).
+- **Comparaison** : `CompareResults.cmake` à plusieurs passages ; `ResultsFormat.cmake` gagne
+  `_fromThousandths`.
+- **Documentation** : l'outil, la comparaison à plusieurs passages et la section « Measuring a change »
+  de `Documentation/PerformanceTesting.md`.
+- **Chantier des tests** : la note de la section 8 de `Examples/C++/tests/ETAT.md` compte les 23 lignes
+  de performance du lot 4.
+- **#349** : commentaire de clôture remis à Gabriel (décisions 20 et 21).
+
+Vérifications (2026-10-08) :
+
+- **Comparaison** : avec un passage de chaque côté, sortie identique à l'ancienne sur trois paires de
+  mesures (schémas 1 et 2, 2 et 4, 3 et 4). Avec trois passages de chaque côté (lot 3 contre lot 4) :
+  étendues et verdicts justes, comptes des flux privés en intervalles.
+- **Outil**, sur le build de Gabriel : deux passages et leur comparaison à trois passages de référence ;
+  une expression avec `|` ; une étiquette sans test et un build absent rendent 1, avec un message ; le
+  `.bat` ne crée aucun fichier parasite.
+- **Encodages** : `.bat` et `.ps1` en ASCII, scripts CMake et Markdown en UTF-8, tout en CRLF.
+
 ## 6. Prochain lot
 
-Les lots 1 à 3 sont validés et commités (sections 5.2 à 5.4). #361 est fait, sans changer l'allocateur
-par défaut ni les bornes (décision 17). Le lot 4 est validé ; reste son commit (section 5.5).
+Les lots 1 à 4 sont validés et commités (sections 5.2 à 5.5). Le lot 5 clôt le chantier (section 5.6).
 
-### 6.1 D'abord : commiter le lot 4
+### 6.1 D'abord : clore le lot 5 et #349
 
-Validé le 2026-10-08 sur le build de Gabriel, avec la correction de la section 2.20 (section 5.5) ;
-mesure complète en section 7.6.
+1. Gabriel relit les choix de la section 3.5 et commite le lot 5.
+2. Gabriel publie le commentaire de clôture sous #349 (décisions 20 et 21) et ferme l'issue quand il le
+   juge bon : le banc rejoindra `master` avec la fusion de `new_test` (décision 21).
 
-1. Gabriel relit le choix « un dossier par appel » (section 3.4) et le changement de
-   `ScalingReport.cmake` (section 5.5).
-2. Gabriel commite le lot 4. Rien n'est à remesurer : les sources mesurées sont celles du commit.
+### 6.2 Ensuite : juger #348
 
-### 6.2 Ensuite : lot 5
+Selon la section « Measuring a change » de `Documentation/PerformanceTesting.md` :
 
-Clôture (section 4.2) : mesurer et comparer en une commande, documenter le déroulement avant et après
-un changement, reprendre la référence « avant #348 » si Gabriel le décide (section 4.3), fusionner
-`new_test` dans `master`, écrire dans #349 les attentes écartées (section 4.3) et un commentaire de
-clôture.
+1. Le jour où #348 se mesure, mesurer aussi le commit de référence, `6850228c` (un worktree suffit) :
+   d'un jour à l'autre, une mesure entière peut se décaler de 6 à 22 % (section 2.10). La section 7.1
+   garde les comptes, qui ne bougent pas.
+2. Mesurer #348, comparer avec `-Baseline`, et lire les comptes avant les durées.
+3. Resserrer les bornes que #348 abaisse, en le justifiant au journal (règles 3 et 11).
+4. Ajouter les trois demandes de #349 qui attendaient #348 (section 4.1), en benchmarks ou en tests.
 
 ## 7. Mesures
 
 ### 7.1 Référence « avant #348 »
 
-Reprise le 2026-09-30 avec le harnais du lot 2 (décision 12). Mesures complètes par ctest, sans
-`-j`, un processus par benchmark, sur le build de Gabriel du commit `9a5001df`, sans modification
-locale : FMT 1.3.0, Release, MSVC 19.44.35228, tas du CRT, fil qui mesure sur les cœurs
-performants, attente de 250 ms au démarrage. Machine : Intel Core i9-13900, 32 cœurs logiques,
-Windows 10.0.22631, 40 Gio disponibles, au repos.
+Reprise le 2026-10-08 avec le harnais du lot 4 (décision 18). Mesures complètes par
+`tools/performance/Measure_Performance.bat`, sans `-j`, un processus par benchmark, sur le build de
+Gabriel du commit `6850228c`, recompilé après le commit, sans modification locale : FMT 1.3.0, Release,
+MSVC 19.44.35228, tas du CRT, tous les fils sur les cœurs performants, attente de 250 ms au démarrage.
+Machine : Intel Core i9-13900, 32 cœurs logiques, Windows 10.0.22631, 40 Gio disponibles, au repos.
 
-Trois mesures à la suite. La troisième a été prise parce que la deuxième avait un échantillon lent
-dans `ComplexYield.Equation` (1,99 fois la médiane) ; elle en a un aussi (1,91 fois). C'est le
-bruit ordinaire de ce benchmark, pas une perturbation : les trois mesures forment la référence.
+Trois mesures des benchmarks publics, à la suite :
 
 | Benchmark | Médiane, mesure 1 | Mesure 2 | Mesure 3 | Allocations par appel (min / médiane / max) | Octets par appel | Mémoire retenue | Pic du tas (octets) |
 |---|---|---|---|---|---|---|---|
-| `ComplexYield.Sum` | 389,6 ns | 377,9 ns | 385,4 ns | 2 / 4 / 4 | 82 | 0 | 80 |
-| `ComplexYield.Multiply` | 315,6 ns | 328,2 ns | 312,2 ns | 2 / 4 / 4 | 66 | 0 | 64 |
-| `ComplexYield.Divide` | 360,0 ns | 349,2 ns | 352,3 ns | 2 / 5 / 5 | 82 | 0 | 80 |
-| `ComplexYield.Subtract` | 351,5 ns | 346,7 ns | 349,7 ns | 2 / 5 / 5 | 82 | 0 | 80 |
-| `ComplexYield.Shift` | 626,9 ns | 658,8 ns | 634,2 ns | 2 / 13 / 13 | 366 | 0 | 348 |
-| `ComplexYield.Equation` | 2 557,8 ns | 2 596,0 ns | 2 605,2 ns | 2 / 31 / 31 | 2 858 | 0 | 872 |
-| `ComplexYield.RecursiveChain` | 1 585,0 ns | 1 648,3 ns | 1 593,2 ns | 2 / 20 / 20 | 410 | 0 | 400 |
-| `Yield.Age` | 65,0 ns | 62,1 ns | 60,7 ns | 0 / 0 / 0 | 0 | 0 | 0 |
-| `Yield.Age.NewRequest` | 288,8 ns | 289,4 ns | 284,9 ns | 7 / 7 / 7 | 98 | 0 | 90 |
-| `Mask.IsSubsetOf` | 2,4 ns | 2,4 ns | 2,4 ns | 0 / 0 / 0 | 0 | 0 | 0 |
-| `Mask.FromString` | 402,1 ns | 398,0 ns | 398,2 ns | 7 / 7 / 7 | 197 | 0 | 160 |
-| `Parser.ReadProject` | 3,73 ms | 4,01 ms | 3,78 ms | 13 262 / 13 262 / 13 262 | 1 870 683 | 0 | 149 044 |
-| `Parser.ReadProject.TwoScenarios` | 4,90 ms | 4,91 ms | 4,88 ms | 19 930 / 19 930 / 19 930 | 2 883 888 | 0 | 311 884 |
+| `ComplexYield.Divide` | 357,1 ns | 358,2 ns | 351,3 ns | 2 / 5 / 5 | 82 | 0 | 80 |
+| `ComplexYield.Equation` | 2 622,8 ns | 2 624,8 ns | 2 586,0 ns | 2 / 31 / 31 | 2 858 | 0 | 872 |
+| `ComplexYield.Multiply` | 316,7 ns | 327,3 ns | 317,0 ns | 4 / 4 / 4 | 66 | 0 | 64 |
+| `ComplexYield.RecursiveChain` | 1 597,2 ns | 1 599,0 ns | 1 582,9 ns | 20 / 20 / 20 | 410 | 0 | 400 |
+| `ComplexYield.Shift` | 635,7 ns | 634,9 ns | 638,4 ns | 2 / 13 / 13 | 366 | 0 | 348 |
+| `ComplexYield.Subtract` | 351,7 ns | 353,4 ns | 348,6 ns | 5 / 5 / 5 | 82 | 0 | 80 |
+| `ComplexYield.Sum` | 378,0 ns | 372,1 ns | 384,7 ns | 4 / 4 / 4 | 82 | 0 | 80 |
+| `Flow.Optimize` | 28,9 ms | 29,8 ms | 29,9 ms | 47 167 / 47 167 / 47 167 | 5 566 717 | -785 | 1 915 588 |
+| `Flow.Optimize.Long` | 63,0 ms | 62,6 ms | 63,8 ms | 537 987 / 537 987 / 537 987 | 19 121 805 | -785 | 4 038 856 |
+| `Flow.Outputs` | 3,69 ms | 3,72 ms | 3,72 ms | 54 227 / 54 227 / 54 227 | 4 234 944 | 0 | 14 686 |
+| `Flow.Replanning` | 122,8 ms | 124,7 ms | 123,6 ms | 799 167 / 799 167 / 799 167 | 112 004 045 | 4 737 039 | 9 104 516 |
+| `Flow.Replanning.Threads1` | 376,6 ms | 376,3 ms | 369,2 ms | 3 417 641 / 3 417 641 / 3 417 641 | 478 735 677 | 51 598 927 | 55 979 695 |
+| `Flow.Replanning.Threads2` | 228,9 ms | 228,7 ms | 234,0 ms | 3 417 641 / 3 417 641 / 3 417 641 | 478 735 677 | 51 598 927 | 56 561 732 |
+| `Flow.Replanning.Threads5` | 137,8 ms | 138,4 ms | 140,8 ms | 3 417 641 / 3 417 641 / 3 417 641 | 478 735 677 | 51 598 927 | 58 918 357 |
+| `Flow.Replanning.Threads10` | 123,3 ms | 122,5 ms | 121,9 ms | 3 417 641 / 3 417 641 / 3 417 641 | 478 735 921 | 51 598 927 | 61 791 342 |
+| `Flow.Replay` | 31,1 ms | 31,0 ms | 32,5 ms | 54 147 / 54 147 / 54 147 | 7 944 095 | -785 | 1 886 300 |
+| `Flow.Simulate` | 32,0 ms | 31,9 ms | 31,9 ms | 51 191 / 51 191 / 51 191 | 9 527 295 | -785 | 2 018 272 |
+| `Mask.FromString` | 411,3 ns | 410,7 ns | 428,5 ns | 7 / 7 / 7 | 197 | 0 | 160 |
+| `Mask.IsSubsetOf` | 2,1 ns | 2,1 ns | 2,5 ns | 0 / 0 / 0 | 0 | 0 | 0 |
+| `Parser.ReadProject` | 4,05 ms | 4,00 ms | 4,22 ms | 13 262 / 13 262 / 13 262 | 1 870 683 | 0 | 149 044 |
+| `Parser.ReadProject.TwoScenarios` | 5,07 ms | 4,93 ms | 5,13 ms | 19 930 / 19 930 / 19 930 | 2 883 888 | 0 | 311 884 |
+| `Yield.Age` | 58,0 ns | 60,3 ns | 63,8 ns | 0 / 0 / 0 | 0 | 0 | 0 |
+| `Yield.Age.NewRequest` | 288,2 ns | 290,6 ns | 296,1 ns | 7 / 7 / 7 | 98 | 0 | 90 |
 
-Les médianes d'un même benchmark diffèrent de 8 % au plus entre les trois mesures : un écart plus
-petit entre cette référence et une mesure « après » n'est pas un changement. Les allocations, les
-octets et la mémoire retenue sont identiques dans les trois ; le minimum des yields complexes tombe
-à 2 quand une clé entre au cache (section 2.1). Pic de mémoire privée du processus : 20,8 à
-21,1 Mo.
+- Les médianes d'un même benchmark diffèrent de 6 % au plus entre les trois mesures, sauf pour deux
+  opérations de quelques nanosecondes : `Mask.IsSubsetOf` (2,1 à 2,5 ns) et `Yield.Age` (58,0 à
+  63,8 ns).
+- Les allocations, les octets et la mémoire retenue sont les mêmes dans les trois mesures, à une
+  allocation près pour `Flow.Replanning.Threads10`. Le minimum de 2 allocations des yields complexes
+  vient des clés entrées au cache (section 2.1).
+- Pic de mémoire privée du processus : de 20,7 à 21,0 Mo pour les benchmarks des lots 1 et 2 ; ceux
+  des flux sont en section 7.6.
+- Comparée à la référence du 2026-09-30 (section 7.7) par `CompareResults.cmake`, trois mesures de
+  chaque côté : sur les 13 benchmarks des lots 1 et 2, les valeurs du milieu vont de -12,5 %
+  (`Mask.IsSubsetOf`, 2,3 à 2,0 ns) à +7,1 % (`Parser.ReadProject`), de -1,9 à +1,3 % sur les yields
+  complexes, avec les mêmes comptes.
 
-Comparée à la référence du lot 1 (section 7.4) par `CompareResults.cmake`, la mesure 1 donne des
-médianes de -1,2 à +3,5 % sur les yields complexes, avec les mêmes allocations : les deux
-références concordent.
+Groupe privé, sur les modèles de production des sections 7.5 et 7.6, deux mesures ; la replanification
+sur 5 fils écrit les mêmes lignes aux deux (empreinte `ba037ca987cc9f37`) :
 
-Les JSON des trois mesures restent locaux, hors du dépôt (décision 5). Pour juger #348, comparer la
-mesure « après » à chacune avec `CompareResults.cmake`.
+| Benchmark | Médiane, mesure 1 | Mesure 2 | Phases, mesure 1 | Allocations par appel | Mémoire retenue (octets) | Pic (Mo) |
+|---|---|---|---|---|---|---|
+| `Flow.Optimize.Bfec` | 3,49 s | 3,48 s | lecture 1,82 s ; construction 1,60 s ; résolution 53,6 ms | 38 825 436 | -785 | 581,0 à 581,2 |
+| `Flow.Outputs.Bfec` | 1,16 s | 1,13 s | — | 17 570 988 et 17 573 642 | 0 et 40 | 220,9 à 221,2 |
+| `Flow.Replanning.Bfec` | 6,72 s | 6,81 s | lecture 463,4 ms ; préparation 1,14 s ; replanification 5,10 s ; résultat 732,3 µs | 42 292 174 et 42 292 468 | 4 737 303 et 4 737 438 | 348,7 à 349,1 |
+| `Flow.Replanning.Threads5.Bfec` | 18,83 s | 20,44 s | lecture 678,8 ms ; préparation 1,14 s ; replanification 16,94 s ; résultat 8,37 ms | 330 661 762 et 330 667 947 | 47 378 715 et 47 391 149 | 1 285,1 à 1 387,2 |
+| `Flow.Replay.Bfec` | 1,60 s | 1,59 s | lecture 934,1 ms ; construction 612,6 ms | 19 390 388 | -785 | 942,4 à 943,1 |
+| `Yield.Model.Bfec` | 66,6 µs | 66,6 µs | — | 0 | 0 | 205,5 |
+
+- Les allocations des flux qui calculent des yields complexes varient de quelques centaines à quelques
+  milliers d'une mesure à l'autre : le cache (section 2.1).
+- Le pic de la replanification sur 5 fils varie selon le chevauchement des réplicats (section 2.19) ;
+  sa borne, 1 725 Mo, tient.
+
+Les JSON restent locaux, hors du dépôt (décision 5) : dans `perf-references`, les dossiers
+`2026-10-08_6850228c_performance_1` à `_3`, et `2026-10-08_6850228c_bfec-perf_1` et `_2`. Pour juger
+#348, mesurer aussi ce commit le jour où #348 se mesure, puis comparer (section 6.2).
 
 ### 7.2 La suite de performance
 
@@ -1498,13 +1593,14 @@ mesure « après » à chacune avec `CompareResults.cmake`.
 | 2026-10-05 (commit `852e1be0`, build de Gabriel) | 19 | 11 | 3,2 s, sans `-j` ; suite base de 254 tests en 16 s sous `-j 8` | — |
 | 2026-10-05 (commit `88daf175`, build de Gabriel) | 19 | 11 | 3,1 s, sans `-j` ; suite base de 254 tests en 16 s sous `-j 8` | 11 à 12 s pour les lignes publiques, 89 s pour les 5 privées |
 | 2026-10-08 (lot 4, build de Gabriel, non commité) | 23 | 11 | 9,4 s, sans `-j` ; suite base de 258 tests en 17 s sous `-j 8` | 18 à 20 s pour les lignes publiques, 202 et 208 s pour les 6 privées |
+| 2026-10-08 (référence, commit `6850228c`) | 23 | 11 | — | 18 s par mesure publique, 200 et 208 s par mesure privée |
 
 ### 7.3 Lot 2, avec l'attente
 
 Deux mesures complètes du 2026-09-30, un processus par benchmark comme sous ctest, avec
 l'exécutable du scratchpad : les sources du lot 2 avec l'attente de 250 ms, compilées hors CMake
 contre le `FMTlib.dll` du build de Gabriel. Fil qui mesure sur les cœurs performants, tas du CRT.
-Remplacées depuis par la référence de la section 7.1.
+Remplacées depuis par la référence de la section 7.7, puis par celle de la section 7.1.
 
 | Benchmark | Médiane, mesure 1 | Médiane, mesure 2 | Allocations par appel (min / médiane / max) | Octets par appel | Mémoire retenue | Pic du tas (octets) |
 |---|---|---|---|---|---|---|
@@ -1555,7 +1651,7 @@ Les JSON de ces deux mesures restent locaux, hors du dépôt (décision 5).
 
 Chacun de ces benchmarks a subi la pause au démarrage d'un processus (section 2.10) : un
 échantillon trop long, sans effet notable sur les médianes. Cette référence est remplacée par
-celle de la section 7.1, avec laquelle elle concorde.
+celle de la section 7.7, avec laquelle elle concorde, puis par celle de la section 7.1.
 
 ### 7.5 Lot 3
 
@@ -1595,7 +1691,7 @@ privées sont de 1 à 10 % plus hautes que les valeurs provisoires du 2026-10-02
 autre exécutable, un autre jour : à mesurer de nouveau avant d'y voir un changement (section 2.10).
 
 Les benchmarks des lots 1 et 2, dans les mêmes mesures, gardent les allocations et les octets de la
-référence de la section 7.1 ; leurs médianes s'en écartent de -12 à +12 % (`Yield.Age` : +18 % à la
+référence de la section 7.7 ; leurs médianes s'en écartent de -12 à +12 % (`Yield.Age` : +18 % à la
 troisième mesure). Les JSON restent locaux, hors du dépôt (décision 5).
 
 ### 7.6 Lot 4
@@ -1631,7 +1727,7 @@ chaque mesure (empreinte `2714db3feb3b0737`) :
 - Comparées à la section 7.5 par `CompareResults.cmake`, les médianes des benchmarks des lots 1 à 3
   vont de -6 à +8 % (`Yield.Age`), avec les mêmes allocations, sauf `Flow.Replanning` : 10 de moins,
   la suppression du dossier de sortie étant sortie de l'appel (section 2.20). Le script avertit que
-  les durées ne se comparent pas, puisque le champ `processors` a changé (section 4.3).
+  les durées ne se comparent pas, puisque le champ `processors` a changé (décision 18).
 - Les mesures provisoires du 2026-10-07, prises avec l'exécutable du scratchpad avant la correction,
   donnaient des appels de 12 à 18 % plus longs (`Flow.Replanning.Threads1` : 413,2 et 426,5 ms) et des
   accélérations de 1,60, 2,47 et 2,86 : un autre exécutable, un autre jour (section 2.10).
@@ -1655,3 +1751,44 @@ empreinte à chaque passage (`ba037ca987cc9f37`) :
   et 7,00 s, `Yield.Model.Bfec` 71,0 et 71,8 µs : de -6 à +2 % de la section 7.5.
 
 Les JSON restent locaux, hors du dépôt (décision 5).
+
+### 7.7 Deuxième référence « avant #348 » (lot 2, 2026-09-30)
+
+Reprise le 2026-09-30 avec le harnais du lot 2 (décision 12). Mesures complètes par ctest, sans
+`-j`, un processus par benchmark, sur le build de Gabriel du commit `9a5001df`, sans modification
+locale : FMT 1.3.0, Release, MSVC 19.44.35228, tas du CRT, fil qui mesure sur les cœurs
+performants, attente de 250 ms au démarrage. Machine : Intel Core i9-13900, 32 cœurs logiques,
+Windows 10.0.22631, 40 Gio disponibles, au repos.
+
+Trois mesures à la suite. La troisième a été prise parce que la deuxième avait un échantillon lent
+dans `ComplexYield.Equation` (1,99 fois la médiane) ; elle en a un aussi (1,91 fois). C'est le
+bruit ordinaire de ce benchmark, pas une perturbation : les trois mesures forment la référence.
+
+| Benchmark | Médiane, mesure 1 | Mesure 2 | Mesure 3 | Allocations par appel (min / médiane / max) | Octets par appel | Mémoire retenue | Pic du tas (octets) |
+|---|---|---|---|---|---|---|---|
+| `ComplexYield.Sum` | 389,6 ns | 377,9 ns | 385,4 ns | 2 / 4 / 4 | 82 | 0 | 80 |
+| `ComplexYield.Multiply` | 315,6 ns | 328,2 ns | 312,2 ns | 2 / 4 / 4 | 66 | 0 | 64 |
+| `ComplexYield.Divide` | 360,0 ns | 349,2 ns | 352,3 ns | 2 / 5 / 5 | 82 | 0 | 80 |
+| `ComplexYield.Subtract` | 351,5 ns | 346,7 ns | 349,7 ns | 2 / 5 / 5 | 82 | 0 | 80 |
+| `ComplexYield.Shift` | 626,9 ns | 658,8 ns | 634,2 ns | 2 / 13 / 13 | 366 | 0 | 348 |
+| `ComplexYield.Equation` | 2 557,8 ns | 2 596,0 ns | 2 605,2 ns | 2 / 31 / 31 | 2 858 | 0 | 872 |
+| `ComplexYield.RecursiveChain` | 1 585,0 ns | 1 648,3 ns | 1 593,2 ns | 2 / 20 / 20 | 410 | 0 | 400 |
+| `Yield.Age` | 65,0 ns | 62,1 ns | 60,7 ns | 0 / 0 / 0 | 0 | 0 | 0 |
+| `Yield.Age.NewRequest` | 288,8 ns | 289,4 ns | 284,9 ns | 7 / 7 / 7 | 98 | 0 | 90 |
+| `Mask.IsSubsetOf` | 2,4 ns | 2,4 ns | 2,4 ns | 0 / 0 / 0 | 0 | 0 | 0 |
+| `Mask.FromString` | 402,1 ns | 398,0 ns | 398,2 ns | 7 / 7 / 7 | 197 | 0 | 160 |
+| `Parser.ReadProject` | 3,73 ms | 4,01 ms | 3,78 ms | 13 262 / 13 262 / 13 262 | 1 870 683 | 0 | 149 044 |
+| `Parser.ReadProject.TwoScenarios` | 4,90 ms | 4,91 ms | 4,88 ms | 19 930 / 19 930 / 19 930 | 2 883 888 | 0 | 311 884 |
+
+Les médianes d'un même benchmark diffèrent de 8 % au plus entre les trois mesures : un écart plus
+petit entre cette référence et une mesure « après » n'est pas un changement. Les allocations, les
+octets et la mémoire retenue sont identiques dans les trois ; le minimum des yields complexes tombe
+à 2 quand une clé entre au cache (section 2.1). Pic de mémoire privée du processus : 20,8 à
+21,1 Mo.
+
+Comparée à la référence du lot 1 (section 7.4) par `CompareResults.cmake`, la mesure 1 donne des
+médianes de -1,2 à +3,5 % sur les yields complexes, avec les mêmes allocations : les deux
+références concordent.
+
+Les JSON des trois mesures restent locaux, hors du dépôt (décision 5). Cette référence est remplacée
+par celle de la section 7.1 (décision 18).

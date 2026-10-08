@@ -22,6 +22,7 @@ Tests protect behavior; benchmarks show performance effects. Neither replaces th
 | `Tests/Performance/CompareResults.cmake` | Compares the results of two runs. |
 | `Tests/Performance/ScalingReport.cmake` | Reports how a family of benchmarks scales with its number of threads. |
 | `Tests/Performance/ResultsFormat.cmake` | Formatting shared by the two scripts above. |
+| `tools/performance/Measure_Performance.bat` | Measures several times in full mode, keeps the runs out of the build and compares them with reference runs (`Measure-Performance.ps1`). |
 | `Examples/Models/TWD_land/Scenarios/perfyields/` | The data of the complex-yield benchmarks. |
 
 ## Running the benchmarks
@@ -58,6 +59,9 @@ FMT_BENCHMARK_MODE=full ctest --test-dir build/release -C Release -L performance
 
 In PowerShell, set the variable with `$env:FMT_BENCHMARK_MODE="full"` first. Each benchmark writes its
 results to `build/release/tests/performance/<benchmark>.json`.
+
+`tools\performance\Measure_Performance.bat` measures several times in one command, keeps each run out of
+the build and compares the runs with reference runs: see [Measuring a change](#measuring-a-change).
 
 ### The executable
 
@@ -154,7 +158,7 @@ the cache when it was still empty. The retained-memory bound of a benchmark that
 yields is therefore the most the cache can keep during one call, with 10 % added. That worst case is
 measured by forcing every computed value into the cache: the allocations that
 `FMTComplexYieldHandler::get` makes during the counted call are slowed down beyond 0.05 ms. The
-harness has no option for it yet.
+harness has no option for it.
 
 A peak bound is the highest peak of two measurements in each mode, with 10 % added: it lets a flow
 vary as it does from one run to the next, and fails when a change makes it need much more memory.
@@ -266,13 +270,13 @@ The allocation fields are `null` where the monitor is not available.
 ## Comparing two runs
 
 ```bash
-cmake -DBASELINE=<file or folder> -DCANDIDATE=<file or folder> -P Tests/Performance/CompareResults.cmake
+cmake -DBASELINE=<runs> -DCANDIDATE=<runs> -P Tests/Performance/CompareResults.cmake
 ```
 
-A folder stands for every `.json` file it holds, such as `build/release/tests/performance` after a
-measurement. For each benchmark, the report gives the change of the median duration and of each phase,
-the allocations and bytes of a typical call before and after, and the change of the process peak
-memory:
+Each side is one run, or several separated by semicolons. A run is a `.json` file, or a folder that
+stands for every `.json` file it holds, such as `build/release/tests/performance` after a measurement.
+For each benchmark, the report gives the change of the median duration and of each phase, the
+allocations and bytes of a typical call before and after, and the change of the process peak memory:
 
 ```text
 Flow.Optimize
@@ -286,6 +290,16 @@ Flow.Optimize
   Peak memory:      +0.0%  (process peak private bytes)
 ```
 
+With several runs on a side, the report compares the middle values of the runs, gives the range of
+their median durations, and says when every candidate run lies outside that range of the baseline. A
+count that differs from one run to another shows as a range, such as `38825307..38825442`:
+
+```text
+ComplexYield.Divide
+  Median duration:  -6.3%  (376.0 ns -> 352.3 ns), runs 375.9 ns..397.5 ns -> 349.5 ns..354.9 ns, below every baseline run
+  Allocations:      5 -> 5 per call
+```
+
 When the fingerprints of a dataset differ, the report warns that the results do not compare.
 
 Durations only compare between two measurements of the same mode, on the same machine and kind of cores,
@@ -293,10 +307,53 @@ in the same build type and with the same allocator: the report warns when they d
 of the same commit differ by up to 8 % on the machine where the suite was written. The comparison only
 reports; nothing fails on a change.
 
-To show the effect of a change, measure the commit before it, keep the results out of the build folder,
-measure the commit with it, and compare. To show the effect of the allocator, measure a build configured
-with `-DWITH_MIMALLOC=ON` with and without `MIMALLOC_DISABLE_REDIRECT=1`, in turns, and compare: the
-warning on the allocators then names the very thing measured.
+To show the effect of a change, follow [Measuring a change](#measuring-a-change). To show the effect of
+the allocator, measure a build configured with `-DWITH_MIMALLOC=ON` with and without
+`MIMALLOC_DISABLE_REDIRECT=1`, in turns, and compare: the warning on the allocators then names the very
+thing measured.
+
+## Measuring a change
+
+`tools\performance\Measure_Performance.bat` runs a [measurement](#measurement) several times, keeps each
+run in a folder of its own, out of the build, and compares the runs with reference runs:
+
+```bat
+tools\performance\Measure_Performance.bat
+tools\performance\Measure_Performance.bat -Baseline ..\perf-references\<date>_<commit>_performance_*
+tools\performance\Measure_Performance.bat -Label bfec-perf -Runs 2
+```
+
+| Option | Meaning |
+| --- | --- |
+| `-Runs <n>` | Number of runs. Default: 3. |
+| `-Label <label>` | ctest label of the benchmarks: `performance`, the default, or `bfec-perf` for the private ones. |
+| `-Regex <expression>` | ctest regular expression that narrows the benchmarks, such as `ComplexYield`. From `cmd`, quote an expression that holds `\|`. |
+| `-Baseline <runs>` | Reference runs to compare with: folders or `.json` files, wildcards allowed. |
+| `-Output <folder>` | Where the runs are kept. Default: `perf-references`, beside the repository. |
+| `-BuildDir <folder>` | Build to measure. Default: `build\release`. |
+
+Each run goes to `<output>\<date>_<commit>[-modified]_<label>_<n>`, with its results and the log of
+ctest. The commit is the one the build was made from; `-modified` marks a build of modified sources,
+whose results do not make a reference. The comparison goes beside the runs, in
+`<date>_<commit>[-modified]_<label>_comparison.txt`. The tool returns 1 when a run fails. Opened from
+the Explorer, without argument, it measures three times, compares nothing and waits for a key.
+
+To measure the effect of a change, such as the preallocated strategies of #348:
+
+1. **Measure the reference.** Build the commit before the change, with no modified file, and measure it.
+   Keep its runs: they are the reference of the machine. A reference compares only with measurements
+   made the same way: when the harness changes what it records or how it runs the benchmarks, measure
+   the reference again.
+2. **Measure the change** the same day, with the reference as `-Baseline`.
+3. **Read the durations.** On the machine where the suite was written, two measurements of the same
+   commit differ by up to 8 %, and a whole measurement can shift by up to 22 %, every benchmark at once.
+   A change of duration is real when it exceeds that noise and every run of the change lies outside the
+   range of the reference runs. When every benchmark moves the same way, measure both again.
+4. **Read the counts.** The allocations and the allocated and retained bytes do not depend on the noise:
+   a change of them comes from the code, except where the complex-yields cache or the length of a path
+   makes them vary (see [What a benchmark does](#what-a-benchmark-does)).
+5. **Protect a gain.** When the change lowers what a benchmark allocates or keeps, lower its bounds in
+   `performance.csv` to the new measure, and justify the new values in the commit.
 
 ## Scaling with threads
 
@@ -470,7 +527,8 @@ of the model, which keeps the test out of the base suite, `-E "T:/"`. CMake warn
 row whose model is elsewhere. Each private benchmark records the SHA-256 of the files of its model, the
 files beside its primary file and those of the scenarios it reads: these models are not versioned, and
 two measurements compare only on the same fingerprint. The file, the names of the models and the results
-stay on the machine.
+stay on the machine. `tools\performance\Measure_Performance.bat -Label bfec-perf` measures them (see
+[Measuring a change](#measuring-a-change)).
 
 On a production model, a flow reads the errors that `doplanning` turns into warnings as warnings, so
 that the model reads and plans as it does in production (`Performance::quietFmt`). A private flow that

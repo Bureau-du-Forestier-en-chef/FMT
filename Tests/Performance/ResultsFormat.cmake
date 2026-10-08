@@ -27,6 +27,25 @@ function(_toThousandths p_value p_result)
 	set(${p_result} "${thousandths}" PARENT_SCOPE)
 endfunction()
 
+# Writes p_thousandths, a whole number of thousandths, as a decimal with three decimals, such as
+# "612.345" or "-0.500": the reverse of _toThousandths.
+function(_fromThousandths p_thousandths p_result)
+	set(sign "")
+	set(value "${p_thousandths}")
+	if (value LESS 0)
+		set(sign "-")
+		math(EXPR value "0 - ${value}")
+	endif()
+	math(EXPR units "${value} / 1000")
+	math(EXPR fraction "${value} % 1000")
+	if (fraction LESS 10)
+		set(fraction "00${fraction}")
+	elseif (fraction LESS 100)
+		set(fraction "0${fraction}")
+	endif()
+	set(${p_result} "${sign}${units}.${fraction}" PARENT_SCOPE)
+endfunction()
+
 # Writes the change from p_before to p_after in percent, with one decimal, such as "-12.4%".
 function(_percentChange p_before p_after p_result)
 	_toThousandths("${p_before}" before)
