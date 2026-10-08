@@ -1559,12 +1559,12 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 
 | Phase | Contenu | Effort | État |
 |---|---|---|---|
-| 0 | Valider la fusion de `master`, puis prendre la référence des comptes | `low` | fait (2026-10-08) |
-| 1 | Étiquettes, presets, noms automatiques, sans rien déplacer | `medium` | fait (2026-10-08), à commiter |
-| 2 | Résumé de fin de passage, `.bat` qui reste ouvert, `RunTests.bat <preset>` | `medium` | à faire |
+| 0 | Valider la fusion de `master`, puis prendre la référence des comptes | `low` | fait (2026-10-08, `7adf1ddc`) |
+| 1 | Étiquettes, presets, noms automatiques, sans rien déplacer | `medium` | fait (2026-10-08, `69ae400d`) |
+| 2 | Résumé de fin de passage, `.bat` qui reste ouvert, `RunTests.bat <preset>`, installation filtrée par `INSTALL_TEST_SUITE` | `medium` | à faire |
 | 3 | Conventions : `CodingStandards.md` (trois niveaux, AAA, noms), `Architecture.md` (dette révélée par les tests), renvois d'`AGENTS.md` | `medium` | à faire |
 | 4 | Interrupteur unique `WITHOUT_TESTS`, squelette `Tests/`, boucle CSV en fonctions | `high` | à faire |
-| 5 | Python et R dans ctest au niveau système, installation filtrée par `INSTALL_TEST_SUITE` | `high` | à faire |
+| 5 | Python et R dans ctest au niveau système : l'installation ne les lance plus qu'à travers ctest | `high` | à faire |
 | 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | à faire |
 | 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | à faire |
 | 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | à faire |
@@ -1598,7 +1598,7 @@ documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json
 - suite BFEC : à lancer par Gabriel, pour le changement du journal de `FMTLpSolver` sur les modèles
   réels.
 
-**Phase 1 (2026-10-08, sur `7adf1ddc` plus le diff de la phase)** :
+**Phase 1 (2026-10-08, `69ae400d`)** :
 
 - noms `System.<cible>[.<cas>]` et étiquettes `system;cpp` sur les 325 lignes CSV et
   `System.UnitTestFMTexcelcache`, qui reçoit aussi la fixture et le code 77 ; un chemin absolu
@@ -1615,7 +1615,19 @@ documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json
   le plus long nom public fait 97 caractères (199 pour un nom privé de benchmark, inchangé), d'où
   une colonne de noms d'environ 120 caractères ; sortie redirigée, `shortProgress` n'abrège rien ;
 - les presets se lisent (`cmake --list-presets=all`) ; le preset de build `release-mam` renvoie
-  enfin à `release-mam` : prévenir Marc-Alex.
+  enfin à `release-mam` : prévenir Marc-Alex ;
+- relecture : 85 des 259 noms publics sont tronqués par `~`, dont 79 lignes de
+  `testScenarioReading`, dont la requête en deuxième argument dépasse à elle seule 60 caractères ;
+  4 autres gardent un chemin relatif que la règle ne réduit pas (`../../tests/<cible>/...`). La
+  phase 9, qui nomme `testScenarioReading` juste après `knownbugs.csv`, en règle l'essentiel ; pas
+  de raison de compliquer la règle automatique. Les noms des benchmarks
+  (`FMTPerformanceTests.*`) ne suivent pas encore le format `<Niveau>.<Suite>` :
+  `Tests/Performance` reste hors du chantier.
+
+**Le filtre de l'installation passe de la phase 5 à la phase 2** (2026-10-08). La phase 2 réécrit
+déjà l'appel de ctest dans `cmake/BaseInstallTests.cmake` ; le filtre n'y ajoute que quelques
+lignes, et c'est lui qui retire de l'installation de Gabriel la campagne privée d'environ
+168 minutes. Rien ne le lie aux suites Python et R, qui restent en phase 5.
 
 **La session des défauts se réduit à #357** (précision de la section 2.7) : c'est le seul vrai
 défaut. Elle ne bloque plus le début des phases ; ses lignes de `knownbugs.csv` doivent seulement
