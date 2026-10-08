@@ -59,8 +59,24 @@ reworked interface, gathered in
 
 ## Testing
 
+Each test carries one level label (`system` for every C++ test today, `performance` for the
+benchmarks), and its name starts with its level: `System.<executable>[.<case>]`. The private tests,
+rows of the local `BFECtests.csv` on models of `T:\`, keep `T:/` in their name. Test presets in
+`CMakePresets.json` select a level on `build/release` (configure preset `release-gl`), eight tests at a
+time:
+
 ```bash
-ctest --test-dir build/release -C Release
+ctest --preset all-public
+ctest --preset system
+ctest --preset system-private
+ctest --preset performance
+```
+
+`all-public` runs everything but the private tests. `unit` and `integration` exist and select
+nothing yet. Without a preset, filter by label, always anchored since `-L` takes a regular expression:
+
+```bash
+ctest --test-dir build/release -C Release -L "^system$" -E "T:/" -j 8 --output-on-failure
 ```
 
 ### Adding a C++ test

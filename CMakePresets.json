@@ -78,7 +78,7 @@
   "buildPresets": [
     {
       "name": "release-mam",
-      "configurePreset": "release",
+      "configurePreset": "release-mam",
       "configuration": "Release"
     },
     {
@@ -90,6 +90,53 @@
       "name": "release-gl",
       "configurePreset": "release-gl",
       "configuration": "Release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "configurePreset": "release-gl",
+      "configuration": "Release",
+      "output": { "outputOnFailure": true, "shortProgress": true },
+      "execution": { "jobs": 8 }
+    },
+    {
+      "name": "unit",
+      "inherits": "base",
+      "displayName": "Tests unitaires (GoogleTest)",
+      "filter": { "include": { "label": "^unit$" } }
+    },
+    {
+      "name": "integration",
+      "inherits": "base",
+      "displayName": "Tests d'intégration (GoogleTest)",
+      "filter": { "include": { "label": "^integration$" } }
+    },
+    {
+      "name": "system",
+      "inherits": "base",
+      "displayName": "Tests système publics",
+      "filter": { "include": { "label": "^system$" }, "exclude": { "name": "T:/" } }
+    },
+    {
+      "name": "system-private",
+      "inherits": "base",
+      "displayName": "Tests système privés, sur les modèles de T:/",
+      "filter": { "include": { "label": "^system$", "name": "T:/" } }
+    },
+    {
+      "name": "performance",
+      "inherits": "base",
+      "displayName": "Benchmarks de performance, un à la fois",
+      "filter": { "include": { "label": "^performance$" } },
+      "execution": { "jobs": 1 }
+    },
+    {
+      "name": "all-public",
+      "inherits": "base",
+      "displayName": "Tout sauf les tests privés de T:/",
+      "filter": { "exclude": { "name": "T:/" } }
     }
   ]
 }

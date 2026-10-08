@@ -49,9 +49,15 @@ if (MSVC AND ExcelWrapperSOURCES)
 			target_include_directories(${executablename} PRIVATE ${ExcelWrapperINCLUDEDIR})
 			if ("${executablename}" STREQUAL "UnitTestFMTexcelcache")
 				add_test(
-									NAME "${executablename}"
+									NAME "System.${executablename}"
 									COMMAND ${executablename}
 									WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+									)
+				#Same properties as the rows of Examples/C++/tests/*.csv: 77 is the skip code of Testing::skip
+				set_tests_properties("System.${executablename}" PROPERTIES
+									LABELS "system;cpp"
+									SKIP_RETURN_CODE 77
+									FIXTURES_REQUIRED ExamplesModels
 									)
 			endif("${executablename}" STREQUAL "UnitTestFMTexcelcache")
 		endforeach()

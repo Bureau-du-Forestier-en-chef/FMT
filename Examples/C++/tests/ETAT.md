@@ -230,12 +230,14 @@ sur le modèle public `Examples/Models/TWD_land`, sans `T:\`, en une minute envi
   suite base après le build de Gabriel** :
 
 ```
-& "C:/Program Files/Microsoft Visual Studio/2022/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/ctest.exe" --test-dir build/release -C Release -E "T:/" -j 8 --output-on-failure
+& "C:/Program Files/Microsoft Visual Studio/2022/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/ctest.exe" --preset all-public
 ```
 
-`ctest.exe` n'est pas dans le `PATH`. L'exclusion `-E "T:/"` écarte les tests BFEC, dont le
-nom contient leur chemin. Chaque lot s'arrête sur une livraison ; le suivant attend le feu
-vert de Gabriel.
+`ctest.exe` n'est pas dans le `PATH`. Le preset `all-public` (`CMakePresets.json`) lance tout
+sauf les tests BFEC, dont le nom garde `T:/`, huit à la fois, avec la sortie des échecs. Un niveau
+seul : `--preset system`, `system-private` (la campagne BFEC, par Gabriel) ou `performance` ; sans
+preset, par étiquette ancrée, par exemple `--test-dir build/release -C Release -L "^system$"`.
+Chaque lot s'arrête sur une livraison ; le suivant attend le feu vert de Gabriel.
 
 ### 1.4 Règles
 
@@ -1386,7 +1388,8 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-09-18 (lot 3) | 213 (195 lignes, 15 désactivées, 2 fixtures, `UnitTestFMTexcelcache`) | 12,9 s réelles ; 99,7 s cumulées | 51 | 17 | 3 | 0 | 15 | 25 |
 | 2026-09-18 (lot 4) | 226 (208 lignes, 15 désactivées, 2 fixtures, `UnitTestFMTexcelcache`) | 22,0 s réelles ; 169,2 s cumulées | 52 | 17 | 3 | 0 | 15 | 25 |
 
-- Tests base inscrits : `ctest ... -N -E "T:/"` (fixtures et tests désactivés compris).
+- Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
+  (fixtures et tests désactivés compris).
 - Durée : la référence est le temps réel de la suite base seule (`Total Test time (real)`).
   La somme des « Test time » de `LastTest.log` varie avec la charge : avec `-j 8`, les tests
   base lancés ensemble se ralentissent entre eux. Les 65,7 s du lot 1 ne se comparent donc pas
@@ -1399,7 +1402,8 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 - Depuis le lot 1 du chantier #349 (`Tests/Performance/ETAT.md`, 2026-09-25), la suite base compte
   aussi les lignes `FMTPerformanceTests.*` (étiquette `performance` ; 7 au lot 1, 13 au lot 2, 19
   au lot 3, 23 au lot 4), qui lisent TWD_land, dont le scénario `perfyields`, créé pour elles. Pour
-  comparer avec les lignes ci-dessus, ajouter `-LE performance` aux commandes.
+  comparer avec les lignes ci-dessus, compter avec `ctest --preset system -N`, qui ne prend que
+  l'étiquette `system` (fixtures comprises).
 
 ## 9. Réorganisation en trois niveaux (#350, depuis le 2026-10-08)
 
@@ -1519,8 +1523,11 @@ tests ignorés avec leur raison. Sortie de test, donc en anglais. Quand tout pas
   `System.ScenarioReadingTest.<Cas>`, `System.Python.<Domaine>`.
 - Nom automatique d'une ligne CSV : arguments 1 et 2 joints par `|`, le chemin
   `../../../../Examples/Models/<M>/<M>.pri` réduit à `<M>`, un chemin absolu réduit à
-  `<lecteur>:/.../<dossier>` (le marqueur `T:/` reste), espaces remplacés par `_`, et au-delà de
-  60 caractères les 51 premiers suivis de `~` et de 8 caractères d'empreinte.
+  `<lecteur>:/.../<dossier>/<fichier>` (le marqueur `T:/` reste), espaces remplacés par `_`, et
+  au-delà de 60 caractères les 51 premiers suivis de `~` et de 8 caractères de l'empreinte SHA1 du
+  cas réduit. Le fichier s'ajoute au dossier depuis la phase 1 (décision de Gabriel, 2026-10-08) :
+  le dossier seul donnait le même nom aux trois lignes `testreadOAschedulerparameters` de
+  `BFECtests.csv`, dont les fichiers de paramètres partagent un dossier.
 - Nom explicite : cinquième colonne optionnelle `name` des CSV publics, contrôlée par
   `^[A-Z][A-Za-z0-9]*$`. Ignorée, avec un avertissement, dans `BFECtests.csv`.
 - Exécutables : `<Fonction>Test` en PascalCase, sans préfixe `test` ni `UnitTest` —
