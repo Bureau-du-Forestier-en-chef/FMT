@@ -96,7 +96,7 @@ class FMTEXPORT FMTVersion : public Core::FMTObject
 		static bool isAtLeast(int major, int minor, int patch);
 		// DocString: FMTVersion::hasFeature
 		/**
-		@brief Test if the FMT version has the named feature (GDAL, OSI, MOSEK, PYTHON, R).
+     @brief Test if the FMT version has the named feature (GDAL, OSI, MOSEK, ONNXRUNTIME, PYTHON, R).
 		@param[in] name the feature name.
 		@return true if the feature is available else false.
 		*/

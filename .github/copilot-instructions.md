@@ -1,0 +1,1 @@
+At the beginning of every task in this repository, read the complete `..\..\AGENTS.md` file relative to the workspace root before planning, searching, or editing. Follow all instructions in it throughout the task. Do not rely on prior summaries or memory; reread the file when starting a new task.
