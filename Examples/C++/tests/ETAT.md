@@ -237,6 +237,9 @@ sur le modèle public `Examples/Models/TWD_land`, sans `T:\`, en une minute envi
 sauf les tests BFEC, dont le nom garde `T:/`, huit à la fois, avec la sortie des échecs. Un niveau
 seul : `--preset system`, `system-private` (la campagne BFEC, par Gabriel) ou `performance` ; sans
 preset, par étiquette ancrée, par exemple `--test-dir build/release -C Release -L "^system$"`.
+Depuis la phase 2, `RunTests.bat <preset>` lance un preset et finit par le résumé, et
+l'installation ne lance plus la suite BFEC : Gabriel la lance par `RunTests.bat system-private`
+(les deux décrits dans `AGENTS.md`, section Testing).
 Chaque lot s'arrête sur une livraison ; le suivant attend le feu vert de Gabriel.
 
 ### 1.4 Règles

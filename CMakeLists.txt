@@ -707,6 +707,14 @@ if (NOT DEFINED PARALLEL_TESTS)
 	set(PARALLEL_TESTS 1)
 endif(NOT DEFINED PARALLEL_TESTS)
 
+# Tests that cmake --install runs: public (all but the private tests, whose name holds T:/),
+# all, or none. The private campaign runs apart: ctest --preset system-private.
+set(INSTALL_TEST_SUITE "public" CACHE STRING "Tests run by cmake --install: public, all or none")
+set_property(CACHE INSTALL_TEST_SUITE PROPERTY STRINGS public all none)
+if (NOT INSTALL_TEST_SUITE MATCHES "^(public|all|none)$")
+	message(FATAL_ERROR "INSTALL_TEST_SUITE must be public, all or none, not ${INSTALL_TEST_SUITE}")
+endif()
+
 list( REMOVE_DUPLICATES DLLlookuppaths)
 
 ###EXTRALINKERFLAGS

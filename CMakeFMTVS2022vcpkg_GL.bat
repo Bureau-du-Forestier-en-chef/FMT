@@ -15,3 +15,5 @@ cmake -S . -B build/release -G "Visual Studio 17 2022" -A x64 -T v143 -DBUILD_TY
 cmake --build build/release --config Release
 
 cmake --install build/release --config Release
+
+pause

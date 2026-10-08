@@ -79,6 +79,18 @@ nothing yet. Without a preset, filter by label, always anchored since `-L` takes
 ctest --test-dir build/release -C Release -L "^system$" -E "T:/" -j 8 --output-on-failure
 ```
 
+`RunTests.bat [preset] [ctest options...]`, at the root, runs a test preset (`all-public` by
+default) and ends with a summary: a table by level (passed, failed, skipped, disabled, total), then
+the failed and the skipped tests with their reason. It finds `ctest` in the `PATH`, otherwise in the
+CMake of Visual Studio 2022, waits for a key, and returns the exit code of ctest. The summary is
+`Tests/Support/TestSummary.cmake`, which reads the results of `ctest --output-junit`.
+
+`cmake --install` runs the ctest pass that the cache variable `INSTALL_TEST_SUITE` selects, and
+prints the same summary: `public` by default (everything but the private tests), `all`, or `none`,
+which runs no test and leaves the README badges unchanged. It does not apply to the Python and R
+suites of the install. The private campaign runs apart, before a release:
+`ctest --preset system-private`.
+
 ### Adding a C++ test
 
 Registration is data-driven. There is no `add_test` call to copy.
