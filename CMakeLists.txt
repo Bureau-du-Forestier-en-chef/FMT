@@ -138,11 +138,17 @@ target_include_directories(FMTlib PRIVATE "${FMTINCLUDEDIR}")
 ##################################################################################################
 ##################################################################################################
 
+#mimalloc serves the executables only with -DWITH_MIMALLOC=ON, which links it first (createexecutable);
+#FMTlib does not load it.
 find_package(mimalloc CONFIG)
 if(mimalloc_FOUND)
     message(STATUS "mimalloc was found successfully!")
     message(STATUS "mimalloc version: ${mimalloc_VERSION}")
-	target_link_libraries(FMTlib PRIVATE mimalloc)
+	if (MSVC AND WITH_MIMALLOC)
+		message(STATUS "WITH_MIMALLOC is set: mimalloc replaces the C runtime heap of the executables")
+	elseif(MSVC)
+		message(STATUS "The executables use the C runtime heap, -DWITH_MIMALLOC=ON puts them on mimalloc")
+	endif(MSVC AND WITH_MIMALLOC)
 else()
     message(WARNING "mimalloc was NOT found. Falling back to default allocator.")
 endif(mimalloc_FOUND)
@@ -691,6 +697,7 @@ if (NOT DEFINED WITHOUT_TESTS)
 		include(CTest)
 	endif(DEFINED COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
 	include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt) #will polulate tests
+	include(${CMAKE_CURRENT_SOURCE_DIR}/Tests/Performance/CMakeLists.txt) #performance and allocation benchmarks
 endif (NOT DEFINED WITHOUT_TESTS)
 
 #add_subdirectory(FMTWrapperCore) # Supposed better than include but directory Header have not .h
