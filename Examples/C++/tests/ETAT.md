@@ -11,7 +11,8 @@
 > on ajoute un test ; la section 1 donne les règles et le patron ; la section 6 dit quoi faire
 > ensuite ; la section 7 se lit avant de toucher au code, elle tient les pièges déjà payés. Les
 > sections 2 à 5 sont l'inventaire, les lacunes, les scénarios et le journal, à consulter au
-> besoin.
+> besoin. **Depuis le 2026-10-08, la réorganisation en trois niveaux (section 9) passe avant la
+> suite de la feuille de route** : une session de phase lit d'abord la section 9.
 >
 > Les sections et sous-sections sont numérotées : « section 2.7 » renvoie à la sous-section 2.7
 > de ce fichier. Les lots (lot 1, lot 2...) sont les étapes du chantier, sans lien avec ces
@@ -208,11 +209,19 @@ sur le modèle public `Examples/Models/TWD_land`, sans `T:\`, en une minute envi
     documentée et tâche de correction (règle 3).
   - **En-tête de licence** dans `Tests/`, comme la bibliothèque ; les exemples restent
     l'exception historique.
-  - **Emplacement** : `Tests/Core/` pour l'unitaire, `Examples/C++/` inchangé pour la chaîne.
+  - ~~**Emplacement** : `Tests/Core/` pour l'unitaire, `Examples/C++/` inchangé pour la chaîne.~~
+    **Remplacée le 2026-10-08** par les trois dossiers `Tests/Unit`, `Tests/Integration` et
+    `Tests/System` (section 9).
   - **Couverture** : mesurée à titre informatif à la fin d'un lot, consignée dans la
     documentation au moment des versions.
   - **Corrections de FMTlib** : jamais dans un lot de tests. Un défaut donne une issue
     documentée, corrigée dans une session à part.
+- **Décisions du 2026-10-08**, après les commentaires de gcyr sur #350 (détail en section 9.2) :
+  trois niveaux de tests dans `Tests/Unit`, `Tests/Integration` et `Tests/System` ; tout
+  l'existant est du niveau système et y déménage ; Arrange / Act / Assert et noms Méthode +
+  Condition + Comportement ; GoogleTest aussi pour l'intégration ; `cmake --install` ne lance plus
+  que la suite publique ; un résumé à la fin de chaque passage ; une session par phase, orchestrée
+  depuis une session qui garde les décisions.
 
 ### 1.3 Rôles
 
@@ -1052,8 +1061,10 @@ Validation (après le build de Gabriel, 2026-09-18) :
 
 ## 6. Prochain lot
 
-### 6.1 État au 2026-09-25
+### 6.1 État au 2026-10-08
 
+- **La réorganisation en trois niveaux passe d'abord** (section 9). Le lot 5 ci-dessous attend sa
+  fin ; le lot 6 y devient la phase 8.
 - Lots 0 à 4 livrés, validés et commités ; rien ne bloque. Les quatre défauts de la section 2.7 ont
   leur issue (#346, #347, #357, #358), et la suite base est verte : 226 tests, 211 verts,
   15 désactivés.
@@ -1075,7 +1086,6 @@ engageait la forme du travail est tranché (section 1.2). Restent :
 |---|---|---|
 | Intégration continue | lot 9 | sans CI, la portabilité Linux et Clang de #350 ne peut être que manuelle : soit on en ajoute une, soit on écarte la demande au moment de fermer l'issue |
 | Suivi des lots dans GitHub | quand le lot 6 démarre | un commentaire par lot sous #350, qui demande des changements focalisés |
-| Langue et contenu d'`AGENTS.md` | à la demande | il est en anglais et sa section « Language » ne dit rien des issues ni des demandes de tirage |
 
 ### 6.3 Feuille de route jusqu'à la fermeture de #350
 
@@ -1384,3 +1394,198 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
   aussi les lignes `FMTPerformanceTests.*` (étiquette `performance` ; 7 au lot 1, 13 au lot 2, 19
   au lot 3, 23 au lot 4), qui lisent TWD_land, dont le scénario `perfyields`, créé pour elles. Pour
   comparer avec les lignes ci-dessus, ajouter `-LE performance` aux commandes.
+
+## 9. Réorganisation en trois niveaux (#350, depuis le 2026-10-08)
+
+Section de travail de la réorganisation. Une session de phase la lit en entier avant de toucher à
+quoi que ce soit, puis met à jour le tableau de la section 9.5 à la fin de sa phase.
+
+### 9.1 Pourquoi
+
+- **Lecture.** Tout se lance et se lit dans un seul passage : chaque test sur sa ligne, les tests
+  Python, de base et longs mêlés. On voit mal ce qui a réussi ou non, et on ne peut pas lancer un
+  niveau seul.
+- **D'où vient le mélange.** `CMakeFMTVS2022vcpkg_GL.bat` configure dans `build/release`,
+  construit, puis installe. L'installation (`cmake/BaseInstall.cmake`) enchaîne pytest en mode
+  bavard, la suite R, puis un ctest sans filtre qui inclut, sur une machine qui a accès aux données
+  privées, la campagne BFEC d'environ 168 minutes. Le `.bat` se termine sans `pause` : la fenêtre
+  se ferme.
+- **Ce que demande gcyr sur #350** (2026-09-23 et 2026-10-07) :
+  - trois niveaux, dans les dossiers `Unit`, `Integration` et `System` ; nos tests actuels sont des
+    tests système et doivent être renommés ;
+  - Arrange / Act / Assert dans chaque test, écrits `// Arrange`, `// Act`, `// Assert` ;
+  - noms Méthode + Condition + Comportement attendu, en PascalCase sans souligné, regroupés sous
+    `<Classe>Test` : `TEST(FMTModelCacheTest, SetLengthWithValidPeriodUpdatesPlanningHorizon)` ;
+  - les problèmes d'architecture que révèlent les tests unitaires se consignent dans
+    `Documentation/Architecture.md`.
+
+### 9.2 Décisions du 2026-10-08
+
+1. **Tout l'existant va dans `Tests/System`** : les 62 tests de `Examples/C++`, les 15 de
+   `FMTWrapperCore/tests`, les 3 d'`Excel/tests`, les suites Python et R. `Examples/C++`
+   disparaît ; `Examples/` garde les modèles et les scripts d'exemple.
+2. **`cmake --install` ne lance que la suite publique** (`INSTALL_TEST_SUITE=public` par défaut,
+   `all` ou `none` sur demande). La campagne privée se lance à part, avant une version.
+3. **Noms automatiques tout de suite, explicites ensuite** : un nom court généré pour chaque ligne
+   CSV, puis un nom Méthode + Condition + Comportement donné famille par famille aux lignes
+   publiques. Les lignes privées gardent un nom automatique.
+4. **GoogleTest aussi pour le niveau Integration** ; une ligne CSV reste possible quand un cas se
+   décrit mieux par des données.
+5. **`Documentation/CodingStandards.md` passe de cinq niveaux de tests à trois**, comme le demande
+   gcyr. Gabriel vérifiera s'il faut quelque chose de plus.
+6. **Un résumé à la fin de chaque passage**, et un `.bat` qui reste ouvert.
+7. **Une session par phase**, lancée depuis la session d'orchestration avec un prompt et un
+   effort (section 9.4).
+8. **#349 d'abord** : fait, clos le 2026-10-08 ; `new_test` a été fusionné dans `master`
+   (PR #367).
+9. **Valider la fusion de `master` avant tout** (phase 0) : on ne suppose pas que les tests
+   arrivés par la fusion fonctionnent.
+
+Maintenues : GoogleTest pour l'unitaire, un test ctest par cas, `DISABLED_` pour un défaut révélé,
+en-tête de licence dans `Tests/`, aucune correction de FMTlib dans une phase de tests, et pas
+d'étiquette `base`/`bfec` : le privé se reconnaît à `T:/` dans son nom et se filtre par là.
+
+Proposés à gcyr en phase 3 : étiquettes toujours ancrées (`-L "^system$"` ; `-L` prend une
+expression régulière, et `r` attraperait `core`) ; `// Act and Assert` quand un seul énoncé agit
+et vérifie (`EXPECT_THROW`) ; en-tête de licence en commentaire `#` pour Python et R.
+
+### 9.3 Cible
+
+**Arborescence.**
+
+```
+Tests/
+  CMakeLists.txt            agrégateur : fixture ExamplesModels, inclut les quatre suites
+  ETAT.md                   ce fichier, déplacé en phase 6
+  Support/
+    TestSummary.cmake       phase 2 : résumé de fin de passage
+    TestTools.h             depuis Examples/C++/tests/
+    TestRegistration.cmake  phase 4 : la boucle CSV en fonctions (noms, étiquettes, contrôles)
+    TestsDataSnapshot.cmake depuis cmake/
+    RenamedTests.csv        phase 7 : ancien;nouveau nom d'exécutable
+  Unit/Core/                GoogleTest, cible FMTCoreUnitTests
+  Integration/              GoogleTest, squelette vide au départ
+  System/
+    Cpp/                    les tests C++, basetests.csv, knownbugs.csv, BFECtests.csv (local)
+      FMTWrapperCore/
+      Excel/                MSVC seulement
+    Python/                 depuis Examples/Python/tests, avec pytest.ini
+    R/                      depuis Examples/R/tests
+  Performance/              inchangé (#349)
+```
+
+**Étiquettes, le mécanisme de base.** Elles suffisent à segmenter, avec un appel direct de ctest :
+`ctest --test-dir build/release -C Release -L "^unit$"`.
+
+| Sorte | Étiquettes |
+|---|---|
+| Niveau, exactement une par test | `unit`, `integration`, `system`, `performance` |
+| Interface, au niveau système | `cpp`, `python`, `r` |
+| Composant | `core`, `wrappercore`, `excel` |
+| Benchmarks, inchangées | `allocation`, `memory`, `bfec-perf` |
+
+Les deux tests de fixture restent sans étiquette : ctest les ajoute de lui-même à tout passage qui
+en dépend.
+
+**Presets de test, un raccourci par-dessus** : `ctest --preset unit`. Gabriel garde son `.bat` pour
+configurer et construire ; les presets de test pointent sur `build/release` par le preset de
+configuration `release-gl`. Prérequis : que `CMakePresets.json` se lise — aujourd'hui CMake le
+rejette en entier parce que le preset de build `release-mam` renvoie à un preset de configuration
+`release` qui n'existe pas. La seule correction est ce nom (`release` → `release-mam`), sans
+toucher aux paramètres du preset `mam` ; prévenir Marc-Alex.
+
+| Preset | Filtre |
+|---|---|
+| `unit` | étiquette `^unit$` |
+| `integration` | étiquette `^integration$` |
+| `system` | étiquette `^system$`, sans `T:/` dans le nom |
+| `system-private` | étiquette `^system$` et `T:/` dans le nom |
+| `performance` | étiquette `^performance$`, une tâche à la fois |
+| `all-public` | tout sauf `T:/` : la suite base d'aujourd'hui |
+
+**Résumé de fin de passage.** À la fin de l'installation comme d'un niveau lancé seul, un tableau
+par niveau (réussis, échoués, ignorés, désactivés, total), puis la liste concise des échecs et des
+tests ignorés avec leur raison. Sortie de test, donc en anglais. Quand tout passe, le tableau seul.
+
+**Noms.**
+
+- Format `<Niveau>.<Suite>[.<Cas>]` : `Unit.FMTOperatorTest.<Cas>`,
+  `System.ScenarioReadingTest.<Cas>`, `System.Python.<Domaine>`.
+- Nom automatique d'une ligne CSV : arguments 1 et 2 joints par `|`, le chemin
+  `../../../../Examples/Models/<M>/<M>.pri` réduit à `<M>`, un chemin absolu réduit à
+  `<lecteur>:/.../<dossier>` (le marqueur `T:/` reste), espaces remplacés par `_`, et au-delà de
+  60 caractères les 51 premiers suivis de `~` et de 8 caractères d'empreinte.
+- Nom explicite : cinquième colonne optionnelle `name` des CSV publics, contrôlée par
+  `^[A-Z][A-Za-z0-9]*$`. Ignorée, avec un avertissement, dans `BFECtests.csv`.
+- Exécutables : `<Fonction>Test` en PascalCase, sans préfixe `test` ni `UnitTest` —
+  `testScenarioReading` → `ScenarioReadingTest`, `doplanning` → `DoPlanningTest`. La table des
+  80 noms va dans `Tests/Support/RenamedTests.csv`, revue par gcyr.
+
+### 9.4 Orchestration
+
+- **Une session d'orchestration** garde les décisions et rédige, pour chaque phase, un prompt
+  autonome : contexte, périmètre exact, fichiers, règles, vérifications attendues, ce qu'il ne faut
+  pas toucher, effort recommandé.
+- **Une session par phase**, ouverte à partir de ce prompt. Elle livre son diff, ses contrôles
+  statiques et un message de commit Conventional Commits en anglais, puis s'arrête. Gabriel
+  compile ; la session lance les tests ; Gabriel commite.
+- **Retour à l'orchestration** : elle relit le résultat à partir des traces écrites — commit, ce
+  fichier, sortie de ctest — et non de mémoire, puis prépare la phase suivante.
+- **Une seule session de phase à la fois dans `new_test`** : deux sessions dans le même worktree
+  mêlent leurs changements non commités.
+- **Ordre** : phase 0, puis la session des défauts (#346, #347, #357, #358), qui déplace des
+  lignes de `knownbugs.csv` vers `basetests.csv` avant le déplacement des CSV, puis les phases 1 à
+  9. La phase 3 peut se placer n'importe où avant la phase 7. Le lot 5 du chantier (section 6.3.2)
+  attend la fin de la réorganisation.
+- **Prévenir** la campagne `FMTWrapperCore` avant la phase 6, et Marc-Alex de la correction de son
+  preset de build en phase 1. Chaque worktree qui a un `BFECtests.csv` lance le script de migration
+  après les phases 6 et 7.
+
+### 9.5 Phases et état
+
+Une demande de tirage par phase, en français, qui renvoie à #350.
+
+| Phase | Contenu | Effort | État |
+|---|---|---|---|
+| 0 | Valider la fusion de `master`, puis prendre la référence des comptes | `low` | à faire |
+| 1 | Étiquettes, presets, noms automatiques, sans rien déplacer | `medium` | à faire |
+| 2 | Résumé de fin de passage, `.bat` qui reste ouvert, `RunTests.bat <preset>` | `medium` | à faire |
+| 3 | Conventions : `CodingStandards.md` (trois niveaux, AAA, noms), `Architecture.md` (dette révélée par les tests), renvois d'`AGENTS.md` | `medium` | à faire |
+| 4 | Interrupteur unique `WITHOUT_TESTS`, squelette `Tests/`, boucle CSV en fonctions | `high` | à faire |
+| 5 | Python et R dans ctest au niveau système, installation filtrée par `INSTALL_TEST_SUITE` | `high` | à faire |
+| 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | à faire |
+| 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | à faire |
+| 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | à faire |
+| 9 | Noms explicites des lignes publiques ; Arrange / Act / Assert quand un test est touché | `high` | à faire |
+
+**Phase 0 en détail.** La fusion de `master` (`c2760ff4`, 2026-10-08) apporte, par rapport au
+dernier état validé (`720010bb`, PR #367) :
+
+- `975320eb` (gcyr) : un mode `loggerlifetime` dans `Examples/C++/testSolvers.cpp` et sa ligne
+  `testSolvers;loggerlifetime;;`. Le test résout `LP3` en CLP puis copie 2000 fois le modèle : il
+  n'échoue que si le processus plante, et rend 1, non 77, quand CLP manque ;
+- dans le même commit, `FMTLpSolver` gagne un membre `m_solverLogger` (classe exportée, donc tout
+  se recompile) et clone son journal à chaque construction ; gcyr note que ça peut casser des
+  tests système ;
+- `ded79a1a` résout un conflit dans `basetests.csv`.
+
+Étapes : Gabriel reconfigure et reconstruit tout ; suite publique (attendu : l'état précédent plus
+une ligne, 15 désactivés, aucun nouvel échec, durée de la nouvelle ligne notée) ; suite BFEC par
+Gabriel ; le nouveau test est consigné tel quel, sans être modifié ; un échec devient une issue
+documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json-v1`, `-N -E "T:/"`,
+`--print-labels`, après avoir copié `LastTest.log`.
+
+### 9.6 Vérifications communes
+
+- Comptes par niveau (`ctest -N -L "^<niveau>$"`) et par preset, comparés à la référence de la
+  phase 0.
+- Comparaison avec `--show-only=json-v1` : mêmes commandes, dossiers de travail et propriétés ;
+  seules changent les étiquettes, puis une fois les noms. Après un déplacement ou un renommage, même
+  nombre de tests.
+- Chaque test porte exactement une étiquette de niveau, hormis les fixtures,
+  `FMTPerformanceTests.Mimalloc` et les `bfec-perf`. Aucun nom de la suite publique ne contient
+  `T:/`.
+- La suite publique donne le même résultat qu'avant, la fixture reste verte, et la configuration
+  n'émet aucun avertissement `no target named`.
+- Après les déplacements : `git diff -M --stat` montre des renommages à 100 %, et le plus long
+  chemin sous `build/release/tests` reste sous 260 caractères.
