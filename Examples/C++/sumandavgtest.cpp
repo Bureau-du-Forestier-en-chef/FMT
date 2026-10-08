@@ -8,12 +8,16 @@
 	#include "FMTModelParser.h"
 #endif
 #include "FMTDefaultLogger.h"
+#include "TestTools.h"
 
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTDefaultLogger().logStamp();
-	const std::string folder = "../../../../Examples/Models/TWD_land/";
+	//FMTPlanningTask rewrites the schedule of the optimized scenarios in the project it receives:
+	//the test works on a copy of TWD_land, never on Examples/Models.
+	const std::string folder = "../../tests/sumandavgtest/TWD_land/";
+	Testing::copyProject("../../../../Examples/Models/TWD_land", folder);
 	const std::string primlocation = folder + "TWD_land.pri";
 	std::vector<bool>playback;
 	std::vector<std::string>allscenarios;
@@ -24,7 +28,8 @@ int main(int argc, char *argv[])
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	modelparser.setErrorsToWarnings(errors);
-	std::string outputlocation = "../../tests/sumandavgtest";
+	//The output dataset is deleted when it already exists: keep it apart from the copied project.
+	std::string outputlocation = "../../tests/sumandavgtest/outputs";
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	//Si on fournit la localisation du fichier primaire à la task il écrira la schedule pour tous les scénarios.
@@ -71,7 +76,9 @@ int main(int argc, char *argv[])
 			"sumandavgtest", __LINE__, "");
 		}
 
-	#endif
 	return 0;
+	#else
+	return Testing::skip("FMT is compiled without OSI");
+	#endif
 	}
 
