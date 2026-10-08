@@ -1560,7 +1560,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | Phase | Contenu | Effort | État |
 |---|---|---|---|
 | 0 | Valider la fusion de `master`, puis prendre la référence des comptes | `low` | fait (2026-10-08) |
-| 1 | Étiquettes, presets, noms automatiques, sans rien déplacer | `medium` | à faire |
+| 1 | Étiquettes, presets, noms automatiques, sans rien déplacer | `medium` | fait (2026-10-08), à commiter |
 | 2 | Résumé de fin de passage, `.bat` qui reste ouvert, `RunTests.bat <preset>` | `medium` | à faire |
 | 3 | Conventions : `CodingStandards.md` (trois niveaux, AAA, noms), `Architecture.md` (dette révélée par les tests), renvois d'`AGENTS.md` | `medium` | à faire |
 | 4 | Interrupteur unique `WITHOUT_TESTS`, squelette `Tests/`, boucle CSV en fonctions | `high` | à faire |
@@ -1597,6 +1597,25 @@ documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json
   1 et non 77 sans CLP, et ne peut être vu rouge qu'en retirant la correction de `FMTLpSolver` ;
 - suite BFEC : à lancer par Gabriel, pour le changement du journal de `FMTLpSolver` sur les modèles
   réels.
+
+**Phase 1 (2026-10-08, sur `7adf1ddc` plus le diff de la phase)** :
+
+- noms `System.<cible>[.<cas>]` et étiquettes `system;cpp` sur les 325 lignes CSV et
+  `System.UnitTestFMTexcelcache`, qui reçoit aussi la fixture et le code 77 ; un chemin absolu
+  garde son fichier (section 9.3) ; aucun doublon, aucune ligne CSV perdue (326 tests `system`) ;
+- `--show-only=json-v1` comparé à la référence : mêmes commandes, dossiers de travail et
+  propriétés pour les 357 tests ; seuls changent les noms, les étiquettes et, voulu, le test Excel
+  (fixture, code 77, et donc sa place dans le `DEPENDS` de `ExamplesModelsUnchanged`) ;
+- une étiquette de niveau par test, hormis les 2 fixtures et les 6 `bfec-perf` ; aucun nom public
+  avec `T:/`, les 92 noms privés l'ont tous ;
+- `ctest --preset <p> -N` : `unit` 0, `integration` 0, `system` 236, `system-private` 94,
+  `performance` 25, `all-public` 259, 357 sans filtre. Les filtres par étiquette ajoutent les
+  2 fixtures à leur compte : sans elles, 234, 92 et 23 ;
+- `ctest --preset all-public` : 244 verts (fixtures comprises), 15 désactivés, 20,4 s réelles ;
+  le plus long nom public fait 97 caractères (199 pour un nom privé de benchmark, inchangé), d'où
+  une colonne de noms d'environ 120 caractères ; sortie redirigée, `shortProgress` n'abrège rien ;
+- les presets se lisent (`cmake --list-presets=all`) ; le preset de build `release-mam` renvoie
+  enfin à `release-mam` : prévenir Marc-Alex.
 
 **La session des défauts se réduit à #357** (précision de la section 2.7) : c'est le seul vrai
 défaut. Elle ne bloque plus le début des phases ; ses lignes de `knownbugs.csv` doivent seulement
