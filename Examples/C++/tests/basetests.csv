@@ -89,3 +89,4 @@ doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|replanification_str
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|replanification_tactique;5;201360
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|replanification_stochastique;5;0
 testWrapperCoreRasterization;../../../../Examples/Models/TWD_land/TWD_land.pri|rasterisation_pass|1420;../../../../Examples/Models/TWD_land/Carte/TWD_land.shp;../../tests/testWrapperCoreRasterizationPass/
+testSolvers;loggerlifetime;;
