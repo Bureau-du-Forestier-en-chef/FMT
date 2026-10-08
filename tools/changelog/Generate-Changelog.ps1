@@ -90,6 +90,20 @@ function Get-ClosedIssues {
     return $res
 }
 
+# Renvoie la premiere section d'un changelog si son titre est [Unreleased] (ou un
+# equivalent : Non publie, in dev, in progress, WIP), du titre jusqu'a la section
+# suivante ; $null sinon. Lit le fichier sur disque, retouches non commitees comprises.
+function Get-UnreleasedSection {
+    param([string]$Path)
+    if (-not (Test-Path $Path)) { return $null }
+    $text = Get-Content -Raw -Encoding UTF8 $Path
+    if (-not $text) { return $null }
+    $m = [regex]::Match($text, '(?ms)^[ \t]{0,3}##[ \t]*\[(?<label>[^\]\r\n]+)\][^\r\n]*\r?\n.*?(?=^[ \t]{0,3}##[ \t]*\[|\z)')
+    if (-not $m.Success) { return $null }
+    if ($m.Groups['label'].Value.Trim() -notmatch '^(unreleased|non[\s-]*publi|in[\s-]*dev|in[\s-]*progress|wip)') { return $null }
+    return $m.Value.TrimEnd()
+}
+
 # Se placer a la racine du depot (le script vit dans tools/changelog/).
 $repoRoot = (& git rev-parse --show-toplevel 2>$null)
 if (-not $repoRoot) {
@@ -160,14 +174,56 @@ $wtPathspec = @('--', '.', ':(exclude)CHANGELOG.md', ':(exclude)CHANGELOG.fr.md'
 $wtStatus   = @(& git status --porcelain | Where-Object { $_ -notmatch 'CHANGELOG(\.fr)?\.md$' })
 $wtCount    = $wtStatus.Count
 
-# Recuperer les commits (hors merges).
-$commits = & git log $range --no-merges --pretty=format:'- %s (%h, %an, %ad)' --date=short
-$count   = if ($commits) { ($commits | Measure-Object -Line).Lines } else { 0 }
+# Section [Unreleased] deja presente en tete des changelogs. Copilot la reprend et renvoie
+# UNE section consolidee qui la remplace, au lieu d'en empiler une seconde.
+$existingEn  = Get-UnreleasedSection -Path 'CHANGELOG.md'
+$existingFr  = Get-UnreleasedSection -Path 'CHANGELOG.fr.md'
+$hasExisting = [bool]($existingEn -or $existingFr)
+
+# Repere des commits deja decrits : le dernier commit qui a modifie un changelog. Le hash
+# ecrit dans le titre [Unreleased] ne convient pas : c'est le HEAD au moment de la
+# generation, et la section est commitee dans le commit SUIVANT avec le code qu'elle decrit.
+$anchor = $null
+if ($hasExisting -and $Since) {
+    $lastClCommit = (& git log -1 --format=%h -- CHANGELOG.md CHANGELOG.fr.md 2>$null)
+    if ($lastClCommit) {
+        $lastClCommit = $lastClCommit.Trim()
+        $afterBase = (& git rev-list --count "$Since..$lastClCommit" 2>$null)
+        if ($afterBase -and [int]$afterBase -gt 0) { $anchor = $lastClCommit }
+    }
+}
+
+# Recuperer les commits (hors merges). La plage part toujours de la base : rien n'est oublie.
+$logFormat = '--pretty=format:- %s (%h, %an, %ad)'
+$commits = @(& git log $range --no-merges $logFormat --date=short | Where-Object { $_ })
+$count   = $commits.Count
 if ($count -eq 0 -and $wtCount -eq 0) {
     Write-Host "Rien a documenter : aucun commit sur '$range' et aucun changement non commite." -ForegroundColor Yellow
     exit 0
 }
-$commitsText = if ($commits) { ($commits -join "`r`n") } else { '(aucun nouveau commit depuis la base)' }
+$newCount = $count
+$oldCount = 0
+if ($anchor) {
+    $newCommits = @(& git log "$anchor..HEAD" --no-merges $logFormat --date=short | Where-Object { $_ })
+    $oldCommits = @(& git log "$Since..$anchor" --no-merges $logFormat --date=short | Where-Object { $_ })
+    $newCount = $newCommits.Count
+    $oldCount = $oldCommits.Count
+    $newText  = if ($newCount) { $newCommits -join "`r`n" } else { '(aucun)' }
+    $oldText  = if ($oldCount) { $oldCommits -join "`r`n" } else { '(aucun)' }
+    $commitsText = "-- NOUVEAUX depuis $anchor (a integrer) : $newCount --`r`n$newText`r`n`r`n" +
+                   "-- DEJA DECRITS dans la section non publiee ($Since..$anchor, contexte seulement) : $oldCount --`r`n$oldText"
+} else {
+    $commitsText = if ($count) { $commits -join "`r`n" } else { '(aucun nouveau commit depuis la base)' }
+}
+
+# Bloc de la section non publiee existante, a remplacer par la reponse de Copilot.
+$existingBlock = ''
+if ($hasExisting) {
+    $exParts = @('SECTION NON PUBLIEE EXISTANTE (ta reponse la REMPLACE) :')
+    if ($existingEn) { $exParts += @('', '--- actuellement en tete de CHANGELOG.md ---', $existingEn) }
+    if ($existingFr) { $exParts += @('', '--- actuellement en tete de CHANGELOG.fr.md ---', $existingFr) }
+    $existingBlock = "`r`n`r`n" + ($exParts -join "`r`n")
+}
 
 # Budget de diff partage : le travail non commite est PRIORITAIRE (aucun message de
 # commit ne le decrit), le diff des commits prend ce qui reste.
@@ -196,23 +252,28 @@ if ($wtCount -gt 0) {
     $workingTreeBlock = "`r`n`r`n" + ($parts -join "`r`n")
 }
 
-# Section DIFF des commits (optionnelle, sur le budget restant).
+# Section DIFF des commits (optionnelle, sur le budget restant). Avec une section non
+# publiee existante, seuls les NOUVEAUX commits sont diffes : le reste est deja decrit.
+$diffBase  = if ($anchor) { $anchor } else { $Since }
 $diffBlock = ''
 $diffChars = 0
+$diffNote  = ''
 if ($Diff) {
-    if (-not $Since) {
-        Write-Host "Attention : -Diff sans reference de base ; diff des commits omis." -ForegroundColor Yellow
+    if (-not $diffBase) {
+        $diffNote = 'omis (aucune reference de base)'
+    } elseif ($anchor -and $newCount -eq 0) {
+        $diffNote = 'aucun nouveau commit depuis la section non publiee'
     } elseif ($budget -le 0) {
-        Write-Host "Budget de diff epuise par le travail non commite ; diff des commits omis." -ForegroundColor Yellow
+        $diffNote = 'omis (plafond consomme par le diff non commite)'
     } else {
-        $stat = (& git diff --stat $Since HEAD | Out-String).TrimEnd()
-        $full = (& git diff $Since HEAD | Out-String).TrimEnd()
+        $stat = (& git diff --stat $diffBase HEAD | Out-String).TrimEnd()
+        $full = (& git diff $diffBase HEAD | Out-String).TrimEnd()
         $diffChars = $full.Length
         if ($diffChars -gt $budget) {
             $full = $full.Substring(0, $budget) +
                     "`r`n`r`n... [diff tronque a $budget caracteres - restreignez la plage] ..."
         }
-        $diffBlock = "`r`n`r`nDIFF DES COMMITS (plage $range) - resume :`r`n$stat`r`n`r`nDIFF complet :`r`n$full"
+        $diffBlock = "`r`n`r`nDIFF DES COMMITS (plage $diffBase..HEAD) - resume :`r`n$stat`r`n`r`nDIFF complet :`r`n$full"
     }
 }
 
@@ -223,18 +284,33 @@ if (-not (Test-Path $templatePath)) {
     exit 1
 }
 $template = Get-Content -Raw -Encoding UTF8 $templatePath
-$prompt = $template.
-    Replace('{{RANGE}}',     $range).
-    Replace('{{BASE}}',      $baseDesc).
-    Replace('{{BASE_DATE}}', $baseDateDesc).
-    Replace('{{DATE}}',      $today).
-    Replace('{{HEAD}}',      $headHash).
-    Replace('{{REPO_URL}}',  $repoUrl).
-    Replace('{{ISSUES_URL}}',$issuesUrl).
-    Replace('{{COMMITS}}',   $commitsText).
-    Replace('{{DIFF}}',      $diffBlock).
-    Replace('{{WORKING_TREE}}', $workingTreeBlock).
-    Replace('{{CLOSED_ISSUES}}', $closedIssuesBlock)
+$values = @{
+    RANGE               = $range
+    BASE                = $baseDesc
+    BASE_DATE           = $baseDateDesc
+    DATE                = $today
+    HEAD                = $headHash
+    REPO_URL            = $repoUrl
+    ISSUES_URL          = $issuesUrl
+    COMMITS             = $commitsText
+    DIFF                = $diffBlock
+    WORKING_TREE        = $workingTreeBlock
+    CLOSED_ISSUES       = $closedIssuesBlock
+    EXISTING_UNRELEASED = $existingBlock
+}
+# Substitution en UNE passe sur le gabarit seul : une valeur inseree n'est jamais relue.
+# Des .Replace() en chaine remplacaient aussi les jetons presents DANS les donnees deja
+# inserees (ex. le diff de l'outil lui-meme), ce qui corrompait le prompt.
+$sb  = New-Object System.Text.StringBuilder
+$pos = 0
+foreach ($tok in [regex]::Matches($template, '\{\{([A-Z_]+)\}\}')) {
+    [void]$sb.Append($template, $pos, $tok.Index - $pos)
+    $key = $tok.Groups[1].Value
+    if ($values.ContainsKey($key)) { [void]$sb.Append([string]$values[$key]) } else { [void]$sb.Append($tok.Value) }
+    $pos = $tok.Index + $tok.Length
+}
+[void]$sb.Append($template, $pos, $template.Length - $pos)
+$prompt = $sb.ToString()
 
 # Copier dans le presse-papier.
 Set-Clipboard -Value $prompt
@@ -251,10 +327,22 @@ if ($wtCount -gt 0) {
 } else {
     Write-Host "  Non commite : rien (arbre de travail propre)." -ForegroundColor DarkGray
 }
+if ($hasExisting) {
+    if ($anchor) {
+        Write-Host "  Section [Unreleased] existante : $oldCount commit(s) deja decrit(s) (jusqu'a $anchor), $newCount nouveau(x)." -ForegroundColor Yellow
+    } else {
+        Write-Host "  Section [Unreleased] existante : injectee dans le prompt." -ForegroundColor Yellow
+    }
+    if ($anchor -and $newCount -eq 0 -and $wtCount -eq 0) {
+        Write-Host "                -> rien de nouveau : la reponse la re-consolide (ex. pour la promouvoir en version)." -ForegroundColor Yellow
+    } else {
+        Write-Host "                -> la reponse la REMPLACE : ne collez pas un second bloc par-dessus." -ForegroundColor Yellow
+    }
+}
 if ($Diff -and $diffChars) {
-    Write-Host "  Diff des commits joint : $diffChars caracteres (plafond global $MaxDiffChars, partage)." -ForegroundColor Green
+    Write-Host "  Diff des commits joint : $diffChars caracteres (plage $diffBase..HEAD, plafond global $MaxDiffChars partage)." -ForegroundColor Green
 } elseif ($Diff) {
-    Write-Host "  Diff des commits : omis (plafond consomme par le diff non commite)." -ForegroundColor Yellow
+    Write-Host "  Diff des commits : $diffNote." -ForegroundColor Yellow
 } else {
     Write-Host "  (sans diff du code : messages de commit + liste des fichiers)" -ForegroundColor DarkGray
 }
