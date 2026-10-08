@@ -356,6 +356,8 @@ Portability is a core architectural objective of FMT. The primary targets are Wi
 
 Architecturally this comes down to containment: platform-specific behavior belongs in dedicated wrappers, adapters, source files, infrastructure implementations, or localized CMake conditions, so that supporting another platform does not require touching unrelated forest-planning logic.
 
+This objective also applies to tests and production pipelines. Test code, test data, build automation, and deployment workflows should support the applicable target platforms without relying on platform-specific paths, tools, or environment assumptions. Where platform-specific steps are necessary, they should be explicitly identified and contained in dedicated configurations or pipeline stages.
+
 Some components are intentionally platform-specific. Those constraints should be identified and contained rather than spread across layers.
 
 The coding rules that follow from this, including path handling and the platform types that must not appear in portable headers, are in [CodingStandards.md, Portability](CodingStandards.md#portability).
