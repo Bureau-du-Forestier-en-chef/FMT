@@ -459,6 +459,12 @@ lignes de `knownbugs.csv` échouent aujourd'hui : elles passeront dans `basetest
 correction. Issues GitHub : **#346** (priorité de `^`) et **#347** (bloc `*YC` mélangé, qui
 couvre aussi la constante d'équation), **#357** (`_DISCOUNTFACTOR`) et **#358** (condition
 de source ignorée).
+
+**Précision de Gabriel (2026-10-08) : seul #357 est un vrai défaut.** Les comportements de #346,
+#347 et #358 sont connus : ce sont des syntaxes ou des cas particuliers « documentés » par la
+suite BFEC, qui les teste sur des modèles réels. Leurs lignes de `knownbugs.csv` attendent donc
+un comportement que FMT n'a pas choisi d'avoir ; elles restent désactivées en attendant une revue
+commune des tests BFEC, qui dira ce qu'on ramène dans la suite publique et sous quelle forme.
 Démonstrations refaites le
 2026-09-17 avec les exécutables du build de `new_test`, sur des copies de TWD_land hors dépôt.
 
@@ -1533,9 +1539,8 @@ tests ignorés avec leur raison. Sortie de test, donc en anglais. Quand tout pas
   fichier, sortie de ctest — et non de mémoire, puis prépare la phase suivante.
 - **Une seule session de phase à la fois dans `new_test`** : deux sessions dans le même worktree
   mêlent leurs changements non commités.
-- **Ordre** : phase 0, puis la session des défauts (#346, #347, #357, #358), qui déplace des
-  lignes de `knownbugs.csv` vers `basetests.csv` avant le déplacement des CSV, puis les phases 1 à
-  9. La phase 3 peut se placer n'importe où avant la phase 7. Le lot 5 du chantier (section 6.3.2)
+- **Ordre** : phase 0, puis les phases 1 à 9. La correction de #357, seul vrai défaut (section
+  2.7), se fait dans une session à part, de préférence avant la phase 6, qui déplace les CSV. La phase 3 peut se placer n'importe où avant la phase 7. Le lot 5 du chantier (section 6.3.2)
   attend la fin de la réorganisation.
 - **Prévenir** la campagne `FMTWrapperCore` avant la phase 6, et Marc-Alex de la correction de son
   preset de build en phase 1. Chaque worktree qui a un `BFECtests.csv` lance le script de migration
@@ -1547,7 +1552,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 
 | Phase | Contenu | Effort | État |
 |---|---|---|---|
-| 0 | Valider la fusion de `master`, puis prendre la référence des comptes | `low` | à faire |
+| 0 | Valider la fusion de `master`, puis prendre la référence des comptes | `low` | fait (2026-10-08) |
 | 1 | Étiquettes, presets, noms automatiques, sans rien déplacer | `medium` | à faire |
 | 2 | Résumé de fin de passage, `.bat` qui reste ouvert, `RunTests.bat <preset>` | `medium` | à faire |
 | 3 | Conventions : `CodingStandards.md` (trois niveaux, AAA, noms), `Architecture.md` (dette révélée par les tests), renvois d'`AGENTS.md` | `medium` | à faire |
@@ -1574,6 +1579,21 @@ une ligne, 15 désactivés, aucun nouvel échec, durée de la nouvelle ligne not
 Gabriel ; le nouveau test est consigné tel quel, sans être modifié ; un échec devient une issue
 documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json-v1`, `-N -E "T:/"`,
 `--print-labels`, après avoir copié `LastTest.log`.
+
+**Résultat (2026-10-08, sur `89f500d4`)** :
+
+- suite publique : 259 tests inscrits, 244 verts, 15 désactivés, 16,3 s réelles avec `-j 8` —
+  l'état validé précédent (243 verts) plus `testSolversloggerlifetime`, vert en 0,62 s ;
+- référence des comptes : 357 tests inscrits, 259 publics, 98 privés ; seules existent les
+  étiquettes des benchmarks (`allocation`, `bfec-perf`, `memory`, `performance`) ;
+- `testSolversloggerlifetime` est consigné tel quel : il ne vérifie qu'une absence de plantage, rend
+  1 et non 77 sans CLP, et ne peut être vu rouge qu'en retirant la correction de `FMTLpSolver` ;
+- suite BFEC : à lancer par Gabriel, pour le changement du journal de `FMTLpSolver` sur les modèles
+  réels.
+
+**La session des défauts se réduit à #357** (précision de la section 2.7) : c'est le seul vrai
+défaut. Elle ne bloque plus le début des phases ; ses lignes de `knownbugs.csv` doivent seulement
+avoir bougé avant le déplacement des CSV (phase 6).
 
 ### 9.6 Vérifications communes
 
