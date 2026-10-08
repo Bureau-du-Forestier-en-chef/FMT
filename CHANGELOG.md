@@ -1,46 +1,39 @@
-## [Unreleased] - 2026-09-17 (c8275b97)
+## [Unreleased] - 2026-10-08 (eaed70a8)
 
 ### Added
-- Major migration of functionality into `FMTWrapperCore` with the addition of dedicated service modules:
-  - `Planning` for planning and replanning;
-  - `OperatingArea` for operating area scheduling;
-  - `AreaVariability` for initial area variability processing;
-  - `Rasterization` for vector-to-raster workflows;
-  - `Environment` and `ModelQuery` for core service operations;
-  - `Controller` as the central wrapper entry point.
-- Added extensive automated test coverage for the new core services (`Planning`, `OperatingArea`, `AreaVariability`, `Rasterization`, `Environment`) and `UnitTestCallbackLogger`.
-- Added automated COIN-OR stack build support for RTools environments (#335, #276).
-- Added stronger testing infrastructure:
-  - automatic verification that `Examples/Models` data remains unchanged during tests;
-  - support for disabled known-bug test suites;
-  - resource locking for tests sharing output files;
-  - support for gracefully skipping unavailable compiled features.
-
+ 
+- Added a service-oriented architecture to `FMTWrapperCore`, with a central controller and dedicated use cases for planning, model queries, scenarios, sessions, transformations, and spatial operations (#340 Créer un controleur de Larman et restructurer Wrapper et WrapperCore).
+- Migrated operating-area management, area variability, rasterization, selection, and planning capabilities to portable `FMTWrapperCore` components.
+- Added a typed event system for forwarding logs, warnings, errors, and results between the Core and user interfaces.
+- Added interface-validation scenarios covering planning, rasterization, transformations, spatially explicit optimization, and replanning workflows.
+- Added automated Python and R test suites integrated into the installation workflow.
+- Added automated COIN-OR stack builds for RTools, including CLP, GLPK, and MOSEK integration (#335 Compiler Osi avec Mosek+Clp+Glpk pour Rtools, #276 Support for GLPK).
+- Added detailed project documentation covering architecture, coding standards, build procedures, testing, and contribution rules.
+- Added structured GitHub templates for bug reports and feature requests.
+ 
 ### Changed
-- Significant architectural refactoring of `FMTWrapperCore` to split responsibilities into dedicated modules and reduce business logic inside the UI wrapper.
-- Refactored bounds and specification classes by splitting `FMTBounds.hpp` into specialized components (`FMTAgeBounds`, `FMTLockBounds`, `FMTPerBounds`, `FMTYldBounds`, `FMTSpec`) (#202).
-- Centralized validation, error handling and logging across internal development tooling.
-- Unified .NET-to-native conversion mechanisms through a shared conversion layer.
-- Updated R examples to reflect the `FMTSolverInterface` naming.
-- Updated Doxygen documentation and version references.
-- Renamed and modernized core infrastructure components:
-  - `FMTFormCache` → `ModelCache`;
-  - `FMTFormLogger` → `CallbackLogger`;
-  - `FMTExceptionHandlerWarning` → `WarningExceptionHandler`.
-- Removed the migration tracking document `FMTWrapperCore/ETAT.md` and migrated test-related tracking to dedicated test resources.
-- Tests that modify project data now operate on copied datasets to prevent accidental modification of reference models.
-
+ 
+- **Breaking:** renamed the public C++ Core namespace from `FMTWrapperCore` to `FMTWrapper::Backend`. Client code using `FMTWrapperCore::*` must be updated.
+- Restructured the user interface and wrapper to delegate business operations to the `FMTWrapperCore` controller and services, reducing interface-specific logic (#340 Créer un controleur de Larman et restructurer Wrapper et WrapperCore).
+- Split `FMTBounds.hpp` into specialized age, lock, period, and yield bounds classes, together with a dedicated specification class (#202 Diviser le fichier FMTbounds.hpp en 6 fichier 1 par classe).
+- Reorganized the CMake installation system into separate runtime, Python, R, and test modules.
+- Improved OSI, MOSEK, CLP, and GLPK solver detection and configuration across supported environments.
+- Updated R examples to use the current interface naming and consolidated their automated validation.
+- Strengthened the commit-message generator with centralized validation, improved error handling, and more robust prompt instructions.
+- Updated the Doxygen configuration and API documentation to reflect the new architecture.
+- Clarified performance and memory requirements, including resource preallocation and reuse in calculation-intensive and multithreaded code.
+ 
 ### Fixed
-- Fixed a parser issue involving theme comparison defaults in `_isMapWithSameThemes` (#341).
-- Fixed registration and execution of several tests that were previously missing or incorrectly configured in CTest.
-- Fixed `testWrapperCoreGetYield`, which was not properly executed and used incorrect numeric validation.
-- Improved error reporting and user-facing error descriptions in the interface (#336).
-- Fixed multiple issues discovered during the `FMTWrapperCore` migration, including scenario handling, output retrieval, string conversions and error-path behaviors.
-- Updated examples and tests to reflect renamed classes and interfaces.
-
-### Removed
-- Removed the legacy monolithic `Tools` component, replaced by the dedicated `Environment` and `ModelQuery` services.
-- Removed duplicated code and obsolete wrapper helper functions following the core migration.
+ 
+- Included `actionsmapping.json` in the Python package to restore functionality in published distributions (#365 Build FMT release 1.3.0 non fonctionnel).
+- Fixed ONNX Runtime feature detection through `hasFeature("ONNXRUNTIME")` in builds using `FMTWITHONNXR` (#362 hasFeature("ONNXRUNTIME") rend toujours faux).
+- Fixed theme comparison and associated default values in the action-table builder (#341 ; de trop dans un if).
+- Fixed model calculations and R interface test execution.
+- Improved retrieval and display of error descriptions in the user interface (#336 Description des erreurs dans l'interface).
+- Fixed changelog generation and its integration into the application (#328 Change Log).
+- Fixed an issue preventing reinterpretation of the `ROOT` scenario (#244 On ne peut pas réinterpréter le scénario ROOT!).
+- Fixed `FMTWrapperCore` symbol exports for shared-library builds.
+- Stabilized logging, warning handling, and model caching during the migration to the new architecture.
 
 ## [v1.3.0] - 2026-09-11 (e5a606bc)
 
