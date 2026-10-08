@@ -31,6 +31,16 @@ namespace Performance
 		return ThreadScope::Current;
 	}
 
+	std::size_t Benchmark::getThreads() const
+	{
+		return 1;
+	}
+
+	std::string Benchmark::getResultFingerprint() const
+	{
+		return std::string();
+	}
+
 	const std::vector<std::string>& Benchmark::getPhaseNames() const
 	{
 		return m_phaseNames;

@@ -269,11 +269,13 @@ namespace Performance
 		}
 		p_benchmark.prepare();
 		result.datasetFingerprint = p_benchmark.getDatasetFingerprint();
+		result.threads = p_benchmark.getThreads();
 		_warmUp(p_benchmark);
 		result.timing = _time(p_benchmark, _calibrate(p_benchmark), result.phases);
 		const CountedCalls COUNTED = _count(p_benchmark, p_expectation);
 		result.allocations = COUNTED.allocations;
 		result.result = COUNTED.lastResult;
+		result.resultFingerprint = p_benchmark.getResultFingerprint();
 		result.processPeakPrivateBytes = MemoryMonitor::read().peakPrivateBytes;
 		checkResult(result, COUNTED.mismatches, p_firstInProcess);
 		return result;

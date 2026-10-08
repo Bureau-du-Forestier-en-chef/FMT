@@ -18,3 +18,7 @@ FMTPerformanceTests;Flow.Replay;48008.953705;;0;27
 FMTPerformanceTests;Flow.Outputs;3079696.8362052;;22000;26
 FMTPerformanceTests;Flow.Simulate;60;;0;32
 FMTPerformanceTests;Flow.Replanning;20;;5000000;84
+FMTPerformanceTests;Flow.Replanning.Threads1;100;;56759000;347
+FMTPerformanceTests;Flow.Replanning.Threads2;100;;56759000;374
+FMTPerformanceTests;Flow.Replanning.Threads5;100;;56759000;422
+FMTPerformanceTests;Flow.Replanning.Threads10;100;;56759000;491

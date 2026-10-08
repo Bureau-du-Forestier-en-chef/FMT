@@ -20,6 +20,8 @@ Tests protect behavior; benchmarks show performance effects. Neither replaces th
 | `Tests/Performance/performance.csv` | One row per benchmark: its registration with ctest, its expected result and its bounds. |
 | `Tests/Performance/performance-private.csv` | A local file that git ignores: the private benchmarks, on models outside the source tree. |
 | `Tests/Performance/CompareResults.cmake` | Compares the results of two runs. |
+| `Tests/Performance/ScalingReport.cmake` | Reports how a family of benchmarks scales with its number of threads. |
+| `Tests/Performance/ResultsFormat.cmake` | Formatting shared by the two scripts above. |
 | `Examples/Models/TWD_land/Scenarios/perfyields/` | The data of the complex-yield benchmarks. |
 
 ## Running the benchmarks
@@ -113,8 +115,9 @@ before its first call, marks the start of a call with `beginPhases`, and the end
 `endPhase`. The results give the median, minimum and maximum of each phase, so that a change shows where
 it costs: in FMT, such as reading or building a model, or in the solver.
 
-Before the first benchmark, the suite asks Windows not to throttle the process, and keeps the thread that
-measures on the fastest cores of the processor (`ProcessorPolicy`). A hybrid processor, such as the 13th
+Before the first benchmark, the suite asks Windows not to throttle the process, and keeps every thread of
+the process, the one that measures and those FMT starts to run a task, on the fastest cores of the
+processor (`ProcessorPolicy`). A hybrid processor, such as the 13th
 generation of Intel Core, mixes performance cores with efficiency cores that run the same code up to 1.7
 times slower, and Windows moves a process whose window is in the background to the efficiency cores.
 Without this, a benchmark could run on either kind, and its times would jump.
@@ -221,10 +224,10 @@ retained-memory bounds that are not 0, hold for the C runtime heap only.
 ## Results
 
 Each run writes one JSON file: the environment of the run, then one entry per benchmark. The layout is
-version 3 of the schema; any change to it changes `schemaVersion` and this section. Version 3 adds
-`datasetFingerprint`, `phases` and `maxPeakMemoryMB`; version 2 added `processors`, the
-retained-memory fields and `maxRetainedBytesPerCall`. `CompareResults.cmake` still reads versions 1
-and 2.
+version 4 of the schema; any change to it changes `schemaVersion` and this section. Version 4 adds
+`resultFingerprint`, and gives `threads` its value; version 3 added `datasetFingerprint`, `phases` and
+`maxPeakMemoryMB`; version 2 added `processors`, the retained-memory fields and
+`maxRetainedBytesPerCall`. `CompareResults.cmake` still reads versions 1 to 3.
 
 | Environment field | Meaning |
 | --- | --- |
@@ -235,7 +238,7 @@ and 2.
 | `buildType`, `optimized` | Configuration of the build, and whether it was compiled with `NDEBUG`. |
 | `compiler`, `compilerVersion` | Compiler of the benchmarks. |
 | `os`, `cpu`, `logicalCores` | Machine. |
-| `processors` | What the measuring thread ran on, and whether Windows could throttle the process: `fastest cores, 16 of 32 logical processors, not throttled` on a hybrid processor. |
+| `processors` | What the threads of the process ran on, and whether Windows could throttle it: `fastest cores for every thread, 16 of 32 logical processors, not throttled` on a hybrid processor. Before version 4, only the measuring thread was kept there: `fastest cores, 16 of 32 logical processors`. |
 | `availableMemoryBytes` | Physical memory available at the start of the run. |
 | `timestamp` | Start of the run, in UTC. |
 | `mode` | `smoke` or `full`. |
@@ -255,6 +258,7 @@ and 2.
 | `peakLiveHeapBytes` | Highest amount of memory allocated and not yet freed during the counted calls. |
 | `processPeakPrivateBytes` | Peak private memory of the process at the end of the benchmark. |
 | `result`, `expected`, `maxAllocationsPerCall`, `maxRetainedBytesPerCall`, `maxPeakMemoryMB` | Result of the last counted call, and the expectation it was checked against. |
+| `resultFingerprint` | Fingerprint of what the last counted call wrote, for a benchmark that checks it, such as a replanning on threads; empty otherwise. |
 | `valid`, `skipped`, `skipReason`, `failures` | Outcome of the checks. |
 
 The allocation fields are `null` where the monitor is not available.
@@ -293,6 +297,32 @@ To show the effect of a change, measure the commit before it, keep the results o
 measure the commit with it, and compare. To show the effect of the allocator, measure a build configured
 with `-DWITH_MIMALLOC=ON` with and without `MIMALLOC_DISABLE_REDIRECT=1`, in turns, and compare: the
 warning on the allocators then names the very thing measured.
+
+## Scaling with threads
+
+```bash
+cmake -DRESULTS=<file or folder> -P Tests/Performance/ScalingReport.cmake
+```
+
+Benchmarks whose names differ only by a `.Threads<N>` part form a family, such as
+`Flow.Replanning.Threads1` to `Flow.Replanning.Threads10`. For each family, from the fewest threads to the
+most, the report gives the median duration of a call and of each phase, the speedup and the efficiency
+against the fewest threads, and the peak memory of the process with its growth per added thread:
+
+```text
+Flow.Replanning, against 1 thread(s)
+  threads  median            speedup  efficiency  peak memory  per added thread
+  1        413.226 ms        1.00     100%        314.8 MB
+           replanning: 352.847 ms, speedup 1.00
+  5        166.844 ms        2.47     49%         382.8 MB     17.0 MB
+           replanning: 92.698 ms, speedup 3.80
+  every member wrote the same results (2714db3feb3b0737)
+```
+
+The speedup of a call is limited by the phases that do not run on threads: a replanning reads its
+models and plans its global model on one thread. The phases show the speedup of the part that does. The
+report warns when the members of a family wrote different results, and only names a family of one
+benchmark, such as a private replanning on threads. Like the comparison, it only reports; nothing fails.
 
 ## Adding a benchmark
 
@@ -389,15 +419,31 @@ On TWD_land, each flow reads its model at every call:
 | `Flow.Outputs` | schedule of `LP`, 10 periods, built once by `prepare` | none | sum of the totals of every output of every period: 3079696.8362052 |
 | `Flow.Simulate` | `DECISION`, non-spatial simulation | read, simulate | `UNIT_REC` at period 5: 60, as `FMTNsstest` checks it |
 | `Flow.Replanning` | `Globalreplanning`, `Globalfire` and `Localreplanning`: 2 replicates of 5 periods, on one thread | read, setup, replanning, result | 20 rows written: 2 replicates × 5 periods × 2 outputs |
+| `Flow.Replanning.Threads<N>` | the same scenarios, 10 replicates of 5 periods replanned as the interface does, on N = 1, 2, 5 (as in production) or 10 threads | read, setup, replanning, result | 100 rows written: 10 replicates × 5 periods × 2 outputs, the same rows as on one thread |
 
 The objectives are the same with MOSEK and CLP, and the results of the replay, the outputs and the
 simulation do not depend on the solver. The replanned values, however, depend on which optimal solution
 the solver returns: for the same replicates, the local model harvests 447 126 m³ under MOSEK and 465 421
-m³ under CLP. The replanning therefore checks the number of rows it writes. Each run of a replanning
-keeps about 4.7 MB, whatever the number of its replicates and periods: its retained-memory bound is 5 MB,
-so that the bound fails if the memory kept starts to grow with the replicates. `Flow.Outputs` is the only
+m³ under CLP. The replanning therefore checks the number of rows it writes. MOSEK keeps about 4.7 MB for
+each thread that has solved a problem, for the life of the process: `Flow.Replanning`, whose replicates
+run on one thread by `conccurentRun`, keeps 4.7 MB per run, and its retained-memory bound is 5 MB, so
+that the bound fails if the memory kept starts to grow with the replicates. `Flow.Outputs` is the only
 flow that computes complex yields: its retained-memory bound, 22 000 bytes, covers the 19 987 bytes that
 the yields cache can keep during one call. Every flow bounds the peak memory of its process.
+
+The `Flow.Replanning.Threads<N>` family replans as the interface does, by `FMTTaskHandler::onDemandRun`,
+on 1, 2, 5 or 10 threads; the fire scenario of TWD_land gives values for 11 replicates. Before the
+measured calls, `prepare` replans the same replicates on one thread by `conccurentRun`: every call must
+write the same rows, whose fingerprint, `resultFingerprint`, is taken on the sorted rows of every file
+written, or the benchmark fails. `onDemandRun` starts a new thread for each replicate, so that each call
+keeps about 4.7 MB per replicate in MOSEK, 51.6 MB in all, and the peak memory of the process grows with
+the number of calls of a measurement: higher in a full measurement than in the short mode. The bounds
+of the family account for it. `ScalingReport.cmake` gives their speedup and their memory per thread.
+
+Each replanning writes its files into a folder of its own, `<benchmark>/call<N>` beside the results
+(`build/release/tests/performance` by default). `prepare` empties the folder of the benchmark, so that no
+measured call removes files. Another process may keep a file open for an instant after it is written:
+`prepare` then tries again for up to a second.
 
 ### Private benchmarks
 
@@ -412,8 +458,12 @@ private benchmark is its kind followed by a variant, `<kind>.<variant>`, and its
 | `Flow.Replay` | `<primary file>\|<scenario>\|<length>\|<output>\|<period>` |
 | `Flow.Outputs` | `<primary file>\|<scenario>\|<length>\|<outputs, a count or all>` |
 | `Flow.Simulate` | `<primary file>\|<scenario>\|<length>\|<output>\|<period>` |
-| `Flow.Replanning` | `<primary file>\|<global scenario>\|<stochastic scenario>\|<local scenario>\|<global length>\|<replanned periods>\|<replicates>\|<outputs joined by +>` |
+| `Flow.Replanning` | `<primary file>\|<global scenario>\|<stochastic scenario>\|<local scenario>\|<global length>\|<replanned periods>\|<replicates>\|<outputs joined by +>[\|<threads>]` |
 | `Yield.Model` | `<primary file>\|<scenario>\|<yield>\|<developments>` |
+
+With a ninth argument, a private replanning runs on that many threads, by `onDemandRun` as the interface
+does, and every call must write the same rows as its first. Without it, the replicates run on one
+thread by `conccurentRun`.
 
 The model must be on `T:\`, like those of the private tests: the name of its ctest test holds the path
 of the model, which keeps the test out of the base suite, `-E "T:/"`. CMake warns and does not register a

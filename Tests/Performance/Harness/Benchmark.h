@@ -41,6 +41,11 @@ namespace Performance
 		// Threads whose allocations are counted: the calling thread by default, every thread for an
 		// operation that hands its work to other threads.
 		virtual ThreadScope getThreadScope() const;
+		// Number of threads the operation runs its work on, written with its results: 1 by default.
+		virtual std::size_t getThreads() const;
+		// Fingerprint of what the last call of run produced, written with its results, or an empty
+		// text. The same operation run on another number of threads must give the same.
+		virtual std::string getResultFingerprint() const;
 		// Builds everything run needs. Not measured.
 		virtual void prepare() = 0;
 		// Runs the measured operation once and returns its result, which the runner compares with

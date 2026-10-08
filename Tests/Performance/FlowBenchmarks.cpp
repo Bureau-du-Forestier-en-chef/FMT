@@ -31,12 +31,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <fstream>
+#include <iomanip>
 #include <map>
 #include <sstream>
 #include <stdexcept>
+#include <system_error>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -59,6 +64,27 @@ namespace
 			fields.push_back(field);
 		}
 		return fields;
+	}
+
+	// Removes p_folder and the files it holds. Another process may keep a file open for an instant
+	// after it was written, and the removal then fails: it is tried again for up to a second.
+	void removeFolder(const std::filesystem::path& p_folder)
+	{
+		constexpr int ATTEMPTS = 50;
+		for (int attempt = 1;; ++attempt)
+		{
+			std::error_code error;
+			std::filesystem::remove_all(p_folder, error);
+			if (!error)
+			{
+				return;
+			}
+			if (attempt == ATTEMPTS)
+			{
+				throw std::filesystem::filesystem_error("remove_all", p_folder, error);
+			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(20));
+		}
 	}
 
 #ifdef FMTWITHOSI
@@ -85,6 +111,53 @@ namespace
 			}
 		}
 		return rows;
+	}
+
+	// Fingerprint of what a replanning wrote: the rows of each CSV file of p_folder, sorted, header
+	// left out, hashed by the 64-bit FNV-1a function. The order of the rows depends on which thread
+	// finishes first; their content must not.
+	std::string outputFingerprint(const std::filesystem::path& p_folder)
+	{
+		std::vector<std::filesystem::path> files;
+		for (const std::filesystem::directory_entry& ENTRY : std::filesystem::directory_iterator(p_folder))
+		{
+			if (ENTRY.path().extension() == ".csv")
+			{
+				files.push_back(ENTRY.path());
+			}
+		}
+		std::sort(files.begin(), files.end());
+		std::uint64_t hash = 14695981039346656037ULL;
+		const auto ADD = [&hash](const std::string& p_text)
+			{
+				for (const unsigned char CHARACTER : p_text)
+				{
+					hash = (hash ^ CHARACTER) * 1099511628211ULL;
+				}
+			};
+		for (const std::filesystem::path& FILE : files)
+		{
+			std::ifstream stream(FILE);
+			std::vector<std::string> rows;
+			std::string line;
+			std::getline(stream, line);
+			while (std::getline(stream, line))
+			{
+				if (!line.empty())
+				{
+					rows.push_back(line);
+				}
+			}
+			std::sort(rows.begin(), rows.end());
+			ADD(FILE.filename().string() + "\n");
+			for (const std::string& ROW : rows)
+			{
+				ADD(ROW + "\n");
+			}
+		}
+		std::ostringstream text;
+		text << std::hex << std::setw(16) << std::setfill('0') << hash;
+		return text.str();
 	}
 
 	// MOSEK, the solver of production, when FMT is built with it; CLP otherwise.
@@ -426,15 +499,23 @@ namespace
 	}
 
 	// Reads the global, stochastic and local scenarios of a replanning, then replans p_replicates
-	// replicates of p_periods periods on one thread, as replanner does, writing the selected
-	// outputs to CSV files. Returns the number of rows written for the local model, replicates x
-	// periods x outputs: the replanned values depend on which optimal solution the solver returns.
+	// replicates of p_periods periods, writing the selected outputs to CSV files: on one thread by
+	// conccurentRun, as replanningtest does, or on p_threads threads by onDemandRun, as the interface
+	// does, which starts a new thread for each replicate. Returns the number of rows written for the
+	// local model, replicates x periods x outputs: the replanned values depend on which optimal
+	// solution the solver returns. A run by onDemandRun also checks what it wrote, which must not
+	// depend on the threads: the rows of the same replicates replanned on one thread by prepare when
+	// p_checkAgainstOneThread is true, or else those of its first call. Each replanning writes into a
+	// folder of its own, call<N> in p_outputFolder, so that no measured call removes files.
 	class ReplanningFlow final : public FlowBenchmark
 	{
 	public:
 		ReplanningFlow(std::string p_name, std::string p_primaryFile, std::vector<std::string> p_scenarios, int p_globalLength,
-			int p_periods, int p_replicates, std::vector<std::string> p_outputs, std::filesystem::path p_outputFolder);
+			int p_periods, int p_replicates, std::vector<std::string> p_outputs, std::filesystem::path p_outputFolder,
+			unsigned int p_threads = 1, bool p_onDemand = false, bool p_checkAgainstOneThread = false);
 		Performance::ThreadScope getThreadScope() const override;
+		std::size_t getThreads() const override;
+		std::string getResultFingerprint() const override;
 		void prepare() override;
 		double run() override;
 
@@ -444,21 +525,34 @@ namespace
 		int m_replicates;
 		std::vector<std::string> m_outputs;
 		std::filesystem::path m_outputFolder;
+		unsigned int m_threads;
+		bool m_onDemand;
+		bool m_checkAgainstOneThread;
+		std::string m_referenceFingerprint;
+		std::string m_lastFingerprint;
+		std::size_t m_calls;
 		std::size_t m_read;
 		std::size_t m_setup;
 		std::size_t m_replanning;
 		std::size_t m_result;
+	#ifdef FMTWITHOSI
+		double _replan(unsigned int p_threads, bool p_onDemand, bool p_fingerprint);
+	#endif
 	};
 
 	ReplanningFlow::ReplanningFlow(std::string p_name, std::string p_primaryFile, std::vector<std::string> p_scenarios,
 		int p_globalLength, int p_periods, int p_replicates, std::vector<std::string> p_outputs,
-		std::filesystem::path p_outputFolder) :
+		std::filesystem::path p_outputFolder, unsigned int p_threads, bool p_onDemand, bool p_checkAgainstOneThread) :
 		FlowBenchmark(std::move(p_name), std::move(p_primaryFile), std::move(p_scenarios)),
 		m_globalLength(p_globalLength),
 		m_periods(p_periods),
 		m_replicates(p_replicates),
 		m_outputs(std::move(p_outputs)),
 		m_outputFolder(std::move(p_outputFolder)),
+		m_threads(p_threads),
+		m_onDemand(p_onDemand),
+		m_checkAgainstOneThread(p_checkAgainstOneThread),
+		m_calls(0),
 		m_read(definePhase("read")),
 		m_setup(definePhase("setup")),
 		m_replanning(definePhase("replanning")),
@@ -466,28 +560,73 @@ namespace
 	{
 	}
 
-	// The task writes into a folder of the results folder, which may not exist yet: it creates the
-	// folder of its outputs, not the folders above.
+	// Empties the folder of the benchmark, where the previous run left its files, and creates it: the
+	// task creates the folder of its outputs, not the folders above.
 	void ReplanningFlow::prepare()
 	{
 		FlowBenchmark::prepare();
-		std::filesystem::create_directories(m_outputFolder.parent_path());
+		removeFolder(m_outputFolder);
+		std::filesystem::create_directories(m_outputFolder);
+		m_calls = 0;
+		m_referenceFingerprint.clear();
+		m_lastFingerprint.clear();
+	#ifdef FMTWITHOSI
+		if (m_checkAgainstOneThread)
+		{
+			_replan(1, false, true);
+			m_referenceFingerprint = m_lastFingerprint;
+		}
+	#endif
 	}
 
-	// The replicates run in a thread of the task handler.
+	// The replicates run in threads of the task handler.
 	Performance::ThreadScope ReplanningFlow::getThreadScope() const
 	{
 		return Performance::ThreadScope::All;
 	}
 
+	std::size_t ReplanningFlow::getThreads() const
+	{
+		return m_threads;
+	}
+
+	std::string ReplanningFlow::getResultFingerprint() const
+	{
+		return m_lastFingerprint;
+	}
+
 	double ReplanningFlow::run()
 	{
 	#ifdef FMTWITHOSI
+		const double ROWS = _replan(m_threads, m_onDemand, m_onDemand);
+		if (m_onDemand)
+		{
+			if (m_referenceFingerprint.empty())
+			{
+				m_referenceFingerprint = m_lastFingerprint;
+			}
+			else if (m_lastFingerprint != m_referenceFingerprint)
+			{
+				throw std::runtime_error(getName() + ": the replanning on " + std::to_string(m_threads) + " threads wrote other rows than "
+					+ (m_checkAgainstOneThread ? "the same replicates on one thread" : "its first call"));
+			}
+		}
+		return ROWS;
+	#else
+		return 0.0;
+	#endif
+	}
+
+#ifdef FMTWITHOSI
+	// Replans the replicates on p_threads threads, by onDemandRun or conccurentRun, into a new folder,
+	// and returns the rows written for the local model. Keeps the fingerprint of every file written
+	// when p_fingerprint is true.
+	double ReplanningFlow::_replan(unsigned int p_threads, bool p_onDemand, bool p_fingerprint)
+	{
 		beginPhases();
 		Parser::FMTModelParser parser;
 		const std::vector<Models::FMTModel> MODELS = parser.readproject(getPrimaryFile(), getScenarios());
 		endPhase(m_read);
-		std::filesystem::remove_all(m_outputFolder);
 		Models::FMTLpModel global(MODELS.at(0), solver());
 		global.setParameter(Models::FMTintmodelparameters::LENGTH, m_globalLength);
 		global.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
@@ -513,22 +652,32 @@ namespace
 			throw std::invalid_argument(getName() + ": the global model lacks one of the selected outputs");
 		}
 		const std::vector<std::string> LAYER_OPTIONS(1, "SEPARATOR=SEMICOLON");
+		const std::filesystem::path FOLDER = m_outputFolder / ("call" + std::to_string(++m_calls));
 		std::unique_ptr<Parallel::FMTTask> task(new Parallel::FMTReplanningTask(global, stochastic, local, outputs,
-			m_outputFolder.string(), "CSV", LAYER_OPTIONS, m_replicates, m_periods, MINIMAL_DRIFT,
+			FOLDER.string(), "CSV", LAYER_OPTIONS, m_replicates, m_periods, MINIMAL_DRIFT,
 			Core::FMToutputlevel::totalonly, false));
 		// The handler logs through the quiet logger of the process, set by prepare. Replacing it here would
 		// leave the solvers of the models above with the message handler of the destroyed logger.
-		Parallel::FMTTaskHandler handler(task, 1);
+		Parallel::FMTTaskHandler handler(task, p_threads);
 		endPhase(m_setup);
-		handler.conccurentRun();
+		if (p_onDemand)
+		{
+			handler.onDemandRun();
+		}
+		else
+		{
+			handler.conccurentRun();
+		}
 		endPhase(m_replanning);
-		const double ROWS = static_cast<double>(countRows(m_outputFolder / (getScenarios().at(2) + ".csv")));
+		const double ROWS = static_cast<double>(countRows(FOLDER / (getScenarios().at(2) + ".csv")));
+		if (p_fingerprint)
+		{
+			m_lastFingerprint = outputFingerprint(FOLDER);
+		}
 		endPhase(m_result);
 		return ROWS;
-	#else
-		return 0.0;
-	#endif
 	}
+#endif
 }
 
 namespace Performance
@@ -546,9 +695,18 @@ namespace Performance
 		// The DECISION scenario, simulated as FMTNsstest checks it.
 		p_suite.add(std::make_unique<SimulateFlow>("Flow.Simulate", p_primaryFile, "DECISION", 1, "UNIT_REC", 5));
 		// The scenarios of replanningtest, with 2 replicates of 5 periods.
-		p_suite.add(std::make_unique<ReplanningFlow>("Flow.Replanning", p_primaryFile,
-			std::vector<std::string>{ "Globalreplanning", "Globalfire", "Localreplanning" }, 10, 5, 2,
-			std::vector<std::string>{ "OVOLREC", "BURNEDAREA" }, p_workFolder / "Flow.Replanning"));
+		const std::vector<std::string> REPLANNING_SCENARIOS{ "Globalreplanning", "Globalfire", "Localreplanning" };
+		const std::vector<std::string> REPLANNING_OUTPUTS{ "OVOLREC", "BURNEDAREA" };
+		p_suite.add(std::make_unique<ReplanningFlow>("Flow.Replanning", p_primaryFile, REPLANNING_SCENARIOS, 10, 5, 2,
+			REPLANNING_OUTPUTS, p_workFolder / "Flow.Replanning"));
+		// The same scenarios replanned as the interface does, by onDemandRun, on 1, 2, 5 (as in
+		// production) and 10 threads: 10 replicates, the fire scenario of TWD_land giving values for 11.
+		for (const unsigned int THREADS : { 1U, 2U, 5U, 10U })
+		{
+			const std::string NAME = "Flow.Replanning.Threads" + std::to_string(THREADS);
+			p_suite.add(std::make_unique<ReplanningFlow>(NAME, p_primaryFile, REPLANNING_SCENARIOS, 10, 5, 10,
+				REPLANNING_OUTPUTS, p_workFolder / NAME, THREADS, true, true));
+		}
 	}
 
 	std::unique_ptr<Benchmark> makeFlowBenchmark(const std::string& p_name, const std::string& p_arguments,
@@ -583,13 +741,16 @@ namespace Performance
 		}
 		if (Performance::isOfKind(p_name, "Flow.Replanning"))
 		{
-			const std::vector<std::string> ARGUMENTS = splitArguments(p_name, p_arguments,
-				"<primary file>|<global scenario>|<stochastic scenario>|<local scenario>|<global length>|<replanned periods>"
-				"|<replicates>|<outputs joined by +>");
+			// A ninth argument replans the replicates on that many threads, by onDemandRun, as the interface does.
+			const std::string USAGE = "<primary file>|<global scenario>|<stochastic scenario>|<local scenario>|<global length>"
+				"|<replanned periods>|<replicates>|<outputs joined by +>";
+			const bool ON_THREADS = std::count(p_arguments.begin(), p_arguments.end(), '|') == 8;
+			const std::vector<std::string> ARGUMENTS = splitArguments(p_name, p_arguments, ON_THREADS ? USAGE + "|<threads>" : USAGE);
+			const unsigned int THREADS = ON_THREADS ? static_cast<unsigned int>(positiveArgument(p_name, ARGUMENTS.at(8))) : 1U;
 			return std::make_unique<ReplanningFlow>(p_name, ARGUMENTS.at(0),
 				std::vector<std::string>{ ARGUMENTS.at(1), ARGUMENTS.at(2), ARGUMENTS.at(3) }, positiveArgument(p_name, ARGUMENTS.at(4)),
 				positiveArgument(p_name, ARGUMENTS.at(5)), positiveArgument(p_name, ARGUMENTS.at(6)), split(ARGUMENTS.at(7), '+'),
-				p_workFolder / p_name);
+				p_workFolder / p_name, THREADS, ON_THREADS, false);
 		}
 		return nullptr;
 	}

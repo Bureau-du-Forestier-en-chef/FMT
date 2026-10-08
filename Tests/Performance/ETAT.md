@@ -460,11 +460,17 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
     `FMTWrapperCore/INTERFACE_MIGRATION.md`.
 - **Issue** : #361, publiée le 2026-09-29, réglée par le commit de #361 (décision 17).
 
-### 2.7 Threads (à examiner au lot 4)
+### 2.7 Threads (examiné au lot 4)
 
-`m_lookat` appartient au gestionnaire de yields, partagé par tous les threads, et il est écrit
-sans verrou. Le lien avec la course connue des caches de yields
-(section 7 de `Examples/C++/tests/ETAT.md`) n'est pas établi.
+- `m_lookat` appartient au gestionnaire de yields, partagé par tous les threads, et il est écrit
+  sans verrou. Le lien avec la course connue des caches de yields
+  (section 7 de `Examples/C++/tests/ETAT.md`) n'est pas établi.
+- **Aucune course visible sur la replanification** (lot 4) : sur 1, 2, 5 et 10 fils, chaque appel
+  écrit exactement les lignes de la même replanification sur un fil, vérifiées par une empreinte des
+  lignes triées. 24 passages de stress à 5 et 10 fils (72 replanifications) n'ont montré aucune
+  différence, ni le modèle privé sur 5 fils comme sur un fil. La replanification copie ses modèles
+  pour chaque réplicat et chaque période ; la course connue touche des modèles spatiaux, que le banc
+  ne mesure pas.
 
 ### 2.8 Comptage des allocations
 
@@ -621,21 +627,22 @@ sans verrou. Le lien avec la course connue des caches de yields
   (règle 14). La replanification passe alors dans 12 processus sur 12. Le défaut donne une issue
   (règle 10) : #363, publiée le 2026-10-05.
 
-### 2.13 La replanification retient 4,7 Mo par exécution (à démontrer)
+### 2.13 La replanification retient 4,7 Mo par fil (cause démontrée au lot 4)
 
-- Chaque exécution de `FMTReplanningTask` laisse de 4 735 432 à 4 737 022 octets alloués après la
-  destruction de la tâche et des modèles. C'est vrai avec 1, 2, 4 ou 8 réplicats, sur 5 ou 10
-  périodes, sur TWD_land comme sur le modèle privé : une taille fixe, qui ne grandit pas d'un
-  réplicat à l'autre. Le pic du processus monte d'autant à chaque exécution. Une fois corrigé le
-  comptage des blocs de taille 0 (section 2.8), la mesure donne 4 737 039 octets, sur TWD_land
-  comme sur le modèle privé.
+- Chaque exécution de `FMTReplanningTask` lancée sur un fil par `conccurentRun` laisse de 4 735 432
+  à 4 737 022 octets alloués après la destruction de la tâche et des modèles. C'est vrai avec 1, 2, 4
+  ou 8 réplicats, sur 5 ou 10 périodes, sur TWD_land comme sur le modèle privé : une taille fixe, qui
+  ne grandit pas d'un réplicat à l'autre. Le pic du processus monte d'autant à chaque exécution. Une
+  fois corrigé le comptage des blocs de taille 0 (section 2.8), la mesure donne 4 737 039 octets, sur
+  TWD_land comme sur le modèle privé.
 - Le moniteur ne comptait que le fil courant, et le travail se fait dans un fil du gestionnaire de
   tâches : il ne le voyait pas. La replanification compte maintenant tous les fils.
-- Cause non trouvée. Sans effet sur une longue replanification unique ; une application qui en
-  enchaîne plusieurs garde 4,7 Mo par exécution. La borne de mémoire retenue de
-  `Flow.Replanning` est de 5 Mo : elle échouerait si la rétention se mettait à grandir avec les
-  réplicats. La replanification privée calcule des yields complexes : sa borne couvre aussi le
-  cache (section 2.16).
+- **Cause** (lot 4, section 2.17) : un bloc de 4 737 568 octets que MOSEK alloue à la première
+  optimisation de chaque fil, et ne rend jamais. Un seul fil en garde un : la taille est fixe. Lancée
+  comme dans l'interface, avec un fil par réplicat, la replanification en garde un par réplicat.
+- La borne de mémoire retenue de `Flow.Replanning` est de 5 Mo : elle échouerait si la rétention se
+  mettait à grandir avec les réplicats. La replanification privée calcule des yields complexes : sa
+  borne couvre aussi le cache (section 2.16).
 
 ### 2.14 Coûts d'un modèle de production (mesurés au lot 3)
 
@@ -712,6 +719,114 @@ sans verrou. Le lien avec la course connue des caches de yields
   MOSEK (`copySolverInterface`), même pour la simulation. MOSEK y libère 785 octets alloués à
   l'appel précédent : d'où les -792 octets des flux publics, -785 une fois corrigé le comptage
   des blocs de taille 0 (section 2.8).
+
+### 2.17 Un fil par réplicat : la mémoire de la replanification grandit avec les réplicats (démontré au lot 4)
+
+- **Constat** : la replanification lancée comme dans l'interface retient environ 4,7 Mo de plus par
+  réplicat, pour toute la vie du processus. Sur le modèle privé, `replanner.exe` du build, sur un fil,
+  atteint 298 Mo de mémoire privée avec 1 réplicat, 327 Mo avec 5 et 354 Mo avec 10.
+- **Cause dans le code** :
+  - `FMTTaskHandler::onDemandRun` (`Source/FMTTaskHandler.cpp`) lance chaque tâche dans un nouveau
+    fil (`FMTWorkerTask`, `Source/FMTWorkerTask.cpp`), et `FMTReplanningTask::spawn` donne une tâche
+    par réplicat : un fil par réplicat, quel que soit le nombre de fils demandé ;
+  - MOSEK alloue un bloc de 4 737 568 octets à la première optimisation d'un fil (`MSK_optimize`,
+    appelée par `FMTLpSolver::initialSolve`), et ne le rend ni à la fin du fil, ni à la destruction
+    des modèles. Le moniteur de diagnostic de la section 2.16 le montre : un tel bloc par fil, encore
+    vivant à la fin.
+- **A/B minimal** (sonde du scratchpad, replanification de TWD_land, mémoire retenue de tous les fils) :
+
+  | Solveur | Lancement | 1 réplicat | 5 réplicats | 10 réplicats |
+  |---|---|---|---|---|
+  | MOSEK | `onDemandRun`, 1 fil | 10,5 Mo | 33,6 Mo | 57,3 Mo |
+  | MOSEK | `conccurentRun`, 1 fil | 10,5 Mo | — | 10,5 Mo |
+  | CLP | `onDemandRun`, 1 fil | 0,9 Mo | 0,9 Mo | 0,9 Mo |
+  | CLP | `conccurentRun`, 1 fil | — | — | 0,9 Mo |
+
+  Détruire aussi les modèles pendant le comptage n'y change rien : 56,4 Mo pour 10 réplicats.
+- **À quoi MOSEK rattache le bloc** : au fil, et à l'optimiseur au point intérieur, que
+  `FMTLpSolver` choisit par défaut. Une sonde sans FMT ni OSI appelle l'API C de MOSEK 10.1.16 sur un
+  LP de 200 colonnes et 100 lignes, avec les réglages de `FMTLpSolver` (un fil) :
+  - chaque fil qui optimise garde 4 737 824 octets, le bloc et 256 octets ; un fil qui optimise deux
+    fois ne les garde qu'une fois ;
+  - ni `MSK_deletetask`, ni la fin du fil, ni `MSK_deleteenv`, ni `MSK_licensecleanup` ne les rendent,
+    et un environnement par fil n'y change rien ;
+  - la licence prend 0,9 Mo une fois, que `MSK_deleteenv` rend ;
+  - au simplexe dual, rien ne reste.
+
+  La taille ne dépend pas du problème : la même sur ce LP, sur TWD_land et sur le modèle privé. FMT et
+  OSI rendent ce qui leur appartient : détruire un modèle détruit sa tâche (`~OsiMskSolverInterface`,
+  `MSK_deletetask`), et la dernière instance d'OSI détruit l'environnement (`MSK_deleteenv`). Ce n'est
+  pas une fuite de `initialSolve` : MOSEK garde le bloc du fil pour la vie du processus. Aucune des
+  fonctions essayées ne le rend, et sa documentation n'en cite aucune pour le faire.
+
+  MOSEK 9.2.36 se comporte de la même façon. Un rapport en anglais pour le support de MOSEK, avec un
+  programme de reproduction autonome qui mesure la mémoire privée du processus, a été remis à Gabriel
+  le 2026-10-07 : MOSEK n'a pas de dépôt public pour son optimiseur, ses rapports de bogue passent par
+  `support@mosek.com`.
+- **Origine** : `onDemandRun` lance un fil par tâche depuis son introduction, `bfdc9936`
+  (2021-12-02) ; `cf54b8ff` (2025-10-08) l'a réécrit avec `FMTWorkerTask`, sans changer ce principe.
+  L'interface replanifie par `onDemandRun` (`FMTWrapperCore/Source/Planning.cpp`, qui reprend son
+  comportement), comme l'exemple `replanner`.
+- **En production** : une replanification de R réplicats garde environ R × 4,7 Mo jusqu'à la fermeture
+  de l'interface, et ces blocs s'additionnent d'une replanification à l'autre dans la même session :
+  4,7 Go pour 1 000 réplicats. `conccurentRun`, lui, ne crée qu'un fil par worker.
+- **Dans le banc** : la famille `Flow.Replanning.Threads<N>` reproduit ce lancement ; chaque appel
+  garde 51,6 Mo (10 réplicats), et le pic du processus grandit avec le nombre d'appels.
+- Défaut de conception de FMT, révélé par un comportement de MOSEK ; pas corrigé (règle 10) : issue
+  #366, publiée par Gabriel le 2026-10-07.
+
+### 2.18 `onDemandRun` attend en boucle active (démontré au lot 4)
+
+- Le fil qui lance la replanification interroge ses workers en boucle (`isDone`, puis `checkSignals`),
+  sans jamais attendre (`Source/FMTTaskHandler.cpp`, `onDemandRun`) : il occupe un cœur pendant toute
+  la replanification.
+- **Mesuré** : dans la sonde, sur 10 réplicats de TWD_land et un fil, le fil principal consomme 0,312 s
+  de processeur pendant les 0,383 s de la replanification (81 %), contre rien avec `conccurentRun`,
+  qui attend ses fils par `join`. Sur le modèle privé, `replanner.exe` avec un seul worker occupe
+  1,54 cœur en moyenne (51,8 s de processeur en 33,6 s).
+- **Origine** : la boucle date aussi de `bfdc9936` (2021-12-02).
+- Même issue que la section 2.17, #366 : un ensemble fixe de fils qui prennent les réplicats à tour de
+  rôle corrigerait les deux.
+
+### 2.19 Mise à l'échelle de la replanification (mesurée au lot 4)
+
+- **TWD_land**, 10 réplicats de 5 périodes, mesure complète (section 7.6) : un appel va de 1,57 à 1,61
+  fois plus vite sur 2 fils, de 2,46 à 2,59 fois sur 5 et de 2,99 à 3,11 fois sur 10 ; la phase de
+  replanification seule, de 1,86 à 1,91, de 3,91 à 4,01 et de 5,38 à 5,47 fois. La lecture et la
+  planification globale de départ (environ 53 ms) ne se partagent pas entre les fils. Chaque fil de
+  plus coûte de 14 à 24 Mo de pic.
+- **Modèle privé**, 10 réplicats de 5 périodes : 60,4 s par appel sur un fil (mode court) ; sur 5 fils,
+  de 17,6 à 21,1 s selon les passages, de 2,9 à 3,4 fois plus vite. Pic de 425,5 Mo sur un fil ; sur
+  5 fils, il varie selon le chevauchement des réplicats, de 1 123 à 1 386 Mo en mode court : de 175 à
+  240 Mo par worker de plus.
+- **Les résultats ne dépendent pas des fils** (section 2.7).
+- **Les fils de FMT tournent sur les cœurs performants** depuis le lot 4 (`ProcessorPolicy`,
+  section 3.4) : un worker sur un cœur efficace ralentirait la mesure jusqu'à 1,7 fois (section 2.10).
+  `Flow.Replanning`, dont le worker tourne pendant que le fil qui mesure attend, reste dans le bruit :
+  de 121,8 à 123,1 ms, contre 124,9 et 128,7 ms en section 7.5.
+
+### 2.20 Un fichier de sortie tenu un instant par un autre processus (validation du lot 4)
+
+- **Constat** : à la troisième mesure complète du 2026-10-07, sur le build de Gabriel,
+  `Flow.Replanning.Threads2` a échoué en vidant son dossier de sortie au début d'un appel :
+  `remove_all` rend l'erreur Windows 32, « le processus ne peut pas accéder au fichier car ce fichier
+  est utilisé par un autre processus ». L'appel précédent avait fermé ces fichiers une quarantaine de
+  millisecondes plus tôt ; deux minutes plus tard, ils étaient libres.
+- **Pas dans le processus** : `FMTReplanningTask::finalize` ferme les fichiers
+  (`FMTParallelWriter::close`) avant que `onDemandRun` ou `conccurentRun` ne rende la main ; les deux
+  joignent d'abord leurs fils, `onDemandRun` en détruisant chaque `FMTWorkerTask`. Le banc ferme ses
+  lectures.
+- **Rare** : un échec sur environ 500 suppressions faites ce jour-là sur le build. Aucun en relançant
+  60 fois le même benchmark (360 suppressions), ni avec une sonde sans FMT qui écrit, ferme et supprime
+  les mêmes fichiers 3 500 fois. Le processus qui tenait le fichier n'est pas identifié ; l'antivirus
+  et l'indexeur de Windows tournent sur le poste.
+- **Même message** quand un autre processus tient un fichier du dossier ouvert sans partage en
+  suppression.
+- **Correction, dans le banc** : chaque replanification écrit dans un dossier à elle, `call<N>`, et
+  `prepare` vide le dossier du benchmark hors mesure, en réessayant pendant une seconde (section 3.4).
+  Vérifié : un fichier tenu 0,8 s est attendu ; tenu 3 s, il fait échouer le benchmark après une
+  seconde, avec le même message. `Flow.Replanning` (lot 3) et les replanifications privées en
+  profitent aussi.
 
 ## 3. Conception du banc
 
@@ -811,6 +926,43 @@ lot par lot, les choix qui ne se lisent pas dans le code. Chacun attend la relec
   et une pour l'empreinte.
 - **Reportées au lot 4** : la replanification à 5 fils et la mémoire par worker.
 
+### 3.4 Choix du lot 4 (validés par Gabriel le 2026-10-07)
+
+- **Lancement comme l'interface** : la famille `Flow.Replanning.Threads<N>` replanifie par
+  `onDemandRun`, que l'interface utilise (`FMTWrapperCore/Source/Planning.cpp`), et non par
+  `conccurentRun`, celui de `replanningtest`. `Flow.Replanning` (lot 3) garde `conccurentRun` sur un
+  fil, pour ne pas changer ce qu'il mesure.
+- **1, 2, 5 et 10 fils, 10 réplicats** : 5 comme en production, 10 au-delà des 8 cœurs performants
+  physiques. Le scénario de feu de TWD_land donne des valeurs pour 11 réplicats au plus
+  (`BURNEDAREA.csv`) ; 10 se partagent en tours complets sur 1, 2, 5 et 10 fils.
+- **Résultats vérifiés** : une empreinte FNV-1a sur 64 bits des lignes triées de chaque fichier écrit,
+  `resultFingerprint` dans le JSON. Une ligne publique la compare à celle de la même replanification
+  sur un fil par `conccurentRun`, faite par `prepare` ; une ligne privée, à son premier appel,
+  puisqu'un passage sur un fil y coûterait une minute. Le benchmark échoue sur une différence.
+- **Mémoire par worker** : la pente du pic du processus entre les membres d'une famille, que donne
+  `ScalingReport.cmake`. Le moniteur n'a pas de compteurs par fil : #349 demande la mémoire par
+  worker, pas les allocations, et le total par appel montre déjà que les allocations ne dépendent
+  pas du nombre de fils.
+- **Tous les fils sur les cœurs performants** : `ProcessorPolicy::apply` fixe aussi les ensembles de
+  processeurs par défaut du processus, que suivent les fils lancés par FMT. Le champ `processors`
+  devient « fastest cores for every thread », et la console dit « Processors: ».
+- **Bornes** : 100 lignes écrites ; mémoire retenue de 56 759 000 octets, la mesure de 51 598 927 plus
+  10 %, presque toute dans MOSEK (section 2.17) ; pic par ligne, le plus haut de deux mesures dans
+  chaque mode plus 10 %. La replanification de TWD_land ne calcule pas de yields complexes : sa
+  mémoire retenue ne dépend pas du passage.
+- **Groupe privé** : un neuvième argument facultatif, le nombre de fils, lance la replanification par
+  `onDemandRun`. `Flow.Replanning.Threads5.Bfec` : 10 réplicats de 5 périodes sur 5 fils, 50 lignes.
+- **Schéma JSON 4** : `resultFingerprint`, et `threads` qui prend sa valeur.
+- **`ScalingReport.cmake`**, et `ResultsFormat.cmake` qui garde les fonctions communes avec
+  `CompareResults.cmake`.
+- **Écarts au plan** : pas de planification parallèle (`FMTPlanningTask`), puisque les calculs qui
+  durent des jours sont des replanifications ; 5 et 10 fils au lieu de 4 et 8 ; pas de compteurs par
+  fil dans le moniteur.
+- **Un dossier par appel** (ajouté à la validation, à relire ; section 2.20) : chaque replanification
+  écrit dans `call<N>`, sous le dossier du benchmark, que `prepare` vide hors mesure en réessayant
+  pendant une seconde. Aucun appel mesuré ne supprime plus de fichiers : la suppression comptait dans
+  la phase de préparation des replanifications, `Flow.Replanning` compris.
+
 ## 4. Feuille de route et fermeture de #349
 
 ### 4.1 Ce que #349 attend, et quel lot s'en charge
@@ -823,9 +975,9 @@ lot par lot, les choix qui ne se lisent pas dans le code. Chacun attend la relec
 | Temps mesuré de façon constante | 1 | fait |
 | Nombre d'allocations et octets alloués | 1 | fait (Windows) |
 | Pic mémoire, là où c'est possible | 1, 2, 3 | fait : pic du tas et du processus, mémoire retenue par appel (lot 2), borne de pic des flux (lot 3) |
-| Mise à l'échelle multithread | 4 | à faire |
+| Mise à l'échelle multithread | 4 | fait : famille `Flow.Replanning.Threads<N>` et `ScalingReport.cmake` (accélération, efficacité, mémoire par worker) |
 | Environnement dans chaque résultat | 1 | fait |
-| Format lisible par une machine | 1, 2 | fait (JSON, schéma 2 depuis le lot 2) |
+| Format lisible par une machine | 1 à 4 | fait (JSON, schéma 4 depuis le lot 4) |
 | Comparaison avec une référence | 1, 5 | script fait ; rapport à finaliser au lot 5 |
 | Chemins sans allocation vérifiés à zéro | 1, 2 | fait : `Yield.Age` et `Mask.IsSubsetOf`, bornés à 0 (lot 2) |
 | Chaque benchmark valide son calcul | 1 | fait |
@@ -838,7 +990,7 @@ lot par lot, les choix qui ne se lisent pas dans le code. Chacun attend la relec
 | Premier jeu : lecture des yields | 2 | fait |
 | Premier jeu : lecture d'un projet | 2 | fait |
 | Premier jeu : un flux de modèle | 3 | fait : optimisation, rejeu, outputs, simulation et replanification (lot 3) |
-| Premier jeu : un flux multithread | 4 | à faire : la replanification à 5 fils |
+| Premier jeu : un flux multithread | 4 | fait : la replanification sur 1, 2, 5 et 10 fils, et sur 5 fils dans le groupe privé |
 
 Trois demandes de #349 sur les yields complexes dépendent de #348 :
 
@@ -860,20 +1012,20 @@ Trois demandes de #349 sur les yields complexes dépendent de #348 :
   - `Yield.Age`, `Yield.Age.NewRequest`, `Mask.IsSubsetOf`, `Mask.FromString`,
     `Parser.ReadProject` et `Parser.ReadProject.TwoScenarios`.
   - Mémoire retenue par appel, réglages par benchmark, `ProcessorPolicy` (section 3.2).
-- **Lot 3 : flux de modèle** : livré le 2026-10-02, à valider sur le build de Gabriel
-  (section 5.4).
+- **Lot 3 : flux de modèle** : fait, validé et commité le 2026-10-05 (`88daf175` et `f9061c93`,
+  section 5.4) ; mesure complète en section 7.5.
   - Six flux publics sur TWD_land et cinq benchmarks privés, dont la variante des yields sur un
     gros modèle (section 3.3).
   - Phases, borne de pic mémoire, groupe privé, empreinte des modèles, schéma JSON 3.
-- **Lot 4 : threads**, effort `xhigh`.
-  - La replanification à 5 fils, comme en production (décision 13), sur TWD_land et sur le
-    modèle privé.
-  - `FMTTaskHandler` et `FMTPlanningTask` sur plusieurs scénarios, avec 1, 2, 4, 8 workers et
-    le maximum (usage : `Examples/C++/planningtest.cpp:94-97`).
-  - Accélération, efficacité, pic mémoire, allocations par worker : compteurs par thread à
-    ajouter au moniteur.
-  - Résultats validés ; la course connue (section 2.7) est à distinguer d'une régression.
-  - Groupe privé : `planningtest` sur un modèle réel (de 18 à 25 s par ligne).
+- **Lot 4 : threads** : livré le 2026-10-07 ; validé le 2026-10-08 sur le build de Gabriel, avec la
+  correction trouvée à sa validation (section 2.20) ; à commiter (section 6.1). Mesure complète en
+  section 7.6.
+  - `Flow.Replanning.Threads1`, `2`, `5` et `10` sur TWD_land, `Flow.Replanning.Threads5.Bfec` dans le
+    groupe privé : la replanification lancée comme l'interface (section 3.4).
+  - Accélération, efficacité et mémoire par worker par `ScalingReport.cmake` ; résultats vérifiés
+    contre un fil.
+  - Constats : un fil par réplicat et 4,7 Mo par fil dans MOSEK (section 2.17), attente active
+    (section 2.18) : issue #366.
 - **Lot 5 : jeux de données et clôture**, effort `high`.
   - Modèle synthétique « moyen » sous `Examples/Performance/`, si le lot 3 le montre utile.
   - Rapport de comparaison finalisé, documentation complète.
@@ -887,6 +1039,7 @@ Trois demandes de #349 sur les yields complexes dépendent de #348 :
 | Modèle synthétique « moyen » | lot 5 | pour la suite publique seulement, si l'horizon de TWD_land ne suffit pas (lot 3) ; la taille réelle passe par le groupe privé (décision 8) |
 | Compteur d'allocations hors Windows | lot 5 | lié à la demande de portabilité de #350 |
 | Mesurer et comparer en un geste | lot 5 | un `.bat` ou une cible du projet Visual Studio qui lance la mesure complète, garde ses JSON et les compare à la référence de la machine |
+| Reprendre la référence « avant #348 » | lot 5 | depuis le lot 4, tous les fils tournent sur les cœurs performants : `CompareResults.cmake` avertit que les durées ne se comparent plus avec la référence du 2026-09-30 (section 7.1), même si les benchmarks à un fil restent dans le bruit (section 7.6). La reprendre sur le commit du lot 4, comme la décision 12 l'a fait au lot 2 |
 | Mesurer le pire cas du cache depuis le banc | lot 5 | une option du harnais qui ralentit les allocations de `FMTComplexYieldHandler::get` pendant les appels comptés ; aujourd'hui, un moniteur de diagnostic hors du dépôt (section 2.16) |
 
 ### 4.4 Fermer #349
@@ -1199,24 +1352,93 @@ Validation de la correction sous mimalloc (2026-10-05, compilée par Gabriel, pa
 (-785, 0 et 4 737 039 octets retenus) ; seuls les flux privés exposés au cache varient
 (section 2.16).
 
+### 5.5 Lot 4 : threads (2026-10-07)
+
+**Statut** : livré le 2026-10-07, compilé par Gabriel le même jour après la reconfiguration (quatre
+lignes nouvelles dans `performance.csv`) ; choix de la section 3.4 validés ; issue #366 publiée. La
+validation a trouvé une suppression de fichiers qui pouvait échouer : corrigée dans le banc
+(section 2.20), recompilée et validée le 2026-10-08. Reste le commit.
+
+- **Harnais** : `Benchmark::getThreads` et `Benchmark::getResultFingerprint`, écrits dans le JSON
+  (schéma 4) et à la console (« threads », « output fingerprint ») ; `ProcessorPolicy::apply` pour
+  tous les fils.
+- **Flux** : `ReplanningFlow` replanifie aussi par `onDemandRun` sur N fils, et vérifie l'empreinte de
+  ce qu'il écrit. Quatre lignes publiques (résultat 100, mémoire retenue 56 759 000 octets, pics de
+  347, 374, 422 et 491 Mo) ; une ligne privée locale (résultat 50, mémoire retenue 60 143 000 octets,
+  pic de 1 725 Mo).
+- **Scripts** : `ScalingReport.cmake` ; `ResultsFormat.cmake` reprend trois fonctions de
+  `CompareResults.cmake`, qui lit les schémas 1 à 4.
+- **Documentation** : `Documentation/PerformanceTesting.md` (fichiers, cœurs, schéma 4, section
+  « Scaling with threads », famille de replanification, argument privé).
+- **Constats** : sections 2.7, 2.13 (cause trouvée), 2.17 à 2.19.
+- **Issue** : #366, publiée par Gabriel, pour `onDemandRun` (sections 2.17 et 2.18). Précisée le même
+  jour par une sonde sans FMT ni OSI : le bloc appartient au fil et à l'optimiseur au point intérieur
+  de MOSEK (section 2.17).
+
+Vérifications (hors build, 2026-10-07) :
+
+- **Compilation** avec `cl` en `/W4` contre le build de Gabriel : aucun avertissement dans le banc.
+- **Passages** : les quatre lignes publiques et `Flow.Replanning` passent avec leurs bornes ; la ligne
+  privée écrit ses 50 lignes à chacun de ses quatre passages, avec la même empreinte.
+- **Vu rouge**, sans recompiler : résultat faux, borne de mémoire retenue et borne de pic sous la
+  mesure : tous rendent 1. Avec une référence faussée (variante du scratchpad), le benchmark échoue :
+  « the replanning on 5 threads wrote other rows than the same replicates on one thread ».
+- **Stress** : 24 passages à 5 et 10 fils, aucune différence (section 2.7).
+- **Pire cas du cache** de la ligne privée, qui calcule des yields complexes (règle 13) :
+  54 675 227 octets.
+- **Rapport** : `ScalingReport.cmake` sur la mesure complète (section 7.6).
+- **Encodages** : sources en cp1252 (un octet `E9`), scripts et texte en UTF-8, tout en CRLF.
+
+Validation sur le build de Gabriel (2026-10-07, en-tête `cdf6a63f`, modifié) :
+
+- **Gabriel** : ctest sans filtre, 356 tests (les 258 de la suite base et 98 privés), aucun échec.
+- **Étiquettes** : `-L performance` (23 lignes et les 2 tests des données), `-L memory` (14 lignes) et
+  `-L bfec-perf` (6 lignes, 102 s) passent. Suite base sous `-j 8` : 258 tests, 243 verts et
+  15 désactivés, en 17 s.
+- **Mode court** : les quatre lignes publiques écrivent les mêmes lignes (`2714db3feb3b0737`) et
+  retiennent 51 598 927 octets ; 3 417 652 allocations par appel, une de plus une fois. La ligne
+  privée écrit ses 50 lignes et retient 47 380 984 octets ; pic de 1 125,4 Mo.
+- **Mesure complète** : trois passages des lignes publiques. Les deux premiers passent ; au troisième,
+  `Flow.Replanning.Threads2` échoue en vidant son dossier de sortie (section 2.20). Accélération d'un
+  appel : 1,58 et 1,63 sur 2 fils, 2,49 et 2,76 sur 5, 3,02 et 3,06 sur 10 (1,60, 2,47 et 2,86 dans
+  les mesures provisoires de la section 7.6).
+- **Correction** (section 2.20), dans `FlowBenchmarks.cpp` et la documentation : compilée hors CMake en
+  `/W4`, aucun avertissement dans le banc ; les cinq replanifications publiques passent, avec un
+  dossier par appel ; un fichier tenu 0,8 s est attendu, un fichier tenu 3 s fait échouer le benchmark
+  après une seconde.
+
+Validation après la correction (2026-10-08, build de Gabriel recompilé, en-tête `cdf6a63f`, modifié) :
+
+- **Étiquettes** : `-L performance` (25 tests) et `-L bfec-perf` (6 lignes, 101 s) passent. Suite base
+  sous `-j 8` : 258 tests, 243 verts et 15 désactivés, en 17 s. Chaque replanification écrit dans
+  `call1`, `call2`...
+- **Mesure complète** : trois passages publics et deux privés, tous verts (section 7.6). Les
+  replanifications font 10 ou 11 allocations de moins par appel (799 167 et 3 417 641) : la
+  suppression du dossier est sortie de l'appel.
+- **`ScalingReport.cmake`** ne fait plus que nommer une famille d'un seul membre. La ligne privée
+  `Flow.Replanning.Threads5.Bfec` y formait une famille « Flow.Replanning.Bfec », qu'on pouvait
+  confondre avec le benchmark de ce nom. Script et documentation seulement, rien à compiler.
+
 ## 6. Prochain lot
 
-Les lots 1 à 3 sont validés et commités (sections 5.2 à 5.4 ; dernier commit du banc `f9061c93`).
-Le chantier, en pause depuis le 2026-10-05 pour #361 (décision 16), reprend au lot 4 : #361 est
-fait, sans changer l'allocateur par défaut ni les bornes (décision 17, section 2.6).
+Les lots 1 à 3 sont validés et commités (sections 5.2 à 5.4). #361 est fait, sans changer l'allocateur
+par défaut ni les bornes (décision 17). Le lot 4 est validé ; reste son commit (section 5.5).
 
-### 6.1 Fait : la mémoire retenue sous mimalloc
+### 6.1 D'abord : commiter le lot 4
 
-Le 2026-10-05, Gabriel a compilé la correction de `AllocationMonitorWindows.cpp` (section 2.8), et
-Claude a relancé les étiquettes et la suite base : sous le tas du CRT, aucune valeur stable ne
-change (section 5.4). Correction commitée (`f9061c93`) ; l'issue du journal de FMT est #363.
+Validé le 2026-10-08 sur le build de Gabriel, avec la correction de la section 2.20 (section 5.5) ;
+mesure complète en section 7.6.
 
-### 6.2 À la reprise : lot 4
+1. Gabriel relit le choix « un dossier par appel » (section 3.4) et le changement de
+   `ScalingReport.cmake` (section 5.5).
+2. Gabriel commite le lot 4. Rien n'est à remesurer : les sources mesurées sont celles du commit.
 
-Threads : la replanification à 5 fils, comme en production (section 4.2), effort `xhigh`. Elle se
-mesure sur le tas du CRT, comme la production (décision 17). Un passage dans un build configuré
-avec `-DWITH_MIMALLOC=ON` reste possible, pour l'ordre de grandeur qu'attendrait une future
-interface (section 2.6) ; ses bornes de mémoire y échouent, c'est attendu.
+### 6.2 Ensuite : lot 5
+
+Clôture (section 4.2) : mesurer et comparer en une commande, documenter le déroulement avant et après
+un changement, reprendre la référence « avant #348 » si Gabriel le décide (section 4.3), fusionner
+`new_test` dans `master`, écrire dans #349 les attentes écartées (section 4.3) et un commentaire de
+clôture.
 
 ## 7. Mesures
 
@@ -1275,6 +1497,7 @@ mesure « après » à chacune avec `CompareResults.cmake`.
 | 2026-10-02 (lot 3, projet jetable) | 19 | 11 | 0,70 s | — |
 | 2026-10-05 (commit `852e1be0`, build de Gabriel) | 19 | 11 | 3,2 s, sans `-j` ; suite base de 254 tests en 16 s sous `-j 8` | — |
 | 2026-10-05 (commit `88daf175`, build de Gabriel) | 19 | 11 | 3,1 s, sans `-j` ; suite base de 254 tests en 16 s sous `-j 8` | 11 à 12 s pour les lignes publiques, 89 s pour les 5 privées |
+| 2026-10-08 (lot 4, build de Gabriel, non commité) | 23 | 11 | 9,4 s, sans `-j` ; suite base de 258 tests en 17 s sous `-j 8` | 18 à 20 s pour les lignes publiques, 202 et 208 s pour les 6 privées |
 
 ### 7.3 Lot 2, avec l'attente
 
@@ -1374,3 +1597,61 @@ autre exécutable, un autre jour : à mesurer de nouveau avant d'y voir un chang
 Les benchmarks des lots 1 et 2, dans les mêmes mesures, gardent les allocations et les octets de la
 référence de la section 7.1 ; leurs médianes s'en écartent de -12 à +12 % (`Yield.Age` : +18 % à la
 troisième mesure). Les JSON restent locaux, hors du dépôt (décision 5).
+
+### 7.6 Lot 4
+
+Mesures complètes du 2026-10-08, par ctest, sans `-j`, un processus par benchmark, sur le build de
+Gabriel compilé avec la correction de la section 2.20, avant le commit du lot 4 (en-tête `cdf6a63f`,
+modifié). Tas du CRT, MOSEK, tous les fils sur les cœurs performants, attente de 250 ms. Machine :
+Intel Core i9-13900, 32 cœurs logiques, Windows 10.0.22631, 43 Gio disponibles. Trois mesures des
+benchmarks publics, deux des privés ; les pics du mode court viennent de `-L performance` et de
+`-L bfec-perf` du même jour.
+
+| Benchmark | Médiane, mesures 1, 2 et 3 | Replanification, mesure 1 | Allocations par appel | Mémoire retenue (octets) | Pic (Mo), court / complet |
+|---|---|---|---|---|---|
+| `Flow.Replanning` | 123,1 ; 121,8 ; 122,1 ms | 68,4 ms | 799 167 | 4 737 039 | 62,2 / 75,7 à 75,8 |
+| `Flow.Replanning.Threads1` | 368,2 ; 367,9 ; 371,8 ms | 311,0 ms | 3 417 641 | 51 598 927 | 159,4 / 314,4 à 314,6 |
+| `Flow.Replanning.Threads2` | 229,5 ; 227,7 ; 235,7 ms | 166,8 ms | 3 417 641 | 51 598 927 | 174,0 / 334,6 à 338,7 |
+| `Flow.Replanning.Threads5` | 149,3 ; 142,6 ; 143,3 ms | 77,5 ms | 3 417 641 | 51 598 927 | 225,6 / 382,6 à 387,0 |
+| `Flow.Replanning.Threads10` | 122,6 ; 118,1 ; 124,2 ms | 57,8 ms | 3 417 641 et 3 417 642 | 51 598 927 | 287,3 / 444,1 à 448,8 |
+
+Rapport de `ScalingReport.cmake` sur chaque mesure ; les quatre lignes ont écrit les mêmes lignes à
+chaque mesure (empreinte `2714db3feb3b0737`) :
+
+| Fils | Accélération d'un appel, mesures 1, 2 et 3 | Efficacité | Accélération de la replanification | Pic de plus par fil |
+|---|---|---|---|---|
+| 2 | 1,60 ; 1,61 ; 1,57 | 78 à 80 % | 1,86 ; 1,91 ; 1,86 | 20,2 à 24,1 Mo |
+| 5 | 2,46 ; 2,57 ; 2,59 | 49 à 51 % | 4,01 ; 3,91 ; 4,00 | 17,0 à 18,1 Mo |
+| 10 | 3,00 ; 3,11 ; 2,99 | 29 à 31 % | 5,38 ; 5,47 ; 5,45 | 14,4 à 14,9 Mo |
+
+- Le pic de plus par fil compte aussi les blocs que MOSEK garde d'un appel à l'autre (section 2.17).
+- La phase de résultat, où le banc relit ce que la replanification a écrit, dure moins de 2 ms sur un
+  fil et jusqu'à 9 ms sur plusieurs, sans cause cherchée : elle pèse sur l'accélération d'un appel,
+  pas sur celle de la replanification.
+- Comparées à la section 7.5 par `CompareResults.cmake`, les médianes des benchmarks des lots 1 à 3
+  vont de -6 à +8 % (`Yield.Age`), avec les mêmes allocations, sauf `Flow.Replanning` : 10 de moins,
+  la suppression du dossier de sortie étant sortie de l'appel (section 2.20). Le script avertit que
+  les durées ne se comparent pas, puisque le champ `processors` a changé (section 4.3).
+- Les mesures provisoires du 2026-10-07, prises avec l'exécutable du scratchpad avant la correction,
+  donnaient des appels de 12 à 18 % plus longs (`Flow.Replanning.Threads1` : 413,2 et 426,5 ms) et des
+  accélérations de 1,60, 2,47 et 2,86 : un autre exécutable, un autre jour (section 2.10).
+
+Groupe privé, `Flow.Replanning.Threads5.Bfec` (10 réplicats de 5 périodes sur 5 fils), la même
+empreinte à chaque passage (`ba037ca987cc9f37`) :
+
+| Mode | Médiane | Replanification | Allocations par appel | Mémoire retenue (octets) | Pic (Mo) |
+|---|---|---|---|---|---|
+| court | 17,59 s | 15,89 s | 330 679 296 | 47 381 389 | 1 386,3 |
+| complet, mesure 1 | 19,26 s | 17,36 s | 330 675 893 | 47 383 402 | 1 291,2 |
+| complet, mesure 2 | 19,47 s | 17,41 s | 330 675 300 | 47 386 082 | 1 298,1 |
+
+- Sur un fil, les mêmes 10 réplicats prenaient 60,41 s par appel en mode court, avec un pic de
+  425,5 Mo (2026-10-07, exécutable du scratchpad).
+- Le pic sur 5 fils varie selon le chevauchement des réplicats : de 1 123 à 1 386 Mo en mode court,
+  de 1 291 à 1 567 Mo en mesure complète, sur quatre passages de chaque mode depuis le 2026-10-07. Sa
+  borne, dans le fichier local, est de 1 725 Mo.
+- Les autres benchmarks privés, en mesure complète : `Flow.Optimize.Bfec` 3,53 et 3,49 s,
+  `Flow.Replay.Bfec` 1,61 et 1,58 s, `Flow.Outputs.Bfec` 1,14 et 1,13 s, `Flow.Replanning.Bfec` 6,67
+  et 7,00 s, `Yield.Model.Bfec` 71,0 et 71,8 µs : de -6 à +2 % de la section 7.5.
+
+Les JSON restent locaux, hors du dépôt (décision 5).

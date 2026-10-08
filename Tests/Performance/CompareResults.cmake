@@ -6,7 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 ]]
 
 # Compares the benchmark results of two runs, written by FMTPerformanceTests (JSON schema versions 1
-# to 3, described in Documentation/PerformanceTesting.md):
+# to 4, described in Documentation/PerformanceTesting.md):
 #
 #   cmake -DBASELINE=<file or folder> -DCANDIDATE=<file or folder> -P Tests/Performance/CompareResults.cmake
 #
@@ -17,75 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 cmake_minimum_required(VERSION 3.19)
 
-# Converts a decimal written without exponent, such as "612.345" or "-0.5", into thousandths: math()
-# only computes with integers. Anything else, null included, gives an empty result.
-function(_toThousandths p_value p_result)
-	if (NOT p_value MATCHES "^(-?)([0-9]+)(\\.([0-9]*))?$")
-		set(${p_result} "" PARENT_SCOPE)
-		return()
-	endif()
-	set(sign "${CMAKE_MATCH_1}")
-	set(integerPart "${CMAKE_MATCH_2}")
-	string(SUBSTRING "${CMAKE_MATCH_4}000" 0 3 fraction)
-	# Leading zeros are removed, so that no number can be read as octal.
-	string(REGEX REPLACE "^0+([0-9])" "\\1" integerPart "${integerPart}")
-	string(REGEX REPLACE "^0+([0-9])" "\\1" fraction "${fraction}")
-	math(EXPR thousandths "${integerPart} * 1000 + ${fraction}")
-	if (sign)
-		math(EXPR thousandths "0 - ${thousandths}")
-	endif()
-	set(${p_result} "${thousandths}" PARENT_SCOPE)
-endfunction()
-
-# Writes the change from p_before to p_after in percent, with one decimal, such as "-12.4%".
-function(_percentChange p_before p_after p_result)
-	_toThousandths("${p_before}" before)
-	_toThousandths("${p_after}" after)
-	if (before STREQUAL "" OR after STREQUAL "" OR before EQUAL 0)
-		set(${p_result} "n/a" PARENT_SCOPE)
-		return()
-	endif()
-	math(EXPR tenths "(${after} - ${before}) * 1000 / ${before}")
-	set(sign "+")
-	if (tenths LESS 0)
-		set(sign "-")
-		math(EXPR tenths "0 - ${tenths}")
-	endif()
-	math(EXPR units "${tenths} / 10")
-	math(EXPR decimal "${tenths} % 10")
-	set(${p_result} "${sign}${units}.${decimal}%" PARENT_SCOPE)
-endfunction()
-
-# Writes a duration read from the results, in nanoseconds, with its unit: nanoseconds with one
-# decimal below a millisecond, then milliseconds or seconds with three. string(JSON) returns it with
-# every digit of its binary value, such as 378.11599999999999.
-function(_formatDuration p_value p_result)
-	_toThousandths("${p_value}" thousandths)
-	if (thousandths STREQUAL "" OR thousandths LESS 0)
-		set(${p_result} "${p_value} ns" PARENT_SCOPE)
-		return()
-	endif()
-	if (thousandths LESS 1000000000)
-		math(EXPR units "${thousandths} / 1000")
-		math(EXPR tenth "(${thousandths} % 1000) / 100")
-		set(${p_result} "${units}.${tenth} ns" PARENT_SCOPE)
-		return()
-	endif()
-	set(unit "ms")
-	set(scale 1000000000)
-	if (NOT thousandths LESS 1000000000000)
-		set(unit "s")
-		set(scale 1000000000000)
-	endif()
-	math(EXPR units "${thousandths} / ${scale}")
-	math(EXPR fraction "(${thousandths} % ${scale}) * 1000 / ${scale}")
-	if (fraction LESS 10)
-		set(fraction "00${fraction}")
-	elseif (fraction LESS 100)
-		set(fraction "0${fraction}")
-	endif()
-	set(${p_result} "${units}.${fraction} ${unit}" PARENT_SCOPE)
-endfunction()
+include("${CMAKE_CURRENT_LIST_DIR}/ResultsFormat.cmake")
 
 # Reads the results of p_path, a file or a folder, into variables named
 # <p_side>.<benchmark>.<field>, the benchmark names into <p_side>.benchmarks and a description of the
@@ -222,7 +154,7 @@ if (NOT baseline.allocator STREQUAL candidate.allocator)
 endif()
 if (NOT baseline.processors STREQUAL candidate.processors AND NOT baseline.processors STREQUAL "processors unknown"
 	AND NOT candidate.processors STREQUAL "processors unknown")
-	message("WARNING: the measuring threads ran on different processors, the durations do not compare")
+	message("WARNING: the threads ran on different processors, the durations do not compare")
 endif()
 message("")
 

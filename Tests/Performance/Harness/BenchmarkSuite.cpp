@@ -72,7 +72,7 @@ namespace
 		std::cout << p_environment.operatingSystem << ", " << p_environment.processor << ", "
 			<< p_environment.logicalCores << " logical cores, " << gigabytes(p_environment.availableMemoryBytes)
 			<< " available, mode " << Performance::toString(p_environment.mode) << std::endl;
-		std::cout << "Measuring thread on " << p_environment.processors << std::endl;
+		std::cout << "Processors: " << p_environment.processors << std::endl;
 		if (!p_environment.optimized)
 		{
 			std::cout << "WARNING: the benchmarks are not optimized, their times are not a reference" << std::endl;
@@ -84,6 +84,10 @@ namespace
 	{
 		const Performance::TimingStatistics& TIMING = p_result.timing;
 		std::cout << std::endl << p_result.benchmark << " (" << p_result.dataset << ")" << std::endl;
+		if (p_result.threads > 1)
+		{
+			std::cout << "  threads " << p_result.threads << std::endl;
+		}
 		std::cout << "  time    " << duration(TIMING.medianNs) << " per call, median of " << TIMING.samples
 			<< " samples of " << TIMING.callsPerSample << " calls (min " << duration(TIMING.minimumNs)
 			<< ", max " << duration(TIMING.maximumNs) << ")" << std::endl;
@@ -104,6 +108,10 @@ namespace
 		if (!p_result.datasetFingerprint.empty())
 		{
 			std::cout << "  data    SHA-256 " << p_result.datasetFingerprint << std::endl;
+		}
+		if (!p_result.resultFingerprint.empty())
+		{
+			std::cout << "  output  fingerprint " << p_result.resultFingerprint << std::endl;
 		}
 		for (const Performance::BenchmarkCheck& CHECK : p_result.checks)
 		{
@@ -166,7 +174,7 @@ namespace Performance
 			return 1;
 		}
 		BenchmarkEnvironment environment = BenchmarkEnvironment::collect(m_options.getMode());
-		environment.processors = ProcessorPolicy::applyToMeasuringThread();
+		environment.processors = ProcessorPolicy::apply();
 		printEnvironment(environment);
 		if (m_options.getMode() == BenchmarkMode::Full)
 		{

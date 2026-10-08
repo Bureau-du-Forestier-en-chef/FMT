@@ -16,7 +16,7 @@ namespace
 {
 	// Version of the JSON layout: change it with the layout, and describe the change in
 	// Documentation/PerformanceTesting.md.
-	constexpr std::int64_t SCHEMA_VERSION = 3;
+	constexpr std::int64_t SCHEMA_VERSION = 4;
 	// Durations are in nanoseconds: three decimals are below the resolution of any clock.
 	constexpr int DURATION_DECIMALS = 3;
 
@@ -168,6 +168,7 @@ namespace
 		writeAllocations(p_writer, p_result.allocations);
 		writeField(p_writer, "processPeakPrivateBytes", p_result.processPeakPrivateBytes);
 		writeField(p_writer, "result", p_result.result);
+		writeField(p_writer, "resultFingerprint", p_result.resultFingerprint);
 		writeExpectation(p_writer, p_result.expectation);
 		writeField(p_writer, "valid", p_result.isValid());
 		writeField(p_writer, "skipped", p_result.isSkipped());

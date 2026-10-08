@@ -40,7 +40,7 @@ namespace Performance
 		std::string operatingSystem;
 		std::string processor;
 		unsigned int logicalCores = 0;
-		// Logical processors the measuring thread runs on, and whether Windows may throttle the
+		// Logical processors the threads of the process run on, and whether Windows may throttle the
 		// process: set by the suite with ProcessorPolicy.
 		std::string processors;
 		// Physical memory available at the start. The complex-yield cache of FMT empties itself when

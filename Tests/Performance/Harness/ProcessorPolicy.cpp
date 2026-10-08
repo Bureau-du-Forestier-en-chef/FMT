@@ -91,16 +91,20 @@ namespace
 
 namespace Performance
 {
-	std::string ProcessorPolicy::applyToMeasuringThread()
+	std::string ProcessorPolicy::apply()
 	{
 #ifdef _WIN32
 		const bool UNTHROTTLED = disablePowerThrottling();
 		const CpuSets CPU_SETS = readCpuSets();
 		std::string description;
+		// The default CPU sets of the process hold for the threads it starts without sets of their
+		// own, such as the workers of a replanning.
+		const ULONG FASTEST = static_cast<ULONG>(CPU_SETS.fastest.size());
 		if (!CPU_SETS.fastest.empty() && CPU_SETS.fastest.size() < CPU_SETS.logicalProcessors
-			&& SetThreadSelectedCpuSets(GetCurrentThread(), CPU_SETS.fastest.data(), static_cast<ULONG>(CPU_SETS.fastest.size())) != 0)
+			&& SetThreadSelectedCpuSets(GetCurrentThread(), CPU_SETS.fastest.data(), FASTEST) != 0
+			&& SetProcessDefaultCpuSets(GetCurrentProcess(), CPU_SETS.fastest.data(), FASTEST) != 0)
 		{
-			description = "fastest cores, " + std::to_string(CPU_SETS.fastest.size()) + " of "
+			description = "fastest cores for every thread, " + std::to_string(CPU_SETS.fastest.size()) + " of "
 				+ std::to_string(CPU_SETS.logicalProcessors) + " logical processors";
 		}
 		else

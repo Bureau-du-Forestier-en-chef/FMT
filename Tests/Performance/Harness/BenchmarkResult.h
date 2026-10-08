@@ -84,6 +84,9 @@ namespace Performance
 		std::uint64_t processPeakPrivateBytes = 0;
 		// Result of the last counted call.
 		double result = 0.0;
+		// Fingerprint of what the last counted call produced, or an empty text (see
+		// Benchmark::getResultFingerprint).
+		std::string resultFingerprint;
 		std::optional<Expectation> expectation;
 		std::vector<BenchmarkCheck> checks;
 		// Why a check could not be made, for instance an allocation bound without the monitor.
@@ -94,7 +97,7 @@ namespace Performance
 		bool isSkipped() const;
 	};
 
-	// Writes the results of one run and their environment as JSON: schema version 3, described in
+	// Writes the results of one run and their environment as JSON: schema version 4, described in
 	// Documentation/PerformanceTesting.md.
 	void writeResults(std::ostream& p_stream, const BenchmarkEnvironment& p_environment,
 		const std::vector<BenchmarkResult>& p_results);
