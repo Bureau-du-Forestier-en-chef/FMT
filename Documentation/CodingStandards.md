@@ -89,6 +89,31 @@ These standards evolve with FMT. When the project adopts a repository-wide conve
 
 ## General Principles
 
+### Clean Code Guidance
+
+Use the design and readability principles associated with Robert C. Martin's
+Clean Code as practical guidance when writing or refactoring FMT code.
+
+The rules in this document and the architectural boundaries in Architecture.md
+take precedence over general recommendations from the book.
+
+Apply these principles by:
+- choosing intention-revealing names;
+- keeping methods focused on one responsibility and one level of abstraction;
+- organizing workflows in a natural top-to-bottom reading order;
+- designing cohesive classes with explicit dependencies;
+- reducing duplication without introducing speculative abstractions;
+- preferring expressive code over comments that merely repeat it;
+- making error handling explicit;
+- protecting observable behavior with focused, deterministic tests.
+
+Apply this guidance pragmatically to C++17. Readability improvements should
+preserve RAII, ownership, lifetime, portability, thread safety, performance,
+serialization compatibility, and numerical behavior.
+
+Do not introduce runtime allocations, unnecessary copying, or additional
+abstractions merely to make code appear cleaner.
+
 Readability is the primary code-quality objective. After that, new code and refactoring should favor a natural top-to-bottom reading order, clear responsibilities, explicit dependencies, strong typing, RAII, deterministic behavior, and the simplest design that satisfies the requirements.
 
 Code should communicate intent clearly without requiring unnecessary comments or knowledge of unrelated components.
@@ -676,6 +701,32 @@ Private extraction is encouraged when a block of code:
 
 Do not extract trivial methods merely to reduce line count. A private method should improve readability by naming a meaningful operation.
 
+#### Agent-assisted method decomposition
+
+An agent should split large methods into multiple small, focused private
+methods when meaningful extraction improves readability or maintainability.
+
+Each extracted method should:
+- represent one meaningful operation;
+- remain at a consistent level of abstraction;
+- use an intention-revealing name beginning with a single underscore;
+- receive its inputs and dependencies explicitly where practical;
+- avoid introducing unnecessary shared mutable state.
+
+The calling method should present the main workflow as a readable sequence of
+clearly named steps.
+
+Extraction should preserve execution order, observable behavior, exception
+handling, ownership, lifetime, thread safety, and numerical results. It should
+not introduce runtime allocations or unnecessary copying.
+
+Do not extract trivial methods solely to reduce line count. Each extraction
+should improve readability, reuse, or independent reasoning.
+
+Update affected declarations, definitions, call sites, and relevant tests.
+Update public documentation when observable behavior or the public contract
+changes.
+
 ### Prefer focused classes over giant classes
 
 When a class accumulates many unrelated private methods, this may indicate that it owns too many responsibilities.
@@ -695,6 +746,28 @@ OutputWriter
 The goal is not to maximize the number of methods or classes. The goal is to create small, cohesive units with clear responsibilities and explicit dependencies.
 
 A public method should present a concise use case. Its private methods should explain the implementation as a sequence of meaningful steps. If those steps represent separate responsibilities, move them into focused collaborator classes.
+
+#### Agent-assisted class decomposition
+
+An agent may decide to split a class into smaller, cohesive classes when doing
+so separates responsibilities, reduces coupling, improves readability, or
+enables independent testing.
+
+The decomposition should:
+- follow the architectural layers and dependency rules in Architecture.md;
+- prefer composition and explicit dependencies;
+- preserve supported public APIs through delegation where necessary;
+- preserve observable behavior, ownership, lifetime, thread safety,
+  serialization compatibility, and numerical results;
+- update affected references, build definitions, documentation, and tests;
+- explain why the decomposition improves the design.
+
+Avoid splitting classes merely to reduce their line count or introduce
+theoretical flexibility.
+
+When extracted private methods reveal separate responsibilities, consider
+moving those responsibilities into focused collaborator classes rather than
+continuing to grow the original class.
 
 ## Formatting
 
@@ -1312,6 +1385,28 @@ Primary refactoring objectives include:
 - explicit ownership;
 - simpler maintenance.
 
+### Boy Scout Rule
+
+Always apply the Boy Scout Rule: leave the code you touch cleaner than you
+found it.
+
+For every change, look for nearby opportunities to improve naming, clarity,
+duplication, responsibility boundaries, and test coverage.
+
+Cleanup should:
+- remain relevant and proportional to the requested task;
+- preserve file encoding, line endings, and repository conventions;
+- consist of small improvements that can be reviewed and validated;
+- preserve supported public APIs and observable behavior unless changes are
+  explicitly intended;
+- separate substantial structural changes from unrelated modifications.
+
+The Boy Scout Rule does not authorize unrelated rewrites, unverified behavioral
+changes, or speculative abstractions.
+
+If a worthwhile improvement cannot be completed safely within the task,
+identify it as follow-up work rather than expanding the scope unchecked.
+
 ### Preserve behavior
 
 Observable behavior includes:
@@ -1438,6 +1533,11 @@ Before submitting or approving a change, consider the following.
 - [ ] Are includes explicit and minimal?
 - [ ] Are there new compiler warnings?
 - [ ] Is dead or commented-out code removed?
+- [ ] Were Clean Code principles applied pragmatically within repository rules?
+- [ ] Were meaningful opportunities to split large methods considered?
+- [ ] Were separate responsibilities moved into focused collaborators where useful?
+- [ ] Does the change leave the touched code cleaner without unrelated churn?
+- [ ] Were execution order, numerical behavior, and allocation requirements preserved?
 
 ### Tests
 
