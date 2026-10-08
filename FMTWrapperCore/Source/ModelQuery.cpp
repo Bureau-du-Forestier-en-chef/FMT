@@ -24,7 +24,7 @@ namespace FMTWrapper::Backend
     {
         // Beyond this number of attribute combinations, the exhaustive decomposition of the
         // masks is too costly and the model is solved instead.
-        constexpr size_t GET_ALL_MASKS_THRESHOLD = 1000000;
+        constexpr size_t GET_ALL_MASKS_THRESHOLD = 200000; // Fix 2026-10-05 test model Julianne
     }
 
     int ModelQuery::getMaxAge(const Models::FMTModel& p_model)
