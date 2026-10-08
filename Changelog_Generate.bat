@@ -38,6 +38,8 @@ echo     1. Collez (Ctrl+V) le prompt dans Copilot (Teams / app) et envoyez.
 echo     2. La reponse contient TROIS blocs. Collez les deux premiers :
 echo          - bloc FRANCAIS -^> en haut de CHANGELOG.fr.md
 echo          - bloc ANGLAIS  -^> en haut de CHANGELOG.md
+echo        S'il y a deja une section [Unreleased] / [Non publie], REMPLACEZ-la
+echo        par le bloc (il la reprend et la complete) au lieu de l'empiler.
 echo        (gardez le 3e, le MESSAGE DE COMMIT, sous la main pour l'etape 4)
 echo     3. Verifiez le numero de version propose, puis SAUVEGARDEZ les deux fichiers.
 echo        Titre [vX.Y.Z] = version taguee ; [Unreleased] = simple accumulation.
