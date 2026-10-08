@@ -1,0 +1,83 @@
+; Scenario of the benchmarks of issue #349 (Tests/Performance/performance.csv): a copy of
+; yieldoperatorsalone, plus two blocks of complex yields at the end. Keep it stable: a change
+; here changes what the benchmarks measure, and their reference values.
+*Y ? peuplement1 ?
+_AGE volumetotal
+0    0
+5    100
+10   150
+15   200
+20   250
+25   300
+30   350
+
+*Y ? peuplement2 ?
+_AGE volumetotal
+0    0
+5    50
+10   100
+15   150
+20   200
+25   230
+30   150
+
+*Y ? peuplement3 ?
+_AGE volumetotal
+0    0
+5    75
+10   125
+15   175
+20   225
+25   250
+30   200
+
+*Y ? feu ?
+_AGE volumetotal
+0    0
+5    50
+10   100
+15   150
+20   200
+25   230
+30   150
+
+*YC ? ? ?
+YBM_RTM_BOG _EQUATION(1.2159259330000001*10^0.87191668899999997)
+YBM_RTM_F _SUM(YBM_RTM_BOG,YBM_RTM_MEH)
+YBM_RTM_MEH _EQUATION(1.1017722459999999*12^0.83493872400000002)
+
+*Y ? ? ?
+_AGE volumezero
+0    0
+; Complex yields alone in their block: no equation holds a number or a constant here,
+; so the operators are kept as they are read. Values computed by hand for
+; testScenarioReading, with volumetotal = 120 at age 7 of UNITE1 PEUPLEMENT1 UTR1.
+*YC ? ? ?
+TWICE _SUM(VOLUMETOTAL,VOLUMETOTAL)
+SUMWITHNUMBER _SUM(VOLUMETOTAL,30)
+DOUBLE _MULTIPLY(VOLUMETOTAL,2)
+HALF _DIVIDE(VOLUMETOTAL,2)
+LESS _SUBTRACT(VOLUMETOTAL,20)
+INRANGE _RANGE(VOLUMETOTAL,100,200)
+OUTRANGE _RANGE(VOLUMETOTAL,0,50)
+GROWTH _MAI(VOLUMETOTAL)
+CURRENT _CAI(VOLUMETOTAL)
+SHIFTED _SHIFT(VOLUMETOTAL,1)
+BIGGEST _MAX(VOLUMETOTAL,VOLUMEZERO)
+SMALLEST _MIN(VOLUMETOTAL,VOLUMEZERO)
+TOPEAK _YTP(VOLUMETOTAL)
+TOVOLUME _DISTANCE(VOLUMETOTAL,50,150)
+
+; An equation without any number, alone in its block (see Examples/C++/tests/ETAT.md, section 2.7),
+; and a chain of complex yields, each using the previous one. Values at age 7 of
+; UNITE1 PEUPLEMENT1 UTR1, where volumetotal = 120: EQUATIONSUM = 240, CHAIN1 = 240,
+; CHAIN2 = 360, CHAIN3 = 480, CHAIN4 = 600, CHAIN5 = 720.
+*YC ? ? ?
+EQUATIONSUM _EQUATION(VOLUMETOTAL+VOLUMETOTAL)
+
+*YC ? ? ?
+CHAIN1 _SUM(VOLUMETOTAL,VOLUMETOTAL)
+CHAIN2 _SUM(CHAIN1,VOLUMETOTAL)
+CHAIN3 _SUM(CHAIN2,VOLUMETOTAL)
+CHAIN4 _SUM(CHAIN3,VOLUMETOTAL)
+CHAIN5 _SUM(CHAIN4,VOLUMETOTAL)

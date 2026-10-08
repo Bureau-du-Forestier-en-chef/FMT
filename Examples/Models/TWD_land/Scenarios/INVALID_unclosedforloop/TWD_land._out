@@ -1,0 +1,7 @@
+; The FOREACH loop below has no ENDFOR: FMTunclosedforloop (81).
+*OUTPUT OSUPREC Harvested area
+*SOURCE ? ? ? coupetotale _AREA
+
+FOREACH x IN (1..3)
+*OUTPUT OSUPRECx
+*SOURCE ? ? ? coupetotale _AREA

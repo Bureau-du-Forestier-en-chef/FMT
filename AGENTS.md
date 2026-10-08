@@ -11,6 +11,7 @@ lives in exactly one document, and changes to it belong in that document only.
 | Layers, responsibilities, dependency direction, loose coupling, performance and memory | [Documentation/Architecture.md](Documentation/Architecture.md) |
 | Naming, file organization, documentation, type safety, ownership, errors, tests, warnings, compatibility | [Documentation/CodingStandards.md](Documentation/CodingStandards.md) |
 | Repository map, build and test mechanics, repository traps, task workflow | this file |
+| Performance benchmarks: running them, reading their results, adding one | [Documentation/PerformanceTesting.md](Documentation/PerformanceTesting.md) |
 
 ## Repository map
 
@@ -23,6 +24,7 @@ lives in exactly one document, and changes to it belong in that document only.
 | `Examples/C++/` | Example programs. Each `.cpp` also becomes a test executable. |
 | `Examples/Python/tests/`, `Examples/R/tests/` | pytest and testthat suites, run through the install targets. |
 | `Examples/Models/` | Woodstock models used by the tests. |
+| `Tests/Performance/` | Performance and allocation benchmarks: `FMTPerformanceTests`, its harness and `performance.csv`. |
 | `Templates/` | Packaging inputs and generated artifacts: R package, `setup.py.in`, `__init__.py.in`, stub normalization. |
 | `cmake/`, `Modules/` | Install and configuration scripts; `Find*.cmake` for GEOS, MOSEK, OSI, R, Rcpp, ONNX Runtime. |
 | `tools/` | `commitMessage/`, `changelog/`, `HeapCorruption/`, `RToolsSetup/`. |
@@ -42,6 +44,18 @@ cmake --build --preset release-gl
 Scripted entry points exist for the usual configurations: `CMakeFMTVS2022vcpkg.bat` and its variants
 on Windows, `CMakeFMTMSYS2rcran45.sh` for the MSYS2 build of the R package. Configuring with
 `-DWITHOUT_TESTING=ON` skips test registration entirely.
+
+The executables that CMake builds (examples, tests, benchmarks) run on the C runtime heap, like FMT in
+Python, Excel and the .NET interface, so that the tests and the benchmarks see what the users get. With
+MSVC, configuring with `-DWITH_MIMALLOC=ON` links mimalloc first into every executable, so that mimalloc
+replaces the C runtime heap of its process: such a build measures what mimalloc would bring, and is not
+for testing (see [The allocator](Documentation/PerformanceTesting.md#the-allocator)). mimalloc can take
+over only before the C runtime starts: FMTlib does not load it, and the processes that load FMTlib later
+keep the C runtime heap. In such a build, `MIMALLOC_DISABLE_REDIRECT=1` keeps the executables on the C
+runtime heap for one run, as a heap debugger such as the page heap of gflags needs, since it only sees
+the heap of Windows. Why the interface cannot use mimalloc is one of the points to consider for a
+reworked interface, gathered in
+[FMTWrapperCore/INTERFACE_MIGRATION.md](FMTWrapperCore/INTERFACE_MIGRATION.md) (in French).
 
 ## Testing
 
@@ -67,6 +81,21 @@ Python and R behaviour is covered by `Examples/Python/tests/` and `Examples/R/te
 Do not report that tests passed unless they were executed. When you could not run them, state
 explicitly which validation is missing.
 
+### Benchmarks
+
+`Tests/Performance/performance.csv` registers the benchmarks of `FMTPerformanceTests` with CTest,
+labelled `performance`, `allocation` when a row bounds the allocations of a call, and `memory` when it
+bounds the memory a call keeps or the peak memory of the process. With the rest of the suite they run in
+a short mode, which only checks their results and bounds. The private benchmarks, rows of the local
+`performance-private.csv` on models of `T:\`, are labelled `bfec-perf` and stay out of the base suite. A
+measurement runs them apart, one at a time:
+
+```bash
+FMT_BENCHMARK_MODE=full ctest --test-dir build/release -C Release -L performance
+```
+
+Running them, reading their results and adding one: [Documentation/PerformanceTesting.md](Documentation/PerformanceTesting.md).
+
 ## Conventions that are easy to break
 
 Each of these is defined in full where it is linked. They are listed here because they are easy to
@@ -84,6 +113,8 @@ break before you have read anything else.
 
 - Code, comments, Doxygen and test output: English.
 - User-facing interface strings, `ETAT.md` files and `CHANGELOG.fr.md`: French.
+- Issues, pull requests and their comments: French. They are written for this team, which reads
+  French faster; a thread opened in English does not change that.
 - `CHANGELOG.md` and `CHANGELOG.fr.md` cover the same releases and are updated together.
 
 ## Commits and changelog

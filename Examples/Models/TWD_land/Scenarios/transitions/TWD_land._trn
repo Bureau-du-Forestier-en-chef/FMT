@@ -1,0 +1,34 @@
+; Transitions written for testScenarioReading: split proportions, target age, target lock
+; and two sources for the same action. A source condition uses the @AGE and @YLD forms of
+; the transition section. The other cases follow the root section.
+
+*CASE COUPEtotale
+*SOURCE ? ? ?
+*TARGET ? peuplement1 ? 60.0
+*TARGET ? peuplement2 ? 40.0
+
+*CASE aCaribou
+*SOURCE ? ? ?
+*TARGET ? ? ? 100.00 _LOCK 2
+
+*CASE plantation
+*SOURCE ? ? ?
+*TARGET ? peuplement1 ? 100.00 _AGE 3
+
+*CASE aFire
+*SOURCE ? ? ? @YLD(volumetotal,100.._MAXAGE)
+*TARGET ? feu ? 100.00
+*SOURCE ? ? ?
+*TARGET ? peuplement3 ? 100.00
+
+*CASE arecup
+*SOURCE ? feu ? @AGE(10.._MAXAGE)
+*TARGET ? peuplement1 ? 100.00
+*SOURCE ? feu ?
+*TARGET ? peuplement2 ? 100.00
+
+*CASE _DEATH
+*SOURCE ? feu ?
+*TARGET ? peuplement1 ? 100.00
+*SOURCE ? ? ?
+*TARGET ? ? ? 100.00

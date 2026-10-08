@@ -1,4 +1,6 @@
 ::set debug env variable to _NO_DEBUG_HEAP=1
+::a WITH_MIMALLOC build runs on mimalloc, which the page heap does not see: keep it on the heap of Windows
+set MIMALLOC_DISABLE_REDIRECT=1
 "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\gflags.exe" /p /enable sasolve.exe /full
 "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\ntsd.exe" -sup -srcpath D:\FMT\Source -y D:\FMT\build\release\bin\Release -g -x sasolve CorruptAfterEnd
 "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\gflags.exe" /p /disable sasolve.exe
