@@ -1564,7 +1564,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 |---|---|---|---|
 | 0 | Valider la fusion de `master`, puis prendre la référence des comptes | `low` | fait (2026-10-08, `7adf1ddc`) |
 | 1 | Étiquettes, presets, noms automatiques, sans rien déplacer | `medium` | fait (2026-10-08, `69ae400d`) |
-| 2 | Résumé de fin de passage, `.bat` qui reste ouvert, `RunTests.bat <preset>`, installation filtrée par `INSTALL_TEST_SUITE` | `medium` | à faire |
+| 2 | Résumé de fin de passage, `.bat` qui reste ouvert, `RunTests.bat <preset>`, installation filtrée par `INSTALL_TEST_SUITE` | `medium` | fait (2026-10-08, `ebb1a5d1`) |
 | 3 | Conventions : `CodingStandards.md` (trois niveaux, AAA, noms), `Architecture.md` (dette révélée par les tests), renvois d'`AGENTS.md` | `medium` | à faire |
 | 4 | Interrupteur unique `WITHOUT_TESTS`, squelette `Tests/`, boucle CSV en fonctions | `high` | à faire |
 | 5 | Python et R dans ctest au niveau système : l'installation ne les lance plus qu'à travers ctest | `high` | à faire |
@@ -1626,6 +1626,24 @@ documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json
   de raison de compliquer la règle automatique. Les noms des benchmarks
   (`FMTPerformanceTests.*`) ne suivent pas encore le format `<Niveau>.<Suite>` :
   `Tests/Performance` reste hors du chantier.
+
+**Phase 2 (2026-10-08, `ebb1a5d1`)** :
+
+- `Tests/Support/TestSummary.cmake` imprime le tableau par niveau, puis les échecs et les ignorés
+  avec leur raison ; `cmake/BaseInstallTests.cmake` l'appelle après le passage, `RunTests.bat
+  <preset>` après le sien ; `CMakeFMTVS2022vcpkg_GL.bat` finit par `pause` ;
+- dans le JUnit de ctest 3.31, un test qui n'a pas pu tourner s'écrit comme un test ignoré
+  (`notrun`, élément `skipped`) : seul le message `SKIP_...` distingue un vrai test ignoré ;
+- installation de Gabriel (`INSTALL_TEST_SUITE=public`) : 259 tests, aucun `T:/`, environ 20 s ;
+  tableau system 219 verts et 15 désactivés, performance 23, other 2 (les fixtures), Total 244 verts
+  et 15 désactivés ;
+- `RunTests.bat system` : 221 verts et 15 désactivés sur 236, ctest « 0 tests failed out of 221 »,
+  21,6 s ; `unit` : « no test matches this selection », code 0 ; `performance` : 25 verts (23 et
+  les 2 fixtures), 26,5 s, une tâche à la fois ;
+- tests inscrits identiques à la référence de la phase 1 : mêmes 357 noms, commandes et propriétés
+  (`--show-only=json-v1`), et sortie de `ctest --preset <p> -N` identique pour les six presets ;
+- défaut préexistant relevé, non corrigé : l'expression des badges de `BaseInstallTests.cmake`
+  (`[^&gt;]*`) exclut le « t » de « https », si bien que les badges des README ne changent jamais.
 
 **Le filtre de l'installation passe de la phase 5 à la phase 2** (2026-10-08). La phase 2 réécrit
 déjà l'appel de ctest dans `cmake/BaseInstallTests.cmake` ; le filtre n'y ajoute que quelques
