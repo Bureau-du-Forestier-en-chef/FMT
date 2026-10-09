@@ -1644,6 +1644,19 @@ documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json
   (`--show-only=json-v1`), et sortie de `ctest --preset <p> -N` identique pour les six presets ;
 - défaut préexistant relevé, non corrigé : l'expression des badges de `BaseInstallTests.cmake`
   (`[^&gt;]*`) exclut le « t » de « https », si bien que les badges des README ne changent jamais.
+  Démontré à la relecture : sur la ligne `MSVC ![](https://img.shields.io/badge/build-pass-...)`,
+  `MSVC[^&gt;]*build[^&lt;]*` ne trouve rien et `MSVC[^>]*build[^<]*` trouve la ligne. Issue à
+  ouvrir (règle 3). La corriger telle quelle ferait réécrire `README.md` et `README.fr.md` à chaque
+  installation, `build-broken` compris : l'issue doit poser le choix entre corriger l'expression et
+  retirer la mise à jour des badges de l'installation.
+
+**À retenir pour la phase 7 (relevé le 2026-10-09).** Les sources de test à déplacer ne partagent pas
+un encodage. Sur les 82 fichiers suivis (sources C++ des trois dossiers et `TestTools.h`), 63 sont
+en ASCII, 6 en cp1252 (`planningtest`, `replanningtest`, `sumandavgtest`, `testVersionFeature`,
+`testmodelwriter`, `testreadwriteproject`) et 13 en UTF-8, dont 8 avec BOM. Seul
+`testVersionFeature.cpp` a déjà l'en-tête de licence. Les 42 sources C++ de `Tests/Performance` sont
+en cp1252 avec l'en-tête. L'en-tête s'écrit dans l'encodage de chaque fichier, après le BOM s'il y en
+a un.
 
 **Le filtre de l'installation passe de la phase 5 à la phase 2** (2026-10-08). La phase 2 réécrit
 déjà l'appel de ctest dans `cmake/BaseInstallTests.cmake` ; le filtre n'y ajoute que quelques
