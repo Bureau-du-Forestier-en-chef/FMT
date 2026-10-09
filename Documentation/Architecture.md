@@ -665,7 +665,11 @@ Compatibility methods delegate to the authoritative implementation and must not 
 
 ## Known Architectural Debt
 
-FMT contains historical design decisions that do not represent the preferred direction for new development. A debt list is only useful if it names real code, so the following are concrete and checkable:
+FMT contains historical design decisions that do not represent the preferred direction for new development.
+
+Tests reveal much of this debt. A test that has to work around the code to reach a behavior points at an interface the code does not offer, and the case is recorded here ([CodingStandards.md, Tests that reveal architectural debt](CodingStandards.md#tests-that-reveal-architectural-debt)).
+
+A debt list is only useful if it names real code, so the following are concrete and checkable:
 
 | Debt | Where |
 | --- | --- |
@@ -674,6 +678,9 @@ FMT contains historical design decisions that do not represent the preferred dir
 | Two parameter conventions in the same header, legacy `l` prefix next to `p_` | `Include/FMTModel.h` and others |
 | Protected members exposing base-class internals to derived classes | 31 of 247 headers |
 | Behavior covered mainly by end-to-end example executables rather than unit tests | `Examples/C++/` |
+| Comparators of public types declared without `FMTEXPORT`, while their members are defined in `Source/`: a test linked to the FMTlib DLL cannot use them | `Core::FMTActionComparator` in `Include/FMTAction.h`; also `FMTActualDevelopmentComparator`, `FMTMaskComparator`, `FMTModelComparator`, `FMTOperatingAreaSchemeComparator`, `FMTOutputNodeValueComparator`, `FMTOutputNodeOriginComparator`, `FMTOutputSourceComparator`, `FMTThemeComparator`, `FMTTransitionComparator`, each in the header of its type |
+| `Core::FMTYieldRequest` declared without `FMTEXPORT`: a test cannot call its constructors or members defined in `Source/FMTYieldRequest.cpp`, among them `getDatas` and `getFirstSeen`, and reaches a yield only through `FMTYields::get(development.getYieldRequest(), name)` | `Include/FMTYieldRequest.h` |
+| An exception chain whose innermost exception is thrown by `std::throw_with_nested` outside any `catch`: its nested pointer is empty, so `std::rethrow_if_nested` on it calls `std::terminate`, and tests read a chain only through `Testing::visitNested` | `raise` in `Source/FMTDefaultExceptionHandler.cpp` and `Source/FMTExceptionHandler.cpp`; workaround in `Examples/C++/tests/TestTools.h` |
 
 These should be improved incrementally when a feature or a focused refactoring touches them. Add a row when a change reveals a new case, and remove one when it is closed.
 

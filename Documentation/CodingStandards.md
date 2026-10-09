@@ -225,7 +225,7 @@ You must preserve the encoding and the line endings of any file you edit.
 - When a file contains bytes above 127, edit it through a tool that reads and writes latin-1 rather than a UTF-8 editor.
 - After a bulk edit, verify that the accented characters survived before proposing the change.
 
-New source files should be written in cp1252 to match their neighbours. Markdown documentation in this repository is UTF-8 without BOM, also with CRLF endings.
+New C++ source files should be written in cp1252 to match their neighbours. New CMake files are written in UTF-8, as those of `Tests/Performance` and `Tests/Support/TestSummary.cmake` are, because CMake reads its files as UTF-8; existing CMake files keep their encoding. New Python and R files are written in UTF-8 too, the encoding Python assumes for its sources. Markdown documentation in this repository is UTF-8 without BOM, also with CRLF endings.
 
 ## File Organization
 
@@ -242,7 +242,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 ```
 
-CMake files carry the same text inside the `#[[ ]]` comment form. A new file without this header is incomplete.
+CMake files carry the same text inside the `#[[ ]]` comment form. Python and R files, which have no block comment that suits it, carry it as `#` line comments before any code:
+
+```python
+# Copyright (c) 2019 Gouvernement du Québec
+#
+# SPDX-License-Identifier: LiLiQ-R-1.1
+# License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+```
+
+A new file without this header is incomplete.
 
 ### One primary class per file
 
@@ -1328,13 +1337,87 @@ When existing behavior lacks coverage, add characterization tests before or duri
 
 ### Test levels
 
-Use the appropriate test level:
+FMT has three test levels, and each test belongs to exactly one:
 
-- unit tests for domain behavior;
-- service tests for application workflows;
-- integration tests for solvers, GDAL, ONNX, serialization, and file formats;
-- wrapper tests for type conversion and public API exposure;
-- compatibility tests for existing formats and interfaces.
+- **Unit** tests check domain behavior: one class or one function, without any real external dependency. No solver, no GDAL, no model on disk, no wrapper.
+- **Integration** tests check one component with its real dependency: solvers, GDAL, ONNX Runtime, serialization, and file formats.
+- **System** tests check complete workflows through C++, Python, R, and Excel, including what the wrappers expose and the compatibility of existing formats and interfaces. Every test written before the three levels is a system test.
+
+The five levels used before fall into these three:
+
+| Former level | Level now |
+| --- | --- |
+| Service tests, for application workflows | System. A service tested alone, its collaborators replaced, is a unit test. |
+| Wrapper tests, for type conversion and public API exposure | System, since they run through Python, R, or Excel. A native class of a wrapper library tested in C++ alone, such as `Wrapper::FMTModelCache` below, is a unit test. |
+| Compatibility tests, for existing formats and interfaces | System. A serialization round trip of one class against a stored archive is an integration test. |
+
+Benchmarks are not a test level. They measure time and allocations rather than behavior, and are described in [PerformanceTesting.md](PerformanceTesting.md).
+
+Where each level lives and how a test is registered are in [AGENTS.md, Testing](../AGENTS.md#testing).
+
+### Arrange, Act, Assert
+
+Every unit and integration test is written in three parts, each opened by its comment:
+
+```cpp
+TEST(FMTModelCacheTest, SetLengthWithValidPeriodUpdatesPlanningHorizon)
+{
+    // Arrange
+    Wrapper::FMTModelCache cache;
+    const int expectedPeriods = 10;
+
+    // Act
+    cache.setLength(expectedPeriods);
+
+    // Assert
+    EXPECT_EQ(cache.getperiods(), expectedPeriods);
+}
+```
+
+- **Arrange** prepares the objects, the inputs, and the expected result.
+- **Act** runs the one behavior under test.
+- **Assert** checks the result.
+
+When a single statement both acts and checks, as `EXPECT_THROW` does, the last two parts share one comment:
+
+```cpp
+    // Act and Assert
+    EXPECT_THROW(<call under test>, Exception::FMTException);
+```
+
+An `// Assert` is never empty, and never left out: a test that checks nothing is not a test.
+
+A system test follows the same rule when it is written or modified. An existing system test that a change does not touch keeps its current form.
+
+### Test names
+
+A GoogleTest case is named after the class under test and the behavior it checks:
+
+```cpp
+TEST(<Class>Test, <Method><Condition><ExpectedBehavior>)
+```
+
+- The suite is the class under test followed by `Test`: `FMTModelCacheTest`.
+- The case reads as method, condition, and expected behavior, in PascalCase without underscores, as GoogleTest requires. The condition is left out when there is none to state.
+
+The examples given on [issue #350](https://github.com/Bureau-du-Forestier-en-chef/FMT/issues/350):
+
+```text
+SetLengthWithValidPeriodUpdatesPlanningHorizon
+GetAttributesWithInvalidThemeReturnsEmptyList
+GetActionsWithWildcardReturnsAllActions
+CopyConstructorPreservesPlanningHorizon
+```
+
+The only underscore allowed is the `DISABLED_` prefix, on a test that reveals an open defect: `DISABLED_SetLengthWithValidPeriodUpdatesPlanningHorizon`. The prefix goes when the defect is fixed.
+
+In CTest, a test is named `<Level>.<Suite>[.<Case>]`, the level written as in [Test levels](#test-levels): `Unit.FMTModelCacheTest.SetLengthWithValidPeriodUpdatesPlanningHorizon`. For a system test, the suite is its executable.
+
+A new system test executable is named `<Function>Test`, in PascalCase and after the workflow it checks, without a `test` prefix: `ScenarioReadingTest`. Existing executables, such as `testScenarioReading`, keep their name until they are renamed together under issue #350.
+
+### Tests that reveal architectural debt
+
+A test reaches the behavior it checks through the public interface. When it cannot, because a class it needs is not exported or a result cannot be read with the standard library, the test may work around the code, but not silently: the same change adds a row to [Architecture.md, Known Architectural Debt](Architecture.md#known-architectural-debt), which defines when a row is added and when it is removed.
 
 ### Test independence
 
@@ -1546,3 +1629,5 @@ Before submitting or approving a change, consider the following.
 - [ ] Is refactored behavior protected by tests?
 - [ ] Are tests deterministic and focused?
 - [ ] Can the relevant behavior be tested without a UI or wrapper?
+- [ ] Does each new or modified test open its parts with `// Arrange`, `// Act`, and `// Assert`?
+- [ ] Do new tests follow the [test names](#test-names) convention?

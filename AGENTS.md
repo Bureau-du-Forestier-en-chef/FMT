@@ -59,8 +59,15 @@ reworked interface, gathered in
 
 ## Testing
 
+What to test, the three test levels, the Arrange / Act / Assert structure and test names are
+defined in [CodingStandards.md, Testing](Documentation/CodingStandards.md#testing); a test that has
+to work around the code is covered in
+[Tests that reveal architectural debt](Documentation/CodingStandards.md#tests-that-reveal-architectural-debt).
+This section covers where tests live and how they run.
+
 Each test carries one level label (`system` for every C++ test today, `performance` for the
-benchmarks), and its name starts with its level: `System.<executable>[.<case>]`. The private tests,
+benchmarks), and its CTest name follows
+[Test names](Documentation/CodingStandards.md#test-names). The private tests,
 rows of the local `BFECtests.csv` on models of `T:\`, keep `T:/` in their name. Test presets in
 `CMakePresets.json` select a level on `build/release` (configure preset `release-gl`), eight tests at a
 time:
@@ -95,8 +102,9 @@ suites of the install. The private campaign runs apart, before a release:
 
 Registration is data-driven. There is no `add_test` call to copy.
 
-1. Add a `.cpp` file to `Examples/C++/`. Every file in that directory becomes an executable
-   ([Examples/C++/CMakeLists.txt](Examples/C++/CMakeLists.txt), line 11).
+1. Add a `.cpp` file to `Examples/C++/`, named as in
+   [Test names](Documentation/CodingStandards.md#test-names). Every file in that directory becomes
+   an executable ([Examples/C++/CMakeLists.txt](Examples/C++/CMakeLists.txt), line 11).
 2. Add a row to a CSV in `Examples/C++/tests/`, in the form
    `TEST;primarylocation;scenario;doublevalue`. The row registers the test with CTest only if a
    target of that name exists (same file, line 42).
@@ -106,8 +114,7 @@ Registration is data-driven. There is no `add_test` call to copy.
 Python and R behaviour is covered by `Examples/Python/tests/` and `Examples/R/tests/`, wired in
 `cmake/BaseInstallPython.cmake` and `cmake/BaseInstallR.cmake`.
 
-Do not report that tests passed unless they were executed. When you could not run them, state
-explicitly which validation is missing.
+Reporting a test result: [CodingStandards.md, Testing](Documentation/CodingStandards.md#testing).
 
 ### Benchmarks
 

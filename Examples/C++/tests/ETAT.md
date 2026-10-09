@@ -1460,7 +1460,12 @@ d'étiquette `base`/`bfec` : le privé se reconnaît à `T:/` dans son nom et se
 
 Proposés à gcyr en phase 3 : étiquettes toujours ancrées (`-L "^system$"` ; `-L` prend une
 expression régulière, et `r` attraperait `core`) ; `// Act and Assert` quand un seul énoncé agit
-et vérifie (`EXPECT_THROW`) ; en-tête de licence en commentaire `#` pour Python et R.
+et vérifie (`EXPECT_THROW`) ; en-tête de licence en commentaire `#` pour Python et R. Depuis la
+phase 3 (2026-10-09), ces petits choix sont écrits, avec ceux que la phase a dû trancher (nouveaux
+fichiers CMake, Python et R en UTF-8 ; classement des anciens niveaux service, wrapper et
+compatibility), dans `Documentation/CodingStandards.md`, l'ancrage des étiquettes dans `AGENTS.md`.
+Ils attendent la réponse de gcyr sur #350 : un refus se corrige dans le document, sans rouvrir le
+reste.
 
 ### 9.3 Cible
 
@@ -1565,7 +1570,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | 0 | Valider la fusion de `master`, puis prendre la référence des comptes | `low` | fait (2026-10-08, `7adf1ddc`) |
 | 1 | Étiquettes, presets, noms automatiques, sans rien déplacer | `medium` | fait (2026-10-08, `69ae400d`) |
 | 2 | Résumé de fin de passage, `.bat` qui reste ouvert, `RunTests.bat <preset>`, installation filtrée par `INSTALL_TEST_SUITE` | `medium` | fait (2026-10-08, `ebb1a5d1`) |
-| 3 | Conventions : `CodingStandards.md` (trois niveaux, AAA, noms), `Architecture.md` (dette révélée par les tests), renvois d'`AGENTS.md` | `medium` | à faire |
+| 3 | Conventions : `CodingStandards.md` (trois niveaux, AAA, noms), `Architecture.md` (dette révélée par les tests), renvois d'`AGENTS.md` | `medium` | livrée (2026-10-09), à commiter ; choix soumis à gcyr |
 | 4 | Interrupteur unique `WITHOUT_TESTS`, squelette `Tests/`, boucle CSV en fonctions | `high` | à faire |
 | 5 | Python et R dans ctest au niveau système : l'installation ne les lance plus qu'à travers ctest | `high` | à faire |
 | 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | à faire |
@@ -1649,6 +1654,24 @@ documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json
   ouvrir (règle 3). La corriger telle quelle ferait réécrire `README.md` et `README.fr.md` à chaque
   installation, `build-broken` compris : l'issue doit poser le choix entre corriger l'expression et
   retirer la mise à jour des badges de l'installation.
+
+**Phase 3 (2026-10-09)** :
+
+- `CodingStandards.md` : trois niveaux et classement des cinq anciens, sous-sections
+  « Arrange, Act, Assert », « Test names » et « Tests that reveal architectural debt », deux points
+  de la liste de relecture, en-tête `#` de Python et R, encodage des nouveaux fichiers CMake, Python
+  et R ; `AGENTS.md` n'y renvoie plus que ; `Architecture.md` : la dette révélée par les tests et
+  trois lignes (comparateurs sans `FMTEXPORT`, `FMTYieldRequest` non exportée, chaîne d'exceptions
+  lancée hors de tout `catch`), vérifiées dans le code ;
+- les noms de gcyr sont cités d'après sa seconde image. La première nommait le même exemple
+  `SetLengthUpdatesPlanningHorizon`, sans condition ;
+- **`FMTModelParser::write` n'a pas sa ligne** : la lecture du code contredit la note de la
+  section 7. Son `catch (...)` appelle `printExceptions`, dont `throwNested` (paramètre `rethrow`
+  vrai par défaut) relance l'exception courante hors du build R, et `printExceptions` la relance à
+  son tour ; un chemin invalide lève `FMTexc(FMTinvalid_path)`, de niveau `FMT_logic`, donc fatal.
+  Non démontré par une exécution (pas de build dans cette phase) : une sonde A/B (écrire dans un
+  dossier inexistant) tranchera avant de corriger la section 7 ou d'ajouter la ligne ;
+- aucun build, aucun test : documentation seulement.
 
 **À retenir pour la phase 7 (relevé le 2026-10-09).** Les sources de test à déplacer ne partagent pas
 un encodage. Sur les 82 fichiers suivis (sources C++ des trois dossiers et `TestTools.h`), 63 sont
