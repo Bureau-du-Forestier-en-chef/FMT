@@ -1573,7 +1573,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | 1 | Étiquettes, presets, noms automatiques, sans rien déplacer | `medium` | fait (2026-10-08, `69ae400d`) |
 | 2 | Résumé de fin de passage, `.bat` qui reste ouvert, `RunTests.bat <preset>`, installation filtrée par `INSTALL_TEST_SUITE` | `medium` | fait (2026-10-08, `ebb1a5d1`) |
 | 3 | Conventions : `CodingStandards.md` (trois niveaux, AAA, noms), `Architecture.md` (dette révélée par les tests), renvois d'`AGENTS.md` | `medium` | fait (2026-10-09, `4ec09af3`) ; choix soumis à gcyr |
-| 4 | Interrupteur unique `WITHOUT_TESTS`, squelette `Tests/`, boucle CSV en fonctions | `high` | à faire |
+| 4 | Interrupteur unique `WITHOUT_TESTS`, squelette `Tests/`, boucle CSV en fonctions | `high` | fait (2026-10-09, `99dd05e4`) |
 | 5 | Python et R dans ctest au niveau système : l'installation ne les lance plus qu'à travers ctest | `high` | à faire |
 | 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | à faire |
 | 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | à faire |
@@ -1675,7 +1675,7 @@ documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json
   dossier inexistant) tranchera avant de corriger la section 7 ou d'ajouter la ligne ;
 - aucun build, aucun test : documentation seulement.
 
-**Phase 4 (2026-10-09, livrée, en attente du build de Gabriel)** :
+**Phase 4 (2026-10-09, `99dd05e4`)** :
 
 - **un seul interrupteur** : `option(WITHOUT_TESTS ... OFF)` à la racine, avant `Excel/`, testé
   partout par sa valeur. `WITHOUT_TESTING` devient un alias déprécié : s'il est vrai,
@@ -1729,7 +1729,19 @@ documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json
 - **reste à corriger plus tard**, hors du périmètre de cette phase : les commentaires de
   `cmake/TestsDataSnapshot.cmake` (lignes 8 et 9) et de `TestTools.h` (ligne 10) nomment encore
   `Examples/C++/CMakeLists.txt` comme le lieu de la fixture et du code 77. À reprendre quand ces
-  fichiers déménagent dans `Tests/Support` (section 9.3).
+  fichiers déménagent dans `Tests/Support` (section 9.3) ;
+- **validation après le build de Gabriel** (2026-10-09) :
+  - `--show-only=json-v1` de `build/release`, comparé par nom à la référence de la phase 1
+    (`test-reorg-baseline\P1\tests.json`) : mêmes 357 noms ; commandes, dossiers de travail et
+    propriétés identiques pour 356 tests, et le `DEPENDS` de `ExamplesModelsUnchanged` garde ses
+    335 éléments dans un autre ordre ;
+  - `ctest --preset <p> -N` : `unit` 0, `integration` 0, `system` 236, `system-private` 94,
+    `performance` 25, `all-public` 259, avec les mêmes noms que les fichiers `preset_<p>.txt` de la
+    référence ;
+  - `RunTests.bat all-public` : « 0 tests failed out of 244 », 17,6 s réelles, et le tableau de la
+    phase 2 (system 219 verts et 15 désactivés, performance 23, other 2 ; Total 244 verts et
+    15 désactivés) ; fixture verte, `Examples/Models` inchangé. Le passage de l'installation
+    (`INSTALL_TEST_SUITE=public`) donne le même tableau.
 
 **À retenir pour la phase 7 (relevé le 2026-10-09).** Les sources de test à déplacer ne partagent pas
 un encodage. Sur les 82 fichiers suivis (sources C++ des trois dossiers et `TestTools.h`), 63 sont
