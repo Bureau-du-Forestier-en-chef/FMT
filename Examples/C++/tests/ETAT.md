@@ -1570,7 +1570,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | 0 | Valider la fusion de `master`, puis prendre la référence des comptes | `low` | fait (2026-10-08, `7adf1ddc`) |
 | 1 | Étiquettes, presets, noms automatiques, sans rien déplacer | `medium` | fait (2026-10-08, `69ae400d`) |
 | 2 | Résumé de fin de passage, `.bat` qui reste ouvert, `RunTests.bat <preset>`, installation filtrée par `INSTALL_TEST_SUITE` | `medium` | fait (2026-10-08, `ebb1a5d1`) |
-| 3 | Conventions : `CodingStandards.md` (trois niveaux, AAA, noms), `Architecture.md` (dette révélée par les tests), renvois d'`AGENTS.md` | `medium` | livrée (2026-10-09), à commiter ; choix soumis à gcyr |
+| 3 | Conventions : `CodingStandards.md` (trois niveaux, AAA, noms), `Architecture.md` (dette révélée par les tests), renvois d'`AGENTS.md` | `medium` | fait (2026-10-09, `4ec09af3`) ; choix soumis à gcyr |
 | 4 | Interrupteur unique `WITHOUT_TESTS`, squelette `Tests/`, boucle CSV en fonctions | `high` | à faire |
 | 5 | Python et R dans ctest au niveau système : l'installation ne les lance plus qu'à travers ctest | `high` | à faire |
 | 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | à faire |
@@ -1655,7 +1655,7 @@ documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json
   installation, `build-broken` compris : l'issue doit poser le choix entre corriger l'expression et
   retirer la mise à jour des badges de l'installation.
 
-**Phase 3 (2026-10-09)** :
+**Phase 3 (2026-10-09, `4ec09af3`)** :
 
 - `CodingStandards.md` : trois niveaux et classement des cinq anciens, sous-sections
   « Arrange, Act, Assert », « Test names » et « Tests that reveal architectural debt », deux points
