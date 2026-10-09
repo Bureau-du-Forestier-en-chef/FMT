@@ -48,17 +48,8 @@ if (MSVC AND ExcelWrapperSOURCES)
 			target_link_libraries(${executablename} PRIVATE FMTExcelWrapper)
 			target_include_directories(${executablename} PRIVATE ${ExcelWrapperINCLUDEDIR})
 			if ("${executablename}" STREQUAL "UnitTestFMTexcelcache")
-				add_test(
-									NAME "System.${executablename}"
-									COMMAND ${executablename}
-									WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-									)
-				#Same properties as the rows of Examples/C++/tests/*.csv: 77 is the skip code of Testing::skip
-				set_tests_properties("System.${executablename}" PROPERTIES
-									LABELS "system;cpp"
-									SKIP_RETURN_CODE 77
-									FIXTURES_REQUIRED ExamplesModels
-									)
+				#Registered like the rows of Examples/C++/tests/*.csv (Tests/Support/TestRegistration.cmake)
+				registersystemtest("System.${executablename}" "Excel/CMakeLists.txt" ${executablename})
 			endif("${executablename}" STREQUAL "UnitTestFMTexcelcache")
 		endforeach()
 	endif(NOT WITHOUT_TESTS)

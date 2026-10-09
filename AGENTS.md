@@ -24,6 +24,7 @@ lives in exactly one document, and changes to it belong in that document only.
 | `Examples/C++/` | Example programs. Each `.cpp` also becomes a test executable. |
 | `Examples/Python/tests/`, `Examples/R/tests/` | pytest and testthat suites, run through the install targets. |
 | `Examples/Models/` | Woodstock models used by the tests. |
+| `Tests/` | Test registration and the tests by level: see [Testing](#testing). |
 | `Tests/Performance/` | Performance and allocation benchmarks: `FMTPerformanceTests`, its harness and `performance.csv`. |
 | `Templates/` | Packaging inputs and generated artifacts: R package, `setup.py.in`, `__init__.py.in`, stub normalization. |
 | `cmake/`, `Modules/` | Install and configuration scripts; `Find*.cmake` for GEOS, MOSEK, OSI, R, Rcpp, ONNX Runtime. |
@@ -43,7 +44,9 @@ cmake --build --preset release-gl
 
 Scripted entry points exist for the usual configurations: `CMakeFMTVS2022vcpkg.bat` and its variants
 on Windows, `CMakeFMTMSYS2rcran45.sh` for the MSYS2 build of the R package. Configuring with
-`-DWITHOUT_TESTING=ON` skips test registration entirely.
+`-DWITHOUT_TESTS=ON` (or `TRUE`, as the release scripts pass it) leaves out every test and every test
+executable; `OFF`, the default, keeps them. `WITHOUT_TESTING`, its former name, still turns them off,
+with a deprecation warning.
 
 The executables that CMake builds (examples, tests, benchmarks) run on the C runtime heap, like FMT in
 Python, Excel and the .NET interface, so that the tests and the benchmarks see what the users get. With
@@ -64,6 +67,16 @@ defined in [CodingStandards.md, Testing](Documentation/CodingStandards.md#testin
 to work around the code is covered in
 [Tests that reveal architectural debt](Documentation/CodingStandards.md#tests-that-reveal-architectural-debt).
 This section covers where tests live and how they run.
+
+The root `CMakeLists.txt` includes `Tests/CMakeLists.txt`, unless `WITHOUT_TESTS` is on. That file
+declares the `ExamplesModels` fixture, which every system test and benchmark requires:
+`cmake/TestsDataSnapshot.cmake` hashes `Examples/Models` before the tests and fails after them if a
+file changed. It then includes one folder per level, `Unit/`, `Integration/` and `System/`, empty
+until their tests arrive, and `Performance/`. The functions that register a test are in
+`Tests/Support/TestRegistration.cmake`: `registersystemtest` registers one system test, under a name
+that no other test may have, and `registercsvtests` registers the rows of CSV files with it.
+`Examples/C++/CMakeLists.txt` calls `registercsvtests` for its CSV files, and `Excel/CMakeLists.txt`
+calls `registersystemtest` for its test.
 
 Each test carries one level label (`system` for every C++ test today, `performance` for the
 benchmarks), and its CTest name follows
@@ -107,7 +120,9 @@ Registration is data-driven. There is no `add_test` call to copy.
    an executable ([Examples/C++/CMakeLists.txt](Examples/C++/CMakeLists.txt), line 11).
 2. Add a row to a CSV in `Examples/C++/tests/`, in the form
    `TEST;primarylocation;scenario;doublevalue`. The row registers the test with CTest only if a
-   target of that name exists (same file, line 42).
+   target of that name exists (`registercsvtests` in
+   [Tests/Support/TestRegistration.cmake](Tests/Support/TestRegistration.cmake)), and a name already
+   given to another test stops the configuration.
 3. `basetests.csv` is versioned. `BFECtests.csv` is listed in `.gitignore`, so `git grep` never shows
    it. Read that file directly before concluding what CTest actually runs.
 

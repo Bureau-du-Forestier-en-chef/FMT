@@ -685,20 +685,37 @@ get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 
 set(ignoreMe "${WITHOUT_TESTS}${WITHOUT_PYTHONLIB}${COVERAGE}")
 
+#The one switch of the tests, read by its value everywhere: ON (or TRUE) configures no test and no test
+#executable, OFF configures them all.
+option(WITHOUT_TESTS "Configure without the tests and their executables" OFF)
+#Former name of the switch. A normal variable rather than the cache, so that the install scripts receive
+#it through ExportAllVariablesToInstall, and that WITHOUT_TESTING set back to OFF gives the tests back.
+if (WITHOUT_TESTING)
+	message(DEPRECATION "WITHOUT_TESTING is deprecated, use WITHOUT_TESTS instead")
+	set(WITHOUT_TESTS ON)
+endif(WITHOUT_TESTING)
+
+if (NOT WITHOUT_TESTS)
+	#Before the first test, that of Excel/CMakeLists.txt, which registers it with these functions
+	enable_testing()
+	include(${CMAKE_CURRENT_SOURCE_DIR}/Tests/Support/TestRegistration.cmake)
+endif (NOT WITHOUT_TESTS)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/Excel/CMakeLists.txt) #will polulate Excel wrapper
 include(${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/CMakeLists.txt) #will polulate FMTWrapperCore
 
-if (NOT DEFINED WITHOUT_TESTS)
+#The executables of the tests come after FMTWrapperCore/, whose include_directories reaches the targets
+#created after it, and the rows of the CSV files after every executable they may name.
+if (NOT WITHOUT_TESTS)
 	if(DEFINED COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
 		SET(TEST_COVERAGE "-T Coverage")
 		include(CTest)
 	endif(DEFINED COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/Tests/CMakeLists.txt) #fixture, test levels and benchmarks
 	include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt) #will polulate tests
-	include(${CMAKE_CURRENT_SOURCE_DIR}/Tests/Performance/CMakeLists.txt) #performance and allocation benchmarks
-endif (NOT DEFINED WITHOUT_TESTS)
+endif (NOT WITHOUT_TESTS)
 
 #add_subdirectory(FMTWrapperCore) # Supposed better than include but directory Header have not .h
 include(${CMAKE_CURRENT_SOURCE_DIR}/UI/CMakeLists.txt) #will polulate UI

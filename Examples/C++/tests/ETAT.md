@@ -65,7 +65,7 @@ Un test base ne fait jamais rien d'autre que ceci : partir de TWD_land, s'arrêt
 | Lignes qui inscrivent les tests | `Examples/C++/tests/basetests.csv` (public), `knownbugs.csv` (désactivées), `BFECtests.csv` (local, privé, ignoré par git) |
 | En-tête commun des tests | `Examples/C++/tests/TestTools.h` |
 | Modèle public et ses scénarios | `Examples/Models/TWD_land`, `Examples/Models/TWD_land/Scenarios/<nom>/` |
-| Inscription dans ctest | `Examples/C++/CMakeLists.txt` (boucle sur les CSV) |
+| Inscription dans ctest | `Tests/Support/TestRegistration.cmake` (fonctions), appelées par `Examples/C++/CMakeLists.txt` pour ses CSV et par `Excel/CMakeLists.txt` ; fixture `ExamplesModels` dans `Tests/CMakeLists.txt` (depuis la phase 4) |
 | Empreinte du modèle entre deux passages | `cmake/TestsDataSnapshot.cmake` |
 | Sorties des tests | `build/release/tests/<test>/` |
 | Suivi du chantier | ce fichier |
@@ -342,7 +342,8 @@ macros (`min`, `max`, `NEAR`, `ERROR`...) arrivent par GDAL : ne pas y introduir
 
 ### 2.1 Des CSV à ctest
 
-- `Examples/C++/CMakeLists.txt` lit `Examples/C++/tests/*.csv`. Colonnes : cible, puis trois
+- `Examples/C++/CMakeLists.txt` passe `Examples/C++/tests/*.csv` à `registercsvtests`
+  (`Tests/Support/TestRegistration.cmake`, depuis la phase 4). Colonnes : cible, puis trois
   arguments ; le `|` sépare des valeurs dans une colonne. Le nom ctest est la concaténation
   cible + arguments 1 et 2 (espaces remplacés par `_`).
 - `basetests.csv` est suivi par git ; `BFECtests.csv` est local et ignoré par git (invisible
@@ -368,7 +369,8 @@ macros (`min`, `max`, `NEAR`, `ERROR`...) arrivent par GDAL : ne pas y introduir
   `build/release/tests/<test>/`.
 - Les arguments sont figés dans `build/release/CTestTestfile.cmake` : **modifier un CSV exige
   de reconfigurer CMake**.
-- `UnitTestFMTexcelcache` est inscrit par `Excel/CMakeLists.txt`, hors CSV.
+- `UnitTestFMTexcelcache` est inscrit par `Excel/CMakeLists.txt`, hors CSV, avec `registersystemtest`,
+  la fonction qui inscrit chaque ligne.
 
 **Un exemple complet.** La ligne
 
@@ -1164,7 +1166,7 @@ Quand les corrections seront faites, la session de tests reprend ainsi :
      FMT et de lancer les tests de chaîne.
   2. **`Tests/Core/CMakeLists.txt` et la cible `FMTCoreTests`**, inscrite avec
      `LABELS "unit;core"` pour que `ctest -L core` fonctionne, et respectant
-     `-DWITHOUT_TESTING=ON`.
+     `-DWITHOUT_TESTS=ON`.
   3. **`Documentation/Testing/CoreTestCoverage.md`** : l'inventaire par classe que demande #350,
      avec ses colonnes. La colonne « Priority » se remplit depuis la section 3 de ce fichier plutôt
      que d'être réinventée. L'inventaire se génère depuis les en-têtes, pour qu'aucune classe ne
@@ -1672,6 +1674,62 @@ documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json
   Non démontré par une exécution (pas de build dans cette phase) : une sonde A/B (écrire dans un
   dossier inexistant) tranchera avant de corriger la section 7 ou d'ajouter la ligne ;
 - aucun build, aucun test : documentation seulement.
+
+**Phase 4 (2026-10-09, livrée, en attente du build de Gabriel)** :
+
+- **un seul interrupteur** : `option(WITHOUT_TESTS ... OFF)` à la racine, avant `Excel/`, testé
+  partout par sa valeur. `WITHOUT_TESTING` devient un alias déprécié : s'il est vrai,
+  `message(DEPRECATION)`, et `WITHOUT_TESTS` vaut `ON` en variable normale, que
+  `ExportAllVariablesToInstall` transmet aux scripts d'installation. Le cache de `WITHOUT_TESTS`
+  n'est pas touché : `WITHOUT_TESTING` remis à `OFF` rend les tests ;
+- **changement de comportement** : `-DWITHOUT_TESTS=false` (ou `OFF`) donne maintenant les tests.
+  La racine testait `NOT DEFINED WITHOUT_TESTS` : toute valeur, fausse comprise, y retirait les
+  tests, alors qu'`Excel/`, `FMTWrapperCore/`, `UI/` et les scripts d'installation, qui testaient la
+  valeur, gardaient leurs exécutables de test et lançaient ctest à l'installation. Les scripts de
+  version passent `-DWITHOUT_TESTS=true` : pour eux, rien ne change ;
+- `Tests/CMakeLists.txt`, l'agrégateur : la fixture `ExamplesModels` (mêmes noms, mêmes commandes),
+  les squelettes `Unit/`, `Integration/` et `System/`, puis `Performance/`, qui quitte la racine.
+  `Tests/Performance/CMakeLists.txt` perd son garde `WITHOUT_TESTING` et son `enable_testing()` ;
+  son corps est désindenté (`git diff -w` ne montre que le garde et le commentaire d'en-tête, devenu
+  faux) ;
+- `Tests/Support/TestRegistration.cmake` : `getcsvtestcase`, recopiée à l'identique ;
+  `registersystemtest`, qui inscrit un test système (`add_test`, `system;cpp`, 77, fixture) sous un
+  nom unique, contrôlé par une propriété GLOBAL par nom, `FMTTESTSorigin.<nom>`, avec un message qui
+  nomme les deux origines ; `registercsvtests`, la boucle sur les CSV, aux règles inchangées.
+  `Examples/C++/CMakeLists.txt` garde la création des exécutables et `FMTTESTSsharedoutputs`,
+  `Excel/CMakeLists.txt` inscrit son test par `registersystemtest`, et la boucle de `UI/tests`, un
+  dossier qui n'existe pas, disparaît ;
+- **écart voulu au prompt de la phase** : `TestRegistration.cmake` est inclus par la racine, avant
+  `Excel/`, et non par l'agrégateur. Placé avant `Excel/`, l'agrégateur faisait passer
+  `Tests/Performance` avant `FMTWrapperCore/`, dont `include_directories` n'atteint que les cibles
+  créées après lui : `FMTPerformanceTests` et `FMTBenchmarkHarness` perdaient
+  `FMTWrapperCore/Include`, vu dans les `.vcxproj` générés. L'agrégateur reste donc à la place de
+  l'ancien bloc, après `FMTWrapperCore/`. **Phase 6** : quand le test Excel aura quitté
+  `Excel/CMakeLists.txt`, l'inclusion de `TestRegistration.cmake` pourra entrer dans l'agrégateur ;
+- `enable_testing()` est appelé une fois, avant le premier `add_test`, celui d'Excel. Le bloc de
+  couverture GNU, inchangé, garde son `include(CTest)`, qui l'appelle aussi ;
+- **contrôles avant le build**, sur la configuration du `.bat` GL rejouée dans le scratchpad :
+  - `--show-only=json-v1`, comparé par nom à celui pris avant toute modification : mêmes 357 noms ;
+    commandes, dossiers de travail et propriétés identiques pour 356 tests ; pour
+    `ExamplesModelsUnchanged`, le `DEPENDS` garde ses 335 éléments dans un autre ordre, celui des
+    inscriptions. Aucun avertissement `no target named` ;
+  - les 187 `.vcxproj`, `.filters` et `.sln` générés sont identiques, dossier de build et GUID
+    normalisés ; seuls les 5 nouveaux fichiers CMake s'ajoutent aux entrées de la reconfiguration ;
+  - variables exportées vers l'installation : les 14 variables que la boucle laissait fuir à la
+    racine disparaissent, `WITHOUT_TESTS` (`OFF`) apparaît, `executablename` et `FMTexecutables` ont
+    une autre dernière valeur ; aucun script d'installation ne lit ces variables ;
+  - `-DWITHOUT_TESTS=ON`, `-DWITHOUT_TESTS=true` et `-DWITHOUT_TESTING=ON` : aucun test, aucun
+    exécutable de test, mêmes 17 projets (bibliothèques et cibles utilitaires) ; l'alias affiche
+    l'avertissement de dépréciation ; `-DWITHOUT_TESTS=false` : les 357 tests ;
+  - doublon provoqué dans des copies des CSV, par un projet jetable qui inclut
+    `TestRegistration.cmake` : « basetests.csv, line 220: the test name
+    "System.testScenarioReading.TWD_land|ROOT|THEMES|3" is already given to basetests.csv, line
+    91 », et, contre le test Excel, « extra.csv, line 1: the test name
+    "System.UnitTestFMTexcelcache" is already given to Excel/CMakeLists.txt » ;
+- **reste à corriger plus tard**, hors du périmètre de cette phase : les commentaires de
+  `cmake/TestsDataSnapshot.cmake` (lignes 8 et 9) et de `TestTools.h` (ligne 10) nomment encore
+  `Examples/C++/CMakeLists.txt` comme le lieu de la fixture et du code 77. À reprendre quand ces
+  fichiers déménagent dans `Tests/Support` (section 9.3).
 
 **À retenir pour la phase 7 (relevé le 2026-10-09).** Les sources de test à déplacer ne partagent pas
 un encodage. Sur les 82 fichiers suivis (sources C++ des trois dossiers et `TestTools.h`), 63 sont
