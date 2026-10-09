@@ -658,7 +658,8 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
 - Le moniteur ne comptait que le fil courant, et le travail se fait dans un fil du gestionnaire de
   tâches : il ne le voyait pas. La replanification compte maintenant tous les fils.
 - **Cause** (lot 4, section 2.17) : un bloc de 4 737 568 octets que MOSEK alloue à la première
-  optimisation de chaque fil, et ne rend jamais. Un seul fil en garde un : la taille est fixe. Lancée
+  optimisation de chaque fil, et ne rend jamais. C'est le tampon du gestionnaire de mémoire de MKL,
+  intégré à MOSEK (démontré le 2026-10-09). Un seul fil en garde un : la taille est fixe. Lancée
   comme dans l'interface, avec un fil par réplicat, la replanification en garde un par réplicat.
 - La borne de mémoire retenue de `Flow.Replanning` est de 5 Mo : elle échouerait si la rétention se
   mettait à grandir avec les réplicats. La replanification privée calcule des yields complexes : sa
@@ -783,6 +784,38 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
   programme de reproduction autonome qui mesure la mémoire privée du processus, a été remis à Gabriel
   le 2026-10-07 : MOSEK n'a pas de dépôt public pour son optimiseur, ses rapports de bogue passent par
   `support@mosek.com`.
+- **La cause est MKL** (réponse du support de MOSEK le 2026-10-09, démontrée le même jour). MOSEK
+  n'a pas reproduit la croissance sur sa machine (10.1.16, Windows, processeur Intel). Il a soupçonné
+  une bibliothèque à tampons par fil, Intel MKL d'abord, ou mimalloc, et proposé deux essais :
+  `MKL_DISABLE_FAST_MM=1` et `MIMALLOC_PURGE_DELAY=0`.
+  - Sur le programme de reproduction (20 fils, mémoire privée), `MKL_DISABLE_FAST_MM=1` supprime la
+    croissance : 28,1 Mo après chaque fil en 10.1.16, de 3,6 à 3,7 Mo en 9.2.36, au lieu de 4,7 Mo
+    de plus par fil. `MIMALLOC_PURGE_DELAY=0` n'y change rien.
+  - MKL est lié statiquement dans les deux DLL : oneMKL 2023.0 dans `mosek64_10_1.dll`, MKL 2019.0
+    Update 3 dans `mosek64_9_2.dll`. Avec `MKL_VERBOSE=1`, chaque appel affiche `FastMM:1`, et
+    `FastMM:0` avec la variable. Le gestionnaire de mémoire rapide de MKL garde les tampons d'un fil
+    jusqu'à la fin du processus, sauf appel de `mkl_free_buffers` ou de `mkl_thread_free_buffers`.
+    MOSEK n'exporte ni l'une ni l'autre : FMT ne peut pas les rendre.
+  - La taille dépend du jeu d'instructions que MKL choisit. Forcé par `MKL_ENABLE_INSTRUCTIONS`,
+    10.1.16 garde 4,7 Mo par fil en AVX2 (le défaut sur l'i9-13900, qui n'a pas d'AVX-512), 3,1 Mo
+    en SSE4.2 et 0,6 Mo en AVX. C'est sans doute pourquoi la machine de MOSEK ne montre rien.
+  - mimalloc n'y est pour rien. `mosek64_9_2.dll` n'en contient pas, et grandit de même. Celui de
+    `mosek64_10_1.dll` est ancien : `MIMALLOC_VERBOSE=1` liste `reset_delay` (100), pas
+    `purge_delay`, donc `MIMALLOC_PURGE_DELAY` est ignorée. `MIMALLOC_RESET_DELAY=0` abaisse la
+    mémoire de départ de 8,7 Mo, sans toucher aux 4,7 Mo par fil.
+  - **Dans FMT** (build `ebb1a5d1`, flux `Flow.*` en mode complet, trois passages de chaque côté, en
+    alternance) : avec la variable, `Flow.Replanning.Threads<N>` retient 2 560 octets par appel au
+    lieu de 51 599 712, soit 256 octets par fil ; `Flow.Replanning`, 256 au lieu de 4 737 824. Mais
+    MKL réalloue alors ses tampons sans cesse : 2 108 allocations de plus par appel, et 9,9 Go alloués
+    au lieu de 0,48 Go. La phase de replanification prend 8 % de plus sur 1 fil, 12 % sur 2, 27 % sur
+    5 et 24 % sur 10 ; la résolution, 1 % de plus (`Flow.Optimize`) et 7 % (`Flow.Optimize.Long`).
+    Les autres flux ne bougent pas. Résultats dans
+    `perf-references\2026-10-09_ebb1a5d1_mkl-fast-mm-ab`.
+  - **Conséquence** : la variable, définie avant le lancement du processus, contourne la croissance
+    sans recompiler, au prix de ce temps ; elle n'est pas essayée dans l'interface. Le correctif de
+    #366 reste un ensemble fixe de fils : la mémoire est bornée à 4,7 Mo par fil, sans ce coût. La
+    réponse à MOSEK et un commentaire pour #366 ont été remis à Gabriel le 2026-10-09 (dossier
+    `reponse-2026-10-09`, à côté du rapport).
 - **Origine** : `onDemandRun` lance un fil par tâche depuis son introduction, `bfdc9936`
   (2021-12-02) ; `cf54b8ff` (2025-10-08) l'a réécrit avec `FMTWorkerTask`, sans changer ce principe.
   L'interface replanifie par `onDemandRun` (`FMTWrapperCore/Source/Planning.cpp`, qui reprend son
@@ -1064,8 +1097,8 @@ Trois demandes de #349 sur les yields complexes dépendent de #348 :
     groupe privé : la replanification lancée comme l'interface (section 3.4).
   - Accélération, efficacité et mémoire par worker par `ScalingReport.cmake` ; résultats vérifiés
     contre un fil.
-  - Constats : un fil par réplicat et 4,7 Mo par fil dans MOSEK (section 2.17), attente active
-    (section 2.18) : issue #366.
+  - Constats : un fil par réplicat et 4,7 Mo par fil dans MKL, intégré à MOSEK (section 2.17),
+    attente active (section 2.18) : issue #366.
 - **Lot 5 : clôture** : livré le 2026-10-08, à relire et commiter (section 5.6).
   - `tools/performance/Measure_Performance.bat`, et `CompareResults.cmake` à plusieurs passages
     (section 3.5).
