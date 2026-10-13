@@ -22,9 +22,9 @@ lives in exactly one document, and changes to it belong in that document only.
 | `UI/` | `FMTForm` and the user interface. |
 | `Excel/` | Excel integration. |
 | `Examples/C++/` | Example programs. Each `.cpp` also becomes a test executable. |
-| `Examples/Python/tests/`, `Examples/R/tests/` | pytest and testthat suites, run through the install targets. |
 | `Examples/Models/` | Woodstock models used by the tests. |
 | `Tests/` | Test registration and the tests by level: see [Testing](#testing). |
+| `Tests/System/Python/`, `Tests/System/R/` | pytest and testthat suites, one system test per file, run by ctest. |
 | `Tests/Performance/` | Performance and allocation benchmarks: `FMTPerformanceTests`, its harness and `performance.csv`. |
 | `Templates/` | Packaging inputs and generated artifacts: R package, `setup.py.in`, `__init__.py.in`, stub normalization. |
 | `cmake/`, `Modules/` | Install and configuration scripts; `Find*.cmake` for GEOS, MOSEK, OSI, R, Rcpp, ONNX Runtime. |
@@ -71,15 +71,17 @@ This section covers where tests live and how they run.
 The root `CMakeLists.txt` includes `Tests/CMakeLists.txt`, unless `WITHOUT_TESTS` is on. That file
 declares the `ExamplesModels` fixture, which every system test and benchmark requires:
 `cmake/TestsDataSnapshot.cmake` hashes `Examples/Models` before the tests and fails after them if a
-file changed. It then includes one folder per level, `Unit/`, `Integration/` and `System/`, empty
-until their tests arrive, and `Performance/`. The functions that register a test are in
-`Tests/Support/TestRegistration.cmake`: `registersystemtest` registers one system test, under a name
-that no other test may have, and `registercsvtests` registers the rows of CSV files with it.
-`Examples/C++/CMakeLists.txt` calls `registercsvtests` for its CSV files, and `Excel/CMakeLists.txt`
-calls `registersystemtest` for its test.
+file changed. It then includes one folder per level, `Unit/` and `Integration/`, empty until their
+tests arrive, and `System/`, which holds the Python and R suites, then `Performance/`. The functions
+that register a test are in `Tests/Support/TestRegistration.cmake`: `registersystemtest` registers one
+system test, under a name that no other test may have, and `registercsvtests` registers the rows of
+CSV files with it. `Examples/C++/CMakeLists.txt` calls `registercsvtests` for its CSV files, and
+`Excel/CMakeLists.txt`, `Tests/System/Python/CMakeLists.txt` and `Tests/System/R/CMakeLists.txt` call
+`registersystemtest` for their tests.
 
-Each test carries one level label (`system` for every C++ test today, `performance` for the
-benchmarks), and its CTest name follows
+Each test carries one level label (`system` for every C++, Python and R test today, `performance` for
+the benchmarks), a system test also the label of its interface (`cpp`, `python` or `r`), and its CTest
+name follows
 [Test names](Documentation/CodingStandards.md#test-names). The private tests,
 rows of the local `BFECtests.csv` on models of `T:\`, keep `T:/` in their name. Test presets in
 `CMakePresets.json` select a level on `build/release` (configure preset `release-gl`), eight tests at a
@@ -107,9 +109,9 @@ CMake of Visual Studio 2022, waits for a key, and returns the exit code of ctest
 
 `cmake --install` runs the ctest pass that the cache variable `INSTALL_TEST_SUITE` selects, and
 prints the same summary: `public` by default (everything but the private tests), `all`, or `none`,
-which runs no test and leaves the README badges unchanged. It does not apply to the Python and R
-suites of the install. The private campaign runs apart, before a release:
-`ctest --preset system-private`.
+which runs no test and leaves the README badges unchanged. The install first builds and installs the
+Python wheel or the R package, without running any test, so that this pass runs their suites with the
+rest. The private campaign runs apart, before a release: `ctest --preset system-private`.
 
 ### Adding a C++ test
 
@@ -126,8 +128,31 @@ Registration is data-driven. There is no `add_test` call to copy.
 3. `basetests.csv` is versioned. `BFECtests.csv` is listed in `.gitignore`, so `git grep` never shows
    it. Read that file directly before concluding what CTest actually runs.
 
-Python and R behaviour is covered by `Examples/Python/tests/` and `Examples/R/tests/`, wired in
-`cmake/BaseInstallPython.cmake` and `cmake/BaseInstallR.cmake`.
+### Python and R tests
+
+Python and R behaviour is covered by the pytest suite of `Tests/System/Python/` and the testthat suite
+of `Tests/System/R/`. Each `test<Domain>.py` or `test<Domain>.R` file is one system test,
+`System.Python.<Domain>` or `System.R.<Domain>`, labelled `system` and `python` or `r`. A new file is
+registered at the next configuration.
+
+- The Python tests are registered where `cmake/BaseInstallPython.cmake` builds the wheel: a build with
+  the `FMT` target and a Python interpreter, without `R_DIR` or `WITHOUT_PYTHONLIB`: the MSVC builds.
+  `runTestFile.py` runs one file with pytest against `FMT.pyd` in `build/release/bin/Release`, put first
+  on the path by `PYTHONPATH`, so they check the current build rather than the wheel last installed.
+  `FMT.pyd` needs the DLLs that `cmake --install` copies next to it: until then, the tests are skipped.
+- The R tests are registered with `R_DIR`, when its `Rscript` is found at configuration: the MSYS2
+  builds. `runTestFile.R` runs one file with testthat against the FMT package installed in that R by
+  `cmake/BaseInstallR.cmake`: the tests are skipped until the package of this build's version is
+  installed. `runTests.R` still runs the whole folder by hand.
+
+A test that cannot run, because pytest, testthat or the package is missing, returns 77 and prints
+`SKIPPED: <reason>`, which the summary shows. Both suites run in the ctest pass of `cmake --install`,
+and like any system test:
+
+```bash
+ctest --test-dir build/release -C Release -L "^python$" --output-on-failure
+RunTests.bat system -R "System\.Python\."
+```
 
 Reporting a test result: [CodingStandards.md, Testing](Documentation/CodingStandards.md#testing).
 

@@ -1,5 +1,6 @@
 #[[
-Build, install, and validate the FMT Python wheel.
+Build and install the FMT Python wheel, and make pytest available to the tests. The pytest suite,
+Tests/System/Python, runs in the ctest pass of BaseInstallTests.cmake.
 ]]
 
 set(FMT_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}")
@@ -18,7 +19,7 @@ if(EXISTS "${FMT_OUTPUT_DIRECTORY}/setup.py" AND NOT EXISTS "${R_DIR}")
         list(APPEND PYTHON_BUILD_DEPENDENCIES pytest)
     endif()
     fmtExecuteRequired("Install Python build dependencies" "${FMT_OUTPUT_DIRECTORY}"
-        "${PYTHON}" -m pip install ${PYTHON_BUILD_DEPENDENCIES})
+        "${PYTHON}" -m pip install -q ${PYTHON_BUILD_DEPENDENCIES})
 
     file(GLOB STALE_WHEELS "${FMT_OUTPUT_DIRECTORY}/FMT*.whl")
     if(STALE_WHEELS)
@@ -26,7 +27,7 @@ if(EXISTS "${FMT_OUTPUT_DIRECTORY}/setup.py" AND NOT EXISTS "${R_DIR}")
     endif()
 
     fmtExecuteRequired("Build the FMT Python wheel" "${FMT_OUTPUT_DIRECTORY}"
-        "${PYTHON}" -m pip wheel .)
+        "${PYTHON}" -m pip wheel -q .)
 
     file(GLOB wheelfiles "${FMT_OUTPUT_DIRECTORY}/FMT*.whl")
     list(LENGTH wheelfiles WHEEL_COUNT)
@@ -37,20 +38,5 @@ if(EXISTS "${FMT_OUTPUT_DIRECTORY}/setup.py" AND NOT EXISTS "${R_DIR}")
     get_filename_component(wheelname "${wheelloc}" NAME)
 
     fmtExecuteRequired("Install the FMT Python wheel" "${FMT_OUTPUT_DIRECTORY}"
-        "${PYTHON}" -m pip install "${wheelloc}" --force-reinstall)
-
-    if(NOT WITHOUT_TESTS)
-        set(FMT_PYTHON_TEST_DIRECTORY
-            "${CMAKE_CURRENT_SOURCE_DIR}/Examples/Python/tests")
-        if(NOT EXISTS "${FMT_PYTHON_TEST_DIRECTORY}")
-            message(FATAL_ERROR
-                "Python test suite is missing: ${FMT_PYTHON_TEST_DIRECTORY}")
-        endif()
-
-        fmtExecuteRequired("Run verbose FMT Python tests" "${FMT_OUTPUT_DIRECTORY}"
-            "${CMAKE_COMMAND}" -E env
-            "FMT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
-            "${PYTHON}" -m pytest -vv -s -ra --showlocals
-            "${FMT_PYTHON_TEST_DIRECTORY}")
-    endif()
+        "${PYTHON}" -m pip install -q "${wheelloc}" --force-reinstall)
 endif()

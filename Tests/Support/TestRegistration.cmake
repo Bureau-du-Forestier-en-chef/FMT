@@ -57,9 +57,11 @@ function(getcsvtestcase primarylocation scenario testcase)
 endfunction()
 
 #Registers the system test <testname>, which runs the command given after <origin>: an executable target
-#and its arguments, run from the folder of the executables. The test is labelled system and cpp, skipped
-#when it returns 77 (Testing::skip in Examples/C++/tests/TestTools.h), and requires the ExamplesModels
-#fixture of Tests/CMakeLists.txt. <origin> says where the test comes from, such as
+#and its arguments, or an interpreter, its test runner and their arguments, run from the folder of the
+#executables. The test is labelled system and with its interface: cpp, unless the command is preceded by
+#INTERFACE <interface>, such as INTERFACE python. It is skipped when it returns 77 (Testing::skip in
+#Examples/C++/tests/TestTools.h, or the runners of Tests/System/Python and Tests/System/R), and requires the
+#ExamplesModels fixture of Tests/CMakeLists.txt. <origin> says where the test comes from, such as
 #"basetests.csv, line 12": the configuration stops, naming both origins, when <testname> is already given.
 function(registersystemtest testname origin)
 	get_property(alreadygiven GLOBAL PROPERTY "FMTTESTSorigin.${testname}" SET)
@@ -68,13 +70,23 @@ function(registersystemtest testname origin)
 		message(FATAL_ERROR "${origin}: the test name \"${testname}\" is already given to ${registeredorigin}")
 	endif(alreadygiven)
 	set_property(GLOBAL PROPERTY "FMTTESTSorigin.${testname}" "${origin}")
+	set(command ${ARGN})
+	set(interface "cpp")
+	list(LENGTH command commandlength)
+	if (commandlength GREATER 2)
+		list(GET command 0 firstargument)
+		if (firstargument STREQUAL "INTERFACE")
+			list(GET command 1 interface)
+			list(REMOVE_AT command 0 1)
+		endif(firstargument STREQUAL "INTERFACE")
+	endif(commandlength GREATER 2)
 	add_test(
 			NAME "${testname}"
-			COMMAND ${ARGN}
+			COMMAND ${command}
 			WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
 			)
 	set_tests_properties("${testname}" PROPERTIES
-			LABELS "system;cpp"
+			LABELS "system;${interface}"
 			SKIP_RETURN_CODE 77
 			FIXTURES_REQUIRED ExamplesModels
 			)
