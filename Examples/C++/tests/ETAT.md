@@ -1574,7 +1574,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | 2 | Résumé de fin de passage, `.bat` qui reste ouvert, `RunTests.bat <preset>`, installation filtrée par `INSTALL_TEST_SUITE` | `medium` | fait (2026-10-08, `ebb1a5d1`) |
 | 3 | Conventions : `CodingStandards.md` (trois niveaux, AAA, noms), `Architecture.md` (dette révélée par les tests), renvois d'`AGENTS.md` | `medium` | fait (2026-10-09, `4ec09af3`) ; choix soumis à gcyr |
 | 4 | Interrupteur unique `WITHOUT_TESTS`, squelette `Tests/`, boucle CSV en fonctions | `high` | fait (2026-10-09, `99dd05e4`) |
-| 5 | Python et R dans ctest au niveau système : l'installation ne les lance plus qu'à travers ctest | `high` | à faire |
+| 5 | Python et R dans ctest au niveau système : l'installation ne les lance plus qu'à travers ctest | `high` | fait côté MSVC (2026-10-13) ; R à valider par Gabriel |
 | 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | à faire |
 | 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | à faire |
 | 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | à faire |
@@ -1742,6 +1742,73 @@ documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json
     phase 2 (system 219 verts et 15 désactivés, performance 23, other 2 ; Total 244 verts et
     15 désactivés) ; fixture verte, `Examples/Models` inchangé. Le passage de l'installation
     (`INSTALL_TEST_SUITE=public`) donne le même tableau.
+
+**Phase 5 (2026-10-13)** :
+
+- **déplacements** par `git mv`, contenu inchangé : `Examples/Python/tests` et
+  `Examples/Python/pytest.ini` dans `Tests/System/Python`, `Examples/R/tests` dans
+  `Tests/System/R` ; 18 renommages à 100 % ;
+- **inscription** : `registersystemtest` prend `INTERFACE <interface>` avant la commande, `cpp` par
+  défaut. Un test par fichier `test<Domaine>` :
+  - `System.Python.<Domaine>`, étiqueté `system;python`, là où l'installation construit la roue :
+    cible `FMT`, `Python_EXECUTABLE` existant, sans `R_DIR` existant (la condition de
+    `BaseInstallPython.cmake`) ni `WITHOUT_PYTHONLIB` ;
+  - `System.R.<Domaine>`, étiqueté `system;r`, avec un `R_DIR` existant et son Rscript, cherché dans
+    `R_DIR` seulement, sans le repli sur le `PATH` de l'installation : le paquet est installé dans ce
+    R ;
+  - `FMT_SOURCE_DIR`, et pour Python `PYTHONPATH` et `PYTHONDONTWRITEBYTECODE`, passent par
+    `ENVIRONMENT`. Le corps des deux `CMakeLists.txt` est dans une fonction : aucune variable ne fuit
+    vers l'installation ;
+- **lanceurs** `runTestFile.py` et `runTestFile.R`, un fichier par appel :
+  - Python : `FMT.pyd` de `bin/<type>` par `PYTHONPATH`, `FMT.__file__` affiché, pytest avec
+    `-p no:cacheprovider` ; 77 sans pytest, ou si l'import échoue dans un arbre jamais installé
+    (reconnu à l'absence de roue `FMT*.whl` dans `bin/<type>`) ; échec si aucun test n'est
+    collecté, si l'import échoue dans un arbre installé, si `FMT.pyd` n'est pas construit ou s'il
+    vient d'ailleurs : sans `FMT.pyd`, Python prend en silence la roue installée (vu dans la
+    configuration jetable). La ligne `SKIPPED:` reste en ASCII et l'erreur d'import suit sur sa
+    propre ligne : Windows la rédige en cp1252, que le résumé affichait mal ;
+  - R : 77 si testthat ou FMT n'est pas installé, ou si la version installée diffère de
+    `PROJECT_VERSION` ; 1 sur un échec, une erreur, ou si aucun test ne tourne. `runTests.R` reste
+    pour lancer le dossier à la main ;
+- **installation** : `BaseInstallPython.cmake` et `BaseInstallR.cmake` gardent pytest et testthat
+  disponibles, construisent et installent les paquets, mais ne lancent plus aucune suite ; pip passe
+  en `-q`. `BaseInstallTests.cmake` ne change pas ;
+- **contrôles avant le build** :
+  - configuration MSVC rejouée dans le scratchpad : 364 tests ; les 357 sont identiques à
+    `P1\tests.json` par nom, commande, dossier et propriétés (hors indices `backtrace`), et seul le
+    `DEPENDS` de `ExamplesModelsUnchanged` gagne les 7 tests Python ; aucun test R ;
+  - lanceur Python à la main contre `build/release` : les 7 fichiers passent (15 fonctions) ; un
+    fichier jetable qui échoue rend 1, un fichier sans test 1 ; 77 sans pytest (venv sans pip) et
+    avec un `FMT.pyd` sans ses DLL ; 1 pour le même arbre avec une roue factice, et sans `FMT.pyd` ;
+    rien d'écrit dans `Tests/System/Python` ;
+  - passage ctest et résumé dans la configuration jetable : les 7 tests ignorés, avec leur raison ;
+  - R, dans un projet jetable avec un faux `Rscript.exe` compilé par `cl` qui écrit ses arguments :
+    7 tests `System.R.*`, leurs propriétés et la commande
+    `Rscript --vanilla runTestFile.R <fichier> 1.3.0` ; aucun test Python avec `R_DIR` ; un `R_DIR`
+    sans Rscript donne un avertissement et aucun test. Le lanceur R n'a jamais été exécuté
+    (contrôle statique seulement) ;
+- **validation après le build de Gabriel** (2026-10-13) :
+  - passage de l'installation : system 226 verts et 15 désactivés, performance 23, other 2 ; Total
+    251 verts et 15 désactivés ;
+  - les 7 tests Python passent, 15 fonctions, avec `FMT.__file__` dans `bin\Release` ;
+  - `ctest --preset <p> -N` : `all-public` 266, `system` 243, `system-private` 94, `performance`
+    25, `unit` 0, `integration` 0 ; `-L "^python$"` : 7 tests et les 2 fixtures ; `-L "^r$"` : 0 ;
+  - la console de l'installation n'a pas été relue par Claude : l'absence du bloc de pytest se
+    déduit du script et du résumé ;
+- **restes ignorés par git**, à supprimer à la main : `Examples/Python/tests/__pycache__` et
+  `Examples/Python/.pytest_cache` ; `Examples/R/tests` est vide.
+
+**À vérifier par Gabriel côté R**, au prochain build MSYS2 :
+
+- `ctest --test-dir build/release -N -L "^r$"` : les 7 tests `System.R.*`, plus les 2 fixtures,
+  et aucun `System.Python.*` ; pas d'avertissement « No Rscript was found » à la configuration ;
+- l'installation ne lance plus testthat (plus d'étape « Run FMT R tests »), mais s'assure toujours
+  qu'il est installé ;
+- le résumé compte les 7 tests R dans `system` ; un test R ignoré y affiche sa raison (testthat ou
+  FMT non installé, ou version installée différente de celle du build) ;
+- jamais exécuté jusqu'ici : `test_file` qui charge `helperFMT.R`, et les colonnes `failed` et
+  `error` de ses résultats. Vu rouge : une attente faussée dans une copie d'un fichier de test doit
+  rendre 1.
 
 **À retenir pour la phase 7 (relevé le 2026-10-09).** Les sources de test à déplacer ne partagent pas
 un encodage. Sur les 82 fichiers suivis (sources C++ des trois dossiers et `TestTools.h`), 63 sont
