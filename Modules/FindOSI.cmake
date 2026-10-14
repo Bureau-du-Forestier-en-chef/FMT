@@ -478,6 +478,23 @@ else()
     set(OSI_INCLUDE_SEARCH_ROOTS "${OSI_SEARCH_ROOT}")
 endif()
 
+# In the RTools workflow, the private stack decides. A build folder configured
+# before it keeps in its cache the COIN-OR of RTools, which FindOSI used to
+# find through OSI_DIR, and a cached result is never searched again: its
+# headers and libraries would mix with those of the private stack. They are
+# searched again at each configuration.
+if(OSI_USING_RTOOLS_BUILD)
+    foreach(_osi_cached_dir
+        OSI_INCLUDE_DIR CLP_INCLUDE_DIR GLPK_INCLUDE_DIR CU_INCLUDE_DIR)
+        unset(${_osi_cached_dir} CACHE)
+    endforeach()
+    foreach(_osi_cached_library
+        COINUTILS OSI OSI_CLP OSI_GLPK CLP CLP_SOLVER GLPK GLPK_SOLVER)
+        unset(${_osi_cached_library}_LIBRARY_RELEASE CACHE)
+        unset(${_osi_cached_library}_LIBRARY_DEBUG CACHE)
+    endforeach()
+endif()
+
 # -----------------------------------------------------------------------------
 # Headers
 # -----------------------------------------------------------------------------
