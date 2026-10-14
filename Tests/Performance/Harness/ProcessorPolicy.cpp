@@ -34,6 +34,18 @@ namespace
 		return SetProcessInformation(GetCurrentProcess(), ProcessPowerThrottling, &state, sizeof(state)) != 0;
 	}
 
+	// The CPU set functions of Windows 10, looked up in kernel32.dll: MinGW declares them only from
+	// mingw-w64 12, and its import library may lack them.
+	using CpuSetInformationFunction = BOOL(WINAPI*)(PSYSTEM_CPU_SET_INFORMATION, ULONG, PULONG, HANDLE, ULONG);
+	using CpuSetSelectionFunction = BOOL(WINAPI*)(HANDLE, const ULONG*, ULONG);
+
+	template <typename Function>
+	Function kernelFunction(const char* p_name)
+	{
+		const HMODULE KERNEL = GetModuleHandleW(L"kernel32.dll");
+		return KERNEL == nullptr ? nullptr : reinterpret_cast<Function>(GetProcAddress(KERNEL, p_name));
+	}
+
 	// The CPU sets of the logical processors, and the identifiers of those of the most performant
 	// efficiency class (a higher class runs faster).
 	struct CpuSets
@@ -45,14 +57,20 @@ namespace
 	CpuSets readCpuSets()
 	{
 		CpuSets cpuSets;
+		const CpuSetInformationFunction GET_CPU_SET_INFORMATION =
+			kernelFunction<CpuSetInformationFunction>("GetSystemCpuSetInformation");
+		if (GET_CPU_SET_INFORMATION == nullptr)
+		{
+			return cpuSets;
+		}
 		ULONG length = 0;
-		GetSystemCpuSetInformation(nullptr, 0, &length, GetCurrentProcess(), 0);
+		GET_CPU_SET_INFORMATION(nullptr, 0, &length, GetCurrentProcess(), 0);
 		if (length == 0)
 		{
 			return cpuSets;
 		}
 		std::vector<unsigned char> buffer(length);
-		if (GetSystemCpuSetInformation(reinterpret_cast<PSYSTEM_CPU_SET_INFORMATION>(buffer.data()), length, &length,
+		if (GET_CPU_SET_INFORMATION(reinterpret_cast<PSYSTEM_CPU_SET_INFORMATION>(buffer.data()), length, &length,
 			GetCurrentProcess(), 0) == 0)
 		{
 			return cpuSets;
@@ -100,9 +118,12 @@ namespace Performance
 		// The default CPU sets of the process hold for the threads it starts without sets of their
 		// own, such as the workers of a replanning.
 		const ULONG FASTEST = static_cast<ULONG>(CPU_SETS.fastest.size());
+		const CpuSetSelectionFunction SELECT_FOR_THREAD = kernelFunction<CpuSetSelectionFunction>("SetThreadSelectedCpuSets");
+		const CpuSetSelectionFunction SELECT_FOR_PROCESS = kernelFunction<CpuSetSelectionFunction>("SetProcessDefaultCpuSets");
 		if (!CPU_SETS.fastest.empty() && CPU_SETS.fastest.size() < CPU_SETS.logicalProcessors
-			&& SetThreadSelectedCpuSets(GetCurrentThread(), CPU_SETS.fastest.data(), FASTEST) != 0
-			&& SetProcessDefaultCpuSets(GetCurrentProcess(), CPU_SETS.fastest.data(), FASTEST) != 0)
+			&& SELECT_FOR_THREAD != nullptr && SELECT_FOR_PROCESS != nullptr
+			&& SELECT_FOR_THREAD(GetCurrentThread(), CPU_SETS.fastest.data(), FASTEST) != 0
+			&& SELECT_FOR_PROCESS(GetCurrentProcess(), CPU_SETS.fastest.data(), FASTEST) != 0)
 		{
 			description = "fastest cores for every thread, " + std::to_string(CPU_SETS.fastest.size()) + " of "
 				+ std::to_string(CPU_SETS.logicalProcessors) + " logical processors";
