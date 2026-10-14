@@ -62,6 +62,11 @@ target_include_directories(FMTBenchmarkHarness
 	PRIVATE "${FMTPERFORMANCEgenerated}" ${FMTINCLUDEDIR} ${Boost_INCLUDE_DIRS}
 	)
 target_compile_definitions(FMTBenchmarkHarness PRIVATE "-DFMTLIBIMPORT" "FMT_BENCHMARK_CONFIGURATION=\"$<CONFIG>\"")
+if (MINGW)
+	# ProcessorPolicy.cpp calls functions of Windows 10 (CPU sets, power throttling), which MinGW declares
+	# only for a target of Windows 10 and later; the Windows SDK of MSVC targets the latest by default.
+	target_compile_definitions(FMTBenchmarkHarness PRIVATE "_WIN32_WINNT=0x0A00")
+endif()
 target_link_libraries(FMTBenchmarkHarness PUBLIC FMTlib)
 set_property(TARGET FMTBenchmarkHarness PROPERTY CXX_STANDARD 17)
 set_property(TARGET FMTBenchmarkHarness PROPERTY CXX_STANDARD_REQUIRED ON)
