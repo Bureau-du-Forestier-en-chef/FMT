@@ -9,7 +9,7 @@
     {
       "name": "release-mam",
       "displayName": "Release MAM (Visual Studio, tests activés)",
-      "description": "Miroir des .bat de build de l'équipe (CMakeFMTVS2022vcpkg.bat / CMakeFMTVS2022vcpkg_MAM.bat), sans WITHOUT_TESTS ni GENERATE_RELEASE_PACKAGE pour avoir les exécutables de test dans build/release.",
+      "description": "Miroir des .bat de build de l'équipe (tools/build/CMakeFMTVS2022vcpkg.bat / tools/build/CMakeFMT_MAM_NEW.bat), sans WITHOUT_TESTS ni GENERATE_RELEASE_PACKAGE pour avoir les exécutables de test dans build/release.",
       "generator": "Visual Studio 17 2022",
       "architecture": "x64",
       "toolset": "v143",
@@ -30,7 +30,7 @@
     {
       "name": "release-gc",
       "displayName": "Release GC (Visual Studio, tests activés)",
-      "description": "Copie du preset MAM basée sur CMakeFMTVS2022vcpkg.bat (Gcyr). Adapter au minimum CMAKE_TOOLCHAIN_FILE et MOSEK_DIR au chemin réel de ta machine.",
+      "description": "Copie du preset MAM basée sur tools/build/CMakeFMTVS2022vcpkg.bat (Gcyr). Adapter au minimum CMAKE_TOOLCHAIN_FILE et MOSEK_DIR au chemin réel de ta machine.",
       "generator": "Visual Studio 17 2022",
       "architecture": "x64",
       "toolset": "v143,version=14.36.17.6",
@@ -52,7 +52,7 @@
     {
       "name": "release-gl",
       "displayName": "Release GL (Visual Studio, tests activés)",
-      "description": "Copie du preset MAM basée sur CMakeFMTVS2022vcpkg_GL.bat. Adapter au minimum CMAKE_TOOLCHAIN_FILE, MOSEK_DIR et le chemin du Ninja embarqué de VS au chemin réel de ta machine.",
+      "description": "Copie du preset MAM basée sur tools/build/CMakeFMTVS2022vcpkg_GL.bat. Adapter au minimum CMAKE_TOOLCHAIN_FILE, MOSEK_DIR et le chemin du Ninja embarqué de VS au chemin réel de ta machine.",
       "generator": "Visual Studio 17 2022",
       "architecture": "x64",
       "toolset": "v143",

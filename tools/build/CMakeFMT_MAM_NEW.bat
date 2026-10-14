@@ -1,4 +1,6 @@
 :::Set the dependencies with MSVC_dependencies_setup.bat
+:::Run from the repository root, even when started from the Explorer
+pushd "%~dp0..\.."
 call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars64.bat"
 
 :::MAM specifics
@@ -25,3 +27,5 @@ cmake --build build/release --config Release
 
 :::Install
 cmake --install build/release --config Release
+
+popd

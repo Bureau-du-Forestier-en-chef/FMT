@@ -42,8 +42,9 @@ cmake --preset release-gl
 cmake --build --preset release-gl
 ```
 
-Scripted entry points exist for the usual configurations: `CMakeFMTVS2022vcpkg.bat` and its variants
-on Windows, `CMakeFMTMSYS2rcran45.sh` for the MSYS2 build of the R package. Configuring with
+Scripted entry points exist for the usual configurations, in `tools/build/`:
+`CMakeFMTVS2022vcpkg.bat` and its variants on Windows, `CMakeFMTMSYS2rcran45.sh` for the MSYS2 build
+of the R package. [tools/README.md](tools/README.md) lists every script of `tools/`. Configuring with
 `-DWITHOUT_TESTS=ON` (or `TRUE`, as the release scripts pass it) leaves out every test and every test
 executable; `OFF`, the default, keeps them. `WITHOUT_TESTING`, its former name, still turns them off,
 with a deprecation warning.
@@ -101,7 +102,7 @@ nothing yet. Without a preset, filter by label, always anchored since `-L` takes
 ctest --test-dir build/release -C Release -L "^system$" -E "T:/" -j 8 --output-on-failure
 ```
 
-`RunTests.bat [preset] [ctest options...]`, at the root, runs a test preset (`all-public` by
+`tools\tests\RunTests.bat [preset] [ctest options...]` runs a test preset (`all-public` by
 default) and ends with a summary: a table by level (passed, failed, skipped, disabled, total), then
 the failed and the skipped tests with their reason. It finds `ctest` in the `PATH`, otherwise in the
 CMake of Visual Studio 2022, waits for a key, and returns the exit code of ctest. The summary is
@@ -112,8 +113,8 @@ prints the same summary: `public` by default (everything but the private tests),
 which runs no test and leaves the README badges unchanged. The install first builds and installs the
 Python wheel or the R package, without running any test, so that this pass runs their suites with the
 rest. The private campaign runs apart, before a release: `ctest --preset system-private`, or
-`RunPrivateTests.bat [ctest options...]`, which checks that `T:\` is reachable, then runs
-`RunTests.bat system-private` and its summary.
+`tools\tests\RunPrivateTests.bat [ctest options...]`, which checks that `T:\` is reachable, then
+runs `RunTests.bat system-private` and its summary.
 
 ### Adding a C++ test
 
@@ -153,7 +154,7 @@ and like any system test:
 
 ```bash
 ctest --test-dir build/release -C Release -L "^python$" --output-on-failure
-RunTests.bat system -R "System\.Python\."
+tools\tests\RunTests.bat system -R "System\.Python\."
 ```
 
 Reporting a test result: [CodingStandards.md, Testing](Documentation/CodingStandards.md#testing).
@@ -196,12 +197,12 @@ break before you have read anything else.
 
 ## Commits and changelog
 
-Commit messages follow Conventional Commits 1.0.0, as produced by `CommitMessage_Generator.bat`
-(`tools/commitMessage/`): `type(scope): description`, lowercase type, imperative subject, 72
-characters or fewer, `!` after the type or scope for a breaking change.
+Commit messages follow Conventional Commits 1.0.0, as produced by
+`tools/commitMessage/CommitMessage_Generator.bat`: `type(scope): description`, lowercase type,
+imperative subject, 72 characters or fewer, `!` after the type or scope for a breaking change.
 
-The changelog follows Keep a Changelog and SemVer, produced by `Changelog_Generate.bat`
-(`tools/changelog/`).
+The changelog follows Keep a Changelog and SemVer, produced by
+`tools/changelog/Changelog_Generate.bat`.
 
 Do not create commits unless you are asked to. Describe what changed and leave the commit to the
 maintainer.

@@ -1,4 +1,6 @@
 ::Set the dependencies with MSVC_dependencies_setup.bat
+::Run from the repository root, even when started from the Explorer
+pushd "%~dp0..\.."
 call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars64.bat"
 
 set MOSEK_DIR=C:/PROGRA~1/Mosek/10.1/
@@ -16,4 +18,5 @@ cmake --build build/release --config Release
 
 cmake --install build/release --config Release
 
+popd
 pause

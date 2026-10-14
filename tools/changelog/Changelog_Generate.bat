@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions
 REM ============================================================================
-REM  Changelog_Generate.bat
+REM  tools\changelog\Changelog_Generate.bat
 REM  1) Genere un prompt (commits + fichiers non commites + issues resolues) et le
 REM     copie dans le presse-papier pour le coller dans Copilot (Teams / app Windows).
 REM  2) Pause : vous collez les deux blocs changelog dans CHANGELOG.fr.md /
@@ -11,12 +11,14 @@ REM     si le titre est une version, tag + branche d'archivage + push origin.
 REM     Si le titre est [Unreleased] : commit + push seulement, sans tag.
 REM
 REM  Argument optionnel : une reference de depart (tag / hash / date).
-REM    Changelog_Generate.bat            (depuis le dernier tag)
-REM    Changelog_Generate.bat v1.0.2     (depuis une reference precise)
+REM    tools\changelog\Changelog_Generate.bat            (depuis le dernier tag)
+REM    tools\changelog\Changelog_Generate.bat v1.0.2     (depuis une reference precise)
 REM ============================================================================
 
-set "DIR=%~dp0tools\changelog"
+set "DIR=%~dp0"
 set "PS=powershell -NoProfile -ExecutionPolicy Bypass -File"
+REM Racine du depot qui contient ce script : les scripts y lancent git.
+cd /d "%~dp0..\.."
 
 set "DIFFOPT="
 set "CHOICE="
@@ -29,7 +31,7 @@ set /p "CHOICE=  Votre choix [1/2] (Entree = 1) : "
 if "%CHOICE%"=="2" set "DIFFOPT=-Diff"
 
 echo.
-%PS% "%DIR%\Generate-Changelog.ps1" %* %DIFFOPT%
+%PS% "%DIR%Generate-Changelog.ps1" %* %DIFFOPT%
 
 echo.
 echo ============================================================
@@ -50,7 +52,7 @@ echo ============================================================
 pause
 
 echo.
-%PS% "%DIR%\Release-Changelog.ps1"
+%PS% "%DIR%Release-Changelog.ps1"
 
 endlocal
 echo.

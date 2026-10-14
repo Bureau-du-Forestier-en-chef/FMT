@@ -943,7 +943,7 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
   l'objet de l'appelant. Décision en attente : correctif ici ou issue pour gcyr, c'est son
   fichier. La replanification, elle, lève bien -- « Infeasible Global model »,
   `FMTReplanningTask.cpp:126`.
-- **La chaîne MSYS2** (`CMakeFMTMSYS2rcran45.sh`) : le `CMakeLists.txt` racine inclut
+- **La chaîne MSYS2** (`tools/build/CMakeFMTMSYS2rcran45.sh`) : le `CMakeLists.txt` racine inclut
   `FMTWrapperCore` sans condition MSVC, donc GCC compile le Core et ses tests. Aucune
   compilation MSYS2 n'est consignée depuis le début de la migration. La recherche des
   extensions MSVC courantes (`std::exception("...")`, fonctions `_s`, `#pragma warning`) ne

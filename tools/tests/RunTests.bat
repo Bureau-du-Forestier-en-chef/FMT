@@ -1,11 +1,13 @@
 @echo off
 rem Runs a test preset of CMakePresets.json, then prints the summary of the pass by level.
-rem Usage: RunTests.bat [preset] [ctest options...]
+rem Usage: tools\tests\RunTests.bat [preset] [ctest options...]
 rem   preset: unit, integration, system, system-private, performance or all-public (the default).
-rem   Example: RunTests.bat system -R Scenario
+rem   Example: tools\tests\RunTests.bat system -R Scenario
 rem The window waits for a key, then the script returns the exit code of ctest.
 setlocal
-cd /d "%~dp0"
+rem The presets are read from the repository root, two levels above this script.
+for %%I in ("%~dp0..\..") do set "ROOT=%%~fI"
+cd /d "%ROOT%"
 
 set "PRESET=all-public"
 set "OPTIONS="
@@ -51,7 +53,7 @@ if errorlevel 1 (
 "%CTEST%" --preset %PRESET% %OPTIONS% --output-junit "%RESULTS%"
 set "RC=%ERRORLEVEL%"
 
-"%CMAKE%" "-DTEST_RESULTS=%RESULTS%" "-DTEST_LIST=%LIST%" -P "%~dp0Tests\Support\TestSummary.cmake"
+"%CMAKE%" "-DTEST_RESULTS=%RESULTS%" "-DTEST_LIST=%LIST%" -P "%ROOT%\Tests\Support\TestSummary.cmake"
 
 :end
 pause

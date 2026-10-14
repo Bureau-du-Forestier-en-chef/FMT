@@ -579,9 +579,10 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
   sans quoi il rend 127 (DLL introuvable).
 - **Le vrai build compile en `/W1`** : les contrôles du scratchpad, en `/W4`, sont plus
   sévères ; un avertissement de niveau 2 à 4 n'apparaît pas dans la sortie du build de Gabriel.
-- **Les messages du build ne sont écrits nulle part.** `CMakeFMTVS2022vcpkg_GL.bat` écrit dans
-  la console seulement, et MSBuild ne laisse pas de journal par projet. Pour les garder, dans
-  PowerShell : `.\CMakeFMTVS2022vcpkg_GL.bat 2>&1 | Tee-Object -FilePath build\release\build-bat.log`.
+- **Les messages du build ne sont écrits nulle part.** `tools\build\CMakeFMTVS2022vcpkg_GL.bat`
+  écrit dans la console seulement, et MSBuild ne laisse pas de journal par projet. Pour les
+  garder, dans PowerShell, à la racine :
+  `.\tools\build\CMakeFMTVS2022vcpkg_GL.bat 2>&1 | Tee-Object -FilePath build\release\build-bat.log`.
   Le journal va sous `build/` : un fichier non suivi à la racine rendrait `dirty` les
   résultats. Après coup, ils se reconstituent sans toucher au build :
   - chaque commande `cl` est dans `build/release/<cible>.dir/Release/*.tlog/CL.command.1.tlog`
