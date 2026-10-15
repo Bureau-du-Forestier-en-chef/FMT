@@ -41,7 +41,7 @@ namespace Parser{
 const boost::regex FMTYieldParser::m_rxyieldtype = boost::regex("^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 const boost::regex FMTYieldParser::m_rxcomplex = boost::regex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT)|(_DELTA)|(_DISTANCE)|(_MAX)|(_MIN)|(_SHIFT))([\\s\\t]*)(\\()(.+)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 const boost::regex FMTYieldParser::m_rxeqs = boost::regex("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)");
-const boost::regex FMTYieldParser::m_rxdiscount = boost::regex("^(_DISCOUNTFACTOR)(\\()([\\s\\t]*[\\d]*)([^,]*)(,)([^,]*)(,)([\\s\\t]*(NONE|HALF|FULL)[\\s\\t]*)(\\))");
+const boost::regex FMTYieldParser::m_rxdiscount = boost::regex("^(_DISCOUNTFACTOR)(\\()([\\s\\t]*[^,%]*)([^,]*)(,)([^,]*)(,)([\\s\\t]*(NONE|HALF|FULL)[\\s\\t]*)(\\))");
 const boost::regex FMTYieldParser::m_rxpredictor = boost::regex("^(.+)(_PRED)(\\()(.+)(\\))");
 const boost::regex FMTYieldParser::m_rxyieldsolo = boost::regex("^\\s*(?!\\d+\\b)(\\S+)\\s+(\\S+)\\s*$", boost::regex_constants::ECMAScript);
 

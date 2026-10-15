@@ -211,6 +211,9 @@ testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields
 testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTHALF|1;0.906601956075;
 testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTHALF|2;0.745160722739;
 testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTHALF|3;0.612467796912;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTDECIMAL|1;0.821927106759;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTDECIMALPERCENT|1;0.802451046501;
+testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|discountconstant|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTCONSTANT|1;0.802451046501;
 testScenarioPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|LP|STATS|5;296|395|166|327;
 testScenarioPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|division|STATS|5;426|730|299|674;
 testScenarioPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|equation|STATS|5;426|730|299|675;

@@ -576,33 +576,32 @@ Démonstrations refaites le
      distinguent la convention retenue.
    - Vu vert après le build de Gabriel (2026-10-15, `15427a6d`) : les 7 lignes `DISCOUNT*`
      passent, lancées une à une puis dans `RunTests.bat all-public` (section 9.5).
-5. **Taux décimal de `_DISCOUNTFACTOR` tronqué** (révélé le 2026-10-15 en vérifiant #357, sans
-   issue ni ligne `knownbugs.csv` pour l'instant).
-   - `FMTYieldParser::m_rxdiscount` lit le taux par `[\d]*`, et le reste du premier argument ne
-     sert qu'à chercher un `%` : la partie décimale est perdue. Même regex depuis `d5ef0e2e`.
-   - Sonde sur une copie de TWD_land hors dépôt, avec `testScenarioReading` du build
-     `15427a6d`, période 1 : `_DISCOUNTFACTOR(0.04,5,FULL)` vaut 1 (taux lu 0) au lieu de
-     0,821927106759, et `_DISCOUNTFACTOR(4.5%,5,FULL)` vaut 0,821927106759 (taux lu 4 %) au lieu
-     de 1/1,045^5 = 0,802451046501. `4%` donne bien 0,821927106759.
+5. **Taux décimal de `_DISCOUNTFACTOR` tronqué** (révélé le 2026-10-15 en vérifiant #357).
+   **Corrigé le 2026-10-15** par le commit `<à reporter>`, dans la session de #357, à la demande
+   de Gabriel : pas de ligne `knownbugs.csv`, les lignes vont directement dans `basetests.csv`.
+   - Cause : `FMTYieldParser::m_rxdiscount` lisait le taux par `[\d]*`, et le reste du premier
+     argument ne servait qu'à chercher un `%` : la partie décimale était perdue, et une constante
+     donnait un nombre vide. Même regex depuis `d5ef0e2e` (2019-11-15).
    - Woodstock accepte un réel sans `%` (messages 102 et 369 de `Wk.msg`), et
-     `FMTData::toString` réécrit le taux sous cette forme (`0.04`) : un modèle relu après
-     écriture perd son taux.
-   - Suite à décider par Gabriel : issue, ligne désactivée et correction (règle 3).
-4. **Condition d'une source de transition ignorée en silence** (lot 3, issue #358).
-   - La section des transitions n'accepte que `@AGE(min..max)` et `@YLD(yield,min..max)`, avec
-     `_MAXAGE` pour l'infini : les formes que FMT écrit lui-même (`Include/FMTBounds.hpp:77`).
-     Toute autre écriture est avalée sans message : `_AGE >= 10`, qui est la forme de la
-     section des actions, mais aussi `@AGE(12)`, `@AGE(10..)`, `@YLD(yield,100..)`, et même un
-     yield inexistant dans ces formes-là.
-   - Conséquence : la source s'applique à tous les développements de son masque. Dans le
-     scénario `INVALID_sourcecondition`, `arecup`, dont la source demande `_AGE >= 10`, opère
-     un développement de 5 ans.
-   - `FMTTransitionParser::getSource` (`Source/FMTTransitionParser.cpp:65`) passe la fin de la
-     ligne à `FMTParser::_setSpec`, qui la rend inchangée quand rien ne correspond ; personne
-     ne vérifie ce reste.
-   - Ligne désactivée : `testReadingErrors` sur `INVALID_sourcecondition`, qui attend
-     `FMTexc(31)` (`FMTunsupported_transition`, déjà levé par ce parseur pour un `_REPLACE`
-     impossible). Le code exact est à confirmer à la correction.
+     `FMTData::toString` réécrit le taux sous cette forme (`0.04`) : un modèle écrit puis relu
+     perdait son taux.
+   - Correction : le groupe du taux prend tout jusqu'à la virgule ou au `%` (`[^,%]*`), que
+     `_getNum` lit comme un réel ou une constante. Les taux entiers, comme `4%`, donnent les
+     mêmes groupes qu'avant.
+   - Valeurs attendues, période 1, 5 ans par période, exposant 1 (`FULL`) :
+
+     | Yield | Écriture | Calcul | Valeur attendue |
+     |---|---|---|---|
+     | `DISCOUNTDECIMAL` (`timeyields`) | `0.04` | 1/1,04^5 | 0,821927106759 |
+     | `DISCOUNTDECIMALPERCENT` (`timeyields`) | `4.5%` | 1/1,045^5 | 0,802451046501 |
+     | `DISCOUNTCONSTANT` (`discountconstant`) | `#RATE%`, `RATE 4.5` | 1/1,045^5 | 0,802451046501 |
+
+   - Le cas de la constante a son propre scénario, `discountconstant` (ses `_yld` et `_con`) :
+     avant la correction, il fait échouer la lecture de tout le scénario (`FMTexc(12)`, nombre
+     invalide), ce qui aurait entraîné les autres lignes de `timeyields`.
+   - Vu rouge sur le build `15427a6d` : `DISCOUNTDECIMAL` donnait 1 (taux lu 0),
+     `DISCOUNTDECIMALPERCENT` 0,821927106759 (taux lu 4 %), et `DISCOUNTCONSTANT` levait
+     `FMTexc(12)`.
 
 Dans TWD_land, `YBM_RTM_BOG`, `YBM_RTM_MEH` et `YBM_RTM_F` ne servent qu'à l'output `TOTALCAR`,
 qu'aucun objectif ni aucune contrainte n'utilise. À la correction, relancer la suite base pour
@@ -1920,7 +1919,10 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
   `tools/tests/RunTests.bat all-public` : « 0 tests failed out of 258 », 27,1 s réelles ;
   tableau system 233 verts et 12 désactivés sur 245, performance 23, other 2 ; Total 258 verts et
   12 désactivés sur 270 ; fixture `ExamplesModelsUnchanged` verte ;
-- la vérification a révélé un autre défaut, le taux décimal tronqué (section 2.7, item 5).
+- la vérification a révélé un autre défaut, le taux décimal tronqué (section 2.7, item 5),
+  corrigé dans la même session à la demande de Gabriel : trois lignes de plus dans
+  `basetests.csv` et le scénario `discountconstant`. Comptes attendus, d'après les CSV :
+  `all-public` 273 tests inscrits, 12 désactivés ; à confirmer au build de Gabriel.
 
 ### 9.6 Vérifications communes
 
