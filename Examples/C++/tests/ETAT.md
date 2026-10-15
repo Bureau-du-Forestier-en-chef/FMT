@@ -466,7 +466,8 @@ Quatre défauts de FMTlib révélés par ces tests, sans correction dans ce chan
 lignes de `knownbugs.csv` échouent aujourd'hui : elles passeront dans `basetests.csv` avec la
 correction. Issues GitHub : **#346** (priorité de `^`) et **#347** (bloc `*YC` mélangé, qui
 couvre aussi la constante d'équation), **#357** (`_DISCOUNTFACTOR`) et **#358** (condition
-de source ignorée).
+de source ignorée). **#357 est corrigé depuis le 2026-10-15** (item 3) : ses lignes sont passées
+dans `basetests.csv`, et `knownbugs.csv` ne garde que les 12 lignes de #346, #347 et #358.
 
 **Précision de Gabriel (2026-10-08) : seul #357 est un vrai défaut.** Les comportements de #346,
 #347 et #358 sont connus : ce sont des syntaxes ou des cas particuliers « documentés » par la
@@ -534,17 +535,45 @@ Démonstrations refaites le
      `PRODUCT`, `QUOTIENT`, `SUBTRACTION`, `INRANGE`, `GROWTH` et `CONSTANT`.
    - Lignes base qui protègent le comportement juste : les 9 yields de `yieldoperatorsalone`,
      les mêmes opérateurs dans un bloc sans équation numérique.
-3. **`_DISCOUNTFACTOR` n'utilise pas le taux lu** (lot 3, issue #357).
-   - `FMTTimeYieldHandler::get` (`Source/FMTTimeYieldHandler.cpp:98`) prend `data.at(1)`, le
-     nombre d'années par période, comme taux d'actualisation : `rateofreturn` et `pertio`
-     pointent tous deux sur `data.at(1)`, et `data.at(0)`, le taux lu par `FMTYieldParser`
-     (`4%` donne 0,04), ne sert à rien.
-   - `_DISCOUNTFACTOR(4%,5,FULL)` vaut 1/6^5 = 0,000128600823 à la période 1, au lieu de
-     1/1,04^5 = 0,821927107.
-   - L'exposant de `HALF` est `période x 0,5` là où la convention usuelle est `période - 0,5` :
-     à confirmer avant de corriger (les deux donnent la même valeur à la période 1).
-   - Lignes désactivées : `timeyields` `DISCOUNTFULL` (périodes 1 et 2) et `DISCOUNTNONE`
-     (période 2).
+3. **`_DISCOUNTFACTOR` n'utilisait pas le taux lu** (lot 3, issue #357). **Corrigé le
+   2026-10-15** par le commit `<à reporter>`, dans une session à part.
+   - Cause : `FMTYieldParser` range le taux en `data.at(0)` (`4%` donne 0,04) et le nombre
+     d'années par période en `data.at(1)`, mais `FMTTimeYieldHandler::get`
+     (`Source/FMTTimeYieldHandler.cpp:98`) lisait `data.at(1)` pour `rateofreturn` comme pour
+     `pertio` : le taux lu ne servait à rien. Présent depuis l'ajout de `_DISCOUNTFACTOR`
+     (`d5ef0e2e`, 2019-11-15).
+   - Vu rouge sur le build de `new_test` du 2026-10-14, avant la correction :
+     `_DISCOUNTFACTOR(4%,5,FULL)` valait 1/6^5 = 0,000128600823 à la période 1 et
+     1/6^10 = 1,65381716879e-8 à la période 2, `DISCOUNTNONE` 0,000128600823 à la période 2.
+   - Correction : `rateofreturn` lit `data.at(0)`.
+   - **Convention `HALF` retenue par Gabriel (2026-10-15) : exposant `période - 0,5`**, au lieu
+     de `période x 0,5`. Rien dans la documentation de FMT ne la fixait. Woodstock (messages 373
+     et 374 de `Wk.msg`) décrit le troisième paramètre comme l'actualisation de la *première*
+     période, `NONE` par défaut : l'exposant vaut donc `(période - 1)` plus 0, 0,5 ou 1. Avec
+     `période x 0,5`, `HALF` égalait `NONE` à la période 2 et actualisait moins que lui ensuite
+     (période 3 : 1/1,04^7,5 = 0,745 contre 1/1,04^10 = 0,676).
+   - Calcul des valeurs attendues : facteur = 1 / (1 + taux)^(années x exposant), avec l'exposant
+     `FULL` = p, `NONE` = p - 1, `HALF` = p - 0,5. Scénario `timeyields`, 4 % et 5 ans par
+     période :
+
+     | Yield | Période | Exposant | Calcul | Valeur attendue |
+     |---|---|---|---|---|
+     | `DISCOUNTFULL` | 1 | 1 | 1/1,04^5 | 0,821927106759 |
+     | `DISCOUNTFULL` | 2 | 2 | 1/1,04^10 | 0,675564168826 |
+     | `DISCOUNTNONE` | 1 | 0 | 1/1,04^0 | 1 |
+     | `DISCOUNTNONE` | 2 | 1 | 1/1,04^5 | 0,821927106759 |
+     | `DISCOUNTHALF` | 1 | 0,5 | 1/1,04^2,5 | 0,906601956075 |
+     | `DISCOUNTHALF` | 2 | 1,5 | 1/1,04^7,5 | 0,745160722739 |
+     | `DISCOUNTHALF` | 3 | 2,5 | 1/1,04^12,5 | 0,612467796912 |
+
+   - Lignes : les trois lignes `DISCOUNTFULL` (périodes 1 et 2) et `DISCOUNTNONE` (période 2) sont
+     passées de `knownbugs.csv` à `basetests.csv`, valeurs inchangées ; `DISCOUNTNONE` (période 1)
+     et `DISCOUNTHALF` (périodes 1 à 3) s'y ajoutent, avec le yield `DISCOUNTHALF` du scénario
+     `timeyields`. Vu rouge des nouvelles lignes sur le même build : `DISCOUNTHALF` donnait
+     0,0113402302907, 0,000128600823 et 1,4583629489e-6 ; `DISCOUNTNONE` (période 1) vaut 1 avec
+     ou sans le défaut, vu rouge avec une attente faussée à 0,99.
+   - Les deux conventions de `HALF` coïncident à la période 1 : seules les périodes 2 et 3
+     distinguent la convention retenue.
 4. **Condition d'une source de transition ignorée en silence** (lot 3, issue #358).
    - La section des transitions n'accepte que `@AGE(min..max)` et `@YLD(yield,min..max)`, avec
      `_MAXAGE` pour l'infini : les formes que FMT écrit lui-même (`Include/FMTBounds.hpp:77`).
@@ -1393,6 +1422,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-09-18 (complément lot 2) | 179 (165 lignes, 11 désactivées, 2 fixtures, `UnitTestFMTexcelcache`) | 13,7 s réelles ; 100,3 s cumulées | 51 | 17 | 3 | 0 | 11 | 25 |
 | 2026-09-18 (lot 3) | 213 (195 lignes, 15 désactivées, 2 fixtures, `UnitTestFMTexcelcache`) | 12,9 s réelles ; 99,7 s cumulées | 51 | 17 | 3 | 0 | 15 | 25 |
 | 2026-09-18 (lot 4) | 226 (208 lignes, 15 désactivées, 2 fixtures, `UnitTestFMTexcelcache`) | 22,0 s réelles ; 169,2 s cumulées | 52 | 17 | 3 | 0 | 15 | 25 |
+| 2026-10-15 (#357, d'après les CSV, à confirmer au build) | 270 `all-public` (266 + 4 lignes `DISCOUNT*`), 247 `system` | à mesurer | — | — | — | — | 12 | — |
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
@@ -1863,9 +1893,17 @@ déjà l'appel de ctest dans `cmake/BaseInstallTests.cmake` ; le filtre n'y ajou
 lignes, et c'est lui qui retire de l'installation de Gabriel la campagne privée d'environ
 168 minutes. Rien ne le lie aux suites Python et R, qui restent en phase 5.
 
-**La session des défauts se réduit à #357** (précision de la section 2.7) : c'est le seul vrai
-défaut. Elle ne bloque plus le début des phases ; ses lignes de `knownbugs.csv` doivent seulement
-avoir bougé avant le déplacement des CSV (phase 6).
+**La session des défauts s'est réduite à #357** (précision de la section 2.7), le seul vrai
+défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
+
+- `_DISCOUNTFACTOR` lit enfin son taux, et `HALF` prend l'exposant `période - 0,5`, convention
+  retenue par Gabriel ;
+- les trois lignes `DISCOUNT*` sont passées de `knownbugs.csv` à `basetests.csv`, valeurs
+  inchangées, et quatre lignes s'y ajoutent pour couvrir `FULL`, `NONE` et `HALF` sur au moins
+  deux périodes ;
+- comptes attendus de la suite publique, d'après les CSV : `all-public` 270 tests inscrits
+  (266 + 4), 12 désactivés au lieu de 15, aucun échec. À confirmer au build de Gabriel
+  (`tools/tests/RunTests.bat all-public`).
 
 ### 9.6 Vérifications communes
 
