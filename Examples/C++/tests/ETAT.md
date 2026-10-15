@@ -536,7 +536,7 @@ Démonstrations refaites le
    - Lignes base qui protègent le comportement juste : les 9 yields de `yieldoperatorsalone`,
      les mêmes opérateurs dans un bloc sans équation numérique.
 3. **`_DISCOUNTFACTOR` n'utilisait pas le taux lu** (lot 3, issue #357). **Corrigé le
-   2026-10-15** par le commit `<à reporter>`, dans une session à part.
+   2026-10-15** par le commit `15427a6d`, dans une session à part.
    - Cause : `FMTYieldParser` range le taux en `data.at(0)` (`4%` donne 0,04) et le nombre
      d'années par période en `data.at(1)`, mais `FMTTimeYieldHandler::get`
      (`Source/FMTTimeYieldHandler.cpp:98`) lisait `data.at(1)` pour `rateofreturn` comme pour
@@ -574,6 +574,20 @@ Démonstrations refaites le
      ou sans le défaut, vu rouge avec une attente faussée à 0,99.
    - Les deux conventions de `HALF` coïncident à la période 1 : seules les périodes 2 et 3
      distinguent la convention retenue.
+   - Vu vert après le build de Gabriel (2026-10-15, `15427a6d`) : les 7 lignes `DISCOUNT*`
+     passent, lancées une à une puis dans `RunTests.bat all-public` (section 9.5).
+5. **Taux décimal de `_DISCOUNTFACTOR` tronqué** (révélé le 2026-10-15 en vérifiant #357, sans
+   issue ni ligne `knownbugs.csv` pour l'instant).
+   - `FMTYieldParser::m_rxdiscount` lit le taux par `[\d]*`, et le reste du premier argument ne
+     sert qu'à chercher un `%` : la partie décimale est perdue. Même regex depuis `d5ef0e2e`.
+   - Sonde sur une copie de TWD_land hors dépôt, avec `testScenarioReading` du build
+     `15427a6d`, période 1 : `_DISCOUNTFACTOR(0.04,5,FULL)` vaut 1 (taux lu 0) au lieu de
+     0,821927106759, et `_DISCOUNTFACTOR(4.5%,5,FULL)` vaut 0,821927106759 (taux lu 4 %) au lieu
+     de 1/1,045^5 = 0,802451046501. `4%` donne bien 0,821927106759.
+   - Woodstock accepte un réel sans `%` (messages 102 et 369 de `Wk.msg`), et
+     `FMTData::toString` réécrit le taux sous cette forme (`0.04`) : un modèle relu après
+     écriture perd son taux.
+   - Suite à décider par Gabriel : issue, ligne désactivée et correction (règle 3).
 4. **Condition d'une source de transition ignorée en silence** (lot 3, issue #358).
    - La section des transitions n'accepte que `@AGE(min..max)` et `@YLD(yield,min..max)`, avec
      `_MAXAGE` pour l'infini : les formes que FMT écrit lui-même (`Include/FMTBounds.hpp:77`).
@@ -1422,7 +1436,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-09-18 (complément lot 2) | 179 (165 lignes, 11 désactivées, 2 fixtures, `UnitTestFMTexcelcache`) | 13,7 s réelles ; 100,3 s cumulées | 51 | 17 | 3 | 0 | 11 | 25 |
 | 2026-09-18 (lot 3) | 213 (195 lignes, 15 désactivées, 2 fixtures, `UnitTestFMTexcelcache`) | 12,9 s réelles ; 99,7 s cumulées | 51 | 17 | 3 | 0 | 15 | 25 |
 | 2026-09-18 (lot 4) | 226 (208 lignes, 15 désactivées, 2 fixtures, `UnitTestFMTexcelcache`) | 22,0 s réelles ; 169,2 s cumulées | 52 | 17 | 3 | 0 | 15 | 25 |
-| 2026-10-15 (#357, d'après les CSV, à confirmer au build) | 270 `all-public` (266 + 4 lignes `DISCOUNT*`), 247 `system` | à mesurer | — | — | — | — | 12 | — |
+| 2026-10-15 (#357, `15427a6d`) | 270 `all-public` (266 + 4 lignes `DISCOUNT*`) ; résumé : system 233 verts et 12 désactivés sur 245, performance 23, other 2 | 27,1 s réelles | — | — | — | — | 12 | — |
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
@@ -1901,9 +1915,12 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
 - les trois lignes `DISCOUNT*` sont passées de `knownbugs.csv` à `basetests.csv`, valeurs
   inchangées, et quatre lignes s'y ajoutent pour couvrir `FULL`, `NONE` et `HALF` sur au moins
   deux périodes ;
-- comptes attendus de la suite publique, d'après les CSV : `all-public` 270 tests inscrits
-  (266 + 4), 12 désactivés au lieu de 15, aucun échec. À confirmer au build de Gabriel
-  (`tools/tests/RunTests.bat all-public`).
+- commit `15427a6d` ; rouge consigné en section 2.7 (build du 2026-10-14) ;
+- validation après le build de Gabriel (2026-10-15) : les 7 lignes `DISCOUNT*` passent ;
+  `tools/tests/RunTests.bat all-public` : « 0 tests failed out of 258 », 27,1 s réelles ;
+  tableau system 233 verts et 12 désactivés sur 245, performance 23, other 2 ; Total 258 verts et
+  12 désactivés sur 270 ; fixture `ExamplesModelsUnchanged` verte ;
+- la vérification a révélé un autre défaut, le taux décimal tronqué (section 2.7, item 5).
 
 ### 9.6 Vérifications communes
 
