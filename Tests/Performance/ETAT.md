@@ -58,13 +58,13 @@ même allocateur, le même jour qu'une nouvelle mesure de ce commit (section 6.2
 ### 0.3 Lien avec #350 et le chantier des tests
 
 - Le moniteur d'allocations du lot 1 est ce que demande le lot 9 de #350 (« absence
-  d'allocation », section 6.3.6 de `Examples/C++/tests/ETAT.md`). Il vit dans une bibliothèque
+  d'allocation », section 6.3.6 de `Tests/ETAT.md`). Il vit dans une bibliothèque
   statique, `FMTBenchmarkHarness`, que la future cible `FMTCoreTests` pourra lier.
 - Les tests (tests de chaîne dans `Examples/C++/`, tests unitaires dans `Tests/Core/` pour
   #350) protègent le comportement ; ce banc mesure. L'un ne remplace pas l'autre
   (`Documentation/Architecture.md`, « Measure before and after »).
 - Les lignes de performance, en mode court, entrent dans la suite base : elles changent les
-  nombres de la section 8 de `Examples/C++/tests/ETAT.md`, où une note le dit depuis le lot 1.
+  nombres de la section 8 de `Tests/ETAT.md`, où une note le dit depuis le lot 1.
 
 ### 0.4 Où vivent les choses
 
@@ -76,7 +76,7 @@ même allocateur, le même jour qu'une nouvelle mesure de ce commit (section 6.2
 | Benchmarks | `Tests/Performance/FMTPerformanceTests.cpp` et `Tests/Performance/*Benchmarks.cpp` |
 | Lignes qui inscrivent les benchmarks, valeurs attendues et bornes | `Tests/Performance/performance.csv` |
 | Données | `Examples/Models/TWD_land/Scenarios/perfyields` ; `Examples/Performance/` s'il faut un modèle plus gros (lot 5) |
-| Benchmarks sur des modèles privés (lots 3 et 4) | un CSV local, ignoré par git comme `Examples/C++/tests/BFECtests.csv` ; aucun nom de modèle privé dans le dépôt |
+| Benchmarks sur des modèles privés (lots 3 et 4) | un CSV local, ignoré par git comme `Tests/System/Cpp/BFECtests.csv` ; aucun nom de modèle privé dans le dépôt |
 | Résultats JSON | `build/release/tests/performance/` |
 | Comparaison de deux passages | `Tests/Performance/CompareResults.cmake` |
 
@@ -484,7 +484,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
 
 - `m_lookat` appartient au gestionnaire de yields, partagé par tous les threads, et il est écrit
   sans verrou. Le lien avec la course connue des caches de yields
-  (section 7 de `Examples/C++/tests/ETAT.md`) n'est pas établi.
+  (section 7 de `Tests/ETAT.md`) n'est pas établi.
 - **Aucune course visible sur la replanification** (lot 4) : sur 1, 2, 5 et 10 fils, chaque appel
   écrit exactement les lignes de la même replanification sur un fil, vérifiées par une empreinte des
   lignes triées. 24 passages de stress à 5 et 10 fils (72 replanifications) n'ont montré aucune
@@ -512,7 +512,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
   chaque passage compté.
 - **Point d'entrée depuis un exécutable** : `FMTYieldRequest` n'est pas exportée, mais
   `FMTYields::get(développement.getYieldRequest(), nom)` fonctionne, comme dans
-  `Examples/C++/testScenarioReading.cpp:285-286`.
+  `Tests/System/Cpp/testScenarioReading.cpp:285-286`.
 - **Les octets vivants comptent la taille que rend `_msize`**, à l'allocation comme à la
   libération (corrigé le 2026-10-05). Le moniteur ajoutait la taille demandée et déduisait celle de
   `_msize`, qui en diffère dans deux cas. La bibliothèque C donne un octet à `malloc(0)`,
@@ -529,7 +529,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
   modèle synthétique seulement si ça ne suffit pas (lot 5).
 - **Les défauts #346 et #347 contraignent le choix des yields** : pas de `^` dans une
   équation, et pas d'équation numérique dans le bloc `*YC` des opérateurs mesurés
-  (section 2.7 de `Examples/C++/tests/ETAT.md`). `perfyields` respecte ces deux conditions.
+  (section 2.7 de `Tests/ETAT.md`). `perfyields` respecte ces deux conditions.
 - **Ne jamais modifier les sections racine de TWD_land** : tous les tests de chaîne en
   dépendent. Un scénario par besoin, et `perfyields` ne se modifie plus : ce serait changer ce
   que mesurent ses benchmarks.
@@ -603,7 +603,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
     performants.
 - Les pièges communs avec les tests (encodage cp1252 des sources, macros de `windows.h`,
   chemins de plus de 260 caractères, `onnxruntime.dll` à côté des sondes, `LastTest.log` que
-  tout appel de ctest réécrit) sont en section 7 de `Examples/C++/tests/ETAT.md`. Ils ne sont pas
+  tout appel de ctest réécrit) sont en section 7 de `Tests/ETAT.md`. Ils ne sont pas
   recopiés ici.
 
 ### 2.11 Lecture d'un projet (mesurée au lot 2)
@@ -1177,7 +1177,7 @@ même jour. Le `CMakeLists.txt` racine inclut maintenant `Tests/Performance/CMak
 - **Comparaison** : `Tests/Performance/CompareResults.cmake`, en CMake seul (`string(JSON)`).
 - **Documentation** : `Documentation/PerformanceTesting.md` (nouveau) ; `AGENTS.md` (table des
   documents, carte du dépôt, section « Benchmarks ») ; une note en section 8 de
-  `Examples/C++/tests/ETAT.md`.
+  `Tests/ETAT.md`.
 - **Écarts au plan** : les choix de la section 3.1, en particulier le retrait de la variante à clé unique
   et la borne sur la médiane ; les compteurs par thread du moniteur, reportés au lot 4 qui s'en
   servira ; le défaut de `hasFeature("ONNXRUNTIME")`, trouvé en écrivant l'environnement.
@@ -1278,7 +1278,7 @@ pour `AGENTS.md`, `9a5001df` pour le reste). Référence de #348 reprise (sectio
   sur quatre mesures complètes.
 - **Documentation** : `Documentation/PerformanceTesting.md` (réglages, cœurs, mémoire retenue,
   schéma 2, nouveaux benchmarks), `AGENTS.md` (étiquette `memory`), note de la section 8 de
-  `Examples/C++/tests/ETAT.md`.
+  `Tests/ETAT.md`.
 
 Vérifications (hors build, 2026-09-29) :
 
@@ -1361,7 +1361,7 @@ correction `88daf175`) et validé le même jour ; choix validés (section 3.3).
   lignes privées ont leurs bornes, posées de la même façon, dans le fichier local.
 - **Documentation** : `Documentation/PerformanceTesting.md` (flux, phases, borne de pic, groupe
   privé, schéma 3, comparaison), `AGENTS.md` (étiquette `bfec-perf`), note de la section 8 de
-  `Examples/C++/tests/ETAT.md`.
+  `Tests/ETAT.md`.
 - **Écarts au plan** : le calcul des outputs devient son propre benchmark (section 3.3) ; graphe
   et matrice restent une seule phase ; la replanification à 5 fils passe au lot 4.
 
@@ -1505,7 +1505,7 @@ scripts CMake, la documentation et deux ETAT.
   `_fromThousandths`.
 - **Documentation** : l'outil, la comparaison à plusieurs passages et la section « Measuring a change »
   de `Documentation/PerformanceTesting.md`.
-- **Chantier des tests** : la note de la section 8 de `Examples/C++/tests/ETAT.md` compte les 23 lignes
+- **Chantier des tests** : la note de la section 8 de `Tests/ETAT.md` compte les 23 lignes
   de performance du lot 4.
 - **#349** : commentaire de clôture remis à Gabriel (décisions 20 et 21).
 

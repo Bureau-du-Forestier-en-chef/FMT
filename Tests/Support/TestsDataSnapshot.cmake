@@ -5,10 +5,10 @@
 #
 # save records the SHA256 and the relative path of every file of DATA_DIR in SNAPSHOT_FILE.
 # compare computes them again and fails when a file was added, removed or modified since the
-# save. Examples/C++/CMakeLists.txt registers both modes as the setup and the cleanup of the
-# ExamplesModels fixture, required by every test of the CSV files: no test may write into
+# save. Tests/CMakeLists.txt registers both modes as the setup and the cleanup of the
+# ExamplesModels fixture, required by every system test and benchmark: no test may write into
 # Examples/Models (a test works on a copy, see Testing::copyProject in
-# Examples/C++/tests/TestTools.h). The comparison does not use git, so uncommitted scenarios
+# Tests/Support/TestTools.h). The comparison does not use git, so uncommitted scenarios
 # are allowed.
 
 cmake_minimum_required(VERSION 3.20)

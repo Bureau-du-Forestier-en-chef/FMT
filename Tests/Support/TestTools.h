@@ -1,13 +1,13 @@
 #ifndef TESTING_TESTTOOLS_HEADER
 #define TESTING_TESTTOOLS_HEADER
 
-// Shared tools of the FMT test executables (Examples/C++, FMTWrapperCore/tests).
+// Shared tools of the FMT test executables (Tests/System/Cpp, Tests/Performance).
 //
 // A test executable returns:
 // - 0 when every check passed;
 // - 1 when a check failed or an exception escaped;
 // - SKIP_RETURN_CODE when a feature it needs is not compiled (OSI, GDAL, ONNX):
-//   ctest then reports the test as skipped (see Examples/C++/CMakeLists.txt).
+//   ctest then reports the test as skipped (see Tests/Support/TestRegistration.cmake).
 //   A missing MOSEK is not a reason to skip: the test falls back on CLP.
 //
 // Typical use:
@@ -23,8 +23,8 @@
 //   }
 //
 // Expected values should come from the arguments given by the CSV files of
-// Examples/C++/tests: a test is then seen failing by running it with a wrong value,
-// without recompiling (see Examples/C++/tests/ETAT.md).
+// Tests/System/Cpp: a test is then seen failing by running it with a wrong value,
+// without recompiling (see Tests/ETAT.md).
 
 #include <cmath>
 #include <cstddef>

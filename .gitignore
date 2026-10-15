@@ -41,7 +41,9 @@ gdal/*
 compile_commands.json
 .cmake/*
 .junie/*
+#The private tests, local to each clone, and their former place, where a copy may remain
 /Examples/C++/tests/BFECtests.csv
+/Tests/System/Cpp/BFECtests.csv
 /Tests/Performance/performance-private.csv
 .vscode/*
 *html

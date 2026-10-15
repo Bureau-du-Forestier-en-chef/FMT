@@ -972,7 +972,7 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
 - **Encodage cp1252** -- depuis le nettoyage, tous les fichiers de `UI/` et de
   `FMTWrapperCore/` sont en UTF-8 sans BOM : les deux derniers tests en cp1252 sont devenus
   ASCII en passant à l'anglais. Des fichiers cp1252 subsistent ailleurs dans FMT (ex.
-  `Source/FMTReplanningTask.cpp`, `Examples/C++/planningtest.cpp`) : les éditer avec un
+  `Source/FMTReplanningTask.cpp`, `Tests/System/Cpp/planningtest.cpp`) : les éditer avec un
   outil qui suppose l'UTF-8 corrompt les accents ; les réécrire entièrement, ou les éditer
   au niveau octet.
 - **La planification écrit dans le projet** -- quand `FMTPlanningTask` reçoit le fichier
@@ -1068,16 +1068,16 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
 
 ## 6. Tests
 
-**Base et BFEC restent séparés**, chacun dans son CSV : `Examples/C++/tests/basetests.csv`
-(modèles publics de `Examples/Models/`, suivi par git) et `Examples/C++/tests/BFECtests.csv`
+**Base et BFEC restent séparés**, chacun dans son CSV : `Tests/System/Cpp/basetests.csv`
+(modèles publics de `Examples/Models/`, suivi par git) et `Tests/System/Cpp/BFECtests.csv`
 (modèles privés sur `T:\`, local et ignoré par git).
 
 - **ctest passe par ces CSV** (rectifié le 2026-09-16 : ce fichier disait les tests du Core
-  « manuels »). `Examples/C++/CMakeLists.txt` enregistre chaque ligne dont la première
+  « manuels »). `Tests/System/Cpp/CMakeLists.txt` enregistre chaque ligne dont la première
   colonne nomme une cible existante (`if (TARGET ...)`, sensible à la casse), avec les
-  colonnes suivantes pour arguments. Les cibles du Core existent à ce moment-là
-  (`FMTWrapperCore/CMakeLists.txt` est inclus avant) ; celles de `UI/tests`, pas encore :
-  `UI/CMakeLists.txt` les enregistre lui-même.
+  colonnes suivantes pour arguments. Les cibles du Core existent à ce moment-là : le même
+  fichier les crée juste avant, depuis `Tests/System/Cpp/FMTWrapperCore/`, et leurs tests
+  portent l'étiquette `wrappercore` (phase 6 de la réorganisation des tests, 2026-10-15).
 - **Inscrits depuis le 2026-09-16** : tous les tests du Core sauf `testWrapperCoreSA`. Sans
   le préfixe `testWrapperCore` :
   - `basetests.csv` : `GetMaxAge`, `GetYield`, `GetAllMasks`, `WriteToProject`,
@@ -1091,7 +1091,7 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
   `testWrapperCoreGetYield` n'a jamais tourné de 2024 à 2026 (`testWrapperCoreGetyield`
   dans un CSV, `testWrapperCoreGetYield.cpp` dans l'autre). Après une modification,
   vérifier le nom dans `build/release/CTestTestfile.cmake`.
-- Les tests `FMTWrapperCore/tests/*` suivent le patron de `testWrapperCoreSES.cpp` :
+- Les tests `Tests/System/Cpp/FMTWrapperCore/*` suivent le patron de `testWrapperCoreSES.cpp` :
   paramètres via un JSON en `argv[1]`, valeurs de référence en `argv[2]`, repli codé en dur
   sur un modèle `T:\`.
 - **Ne pas** ajouter d'`add_test()` dans `FMTWrapperCore/CMakeLists.txt` : un test du Core

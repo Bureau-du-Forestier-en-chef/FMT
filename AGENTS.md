@@ -18,12 +18,12 @@ lives in exactly one document, and changes to it belong in that document only.
 | Path | Contents |
 | --- | --- |
 | `Include/`, `Source/` | The FMT library: 247 headers, 224 sources. Namespaces `Core` (model concepts), `Models` (planning models), `Spatial`, `Graph`, `Parser` (Woodstock files), `Heuristics`, `Parallel`, `Logging`, `Exception`. |
-| `FMTWrapperCore/` | Portable wrapper core shared by the interfaces, with its own `tests/`. |
+| `FMTWrapperCore/` | Portable wrapper core shared by the interfaces. |
 | `UI/` | `FMTForm` and the user interface. |
 | `Excel/` | Excel integration. |
-| `Examples/C++/` | Example programs. Each `.cpp` also becomes a test executable. |
 | `Examples/Models/` | Woodstock models used by the tests. |
 | `Tests/` | Test registration and the tests by level: see [Testing](#testing). |
+| `Tests/System/Cpp/` | C++ system tests: each `.cpp` becomes a test executable, which the rows of the CSV files of the folder run; `FMTWrapperCore/` and `Excel/` hold those of the wrapper core and of Excel. |
 | `Tests/System/Python/`, `Tests/System/R/` | pytest and testthat suites, one system test per file, run by ctest. |
 | `Tests/Performance/` | Performance and allocation benchmarks: `FMTPerformanceTests`, its harness and `performance.csv`. |
 | `Templates/` | Packaging inputs and generated artifacts: R package, `setup.py.in`, `__init__.py.in`, stub normalization. |
@@ -69,20 +69,22 @@ to work around the code is covered in
 [Tests that reveal architectural debt](Documentation/CodingStandards.md#tests-that-reveal-architectural-debt).
 This section covers where tests live and how they run.
 
-The root `CMakeLists.txt` includes `Tests/CMakeLists.txt`, unless `WITHOUT_TESTS` is on. That file
-declares the `ExamplesModels` fixture, which every system test and benchmark requires:
-`cmake/TestsDataSnapshot.cmake` hashes `Examples/Models` before the tests and fails after them if a
-file changed. It then includes one folder per level, `Unit/` and `Integration/`, empty until their
-tests arrive, and `System/`, which holds the Python and R suites, then `Performance/`. The functions
-that register a test are in `Tests/Support/TestRegistration.cmake`: `registersystemtest` registers one
+The root `CMakeLists.txt` includes `Tests/CMakeLists.txt`, unless `WITHOUT_TESTS` is on, after `Excel/`
+and `FMTWrapperCore/`, whose libraries the C++ tests link to. That file declares the `ExamplesModels`
+fixture, which every system test and benchmark requires: `Tests/Support/TestsDataSnapshot.cmake`
+hashes `Examples/Models` before the tests and fails after them if a file changed. It then includes one
+folder per level, `Unit/` and `Integration/`, empty until their tests arrive, and `System/`, which
+holds the C++ tests and the Python and R suites, then `Performance/`. The functions that register a
+test are in `Tests/Support/TestRegistration.cmake`, included first: `registersystemtest` registers one
 system test, under a name that no other test may have, and `registercsvtests` registers the rows of
-CSV files with it. `Examples/C++/CMakeLists.txt` calls `registercsvtests` for its CSV files, and
-`Excel/CMakeLists.txt`, `Tests/System/Python/CMakeLists.txt` and `Tests/System/R/CMakeLists.txt` call
-`registersystemtest` for their tests.
+CSV files with it. `Tests/System/Cpp/CMakeLists.txt` calls `registercsvtests` for its CSV files and
+`registersystemtest` for the Excel test, and `Tests/System/Python/CMakeLists.txt` and
+`Tests/System/R/CMakeLists.txt` call `registersystemtest` for their tests.
 
 Each test carries one level label (`system` for every C++, Python and R test today, `performance` for
-the benchmarks), a system test also the label of its interface (`cpp`, `python` or `r`), and its CTest
-name follows
+the benchmarks), a system test also the label of its interface (`cpp`, `python` or `r`), a C++ test of
+the wrapper core or of Excel the label of its component (`wrappercore` or `excel`), and its CTest name
+follows
 [Test names](Documentation/CodingStandards.md#test-names). The private tests,
 rows of the local `BFECtests.csv` on models of `T:\`, keep `T:/` in their name. Test presets in
 `CMakePresets.json` select a level on `build/release` (configure preset `release-gl`), eight tests at a
@@ -120,10 +122,11 @@ runs `RunTests.bat system-private` and its summary.
 
 Registration is data-driven. There is no `add_test` call to copy.
 
-1. Add a `.cpp` file to `Examples/C++/`, named as in
-   [Test names](Documentation/CodingStandards.md#test-names). Every file in that directory becomes
-   an executable ([Examples/C++/CMakeLists.txt](Examples/C++/CMakeLists.txt), line 11).
-2. Add a row to a CSV in `Examples/C++/tests/`, in the form
+1. Add a `.cpp` file to `Tests/System/Cpp/`, or to its `FMTWrapperCore/` folder for a test of the
+   wrapper core, named as in [Test names](Documentation/CodingStandards.md#test-names). Every file in
+   these folders becomes an executable ([Tests/System/Cpp/CMakeLists.txt](Tests/System/Cpp/CMakeLists.txt),
+   line 22).
+2. Add a row to a CSV in `Tests/System/Cpp/`, in the form
    `TEST;primarylocation;scenario;doublevalue`. The row registers the test with CTest only if a
    target of that name exists (`registercsvtests` in
    [Tests/Support/TestRegistration.cmake](Tests/Support/TestRegistration.cmake)), and a name already
@@ -185,7 +188,7 @@ break before you have read anything else.
 | Every source and CMake file carries the LiLiQ-R license header | Copy it into any new file. [Rule](Documentation/CodingStandards.md#license-header) |
 | A Doxygen block needs a `// DocString:` marker to reach Python and R users | Add the marker above the block, naming the symbol. [Rule](Documentation/CodingStandards.md#docstring-markers) |
 | Parameters use the `p_` prefix in modernized code | Do not add to the legacy `l` prefix, and do not mix both in one interface. [Rule](Documentation/CodingStandards.md#parameters) |
-| `Examples/C++/tests/BFECtests.csv` is listed in `.gitignore` | `git grep` never shows it. Read it directly before concluding what CTest runs. |
+| `Tests/System/Cpp/BFECtests.csv` is listed in `.gitignore` | `git grep` never shows it. Read it directly before concluding what CTest runs. |
 
 ### Language
 
@@ -210,7 +213,7 @@ maintainer.
 ## Work that spans several sessions
 
 For a campaign that runs over several sessions, such as a migration, a large rename or a test
-effort, keep a status file next to the work: `FMTWrapperCore/ETAT.md`, `Examples/C++/tests/ETAT.md`.
+effort, keep a status file next to the work: `FMTWrapperCore/ETAT.md`, `Tests/ETAT.md`.
 Write it in French. Read it before each batch and update it afterwards.
 
 It should record:

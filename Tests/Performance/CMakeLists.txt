@@ -91,7 +91,7 @@ target_sources(FMTPerformanceTests PRIVATE
 	"${FMTPERFORMANCEdir}/YieldBenchmarks.h"
 	"${FMTPERFORMANCEdir}/YieldBenchmarks.cpp"
 	)
-target_include_directories(FMTPerformanceTests PRIVATE "${FMTPERFORMANCEdir}" "${FMTPERFORMANCEroot}/Examples/C++/tests")
+target_include_directories(FMTPerformanceTests PRIVATE "${FMTPERFORMANCEdir}" "${FMTPERFORMANCEroot}/Tests/Support")
 target_link_libraries(FMTPerformanceTests PRIVATE FMTBenchmarkHarness)
 
 # One ctest test per row of performance.csv:

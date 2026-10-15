@@ -68,7 +68,7 @@ SMALLEST _MIN(VOLUMETOTAL,VOLUMEZERO)
 TOPEAK _YTP(VOLUMETOTAL)
 TOVOLUME _DISTANCE(VOLUMETOTAL,50,150)
 
-; An equation without any number, alone in its block (see Examples/C++/tests/ETAT.md, section 2.7),
+; An equation without any number, alone in its block (see Tests/ETAT.md, section 2.7),
 ; and a chain of complex yields, each using the previous one. Values at age 7 of
 ; UNITE1 PEUPLEMENT1 UTR1, where volumetotal = 120: EQUATIONSUM = 240, CHAIN1 = 240,
 ; CHAIN2 = 360, CHAIN3 = 480, CHAIN4 = 600, CHAIN5 = 720.

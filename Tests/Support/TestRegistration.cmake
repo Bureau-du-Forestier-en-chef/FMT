@@ -6,16 +6,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 ]]
 
 #[[
-The functions that register the tests with ctest, included by the root CMakeLists.txt before the first
-of them is called, by Excel/CMakeLists.txt:
+The functions that register the tests with ctest, included by Tests/CMakeLists.txt before any test is
+registered:
 
 - getcsvtestcase builds the case part of the name of a CSV row;
 - registersystemtest registers one system test;
 - registercsvtests registers the rows of CSV files, one system test per row.
 
 A test name is given once. registersystemtest keeps the origin of each name in a GLOBAL property, so
-that the check covers every registration, the CSV rows and Excel/CMakeLists.txt alike, and a name
-given twice stops the configuration with the origin of both tests.
+that the check covers every registration, the CSV rows, the Excel test and the Python and R tests alike,
+and a name given twice stops the configuration with the origin of both tests.
 ]]
 
 #Case part of the ctest name of a CSV row, built from its first two arguments joined by |:
@@ -59,8 +59,10 @@ endfunction()
 #Registers the system test <testname>, which runs the command given after <origin>: an executable target
 #and its arguments, or an interpreter, its test runner and their arguments, run from the folder of the
 #executables. The test is labelled system and with its interface: cpp, unless the command is preceded by
-#INTERFACE <interface>, such as INTERFACE python. It is skipped when it returns 77 (Testing::skip in
-#Examples/C++/tests/TestTools.h, or the runners of Tests/System/Python and Tests/System/R), and requires the
+#INTERFACE <interface>, such as INTERFACE python. When the command runs a target whose FMTTESTScomponent
+#property is set, such as wrappercore for the executables of Tests/System/Cpp/FMTWrapperCore, the test is
+#also labelled with that component. It is skipped when it returns 77 (Testing::skip in
+#Tests/Support/TestTools.h, or the runners of Tests/System/Python and Tests/System/R), and requires the
 #ExamplesModels fixture of Tests/CMakeLists.txt. <origin> says where the test comes from, such as
 #"basetests.csv, line 12": the configuration stops, naming both origins, when <testname> is already given.
 function(registersystemtest testname origin)
@@ -80,13 +82,21 @@ function(registersystemtest testname origin)
 			list(REMOVE_AT command 0 1)
 		endif(firstargument STREQUAL "INTERFACE")
 	endif(commandlength GREATER 2)
+	set(labels "system;${interface}")
+	list(GET command 0 executable)
+	if (TARGET "${executable}")
+		get_target_property(component "${executable}" FMTTESTScomponent)
+		if (component)
+			list(APPEND labels "${component}")
+		endif(component)
+	endif(TARGET "${executable}")
 	add_test(
 			NAME "${testname}"
 			COMMAND ${command}
 			WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
 			)
 	set_tests_properties("${testname}" PROPERTIES
-			LABELS "system;${interface}"
+			LABELS "${labels}"
 			SKIP_RETURN_CODE 77
 			FIXTURES_REQUIRED ExamplesModels
 			)

@@ -19,7 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Performance
 {
 	// Exit code of a run whose every selected benchmark skipped a check. ctest reports such a test
-	// as skipped: it is the code of Testing::SKIP_RETURN_CODE (Examples/C++/tests/TestTools.h).
+	// as skipped: it is the code of Testing::SKIP_RETURN_CODE (Tests/Support/TestTools.h).
 	constexpr int SKIP_RETURN_CODE = 77;
 
 	// The benchmarks of one executable. The command line selects them; they run one after the

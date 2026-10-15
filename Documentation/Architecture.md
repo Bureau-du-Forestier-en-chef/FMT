@@ -127,7 +127,7 @@ Each layer maps to directories and namespaces in the repository:
 
 | Layer | Where it lives |
 | --- | --- |
-| Applications and user interfaces | `UI/`, `Excel/FMTExcel/`, `Examples/C++/` |
+| Applications and user interfaces | `UI/`, `Excel/FMTExcel/`, `Tests/System/Cpp/` |
 | Wrappers and language bindings | `UI/` (`FMTForm`), `Excel/`, the `Python` and `R` namespaces in `Include/` and `Source/` |
 | Application controllers and services | `FMTWrapperCore/` (`Controller`, the `UseCases` classes, `SES`, `Planning`, `TransformationCore`) |
 | Forest-planning domain | `Include/` and `Source/`, namespaces `Core`, `Models`, `Spatial`, `Graph`, `Heuristics` |
@@ -677,10 +677,10 @@ A debt list is only useful if it names real code, so the following are concrete 
 | Untyped `const void*` vertex handles crossing a public interface | `Include/FMTGraphVertexToYield.h` |
 | Two parameter conventions in the same header, legacy `l` prefix next to `p_` | `Include/FMTModel.h` and others |
 | Protected members exposing base-class internals to derived classes | 31 of 247 headers |
-| Behavior covered mainly by end-to-end example executables rather than unit tests | `Examples/C++/` |
+| Behavior covered mainly by end-to-end example executables rather than unit tests | `Tests/System/Cpp/` |
 | Comparators of public types declared without `FMTEXPORT`, while their members are defined in `Source/`: a test linked to the FMTlib DLL cannot use them | `Core::FMTActionComparator` in `Include/FMTAction.h`; also `FMTActualDevelopmentComparator`, `FMTMaskComparator`, `FMTModelComparator`, `FMTOperatingAreaSchemeComparator`, `FMTOutputNodeValueComparator`, `FMTOutputNodeOriginComparator`, `FMTOutputSourceComparator`, `FMTThemeComparator`, `FMTTransitionComparator`, each in the header of its type |
 | `Core::FMTYieldRequest` declared without `FMTEXPORT`: a test cannot call its constructors or members defined in `Source/FMTYieldRequest.cpp`, among them `getDatas` and `getFirstSeen`, and reaches a yield only through `FMTYields::get(development.getYieldRequest(), name)` | `Include/FMTYieldRequest.h` |
-| An exception chain whose innermost exception is thrown by `std::throw_with_nested` outside any `catch`: its nested pointer is empty, so `std::rethrow_if_nested` on it calls `std::terminate`, and tests read a chain only through `Testing::visitNested` | `raise` in `Source/FMTDefaultExceptionHandler.cpp` and `Source/FMTExceptionHandler.cpp`; workaround in `Examples/C++/tests/TestTools.h` |
+| An exception chain whose innermost exception is thrown by `std::throw_with_nested` outside any `catch`: its nested pointer is empty, so `std::rethrow_if_nested` on it calls `std::terminate`, and tests read a chain only through `Testing::visitNested` | `raise` in `Source/FMTDefaultExceptionHandler.cpp` and `Source/FMTExceptionHandler.cpp`; workaround in `Tests/Support/TestTools.h` |
 
 These should be improved incrementally when a feature or a focused refactoring touches them. Add a row when a change reveals a new case, and remove one when it is closed.
 
