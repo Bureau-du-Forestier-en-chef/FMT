@@ -577,7 +577,7 @@ Démonstrations refaites le
    - Vu vert après le build de Gabriel (2026-10-15, `15427a6d`) : les 7 lignes `DISCOUNT*`
      passent, lancées une à une puis dans `RunTests.bat all-public` (section 9.5).
 5. **Taux décimal de `_DISCOUNTFACTOR` tronqué** (révélé le 2026-10-15 en vérifiant #357).
-   **Corrigé le 2026-10-15** par le commit `<à reporter>`, dans la session de #357, à la demande
+   **Corrigé le 2026-10-15** par le commit `62f9e288`, dans la session de #357, à la demande
    de Gabriel : pas de ligne `knownbugs.csv`, les lignes vont directement dans `basetests.csv`.
    - Cause : `FMTYieldParser::m_rxdiscount` lisait le taux par `[\d]*`, et le reste du premier
      argument ne servait qu'à chercher un `%` : la partie décimale était perdue, et une constante
@@ -602,6 +602,8 @@ Démonstrations refaites le
    - Vu rouge sur le build `15427a6d` : `DISCOUNTDECIMAL` donnait 1 (taux lu 0),
      `DISCOUNTDECIMALPERCENT` 0,821927106759 (taux lu 4 %), et `DISCOUNTCONSTANT` levait
      `FMTexc(12)`.
+   - Vu vert après le build de Gabriel (2026-10-15, `62f9e288`) : les 3 lignes passent, lancées
+     une à une puis dans `RunTests.bat all-public` (section 9.5).
 
 Dans TWD_land, `YBM_RTM_BOG`, `YBM_RTM_MEH` et `YBM_RTM_F` ne servent qu'à l'output `TOTALCAR`,
 qu'aucun objectif ni aucune contrainte n'utilise. À la correction, relancer la suite base pour
@@ -1436,6 +1438,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-09-18 (lot 3) | 213 (195 lignes, 15 désactivées, 2 fixtures, `UnitTestFMTexcelcache`) | 12,9 s réelles ; 99,7 s cumulées | 51 | 17 | 3 | 0 | 15 | 25 |
 | 2026-09-18 (lot 4) | 226 (208 lignes, 15 désactivées, 2 fixtures, `UnitTestFMTexcelcache`) | 22,0 s réelles ; 169,2 s cumulées | 52 | 17 | 3 | 0 | 15 | 25 |
 | 2026-10-15 (#357, `15427a6d`) | 270 `all-public` (266 + 4 lignes `DISCOUNT*`) ; résumé : system 233 verts et 12 désactivés sur 245, performance 23, other 2 | 27,1 s réelles | — | — | — | — | 12 | — |
+| 2026-10-15 (taux décimal, `62f9e288`) | 273 `all-public` (270 + 3 lignes `DISCOUNT*`) ; résumé : system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 13,2 s réelles | — | — | — | — | 12 | — |
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
@@ -1921,8 +1924,10 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
   12 désactivés sur 270 ; fixture `ExamplesModelsUnchanged` verte ;
 - la vérification a révélé un autre défaut, le taux décimal tronqué (section 2.7, item 5),
   corrigé dans la même session à la demande de Gabriel : trois lignes de plus dans
-  `basetests.csv` et le scénario `discountconstant`. Comptes attendus, d'après les CSV :
-  `all-public` 273 tests inscrits, 12 désactivés ; à confirmer au build de Gabriel.
+  `basetests.csv` et le scénario `discountconstant` (commit `62f9e288`). Après le build de
+  Gabriel (2026-10-15) : `RunTests.bat all-public`, « 0 tests failed out of 261 », 13,2 s
+  réelles ; tableau system 236 verts et 12 désactivés sur 248, performance 23, other 2 ; Total
+  261 verts et 12 désactivés sur 273 ; fixture `ExamplesModelsUnchanged` verte.
 
 ### 9.6 Vérifications communes
 
