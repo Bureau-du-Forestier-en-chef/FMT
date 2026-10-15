@@ -1575,7 +1575,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | 2 | Résumé de fin de passage, `.bat` qui reste ouvert, `RunTests.bat <preset>`, installation filtrée par `INSTALL_TEST_SUITE` | `medium` | fait (2026-10-08, `ebb1a5d1`) |
 | 3 | Conventions : `CodingStandards.md` (trois niveaux, AAA, noms), `Architecture.md` (dette révélée par les tests), renvois d'`AGENTS.md` | `medium` | fait (2026-10-09, `4ec09af3`) ; choix soumis à gcyr |
 | 4 | Interrupteur unique `WITHOUT_TESTS`, squelette `Tests/`, boucle CSV en fonctions | `high` | fait (2026-10-09, `99dd05e4`) |
-| 5 | Python et R dans ctest au niveau système : l'installation ne les lance plus qu'à travers ctest | `high` | fait côté MSVC (2026-10-13) ; R à valider par Gabriel |
+| 5 | Python et R dans ctest au niveau système : l'installation ne les lance plus qu'à travers ctest | `high` | fait (2026-10-13, `cae97f61`) ; R validé sous MSYS2 le 2026-10-14 |
 | 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | à faire |
 | 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | à faire |
 | 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | à faire |
@@ -1810,6 +1810,44 @@ documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json
 - jamais exécuté jusqu'ici : `test_file` qui charge `helperFMT.R`, et les colonnes `failed` et
   `error` de ses résultats. Vu rouge : une attente faussée dans une copie d'un fichier de test doit
   rendre 1.
+
+**Validation côté R** (2026-10-14, build MSYS2 de Gabriel sur `9111b584`) :
+
+- avant d'y arriver, quatre défauts du build MinGW, sans lien avec la phase, corrigés à part :
+  `af301748` (git pour la pile COIN-OR privée de `FindOSI`), `009649ec` (cache d'un `build/release`
+  configuré avant `e33ee6d0`, qui mêlait le COIN-OR de Rtools et la pile privée), `f224a2b2` et
+  `9111b584` (fonctions de Windows 10 du harnais des benchmarks) ;
+- configuration : `ctest -N -L "^r$"` donne les 7 tests `System.R.*` et les 2 fixtures ; seul
+  avertissement `no target named` : `UnitTestFMToutputCache`, test Excel créé avec MSVC seulement,
+  une fois le `BFECtests.csv` local de `/home/FMT` remplacé par la copie de `new_test` ;
+- installation (`INSTALL_TEST_SUITE=public`, aucun `T:/`) : system 223 verts, 2 échecs et
+  15 désactivés sur 240, performance 12 verts et 11 échecs sur 23, other 2 ; Total 237 verts,
+  13 échecs, 15 désactivés sur 265 ;
+- les 7 tests R passent contre le paquet de `R-4.5.0/library/FMT` : `helperFMT.R` est chargé
+  (`testParser` et `testPlanning` lisent TWD_land par `fmtModelPath`), et les résultats de
+  `test_file` sont lus. R avertit que testthat a été compilé avec R 4.5.3 ;
+- non vérifié : la console de l'installation (absence de « Run FMT R tests »), un vu rouge d'un test
+  R et le code 77 du lanceur R ;
+- échecs hors de la phase :
+  - `System.doplanning.TWD_land|fullcarbon|5` et `System.testJointScenarioReading.TWD_land|fullcarbon|…` :
+    le scénario `fullcarbon` lit des yields `_PRED` par ONNX Runtime, absent du build R (MSYS2) ;
+    échec attendu dans ce build seulement, selon Gabriel, le scénario passant sous MSVC. Ils
+    échouent au lieu de rendre 77 (règle 8), `doplanning` par `std::terminate` (`0xc0000409`) :
+    à reprendre quand on touche ces tests ;
+  - 10 benchmarks `Flow.*` : mémoire privée de pointe d'environ 2,18 Go pour des bornes de 26 à
+    491 Mo, déjà là dans les benchmarks les plus petits, alors que `Flow.Optimize` garde 1,9 Mo de
+    tas au plus. OpenBLAS et libgomp, le runtime OpenMP de GCC, sont liés en statique dans
+    `libFMTlib.dll` et dans `FMT.dll` (le `-lblas` de `build-coin-stack.sh`) ; les en-têtes PE ne
+    demandent ni pile ni tas inhabituels. A/B sur `Flow.Optimize` (2026-10-15) :
+    `OPENBLAS_NUM_THREADS=1` ne change rien (2 190,9 Mo), `OMP_NUM_THREADS=1` donne 173,6 Mo. La
+    mémoire suit donc le nombre de fils OpenMP, environ 65 Mo par fil, 32 fils par défaut sur ce
+    poste ; mécanisme probable, non lu dans le code : les tampons qu'OpenBLAS, compilé avec OpenMP,
+    prépare pour chaque fil au chargement. Chaque session R qui charge FMT est concernée : issue à
+    ouvrir (règle 3). Même à 173,6 Mo, `Flow.Optimize` dépasse sa borne de 32 Mo, calibrée sous
+    MSVC : les bornes de mémoire sont propres à MSVC ;
+  - `Mask.FromString` : 11 allocations par appel pour une borne de 7, mesurée avec la bibliothèque
+    standard de MSVC ; libstdc++ alloue autrement. Borne par compilateur, ou pas de borne
+    d'allocations sous MinGW : à trancher.
 
 **À retenir pour la phase 7 (relevé le 2026-10-09).** Les sources de test à déplacer ne partagent pas
 un encodage. Sur les 82 fichiers suivis (sources C++ des trois dossiers et `TestTools.h`), 63 sont
