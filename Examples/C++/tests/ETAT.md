@@ -1842,12 +1842,13 @@ documentée (règle 3) ; puis la référence hors du dépôt : `--show-only=json
     `OPENBLAS_NUM_THREADS=1` ne change rien (2 190,9 Mo), `OMP_NUM_THREADS=1` donne 173,6 Mo. La
     mémoire suit donc le nombre de fils OpenMP, environ 65 Mo par fil, 32 fils par défaut sur ce
     poste ; mécanisme probable, non lu dans le code : les tampons qu'OpenBLAS, compilé avec OpenMP,
-    prépare pour chaque fil au chargement. Chaque session R qui charge FMT est concernée : issue à
-    ouvrir (règle 3). Même à 173,6 Mo, `Flow.Optimize` dépasse sa borne de 32 Mo, calibrée sous
-    MSVC : les bornes de mémoire sont propres à MSVC ;
+    prépare pour chaque fil au chargement. Chaque session R qui charge FMT est concernée : issue
+    #373 (2026-10-15, règle 3). Même à 173,6 Mo, `Flow.Optimize` dépasse sa borne de 32 Mo, calibrée sous
+    MSVC : les bornes de mémoire sont propres à MSVC. Décision de Gabriel (2026-10-15) : des bornes
+    propres à MinGW, dans `Tests/Performance/performance-mingw.csv`, avec `OMP_NUM_THREADS=32`
+    (section 7.8 de `Tests/Performance/ETAT.md`) ;
   - `Mask.FromString` : 11 allocations par appel pour une borne de 7, mesurée avec la bibliothèque
-    standard de MSVC ; libstdc++ alloue autrement. Borne par compilateur, ou pas de borne
-    d'allocations sous MinGW : à trancher.
+    standard de MSVC ; libstdc++ alloue autrement. Borne de 11 dans `performance-mingw.csv`.
 
 **À retenir pour la phase 7 (relevé le 2026-10-09).** Les sources de test à déplacer ne partagent pas
 un encodage. Sur les 82 fichiers suivis (sources C++ des trois dossiers et `TestTools.h`), 63 sont
