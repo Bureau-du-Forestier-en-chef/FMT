@@ -1634,7 +1634,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | 3 | Conventions : `CodingStandards.md` (trois niveaux, AAA, noms), `Architecture.md` (dette révélée par les tests), renvois d'`AGENTS.md` | `medium` | fait (2026-10-09, `4ec09af3`) ; choix soumis à gcyr |
 | 4 | Interrupteur unique `WITHOUT_TESTS`, squelette `Tests/`, boucle CSV en fonctions | `high` | fait (2026-10-09, `99dd05e4`) |
 | 5 | Python et R dans ctest au niveau système : l'installation ne les lance plus qu'à travers ctest | `high` | fait (2026-10-13, `cae97f61`) ; R validé sous MSYS2 le 2026-10-14 |
-| 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | livré (2026-10-15) en deux commits ; validation après le build de Gabriel à faire |
+| 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | fait (2026-10-15, `7886ca2b` et `7fdcea94`) ; 261 verts et 12 désactivés |
 | 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | à faire |
 | 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | à faire |
 | 9 | Noms explicites des lignes publiques ; Arrange / Act / Assert quand un test est touché | `high` | à faire |
@@ -1941,7 +1941,7 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
   réelles ; tableau system 236 verts et 12 désactivés sur 248, performance 23, other 2 ; Total
   261 verts et 12 désactivés sur 273 ; fixture `ExamplesModelsUnchanged` verte.
 
-**Phase 6 (2026-10-15)** :
+**Phase 6 (2026-10-15, `7886ca2b` puis `7fdcea94`)** :
 
 - **déplacements** par `git mv`, contenu inchangé, seuls dans un premier commit : les 63 sources
   d'`Examples/C++`, son `CMakeLists.txt`, `basetests.csv` et `knownbugs.csv` dans
@@ -1997,8 +1997,26 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
   - arborescence prévue sous `tests/` identique ; son plus long chemin reste
     `tests/Spatialyexplicitsimulation_doplanning`, les dossiers de sortie portant le nom des
     cibles, inchangé ;
-- **après le build de Gabriel** : déplacer son `BFECtests.csv`, puis les vérifications de la
-  section 9.6 contre `test-reorg-baseline\P6-before`.
+- **validation après le build de Gabriel** (2026-10-15, sur `7fdcea94`) :
+  - `7886ca2b` ne contient que les 87 renommages à 100 %, `7fdcea94` les 20 fichiers modifiés ;
+    `git log --follow Tests/System/Cpp/testScenarioReading.cpp` remonte aux commits d'`Examples/C++` ;
+  - `BFECtests.csv` est dans `Tests/System/Cpp/`, ignoré par git ; `Examples/C++` n'existe plus ;
+  - `--show-only=json-v1` de `build/release`, comparé par nom à
+    `test-reorg-baseline\P6-before\tests.json` : mêmes 371 tests ; commandes, dossiers de travail et
+    propriétés identiques, hormis le chemin du script des deux fixtures, l'ordre du `DEPENDS` de
+    `ExamplesModelsUnchanged` et les étiquettes `wrappercore` (16 tests) et `excel` (2) ;
+  - `ctest --preset <p> -N` : `all-public` 273, `system` 250, `system-private` 94, `performance` 25,
+    `unit` 0, `integration` 0, avec les mêmes noms que les fichiers `preset_<p>.txt` de la
+    référence ; `-L "^wrappercore$"` 18 et `-L "^excel$"` 4, fixtures comprises ;
+  - passage de l'installation (`INSTALL_TEST_SUITE=public`, aucun `T:/`) : 0 échec sur 273, 18 s ;
+    tableau system 236 verts et 12 désactivés sur 248, performance 23, other 2 ; Total 261 verts et
+    12 désactivés ; fixture `ExamplesModelsUnchanged` verte. Les tests `wrappercore` publics et
+    `System.UnitTestFMTexcelcache` passent ;
+  - plus long chemin sous `build/release/tests` : 92 caractères depuis `build/release`, comme
+    avant le build ;
+  - non relu : la console de la configuration. L'absence d'avertissement `no target named` se
+    déduit des 371 tests identiques, celle de l'avertissement de l'ancien emplacement de
+    `BFECtests.csv` du fichier déplacé avant la configuration.
 
 ### 9.6 Vérifications communes
 
