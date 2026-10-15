@@ -101,7 +101,34 @@ target_link_libraries(FMTPerformanceTests PRIVATE FMTBenchmarkHarness)
 # when its row bounds the allocations, and memory when it bounds the memory a call keeps or the
 # peak memory of the process. ctest runs them in their short mode; with FMT_BENCHMARK_MODE=full in
 # the environment, they measure (run them without -j).
+# With MinGW, the benchmarks read performance-mingw.csv: the same rows and expected results, with the
+# bounds measured in that build. FMTlib links there an OpenBLAS built with OpenMP, which commits about
+# 65 MB per OpenMP thread when it loads (#373): the benchmarks run with 32 OpenMP threads, so that their
+# peak bounds hold on any machine and keep that cost in view until #373 is fixed.
 set(FMTPERFORMANCEcsv "${FMTPERFORMANCEdir}/performance.csv")
+set(FMTPERFORMANCEenvironment "")
+if (MINGW)
+	set(FMTPERFORMANCEcsv "${FMTPERFORMANCEdir}/performance-mingw.csv")
+	set(FMTPERFORMANCEenvironment "OMP_NUM_THREADS=32")
+endif()
+#The two files must list the same benchmarks with the same expected results: only their bounds differ.
+foreach(FMTPERFORMANCEfile IN ITEMS performance.csv performance-mingw.csv)
+	file(STRINGS "${FMTPERFORMANCEdir}/${FMTPERFORMANCEfile}" FMTPERFORMANCElines)
+	set(FMTPERFORMANCEkeys "")
+	foreach(FMTPERFORMANCEline IN LISTS FMTPERFORMANCElines)
+		string(REGEX MATCH "^[^;]*;[^;]*;[^;]*" FMTPERFORMANCEkey "${FMTPERFORMANCEline}")
+		string(REPLACE ";" "|" FMTPERFORMANCEkey "${FMTPERFORMANCEkey}")
+		list(APPEND FMTPERFORMANCEkeys "${FMTPERFORMANCEkey}")
+	endforeach()
+	set("FMTPERFORMANCEkeys.${FMTPERFORMANCEfile}" "${FMTPERFORMANCEkeys}")
+endforeach()
+if (NOT "${FMTPERFORMANCEkeys.performance.csv}" STREQUAL "${FMTPERFORMANCEkeys.performance-mingw.csv}")
+	message(WARNING "performance.csv and performance-mingw.csv no longer list the same benchmarks and expected results: a row added or changed in one belongs in the other, with its MinGW bounds")
+endif()
+unset(FMTPERFORMANCElines)
+unset(FMTPERFORMANCEkeys)
+unset(FMTPERFORMANCEkeys.performance.csv)
+unset(FMTPERFORMANCEkeys.performance-mingw.csv)
 set(FMTPERFORMANCEresults "${CMAKE_BINARY_DIR}/tests/performance")
 file(MAKE_DIRECTORY "${FMTPERFORMANCEresults}")
 file(READ "${FMTPERFORMANCEcsv}" FMTPERFORMANCErows)
@@ -154,6 +181,9 @@ foreach(row ${FMTPERFORMANCErows})
 			FIXTURES_REQUIRED ExamplesModels
 			LABELS "${labels}"
 			)
+	if (NOT FMTPERFORMANCEenvironment STREQUAL "")
+		set_tests_properties("${testname}" PROPERTIES ENVIRONMENT "${FMTPERFORMANCEenvironment}")
+	endif()
 endforeach()
 # Regression test of #361, in a build configured with -DWITH_MIMALLOC=ON: the benchmarks must then run
 # on mimalloc, which needs mimalloc.dll to stay the first import of the executable. The test runs one

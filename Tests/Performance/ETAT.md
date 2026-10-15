@@ -1826,3 +1826,26 @@ références concordent.
 
 Les JSON des trois mesures restent locaux, hors du dépôt (décision 5). Cette référence est remplacée
 par celle de la section 7.1 (décision 18).
+
+### 7.8 Bornes du build MinGW (2026-10-15)
+
+Après le chantier, la validation R de la phase 5 de #350 a fait tourner les benchmarks pour la première
+fois dans le build MSYS2 du paquet R (Rtools 4.5, GCC 14.3.0, `9111b584`).
+
+- Les résultats et les temps sont bons ; 11 bornes, calibrées sous MSVC, échouaient :
+  - les 10 bornes de pointe des `Flow.*`. Le processus engage environ 2,2 Go dès le chargement, parce
+    que FMTlib y lie un OpenBLAS compilé avec OpenMP, qui engage environ 65 Mo par fil OpenMP (#373 ;
+    `OMP_NUM_THREADS=1` fait tomber `Flow.Optimize` de 2 190,9 à 173,6 Mo, `OPENBLAS_NUM_THREADS=1` ne
+    change rien) ;
+  - la borne d'allocations de `Mask.FromString`, 11 par appel avec libstdc++ pour 7 avec MSVC.
+- Décision de Gabriel : des bornes propres à MinGW, qui gardent le coût de #373 en vue, dans
+  `performance-mingw.csv` (mêmes lignes et résultats attendus que `performance.csv`), avec
+  `OMP_NUM_THREADS=32` fixé par ctest pour que les bornes de pointe valent sur toute machine.
+- Mesure : deux passages en mode court et deux en mode complet, `OMP_NUM_THREADS=32`, JSON gardés hors
+  du dépôt (`Documents/FMT/mingw-bench`). Allocations et mémoire retenue identiques d'un passage à
+  l'autre, hormis `Flow.Outputs` (0 ou 2 418 octets retenus, sous sa borne de 22 000).
+- Bornes écrites : allocations aux médianes (`ComplexYield.Shift` 12, `ComplexYield.Equation` 29,
+  `Mask.FromString` 11, les autres comme sous MSVC) ; bornes de mémoire retenue de MSVC gardées, toutes
+  tenues ; pointes à la plus haute des quatre mesures plus 10 %, de 2 404 Mo (`Flow.Outputs`) à 2 834 Mo
+  (`Flow.Replanning.Threads10`).
+- Quand #373 sera corrigé, abaisser les bornes de pointe de `performance-mingw.csv`.

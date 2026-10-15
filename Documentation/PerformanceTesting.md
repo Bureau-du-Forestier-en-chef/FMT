@@ -18,6 +18,7 @@ Tests protect behavior; benchmarks show performance effects. Neither replaces th
 | `Tests/Performance/DefinedBenchmarks.h`, `.cpp` | The benchmarks defined by a row of an expectations file, such as the private ones. |
 | `Tests/Performance/QuietFmt.h`, `.cpp` | Makes FMT quiet, once per process (see [Adding a benchmark](#adding-a-benchmark)). |
 | `Tests/Performance/performance.csv` | One row per benchmark: its registration with ctest, its expected result and its bounds. |
+| `Tests/Performance/performance-mingw.csv` | The same rows and expected results, with the bounds of the MinGW build (see [The MinGW build](#the-mingw-build)). |
 | `Tests/Performance/performance-private.csv` | A local file that git ignores: the private benchmarks, on models outside the source tree. |
 | `Tests/Performance/CompareResults.cmake` | Compares the results of two runs. |
 | `Tests/Performance/ScalingReport.cmake` | Reports how a family of benchmarks scales with its number of threads. |
@@ -225,6 +226,22 @@ bytes do depend on it, which is why every result records the allocator of its ru
 peak of a process of the benchmarks rises from about 22 MB to 54 MB: the peak bounds, and the
 retained-memory bounds that are not 0, hold for the C runtime heap only.
 
+## The MinGW build
+
+The MSYS2 build of the R package compiles the benchmarks with GCC, which allocates and keeps memory
+otherwise than MSVC. There, `Tests/Performance/CMakeLists.txt` registers the benchmarks with
+`performance-mingw.csv`: the same rows and expected results as `performance.csv`, with bounds measured
+in that build by the rule of [Adding a benchmark](#adding-a-benchmark). The configuration warns when the
+two files no longer list the same benchmarks and expected results.
+
+In that build, FMTlib links an OpenBLAS built with OpenMP, which commits about 65 MB per OpenMP thread
+when it loads ([#373](https://github.com/Bureau-du-Forestier-en-chef/FMT/issues/373)): the peak of a
+process of the benchmarks is about 2.2 GB with 32 threads, against about 22 MB with MSVC. The benchmarks
+run there with `OMP_NUM_THREADS=32`, set by ctest, so that their peak bounds hold on any machine and keep
+that cost in view. When #373 is fixed, the peaks drop: lower the peak bounds of `performance-mingw.csv`
+then, as for any gain ([Measuring a change](#measuring-a-change)). The bounds of 2026-10-15 come from two
+runs in each mode with GCC 14.3.0 of Rtools 4.5.
+
 ## Results
 
 Each run writes one JSON file: the environment of the run, then one entry per benchmark. The layout is
@@ -397,7 +414,8 @@ benchmark, such as a private replanning on threads. Like the comparison, it only
    a benchmark that measures a wrong computation must fail.
 4. **Add its row** to `performance.csv`:
    `FMTPerformanceTests;<name>;<expected result>;<allocation bound>;<retained-memory bound>;<peak MB>`.
-   Leave the bounds empty for a first run.
+   Leave the bounds empty for a first run. Add the same row to `performance-mingw.csv`, whose bounds are
+   measured in the MinGW build ([The MinGW build](#the-mingw-build)).
 5. **Measure the bounds**: run the benchmark twice and read the allocations and the retained bytes per
    call. Write each median as a bound when it changes neither between the runs nor with the machine. For
    a flow, run it alone in its process twice in each mode, and write the highest peak with 10 % added.
