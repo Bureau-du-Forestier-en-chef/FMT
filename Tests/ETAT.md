@@ -433,12 +433,12 @@ une ligne de plus ne coûte qu'une reconfiguration.
 
 ### 2.4 Vérifications mortes
 
-- `DoSpatiallyExplicitPlanning.cpp:87-88` : le contrôle des patchs découpe `stats`
+- `DoSpatiallyExplicitPlanning.cpp:94-95` : le contrôle des patchs découpe `stats`
   au lieu de `result`, et `spresults.at(1) != "2"` est toujours vrai quand la première
   condition l'est.
 - `AddYieldHandlers.cpp` : le vecteur `totest` n'est jamais rempli ; la boucle qui compare les
   valeurs ne s'exécute pas. Seul `isYld` est vérifié.
-- `Tests/System/Cpp/FMTWrapperCore/WrapperCoreRunSimulatedAnnealing.cpp:150` : l'écart de plus de 5 % ne fait
+- `Tests/System/Cpp/FMTWrapperCore/WrapperCoreRunSimulatedAnnealing.cpp:157` : l'écart de plus de 5 % ne fait
   qu'afficher un avertissement (hors ctest de toute façon).
 
 ### 2.5 Hors ctest, désactivés ou jamais exécutés
@@ -1321,10 +1321,19 @@ abandonne.
 
 ## 7. Pièges connus
 
-- **Encodage** : `RunPlanningTask.cpp`, `WriteModel.cpp`, `WriteAndReadProject.cpp` et
-  `SumAndAverageOutputs.cpp` sont en cp1252. Les éditer en Python latin-1 (`newline=''`), jamais avec
-  un outil qui suppose l'UTF-8. Les fichiers CMake et `basetests.csv` sont en UTF-8 ; le
-  dépôt est en `core.autocrlf=true` (CRLF dans l'arbre de travail).
+- **Encodage** : depuis la phase 7, toutes les sources C++ de `Tests/System/Cpp` portent
+  l'en-tête de licence, donc le « é » de « Québec ». 68 sont en cp1252 : les 62 qui étaient en
+  ASCII, `RunPlanningTask.cpp`, `WriteModel.cpp`, `WriteAndReadProject.cpp`,
+  `ReplanConcurrently.cpp`, `SumAndAverageOutputs.cpp` et `QueryVersionFeature.cpp`. 13 sont en UTF-8 :
+  `RunOpAreaSchedulerTask.cpp`, `ScheduleOperatingAreas.cpp`, `ReplanOnDemand.cpp`,
+  `WrapperCoreRunSimulatedAnnealing.cpp` et `WrapperCoreRunSes.cpp`, puis 8 avec BOM
+  (`GetModelFromProportions.cpp`, `WriteAndReadGCBMTransitions.cpp`, `GetYieldsFromGraph.cpp`,
+  `GetVariabilities.cpp`, `ReplayScheduleOutputs.cpp`, `ResolveAfterConstraintChange.cpp`,
+  `WriteAndReadOutputTypes.cpp`, `SetSolution.cpp`). `Tests/Support/TestTools.h` est en cp1252.
+  Vérifier l'encodage avant d'éditer, et éditer un fichier cp1252 en Python latin-1
+  (`newline=''`), jamais avec un outil qui suppose l'UTF-8. Les fichiers CMake, Python et R de
+  `Tests/` et `basetests.csv` sont en UTF-8 ; le dépôt est en `core.autocrlf=true` (CRLF dans
+  l'arbre de travail).
 - **`TWD_land.out`** contient déjà des U+FFFD dans les descriptions d'outputs (accents perdus
   autrefois) : ne pas le « corriger » en passant.
 - **Format CSV** : séparateur `;`, pas de commentaire possible, première ligne = en-tête. Une

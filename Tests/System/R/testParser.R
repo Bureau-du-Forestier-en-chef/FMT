@@ -1,3 +1,8 @@
+# Copyright (c) 2019 Gouvernement du Québec
+#
+# SPDX-License-Identifier: LiLiQ-R-1.1
+# License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+
 test_that("Parser exports construct and load TWD_land", {
   parserClasses <- c(
     "FMTparser", "FMTareaparser", "FMTlandscapeparser", "FMTactionparser",

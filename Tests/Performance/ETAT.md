@@ -512,7 +512,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
   chaque passage compté.
 - **Point d'entrée depuis un exécutable** : `FMTYieldRequest` n'est pas exportée, mais
   `FMTYields::get(développement.getYieldRequest(), nom)` fonctionne, comme dans
-  `Tests/System/Cpp/ReadScenario.cpp:285-286`.
+  `Tests/System/Cpp/ReadScenario.cpp:292-293`.
 - **Les octets vivants comptent la taille que rend `_msize`**, à l'allocation comme à la
   libération (corrigé le 2026-10-05). Le moniteur ajoutait la taille demandée et déduisait celle de
   `_msize`, qui en diffère dans deux cas. La bibliothèque C donne un octet à `malloc(0)`,
