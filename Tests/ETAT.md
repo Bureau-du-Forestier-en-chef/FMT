@@ -1682,7 +1682,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | 4 | Interrupteur unique `WITHOUT_TESTS`, squelette `Tests/`, boucle CSV en fonctions | `high` | fait (2026-10-09, `99dd05e4`) |
 | 5 | Python et R dans ctest au niveau système : l'installation ne les lance plus qu'à travers ctest | `high` | fait (2026-10-13, `cae97f61`) ; R validé sous MSYS2 le 2026-10-14 |
 | 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | fait (2026-10-15, `7886ca2b` et `7fdcea94`) ; 261 verts et 12 désactivés |
-| 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | livrée (2026-10-16), à valider après le build de Gabriel |
+| 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | fait (2026-10-16, `5ae7fa75`, `31f3e288` et `ab5b27b3`) ; 261 verts et 12 désactivés |
 | 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | à faire |
 | 9 | Noms explicites des lignes publiques ; Arrange / Act / Assert quand un test est touché | `high` | à faire |
 
@@ -2143,6 +2143,35 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
   le chemin finit par `/` n'ont pas de `/` final dans leur nom. Sans elle, elles l'ont (démontré
   par `cmake -P` et le projet jetable). À corriger à part, sans lire `CMAKE_MATCH_4` quand le
   groupe peut être vide : par exemple, tester si le champ finit par `/`.
+- **validation après le build de Gabriel** (2026-10-16, sur `ab5b27b3`) :
+  - les trois commits reproduisent les arbres vérifiés avant la livraison : `5ae7fa75`, 81
+    renommages à 100 % ; `31f3e288`, 75 fichiers ; `ab5b27b3`, 101 fichiers.
+    `git log --follow Tests/System/Cpp/ReadScenario.cpp` remonte aux commits d'`Examples/C++` ;
+  - copie privée de `new_test` migrée par le script : 92 lignes, toutes aux nouveaux noms ;
+    sauvegarde identique à l'original ; les deux fichiers ignorés par git ;
+  - `--show-only=json-v1` de `build/release`, comparé à `test-reorg-baseline\P6-before\tests.json`,
+    noms traduits par la table : mêmes 371 tests, arguments, dossiers de travail et propriétés,
+    hormis les étiquettes de composant, le chemin du script des fixtures et l'ordre du `DEPENDS`
+    (phase 6), et le dossier renommé de 9 lignes (3 publiques, 6 privées), dont 7 changent aussi
+    de nom par ce dossier ;
+  - 44 commandes ne diffèrent que par la casse de l'exécutable (`doplanning.exe` au lieu de
+    `DoPlanning.exe`, et de même pour `CreateModel`, `ForceSolution` et `GetCarbonPredictors`) :
+    reconstruit le 2026-10-16, le fichier garde la casse de l'ancien, que Windows conserve quand
+    l'éditeur de liens l'écrase. `bin/Release` garde aussi les exécutables des 77 autres anciens
+    noms. Sans effet sur ctest, qui suit les cibles ; supprimer ces fichiers rend la bonne casse au
+    build suivant ;
+  - `ctest --preset <p> -N` : `all-public` 273, `system` 250, `system-private` 94, `performance` 25,
+    `unit` 0, `integration` 0 ;
+  - aucun avertissement de traduction, `no target named` ni d'ancien emplacement, vu en rejouant la
+    configuration dans le scratchpad sur la copie migrée ; la console de la configuration de
+    Gabriel n'a pas été relue ;
+  - `ctest --preset all-public` : « 0 tests failed out of 261 », 13,7 s réelles ; tableau system
+    236 verts et 12 désactivés sur 248, performance 23, other 2 ; Total 261 verts et
+    12 désactivés sur 273 ; fixture `ExamplesModelsUnchanged` verte. Le passage de l'installation
+    (`LastTest.log` copié dans `test-reorg-baseline\P7-after`) compte aussi 273 tests sans échec ;
+  - plus long chemin sous `build/release/tests` : 91 caractères, 146 en absolu, comme prévu ;
+  - reste à migrer les copies privées du clone `/home/FMT` de rtools45 et du worktree `dev`, une
+    fois qu'ils auront la phase 7.
 
 ### 9.6 Vérifications communes
 
