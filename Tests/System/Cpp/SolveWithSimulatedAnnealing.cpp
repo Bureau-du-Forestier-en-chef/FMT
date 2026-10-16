@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 			length = 3;
 			objectivevalue = 1000;*/
 			}
-		const std::string outputlocation = "../../tests/sasolve";
+		const std::string outputlocation = "../../tests/SolveWithSimulatedAnnealing";
 		Parser::FMTModelParser modelparser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);

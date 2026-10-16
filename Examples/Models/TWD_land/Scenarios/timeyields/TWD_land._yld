@@ -46,7 +46,7 @@ YBM_RTM_MEH _EQUATION(1.1017722459999999*12^0.83493872400000002)
 *Y ? ? ?
 _AGE volumezero
 0    0
-; Time yields read by period, for testScenarioReading. PERIODVALUE starts at period 1.
+; Time yields read by period, for ReadScenario. PERIODVALUE starts at period 1.
 *YT ? ? ?
 PERIODVALUE 1 10 20 30
 DISCOUNTFULL _DISCOUNTFACTOR(4%,5,FULL)

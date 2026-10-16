@@ -1,4 +1,4 @@
-; Invalid on purpose for testReadingErrors: the COUPETOTALE targets sum to 90, FMTleakingtransition (38).
+; Invalid on purpose for ReadInvalidScenario: the COUPETOTALE targets sum to 90, FMTleakingtransition (38).
 *CASE Coupetotale
 *SOURCE  ? ? ?
 *TARGET  ? ? ?  90.0

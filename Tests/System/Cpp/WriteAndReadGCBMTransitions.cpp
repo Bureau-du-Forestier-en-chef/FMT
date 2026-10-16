@@ -21,7 +21,7 @@ transitions.push_back(Core::FMTGCBMTransition(11,m1,"ACPFAIBL-FC8332"));
 std::map<std::string, std::string>m2;
 m2["THEME5"] = "FC8202";
 transitions.push_back(Core::FMTGCBMTransition(10,m2, "ACPFORT-FC8202"));
-const std::string outdir = "../../tests/testGCBMtransitionparser/gcbmtransitiontest.txt";
+const std::string outdir = "../../tests/WriteAndReadGCBMTransitions/gcbmtransitiontest.txt";
 transitionparser.writeGCBM(transitions, outdir);
 const std::vector<Core::FMTGCBMTransition> outtr = transitionparser.readGCBM(outdir);
 if (outtr!= transitions)

@@ -20,7 +20,7 @@ int main()
 	Logging::FMTDefaultLogger().logStamp();
 	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
-	const std::string outdir = "../../tests/Spatialyexplicitsimulation_doplanning/";
+	const std::string outdir = "../../tests/DoSpatiallyExplicitPlanning/";
 	Parser::FMTModelParser mparser;
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);

@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 			selectedoutputs.push_back(output);
 		}
 	}
-	const std::string outputlocation = "../../tests/replanningmodeladaption/replanning";
+	const std::string outputlocation = "../../tests/ReplanWithModelAdaption/replanning";
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	std::unique_ptr<Parallel::FMTTask> maintaskptr(new Parallel::FMTReplanningTask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions,10,10,0.5, Core::FMToutputlevel::totalonly));

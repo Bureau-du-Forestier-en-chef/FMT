@@ -132,7 +132,9 @@ Registration is data-driven. There is no `add_test` call to copy.
    [Tests/Support/TestRegistration.cmake](Tests/Support/TestRegistration.cmake)), and a name already
    given to another test stops the configuration.
 3. `basetests.csv` is versioned. `BFECtests.csv` is listed in `.gitignore`, so `git grep` never shows
-   it. Read that file directly before concluding what CTest actually runs.
+   it. Read that file directly before concluding what CTest actually runs. A row that names an
+   executable by its name before issue #350 (`Tests/Support/RenamedTests.csv`) still registers, with a
+   warning, until `tools\testMigration\Update_PrivateTests.bat` renames the rows of that copy.
 
 ### Python and R tests
 

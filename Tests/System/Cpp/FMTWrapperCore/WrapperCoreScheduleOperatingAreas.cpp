@@ -14,14 +14,14 @@
 
 // Private test of FMTWrapper::Backend::OperatingArea, registered in BFECtests.csv: no public
 // model has a YOUVERT yield. It reuses the scenario and the settings of the
-// testOAschedulertask example.
+// RunOpAreaSchedulerTask example.
 //
-// Arguments, same form as testOAschedulertask in BFECtests.csv:
+// Arguments, same form as RunOpAreaSchedulerTask in BFECtests.csv:
 //   argv[1] = .pri file
 //   argv[2] = "<scenario>|<parameters file>", the latter being looked for in
 //             <.pri folder>/Scenarios/<scenario>/
 //   argv[3] = vector file of the operating areas
-// Without arguments: first testOAschedulertask line of BFECtests.csv.
+// Without arguments: first RunOpAreaSchedulerTask line of BFECtests.csv.
 //
 // Checks that the scheduling succeeds, that the task writes its final model into the
 // result folder, then that this model is read back and replays its schedule.
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 	params.numberOfPeriods = 5;
 	params.numberOfThreads = 1;
 	// getOperatingArea passes this number as is to readOaSchedulerParameters, which expects
-	// a 0-based index: 13 designates the 14th theme, the one testOAschedulertask uses.
+	// a 0-based index: 13 designates the 14th theme, the one RunOpAreaSchedulerTask uses.
 	params.themeNumber = 13;
 	params.maximumTime = 9000;
 	params.numberOfIterations = 10;
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
 	params.lockField = "STANLOCK";
 	params.parametersFilePath =
 		(PRIMARY_FOLDER / "Scenarios" / scenario / parametersFile).string();
-	params.resultFolder = "../../tests/testWrapperCoreOperatingArea";
+	params.resultFolder = "../../tests/WrapperCoreScheduleOperatingAreas";
 	// 2 is the default UPDATE value in FMT, the one the example keeps.
 	params.updatePeriod = 2;
 	params.returnTimeOutputName = "OATTEINTE7M";
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 			return 1;
 		}
 
-		// As in testOAschedulertask: the final model must be read back and replay its schedule.
+		// As in RunOpAreaSchedulerTask: the final model must be read back and replay its schedule.
 		const std::vector<Models::FMTModel> WRITTEN =
 			modelParser.readproject(FINAL_MODEL.string(), std::vector<std::string>(1, "ROOT"));
 		const std::vector<Core::FMTSchedule> SCHEDULES =

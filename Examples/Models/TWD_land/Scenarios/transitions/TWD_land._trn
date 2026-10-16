@@ -1,4 +1,4 @@
-; Transitions written for testScenarioReading: split proportions, target age, target lock
+; Transitions written for ReadScenario: split proportions, target age, target lock
 ; and two sources for the same action. A source condition uses the @AGE and @YLD forms of
 ; the transition section. The other cases follow the root section.
 

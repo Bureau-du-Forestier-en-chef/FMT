@@ -379,7 +379,7 @@ int main(int argc, char* argv[])
 		{
 		if (argc < 3)
 		{
-			throw std::invalid_argument("Usage: testScenarioReading <primary file>|<scenario>|<query>... <expected value>");
+			throw std::invalid_argument("Usage: ReadScenario <primary file>|<scenario>|<query>... <expected value>");
 		}
 		std::vector<std::string> arguments = split(argv[1]);
 		if (arguments.size() < 3)

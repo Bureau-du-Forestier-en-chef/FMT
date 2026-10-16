@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
 		{
 		if (argc < 2)
 		{
-			throw std::invalid_argument("Usage: testJointScenarioReading <primary file>|<scenario>|<scenario>... [<scenarios read alone>]");
+			throw std::invalid_argument("Usage: ReadScenariosTogether <primary file>|<scenario>|<scenario>... [<scenarios read alone>]");
 		}
 		const std::vector<std::string> ARGUMENTS = split(argv[1]);
 		const std::string PRIMARY_FILE = ARGUMENTS.at(0);
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
 		// One folder per CSV row, named by a hash: scenario names would exceed the Windows path limit.
 		std::ostringstream folderName;
 		folderName << std::hex << std::hash<std::string>()(boost::join(SCENARIOS, "|") + "/" + boost::join(ALONE, "|"));
-		const std::filesystem::path FOLDER = std::filesystem::path("../../tests/testJointScenarioReading") / folderName.str();
+		const std::filesystem::path FOLDER = std::filesystem::path("../../tests/ReadScenariosTogether") / folderName.str();
 		std::filesystem::remove_all(FOLDER);
 		std::cout << "Models written in " << FOLDER.string() << std::endl;
 

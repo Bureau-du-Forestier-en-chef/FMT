@@ -1,4 +1,4 @@
-; Invalid on purpose for testReadingErrors: area 4O3.28 is not a number, FMTinvalid_number (12).
+; Invalid on purpose for ReadInvalidScenario: area 4O3.28 is not a number, FMTinvalid_number (12).
 ;Total area: 1814.760000
 ;*A TH1 TH3 AGE AREA
 *A UNITE1 PEUPLEMENT1 UTR1 12 4O3.28

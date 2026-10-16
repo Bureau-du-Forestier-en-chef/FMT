@@ -512,7 +512,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
   chaque passage compté.
 - **Point d'entrée depuis un exécutable** : `FMTYieldRequest` n'est pas exportée, mais
   `FMTYields::get(développement.getYieldRequest(), nom)` fonctionne, comme dans
-  `Tests/System/Cpp/testScenarioReading.cpp:285-286`.
+  `Tests/System/Cpp/ReadScenario.cpp:285-286`.
 - **Les octets vivants comptent la taille que rend `_msize`**, à l'allocation comme à la
   libération (corrigé le 2026-10-05). Le moniteur ajoutait la taille demandée et déduisait celle de
   `_msize`, qui en diffère dans deux cas. La bibliothèque C donne un octet à `malloc(0)`,
@@ -690,7 +690,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
 - **Sur le modèle privé, un output au moins ne rend pas de total** : `.at("Total")` y lève
   « invalid map<K, T> key ». La somme de `Flow.Outputs` saute ces outputs.
 - **Un yield manquant d'un modèle de production** (FMTexc 42) est une erreur par défaut ;
-  `doplanning` en fait un avertissement, et les flux font de même (`quietFmt`).
+  `DoPlanning` en fait un avertissement, et les flux font de même (`quietFmt`).
 
 ### 2.16 La mémoire retenue d'un calcul de yields complexes dépend du temps (démontré à la validation du lot 3)
 
@@ -820,7 +820,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
 - **Origine** : `onDemandRun` lance un fil par tâche depuis son introduction, `bfdc9936`
   (2021-12-02) ; `cf54b8ff` (2025-10-08) l'a réécrit avec `FMTWorkerTask`, sans changer ce principe.
   L'interface replanifie par `onDemandRun` (`FMTWrapperCore/Source/Planning.cpp`, qui reprend son
-  comportement), comme l'exemple `replanner`.
+  comportement), comme l'exemple `ReplanOnDemand`.
 - **En production** : une replanification de R réplicats garde environ R × 4,7 Mo jusqu'à la fermeture
   de l'interface, et ces blocs s'additionnent d'une replanification à l'autre dans la même session :
   4,7 Go pour 1 000 réplicats. `conccurentRun`, lui, ne crée qu'un fil par worker.

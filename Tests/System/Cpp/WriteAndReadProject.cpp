@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 	//std::string primarylocation = std::string("../../../../Examples/Models/TWD_land/TWD_land.pri"); // changer ici pour pointer sur un modèle avec le bug
 	Parser::FMTModelParser modelparser;
 	modelparser.setDefaultExceptionHandler();
-	const std::string outdir = "../../tests/testreadwriteproject/";
+	const std::string outdir = "../../tests/WriteAndReadProject/";
 	//const std::string outdir = "D:/FMT/build/release/tests/testreadwriteproject/";
 	
 	std::vector<Exception::FMTexc> errors;

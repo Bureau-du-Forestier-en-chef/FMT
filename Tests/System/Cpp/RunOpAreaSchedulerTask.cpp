@@ -148,7 +148,7 @@ else
     results = std::vector<std::string>(1, "test");
     length = 20;
             }
-            const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
+            const std::string out("../../tests/RunOpAreaSchedulerTask/" + scenarios.at(0));
             Parser::FMTModelParser modelparser;
             modelparser.setDefaultExceptionHandler();
             std::vector<Exception::FMTexc> errors;
@@ -210,14 +210,14 @@ else
                 }
                 // On relit ici le nouveau "root" qui est le meilleur modèle écrit précédement 
                 const std::vector<Models::FMTModel> nmodels = modelparser.readproject(
-                    "../../tests/testOAschedulertask/" + results[0] + ".pri", std::vector<std::string>(1, "ROOT"));
+                    "../../tests/RunOpAreaSchedulerTask/" + results[0] + ".pri", std::vector<std::string>(1, "ROOT"));
                 Models::FMTModel readmodel = nmodels.at(0);
                 Models::FMTLpModel noptimizationmodel(readmodel, Models::FMTSolverInterface::CLP); // Pourquoi CLP et pas Mosek?
                 noptimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
                 noptimizationmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
                 noptimizationmodel.Models::FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
                 const std::vector<Core::FMTSchedule> schedules = modelparser.readSchedules(
-                    "../../tests/testOAschedulertask/" + results[0] + ".pri", nmodels).at(0);
+                    "../../tests/RunOpAreaSchedulerTask/" + results[0] + ".pri", nmodels).at(0);
                 // On regarde si on est capable de relire ce qu'on vient de créer
                 noptimizationmodel.doPlanning(false, schedules); // si c'est false, pas besoin de optimiser. Fait juste prendre la solution. 
                

@@ -13,6 +13,7 @@ location: run it by a double-click in the Explorer, or from a console at the roo
 | `build/` | `CMakeFMTMSYS2rcran45.sh`, `CMakeFMTMSYS2rcran45_release.sh` | MSYS2 builds of the R package, run in the Rtools shell from `/home/FMT`. |
 | `tests/` | `RunTests.bat [preset] [ctest options...]` | Runs a test preset (`all-public` by default) and prints the summary by level. |
 | `tests/` | `RunPrivateTests.bat [ctest options...]` | Checks that `T:\` is reachable, then runs `RunTests.bat system-private`. |
+| `testMigration/` | `Update_PrivateTests.bat [-Worktree <folder>]` | Renames the test executables in the private copy of `BFECtests.csv` of a worktree, after their renaming under #350, and moves a copy left in `Examples/C++/tests` to `Tests/System/Cpp`. |
 | `performance/` | `Measure_Performance.bat` | Measures the benchmarks in full mode and compares them with reference runs ([PerformanceTesting.md](../Documentation/PerformanceTesting.md)). |
 | `commitMessage/` | `CommitMessage_Generator.bat` | Copies a Conventional Commits prompt built from the staged diff to the clipboard. |
 | `changelog/` | `Changelog_Generate.bat [since]` | Copies a changelog prompt to the clipboard, then, after confirmation, commits and pushes the changelog, and tags a version. |

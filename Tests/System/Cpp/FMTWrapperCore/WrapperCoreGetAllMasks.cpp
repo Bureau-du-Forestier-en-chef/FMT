@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 		scenarioName = results.at(1);
 		periods = std::stoi(results.at(2));
 		resultSize = std::stoi(results.at(3));
-		outputFilePath = "..\\..\\tests\\testWrapperCoreGetAllMasks\\" + scenarioName + ".txt";
+		outputFilePath = "..\\..\\tests\\WrapperCoreGetAllMasks\\" + scenarioName + ".txt";
 
 		std::vector<std::string> csvThemesNumber;
 		boost::split(csvThemesNumber, argv[2], boost::is_any_of("|"));
@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
 		scenarioName = "TBE_TEST_CORRECTION";
 		periods = 5;
 		writeOnDisk = true;
-		outputFilePath = "..\\..\\tests\\testWrapperCoreGetAllMasks\\get_all_mask_output.txt";
+		outputFilePath = "..\\..\\tests\\WrapperCoreGetAllMasks\\get_all_mask_output.txt";
 		resultSize = 19607;
 		themesNumbers = {3, 5, 12, 13, 14, 21};
 		rastpath = "";

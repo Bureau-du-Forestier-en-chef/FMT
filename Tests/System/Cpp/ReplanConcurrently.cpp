@@ -16,8 +16,8 @@ int main(int argc, char *argv[])
 	#ifdef FMTWITHOSI
 	Logging::FMTDefaultLogger().logStamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
-	const std::string outputlocation = "../../tests/replanningtest/replanning";
-	const std::string scheduleLocation = "../../tests/replanningtest/replanning/scenarios/replicat1/replanning._seq";
+	const std::string outputlocation = "../../tests/ReplanConcurrently/replanning";
+	const std::string scheduleLocation = "../../tests/ReplanConcurrently/replanning/scenarios/replicat1/replanning._seq";
 	//const std::string folder = "../../Examples/Models/TWD_land/";
 	const std::string primlocation = folder + "TWD_land.pri";
 	std::vector<std::string>allscenarios;
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 			selectedoutputs.push_back(output);
 		}
 	}
-	const std::string outputlocation = "../../tests/replanningtest/replanning";
+	const std::string outputlocation = "../../tests/ReplanConcurrently/replanning";
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	std::unique_ptr<Parallel::FMTTask> maintaskptr(new Parallel::FMTReplanningTask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions,10,10,0.5, Core::FMToutputlevel::totalonly));

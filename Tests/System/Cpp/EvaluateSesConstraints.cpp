@@ -13,7 +13,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHGDAL
-	const std::string writelocation = "../../tests/testsesevaluation/";
+	const std::string writelocation = "../../tests/EvaluateSesConstraints/";
 	const int length = 6;
 	std::string primarylocation;
 	std::string scenario;

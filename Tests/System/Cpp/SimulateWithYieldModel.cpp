@@ -82,7 +82,7 @@ int main()
 		}
 	}
 
-	mparser.writeResults(simulationmodel, spatialoutput, 1, 10, "../../tests/testyieldmodel/", Core::FMToutputlevel::totalonly, "CSV");
+	mparser.writeResults(simulationmodel, spatialoutput, 1, 10, "../../tests/SimulateWithYieldModel/", Core::FMToutputlevel::totalonly, "CSV");
 
 	//simulationmodel.solve();
 	for (const Core::FMTOutput& output : spatialoutput)

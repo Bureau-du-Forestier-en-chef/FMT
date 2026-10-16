@@ -160,7 +160,7 @@ et `Percentage of infeasible constraints 20 %`, contre `0 %` pour `sse_pass`.
 | Échec | `spatial_fail_rasters`, le même scénario |
 | Cas infaisable | `ose_infaisable` |
 
-Mêmes rasters, 5 ou 10 périodes, et les valeurs de recuit de `sasolve` : 500 000 mouvements,
+Mêmes rasters, 5 ou 10 périodes, et les valeurs de recuit de `SolveWithSimulatedAnnealing` : 500 000 mouvements,
 3 000 acceptés, 5 000 par cycle.
 
 **Aucun réglage ne fera « échouer » `ose_infaisable`** : l'optimisation n'a pas de sortie de

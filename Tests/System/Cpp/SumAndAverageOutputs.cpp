@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	Logging::FMTDefaultLogger().logStamp();
 	//FMTPlanningTask rewrites the schedule of the optimized scenarios in the project it receives:
 	//the test works on a copy of TWD_land, never on Examples/Models.
-	const std::string folder = "../../tests/sumandavgtest/TWD_land/";
+	const std::string folder = "../../tests/SumAndAverageOutputs/TWD_land/";
 	Testing::copyProject("../../../../Examples/Models/TWD_land", folder);
 	const std::string primlocation = folder + "TWD_land.pri";
 	std::vector<bool>playback;
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	modelparser.setErrorsToWarnings(errors);
 	//The output dataset is deleted when it already exists: keep it apart from the copied project.
-	std::string outputlocation = "../../tests/sumandavgtest/outputs";
+	std::string outputlocation = "../../tests/SumAndAverageOutputs/outputs";
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	//Si on fournit la localisation du fichier primaire à la task il écrira la schedule pour tous les scénarios.

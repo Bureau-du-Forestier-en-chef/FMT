@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 		{
 		if (argc < 3)
 		{
-			throw std::invalid_argument("Usage: testReadingErrors <primary file>|<scenario> <expected FMTexc number>");
+			throw std::invalid_argument("Usage: ReadInvalidScenario <primary file>|<scenario> <expected FMTexc number>");
 		}
 		const std::string FIRST_ARGUMENT(argv[1]);
 		std::vector<std::string> arguments;

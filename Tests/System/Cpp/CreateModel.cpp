@@ -149,7 +149,7 @@ int main()
 	model.setParameter(Models::FMTintmodelparameters::LENGTH, 10);
 	Parser::FMTModelParser mparser;
 	//Write model
-	mparser.write(model, "../../tests/createmodel/");
+	mparser.write(model, "../../tests/CreateModel/");
 	//Solve model
 	model.doPlanning(true);
 	return 0;

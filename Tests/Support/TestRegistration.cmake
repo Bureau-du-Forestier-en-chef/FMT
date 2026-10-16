@@ -10,6 +10,7 @@ The functions that register the tests with ctest, included by Tests/CMakeLists.t
 registered:
 
 - getcsvtestcase builds the case part of the name of a CSV row;
+- getrenamedtests reads the former names of the test executables;
 - registersystemtest registers one system test;
 - registercsvtests registers the rows of CSV files, one system test per row.
 
@@ -54,6 +55,28 @@ function(getcsvtestcase primarylocation scenario testcase)
 		string(APPEND case "~${casehash}")
 	endif()
 	set(${testcase} "${case}" PARENT_SCOPE)
+endfunction()
+
+#Reads Tests/Support/RenamedTests.csv, the table of the test executables renamed under #350 (former;new),
+#into <formernames> and <newnames>, two lists in the same order.
+function(getrenamedtests formernames newnames)
+	file(READ "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/RenamedTests.csv" data)
+	string(REPLACE "\r" "" data "${data}")
+	string(REPLACE ";" "," data "${data}")
+	string(REPLACE "\n" ";" data "${data}")
+	set(former "")
+	set(new "")
+	foreach(line IN LISTS data)
+		if (line AND NOT line STREQUAL "former,new")#former;new is the header of the file
+			string(REPLACE "," ";" line "${line}")
+			list(GET line 0 formername)
+			list(GET line 1 newname)
+			list(APPEND former "${formername}")
+			list(APPEND new "${newname}")
+		endif()
+	endforeach()
+	set(${formernames} "${former}" PARENT_SCOPE)
+	set(${newnames} "${new}" PARENT_SCOPE)
 endfunction()
 
 #Registers the system test <testname>, which runs the command given after <origin>: an executable target
@@ -108,13 +131,18 @@ endfunction(registersystemtest testname origin)
 #- The first row of a file, TEST, is its header; an empty row is skipped.
 #- A row whose target does not exist is not registered, with a warning: every target a row may name must
 #  exist before the call.
+#- A row that names a target by its former name (getrenamedtests) is read as a row of its new name. The
+#  file gets one warning, which counts these rows: tools/testMigration/Update_PrivateTests.bat renames them
+#  in the private copies.
 #- The rows of a target listed in <sharedoutputs> write into the same output files: they never run at the
 #  same time.
 #- The rows of knownbugs.csv reveal a known bug: they are registered, but not run until it is fixed.
 #- Each registered target gets its output folder, tests/<target> in the build folder.
 function(registercsvtests csvfiles sharedoutputs)
+	getrenamedtests(formernames newnames)
 	foreach(testfile IN LISTS csvfiles)
 		get_filename_component(testfilename "${testfile}" NAME)
+		set(renamedrows 0)
 		file(READ "${testfile}" data)
 		string(REPLACE "\r" "" data "${data}")
 		string(REPLACE ";" "," data "${data}")
@@ -128,6 +156,16 @@ function(registercsvtests csvfiles sharedoutputs)
 				list(GET line 1 primarylocation)
 				list(GET line 2 scenario)
 				list(GET line 3 dblvalue)
+				if (NOT TARGET "${testname}")
+					list(FIND formernames "${testname}" renamedindex)
+					if (renamedindex GREATER -1)
+						list(GET newnames ${renamedindex} newname)
+						if (TARGET "${newname}")
+							set(testname "${newname}")
+							math(EXPR renamedrows "${renamedrows} + 1")
+						endif()
+					endif()
+				endif()
 				if (TARGET "${testname}")#Got the executable!
 					file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/tests/${testname}")
 					getcsvtestcase("${primarylocation}" "${scenario}" testcase)
@@ -148,5 +186,8 @@ function(registercsvtests csvfiles sharedoutputs)
 				endif(TARGET "${testname}")
 			endif(line)
 		endforeach()
+		if (renamedrows GREATER 0)
+			message(WARNING "${testfilename}: ${renamedrows} rows name a test executable by its former name, read as its new name (Tests/Support/RenamedTests.csv): rename them in ${testfile} with tools/testMigration/Update_PrivateTests.bat")
+		endif()
 	endforeach()
 endfunction(registercsvtests csvfiles sharedoutputs)

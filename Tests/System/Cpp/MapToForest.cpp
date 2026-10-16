@@ -29,13 +29,13 @@ int main(int argc, char* argv[])
         scenario = results.at(1);
         side = std::stoi(results.at(2));//196
         maplocation = argv[2];// modellocation + "/Carte/TWD_land.shp";
-        writelocation = argv[3];// "../../tests/maptoFMTforest/";
+        writelocation = argv[3];// "../../tests/MapToForest/";
     }else {
         primarylocation = "T:/Donnees/Usagers/PICBR1/PC9424_U08551_DET/PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
         scenario = "14_Sc5_Determin_apsp";
         side = 196;
         maplocation = "T:/Donnees/Usagers/PICBR1/PC9424_U08551_DET/Carte/PC_9424_UA_U08551.shp";// modellocation + "/Carte/TWD_land.shp";
-        writelocation =  "../../tests/maptoFMTforest/";
+        writelocation =  "../../tests/MapToForest/";
     }
    
     std::string lockfield;

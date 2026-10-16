@@ -40,26 +40,26 @@ function(createcppsystemtests)
 		FILE(GLOB FMTexecutables ${CMAKE_CURRENT_LIST_DIR}/Excel/*.cpp)
 		foreach(pathtosource ${FMTexecutables})
 			createexecutable("${pathtosource}" executablename)
-			if ("${executablename}" STREQUAL "UnitTestFMTexcelcache" OR "${executablename}" STREQUAL "UnitTestFMToutputCache")
+			if ("${executablename}" STREQUAL "UseExcelCache" OR "${executablename}" STREQUAL "GetOutputCacheValues")
 				set_property(TARGET ${executablename} PROPERTY VS_DOTNET_REFERENCES
 					"System"
 						"System.Data"
 						"System.Xml"
 					)
 				set_target_properties(${executablename} PROPERTIES COMMON_LANGUAGE_RUNTIME "")
-			endif("${executablename}" STREQUAL "UnitTestFMTexcelcache" OR "${executablename}" STREQUAL "UnitTestFMToutputCache")
+			endif("${executablename}" STREQUAL "UseExcelCache" OR "${executablename}" STREQUAL "GetOutputCacheValues")
 			target_link_libraries(${executablename} PRIVATE FMTExcelWrapper)
 			target_include_directories(${executablename} PRIVATE ${ExcelWrapperINCLUDEDIR})
 			set_property(TARGET ${executablename} PROPERTY FMTTESTScomponent excel)
-			if ("${executablename}" STREQUAL "UnitTestFMTexcelcache")
+			if ("${executablename}" STREQUAL "UseExcelCache")
 				#Registered like the rows of the CSV files
 				registersystemtest("System.${executablename}" "Tests/System/Cpp/CMakeLists.txt" ${executablename})
-			endif("${executablename}" STREQUAL "UnitTestFMTexcelcache")
+			endif("${executablename}" STREQUAL "UseExcelCache")
 		endforeach()
 	endif(TARGET FMTExcelWrapper)
 
 	#Executables whose rows write into the same output files: their rows never run at the same time
-	set(FMTTESTSsharedoutputs planningtest testActionsAggregations testOAschedulerBFEC testreadwriteproject)
+	set(FMTTESTSsharedoutputs RunPlanningTask AggregateActions ScheduleOperatingAreas WriteAndReadProject)
 	FILE(GLOB FMTTESTSfiles ${CMAKE_CURRENT_LIST_DIR}/*.csv)
 	#BFECtests.csv, the private rows, is local and ignored by git. A copy left in Examples/C++/tests, its
 	#folder until phase 6 of the test reorganization (#350), is read in its place, first, as the glob lists it.

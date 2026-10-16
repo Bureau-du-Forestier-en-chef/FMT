@@ -1,13 +1,13 @@
 TEST;primarylocation;scenario;doublevalue
-testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PRECEDENCE;18;
-testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|YIELD|UNITE1 PEUPLEMENT1 UTR1|1|YBM_RTM_BOG;9.05365226732;
-testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUMOFYIELDS;11;
-testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUMWITHCONSTANT;10;
-testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUMOFAGEYIELDS;240;
-testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PRODUCT;30;
-testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|QUOTIENT;1.2;
-testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUBTRACTION;1;
-testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|INRANGE;1;
-testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|GROWTH;17.14285714;
-testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|CONSTANT;6;
-testReadingErrors;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_sourcecondition;31;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PRECEDENCE;18;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|YIELD|UNITE1 PEUPLEMENT1 UTR1|1|YBM_RTM_BOG;9.05365226732;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUMOFYIELDS;11;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUMWITHCONSTANT;10;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUMOFAGEYIELDS;240;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PRODUCT;30;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|QUOTIENT;1.2;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUBTRACTION;1;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|INRANGE;1;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|GROWTH;17.14285714;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|CONSTANT;6;
+ReadInvalidScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_sourcecondition;31;

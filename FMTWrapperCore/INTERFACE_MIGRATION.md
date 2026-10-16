@@ -208,7 +208,7 @@ La technologie de l'interface compte moins que la question de savoir qui fournit
 
 | Piste | Verdict |
 |---|---|
-| Un processus natif à part pour les calculs longs (`replanner.exe` lancé par l'interface) | Écartée par l'équipe (2026-10-06). |
+| Un processus natif à part pour les calculs longs (`ReplanOnDemand.exe` lancé par l'interface) | Écartée par l'équipe (2026-10-06). |
 | Le Segment Heap, par le manifeste de l'interface (`<heapType>SegmentHeap</heapType>`) | Déjà essayée par l'équipe. Résultat : à consigner. |
 | Des allocateurs explicites dans FMTlib (`mi_stl_allocator`, `std::pmr`) | Reportée après #348, à guider par le banc (voir plus bas). |
 | Modifier `FMT.exe` après coup (`minject`), ou `AppInit_DLLs` | Écartées. `minject` n'est pas dans le paquet vcpkg, et il faudrait le repasser sur chaque `FMT.exe`, que le SDK régénère à chaque publication. Le lanceur de la section 4.4 donne le même ordre de démarrage sans modifier de binaire, mais il garde les mêmes risques, dont celui de l'issue 1221. `AppInit_DLLs` est obsolète. |

@@ -1360,7 +1360,7 @@ Where each level lives and how a test is registered are in [AGENTS.md, Testing](
 Every unit and integration test is written in three parts, each opened by its comment:
 
 ```cpp
-TEST(FMTModelCacheTest, SetLengthWithValidPeriodUpdatesPlanningHorizon)
+TEST(FMTModelCache, GivenAValidPeriodWhenSetLengthThenUpdatesPlanningHorizon)
 {
     // Arrange
     Wrapper::FMTModelCache cache;
@@ -1391,29 +1391,31 @@ A system test follows the same rule when it is written or modified. An existing 
 
 ### Test names
 
-A GoogleTest case is named after the class under test and the behavior it checks:
+A test name says what the test starts from, what it does, and what it expects: given, when, then. These are the three parts of the test itself: the given is arranged, the when is acted, the then is asserted. Names are written in PascalCase without underscores, as GoogleTest recommends, and do not contain `Test`.
+
+A GoogleTest case is named after the class under test, then given, when and then:
 
 ```cpp
-TEST(<Class>Test, <Method><Condition><ExpectedBehavior>)
+TEST(<Class>, Given<Condition>When<Action>Then<ExpectedBehavior>)
 ```
 
-- The suite is the class under test followed by `Test`: `FMTModelCacheTest`.
-- The case reads as method, condition, and expected behavior, in PascalCase without underscores, as GoogleTest requires. The condition is left out when there is none to state.
+- The suite is the class under test: `FMTModelCache`.
+- The case opens with `Given`, `When` and `Then`, in that order, each followed by its part in PascalCase.
 
-The examples given on [issue #350](https://github.com/Bureau-du-Forestier-en-chef/FMT/issues/350):
+The examples given on [issue #350](https://github.com/Bureau-du-Forestier-en-chef/FMT/issues/350), in this form:
 
 ```text
-SetLengthWithValidPeriodUpdatesPlanningHorizon
-GetAttributesWithInvalidThemeReturnsEmptyList
-GetActionsWithWildcardReturnsAllActions
-CopyConstructorPreservesPlanningHorizon
+GivenAValidPeriodWhenSetLengthThenUpdatesPlanningHorizon
+GivenAnInvalidThemeWhenGetAttributesThenReturnsAnEmptyList
+GivenAWildcardWhenGetActionsThenReturnsAllActions
+GivenAPlanningHorizonWhenCopyConstructedThenPreservesIt
 ```
 
-The only underscore allowed is the `DISABLED_` prefix, on a test that reveals an open defect: `DISABLED_SetLengthWithValidPeriodUpdatesPlanningHorizon`. The prefix goes when the defect is fixed.
+The only underscore allowed is the `DISABLED_` prefix, on a test that reveals an open defect: `DISABLED_GivenAValidPeriodWhenSetLengthThenUpdatesPlanningHorizon`. The prefix goes when the defect is fixed.
 
-In CTest, a test is named `<Level>.<Suite>[.<Case>]`, the level written as in [Test levels](#test-levels): `Unit.FMTModelCacheTest.SetLengthWithValidPeriodUpdatesPlanningHorizon`. For a system test, the suite is its executable.
+In CTest, a test is named `<Level>.<Suite>[.<Case>]`, the level written as in [Test levels](#test-levels): `Unit.FMTModelCache.GivenAValidPeriodWhenSetLengthThenUpdatesPlanningHorizon`. For a system test, the suite is its executable, and the case of a CSV row is built from its arguments (`registercsvtests` in `Tests/Support/TestRegistration.cmake`).
 
-A new system test executable is named `<Function>Test`, in PascalCase and after the workflow it checks, without a `test` prefix: `ScenarioReadingTest`. Existing executables, such as `testScenarioReading`, keep their name until they are renamed together under issue #350.
+A system test executable is named after the action it runs, the when of its tests, in PascalCase and verb first, without `When` or `Test`: `ReadScenario`, `SetSolution`. Where it exists, the name of the FMT method under test is the action: `DoPlanning`, `BuildAction`. An executable of `Tests/System/Cpp/FMTWrapperCore` starts with `WrapperCore`, the component that acts: `WrapperCoreGetYield`. The executables written before this rule were renamed together under issue #350; `Tests/Support/RenamedTests.csv` gives the former name of each, such as `testScenarioReading`.
 
 ### Tests that reveal architectural debt
 

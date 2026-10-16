@@ -26,12 +26,12 @@ int main(int argc, char* argv[])
         pointsLocation = results.at(0);
         themesLocation = results.at(1);
         side = std::stoi(results.at(2));//196
-        writeLocation = argv[2];// "../../tests/maptoFMTforest/";
+        writeLocation = argv[2];// "../../tests/MapToForest/";
     }else {
         side = 1420;
         themesLocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/PointToRasters/Sqlite.lan";
         pointsLocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/PointToRasters/V2Forest.xml";
-        writeLocation= "../../tests/PointToRasters/";
+        writeLocation= "../../tests/ConvertPointsToRasters/";
     }
     const std::string LOCK_FIELD = "STANLOCK";
 

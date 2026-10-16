@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 	int length;
 	int replicate;
 	std::vector<std::string>allscenarios;
-	std::string outputlocation = "../../tests/replanner/Feux_2023_ouest_V01";
+	std::string outputlocation = "../../tests/ReplanOnDemand/Feux_2023_ouest_V01";
 	unsigned int n_threads = 5;
 	if (argc > 1) {
 		// fichier_pri | strat | stoch | tact | outputm_location | n_thread; length; replicate
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 	}
 	std::size_t lastslash = primlocation.find_last_of("/\\");
 	const std::string locname = primlocation.substr(lastslash + 1, (primlocation.size() - lastslash) - 5);
-	//const std::string outputlocation = "../../tests/replanner/"+ locname;
+	//const std::string outputlocation = "../../tests/ReplanOnDemand/"+ locname;
 
 	std::vector<std::string> layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");

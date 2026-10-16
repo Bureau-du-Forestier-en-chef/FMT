@@ -31,7 +31,7 @@ void out(const FMTWrapper::Backend::Event& p_event)
 			public:
 				UnitTestCallbackLogger()
 					{
-					m_OutLocation = "../../tests/UnitTestCallbackLogger";
+					m_OutLocation = "../../tests/LogThroughCallback";
 					// const std::string outFile = m_OutLocation+"/CallbackLoggerTest.log";
 					const std::string outFile = "CallbackLoggerTest.log";
 					m_subscription = m_publisher.subscribe(&out);

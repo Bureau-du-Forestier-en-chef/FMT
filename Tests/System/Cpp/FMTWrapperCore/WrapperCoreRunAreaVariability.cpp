@@ -12,7 +12,7 @@
 #include "ModelQuery.h"
 
 // Test of FMTWrapper::Backend::AreaVariability, registered in basetests.csv, on the public
-// TWD_land data (LP scenario), with the masks of the testareavariabilities example.
+// TWD_land data (LP scenario), with the masks of the GetModelFromProportions example.
 //
 // Covers the nominal case (the output file is written), the three refusals (missing
 // table, table reduced to its header, no output requested) and the exception raised
@@ -58,7 +58,7 @@ namespace
 int main()
 {
 	const std::string MODEL_FOLDER = "../../../../Examples/Models/TWD_land/";
-	const std::filesystem::path OUTPUT_FOLDER = "../../tests/testWrapperCoreAreaVariability";
+	const std::filesystem::path OUTPUT_FOLDER = "../../tests/WrapperCoreRunAreaVariability";
 	const std::filesystem::path OUTPUT_FILE = OUTPUT_FOLDER / "areavariability.csv";
 
 	std::filesystem::create_directories(OUTPUT_FOLDER);

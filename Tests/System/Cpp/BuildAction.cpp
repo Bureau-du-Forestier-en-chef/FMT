@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 		std::string SCENARIO;
 		std::string TARGET_YIELD;
 		std::string ACTION_NAME;
-		const std::string OUTPUT_DIRECTORY = "../../tests/testActionsBuilder/";
+		const std::string OUTPUT_DIRECTORY = "../../tests/BuildAction/";
 		if (argc > 1) {
 			const std::string vals = argv[1];
 			std::vector<std::string>results;
@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 			SCENARIO = results.at(1);
 			TARGET_YIELD = argv[2];
 			ACTION_NAME = argv[3];
-			//OUTPUT_DIRECTORY = "../../tests/testActionsBuilder/";
+			//OUTPUT_DIRECTORY = "../../tests/BuildAction/";
 		}
 		else {
 			PRIMARYm_location = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";

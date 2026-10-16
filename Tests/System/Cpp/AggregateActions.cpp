@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 													"AREG","AEC","ACRV","AEDUNAT","ASCA","AEC2","ACRS","AEPC",
 													"APLLI","AEC3","APLCC","ACJ","ACPJ","ACPROG","ACA","ACA2","ACP"};*/
 		//const std::string OUTPUT_DIRECTORY = "outputs/";
-		const std::string OUTPUT_DIRECTORY = "../../tests/testActionsAggregations/";
+		const std::string OUTPUT_DIRECTORY = "../../tests/AggregateActions/";
 		Parser::FMTModelParser ModelParser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);

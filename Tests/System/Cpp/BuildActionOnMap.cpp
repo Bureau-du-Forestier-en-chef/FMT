@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
             }
         const boost::filesystem::path BASE_PATH = boost::filesystem::path(primarylocation).parent_path();
         const std::string MAPm_location = (BASE_PATH / boost::filesystem::path(maplocation)).string();
-        const std::string	writelocation =  "../../tests/testActionsBuilderMap/";
+        const std::string	writelocation =  "../../tests/BuildActionOnMap/";
         std::string lockfield;
         if (primarylocation.find("TWD_land")==std::string::npos)
         {

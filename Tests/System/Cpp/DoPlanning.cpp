@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
 		{
 			returnschedule.push_back(optimizationmodel.getSolution(id+1, true));
 		}
-		schparser.write(returnschedule, "../../tests/doPlanning/schedule.seq");*/
+		schparser.write(returnschedule, "../../tests/DoPlanning/schedule.seq");*/
 		std::cout << " Objective: " << int(optimizationmodel.getObjValue())<<"\n";
 		if ((std::abs(optimizationmodel.getObjValue() - objectivevalue)) >= 1)
 		{

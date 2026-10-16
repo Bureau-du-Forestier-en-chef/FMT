@@ -2,6 +2,11 @@
 
 Depuis la phase 6 de la réorganisation (section 9, 2026-10-15), ce fichier est `Tests/ETAT.md` ; il
 était `Examples/C++/tests/ETAT.md`, dont `git log --follow Tests/ETAT.md` garde l'historique.
+Depuis la phase 7 (2026-10-16), chaque exécutable de test porte le nom de l'action qu'il exerce,
+verbe en tête (`ReadScenario`, `SetSolution`) : `Tests/Support/RenamedTests.csv` donne l'ancien
+nom de chacun. Les sections vivantes emploient les
+nouveaux noms ; les sections datées (journal de la section 5, état de la section 6.1, mesures de la
+section 8, phases de la section 9.5) gardent ceux de leur époque.
 
 > Fichier de suivi du chantier « plus de tests exécutables sans les données privées ». Il est
 > mis à jour **à la fin de chaque lot**. Une session qui démarre à froid doit pouvoir savoir
@@ -35,23 +40,23 @@ ne redéfinit pas, il l'hérite. FMT traverse toujours ce modèle dans le même 
 1. **Lecture.** `FMTModelParser::readproject` appelle un parseur par section et rend un
    `FMTModel` par scénario demandé : thèmes, agrégats, développements initiaux, yields,
    actions, transitions, lifespan, outputs, contraintes. Une erreur ici fausse tout le reste
-   en silence. → `testScenarioReading`, `testJointScenarioReading`, `testReadingErrors`
+   en silence. → `ReadScenario`, `ReadScenariosTogether`, `ReadInvalidScenario`
    (lot 2), lacunes 1 à 3 de la section 3.1.
 2. **Objets du cœur.** Un développement est un masque (`FMTMask`) avec un âge, un verrou et
    une période. Il vieillit (`grow`), devient opérable (`operable`) et se transforme
    (`operate`, qui applique la transition et rend des chemins avec leurs proportions). Les
    rendements répondent à une requête (`FMTYields::get`). → requêtes `OPERABLE`, `OPERATE`,
-   `GROW` et `YIELD` de `testScenarioReading` (lot 3), lacune 4.
+   `GROW` et `YIELD` de `ReadScenario` (lot 3), lacune 4.
 3. **Graphe et matrice.** `FMTSrModel::buildPeriod` construit, période par période, un graphe
    dont les sommets sont des développements et les arcs des actions ou de la croissance ;
    `FMTLpModel` le traduit en matrice, dont les lignes sont des contraintes et les colonnes des
-   variables. → requête `STATS` de `testScenarioPlanning` (lot 4), lacune 6.
+   variables. → requête `STATS` de `PlanScenario` (lot 4), lacune 6.
 4. **Optimisation.** L'objectif et les contraintes du `.opt` sont résolus par MOSEK ou CLP, le
-   présolve pouvant réduire le modèle avant. → les 16 objectifs de `doplanning` et compagnie,
-   `presolvetest` pour le présolve, lacune 5.
+   présolve pouvant réduire le modèle avant. → les 16 objectifs de `DoPlanning` et compagnie,
+   `Presolve` pour le présolve, lacune 5.
 5. **Résultats.** La solution donne une cédule par période (`getSolution`) et des valeurs
    d'outputs (`getOutput`). Une cédule peut être rejouée dans un modèle neuf
-   (`doPlanning(false, cédules)`). → requête `REPLAY` de `testScenarioPlanning` (lot 4),
+   (`doPlanning(false, cédules)`). → requête `REPLAY` de `PlanScenario` (lot 4),
    lacune 7.
 6. **Écriture.** `FMTModelParser::write` réécrit un modèle lu, `writeToProject` un projet
    complet, `FMTScheduleParser` les cédules. C'est la seule étape encore sans test de valeur.
@@ -81,8 +86,8 @@ Un test base ne fait jamais rien d'autre que ceci : partir de TWD_land, s'arrêt
    que FMT affiche : sinon le test grave le comportement actuel, bogue compris. Quand le calcul
    à la main n'a pas de sens (statistiques d'un graphe), on mesure une fois, on le dit au
    journal, et on vérifie au moins que la valeur ne dépend ni du solveur ni du passage.
-3. **Réutiliser un test générique** quand il peut répondre (`testScenarioReading`,
-   `testScenarioPlanning`, `testReadingErrors`, `testJointScenarioReading`) : il n'y a alors
+3. **Réutiliser un test générique** quand il peut répondre (`ReadScenario`,
+   `PlanScenario`, `ReadInvalidScenario`, `ReadScenariosTogether`) : il n'y a alors
    qu'une ligne CSV à écrire, sans compilation. Sinon, écrire un exécutable dans
    `Tests/System/Cpp/`, sur le patron de la section 1.5.
 4. **Ajouter la ligne CSV** (section 2.1), faire reconfigurer CMake, et compiler si un source a
@@ -268,13 +273,13 @@ Chaque lot s'arrête sur une livraison ; le suivant attend le feu vert de Gabrie
    plusieurs tests ont des défauts codés en dur vers des chemins privés ou disparus (section 7) ;
    une ligne sans argument teste alors autre chose que ce qu'on croit, ou rien du tout.
 5. **Aucune écriture sous `Examples/Models`** : le test copie le projet dans
-   `build/release/tests/<test>/` (patron de `testWrapperCorePlanning`). *Pourquoi* : deux tests
+   `build/release/tests/<test>/` (patron de `WrapperCoreRunPlanning`). *Pourquoi* : deux tests
    qui écrivent au même endroit se marchent dessus, et un modèle modifié en cours de route
    fausse tous les tests suivants. L'empreinte prise avant et après chaque passage (section 2.1) le
    détecte.
 6. **Un nouveau test privilégie MOSEK.**
    - Il prend `Models::FMTSolverInterface::MOSEK` quand FMT est compilé avec MOSEK
-     (`FMTWITHMOSEK`), `CLP` sinon : patron `#ifdef FMTWITHMOSEK` de `doplanning.cpp`,
+     (`FMTWITHMOSEK`), `CLP` sinon : patron `#ifdef FMTWITHMOSEK` de `DoPlanning.cpp`,
      paramètre `solver` des DTO du Core compris.
    - Les tests existants gardent leur solveur, CLP ou MOSEK : on ne les convertit pas.
    - La valeur attendue doit tenir avec les deux solveurs, puisqu'un build sans MOSEK
@@ -309,13 +314,13 @@ Depuis le lot 1, `TestTools.h` (dans `Tests/Support/` depuis la phase 6 ; namesp
 
 Depuis le lot 2, trois tests génériques pilotés par le CSV servent de modèles :
 
-- `testScenarioReading` : une ligne = une requête sur un scénario lu (`THEMES`, `ATTRIBUTES`,
+- `ReadScenario` : une ligne = une requête sur un scénario lu (`THEMES`, `ATTRIBUTES`,
   `AGGREGATE`, `AREA`, `ACTIONS`, `OPERABLE`, `OPERATE`, `GROW`, `YIELD`, `OUTPUTS`,
   `CONSTRAINT`... ; liste en tête du source) et sa valeur attendue. Un développement s'y écrit
   `<masque>|<âge>[|<verrou>[|<période>]]`, et une valeur attendue écrite `FMTexc(<code>)` exige
   que la requête lève ce code (lot 3) ;
-- `testJointScenarioReading` : une ligne = une liste de scénarios lus ensemble ;
-- `testReadingErrors` : une ligne = un scénario invalide et le `FMTexc` attendu.
+- `ReadScenariosTogether` : une ligne = une liste de scénarios lus ensemble ;
+- `ReadInvalidScenario` : une ligne = un scénario invalide et le `FMTexc` attendu.
 
 Ajouter une ligne à l'un d'eux ne demande pas de recompiler, seulement de reconfigurer.
 
@@ -332,7 +337,7 @@ macros (`min`, `max`, `NEAR`, `ERROR`...) arrivent par GDAL : ne pas y introduir
 
 - **Tests métamorphiques** : deux calculs qui doivent concorder, sans valeur de référence à
   maintenir.
-  - Présolve activé ou non : même objectif (existe déjà : `presolvetest`, un seul scénario).
+  - Présolve activé ou non : même objectif (existe déjà : `Presolve`, un seul scénario).
   - Rejeu de la cédule optimale : même objectif.
   - Scénarios lus d'un coup ou un par un : mêmes modèles, comparés par leur écriture texte.
   - Écrire, relire, réécrire : fichiers identiques.
@@ -364,8 +369,8 @@ macros (`min`, `max`, `NEAR`, `ERROR`...) arrivent par GDAL : ne pas y introduir
     échoue en listant tout fichier ajouté, retiré ou modifié. L'empreinte est écrite dans
     `build/release/tests/ExamplesModels.snapshot` ;
   - `RESOURCE_LOCK <cible>` si la cible figure dans `FMTTESTSsharedoutputs`
-    (`planningtest`, `testActionsAggregations`, `testOAschedulerBFEC`,
-    `testreadwriteproject`) : ses lignes écrivent dans les mêmes fichiers et ne tournent
+    (`RunPlanningTask`, `AggregateActions`, `ScheduleOperatingAreas`,
+    `WriteAndReadProject`) : ses lignes écrivent dans les mêmes fichiers et ne tournent
     jamais en même temps ;
   - `DISABLED TRUE` si la ligne vient de `knownbugs.csv` : ctest l'affiche « Disabled » sans
     l'exécuter ;
@@ -378,17 +383,17 @@ macros (`min`, `max`, `NEAR`, `ERROR`...) arrivent par GDAL : ne pas y introduir
   `build/release/tests/<test>/`.
 - Les arguments sont figés dans `build/release/CTestTestfile.cmake` : **modifier un CSV exige
   de reconfigurer CMake**.
-- `UnitTestFMTexcelcache` est inscrit par `Tests/System/Cpp/CMakeLists.txt`, hors CSV, avec `registersystemtest`,
+- `UseExcelCache` est inscrit par `Tests/System/Cpp/CMakeLists.txt`, hors CSV, avec `registersystemtest`,
   la fonction qui inscrit chaque ligne.
 
 **Un exemple complet.** La ligne
 
 ```
-testScenarioReading;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|? ? ?;1814.76;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|? ? ?;1814.76;
 ```
 
 inscrit un test dont le nom est la cible suivie des deux premiers arguments, espaces remplacés
-par `_`. ctest lance `testScenarioReading.exe` depuis `build/release/bin/Release` avec deux
+par `_`. ctest lance `ReadScenario.exe` depuis `build/release/bin/Release` avec deux
 arguments : `../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|? ? ?`, qui dit quoi
 lire et quoi demander, puis `1814.76`, la valeur attendue. La quatrième colonne, vide, disparaît
 de la commande.
@@ -405,40 +410,40 @@ une ligne de plus ne coûte qu'une reconfiguration.
 
 | Étape | Vérifie une valeur | Exécute sans vérifier |
 |---|---|---|
-| Lecture d'un scénario | direct : `testScenarioReading` (lot 2 : thèmes, attributs, agrégats, aire par masque, actions et drapeaux, outputs et contraintes de ROOT ; noms de thèmes, aire héritée et contraintes de `LP3` ; contraintes de `stdconstraints`), constantes (`UnitTestFMTParser`, 3 cas), un yield complexe (`testWrapperCoreGetYield`), nombre de masques (`testWrapperCoreGetAllMasks`), âge maximal (`testWrapperCoreGetMaxAge`, borne seulement), gabarits (`templatestest`, au moins un modèle) ; indirect : objectifs de `doplanning` (16 scénarios), `landaggregatestest`, `testlevelopt` | tous les autres tests |
-| Lecture de plusieurs scénarios d'un coup | direct : `testJointScenarioReading` (lot 2 : 7 combinaisons, 32 scénarios) ; indirect : `testlevelopt` (9 scénarios, objectifs) | `testreadwriteproject`, `planningtest`, `replanningtest`, `replanningmodeladaption`, `UnitTestCallbackLogger` |
-| Erreurs de lecture | `testReadingErrors` (lot 2 : 7 scénarios invalides, 6 codes `FMTexc`) | -- |
-| Objets du cœur (masques, yields, opérabilité, transitions) | `testScenarioReading` (lot 2 : opérabilité aux bornes d'âge, de yield et d'agrégat, `_DEATH` tiré du lifespan, interpolation des yields d'âge, opérateurs de yields complexes), `nochoice` (développements sans choix d'un masque), `testyieldsfromfactor` (monotonie), `testtimeyieldoutputs` (2 outputs de yields temporels) ; transitions et vieillissement : indirectement par les objectifs | `testaddtomodel` (vérification de valeur morte) |
-| Présolve et postsolve | `presolvetest` (objectif avec ou sans présolve ; NOT_MASK, plus 6 scénarios au lot 4) ; `doplanning` (présolve de 10 itérations) | -- |
-| Graphe et matrice | `testScenarioPlanning` `STATS` (lot 4 : sommets, arcs, lignes et colonnes de 3 scénarios) ; indirect (objectifs) | `testoutputshadowcost` (vérifie seulement la résolution après retrait et remise d'une contrainte) |
-| Optimisation | `doplanning` (16), `testlevelopt` (9), `landaggregatestest` ; `testSolvers` (chaque solveur résout, sans valeur) | `Simpleplanning`, `createmodel` |
-| Résultats et rejeu | `testlevel` (26 outputs), `testoutput` (3 outputs après rejeu d'une cédule), `forcesolution` (6 valeurs et conservation de la superficie), `sumandavgtest` (somme et moyenne), `FMTNsstest` (5 lignes sur 7) ; `testScenarioPlanning` `REPLAY` (lot 4 : rejeu de la cédule optimale, tous les outputs de toutes les périodes, 4 scénarios) | `Simpleplanning` (écrit la cédule), `testareavariabilities`, `testmultisolutions` |
-| Écriture et relecture | `testmodelwriter` (5 scénarios, objectif après relecture), `testOutputType` (nombre d'outputs), `testWrapperCoreWriteToProject` (fichiers présents) | `testreadwriteproject`, `nonspatialupdate` |
-| Tâches (planification, replanification) | `sumandavgtest`, `testWrapperCorePlanning` | `planningtest`, `replanningtest`, `replanningmodeladaption`, `UnitTestCallbackLogger` |
-| Spatial (SES, cartes, rasters) | `Spatialyexplicitsimulation_doplanning` (une vérification valide), `testWrapperCoreRasterization` | `Spatialyexplicitsimulation`, `maptoFMTforest`, `vectorfieldtoraster`, `GetCarbonpredictors` |
-| Divers | `testGCBMtransitionparser` (aller-retour), `testgdaldrivers`, `testOPAreaclustering` (une solution existe), `testWrapperCoreAreaVariability`, `testWrapperCoreEnvironment`, `UnitTestFMTexcelcache` | `testyieldmodel`, `testlpyieldmodel`, `testlpyieldmodelopt` |
+| Lecture d'un scénario | direct : `ReadScenario` (lot 2 : thèmes, attributs, agrégats, aire par masque, actions et drapeaux, outputs et contraintes de ROOT ; noms de thèmes, aire héritée et contraintes de `LP3` ; contraintes de `stdconstraints`), constantes (`ConvertStringsToConstants`, 3 cas), un yield complexe (`WrapperCoreGetYield`), nombre de masques (`WrapperCoreGetAllMasks`), âge maximal (`WrapperCoreGetMaxAge`, borne seulement), gabarits (`ReadTemplates`, au moins un modèle) ; indirect : objectifs de `DoPlanning` (16 scénarios), `PlanWithLandAggregates`, `OptimizeWithLevels` | tous les autres tests |
+| Lecture de plusieurs scénarios d'un coup | direct : `ReadScenariosTogether` (lot 2 : 7 combinaisons, 32 scénarios) ; indirect : `OptimizeWithLevels` (9 scénarios, objectifs) | `WriteAndReadProject`, `RunPlanningTask`, `ReplanConcurrently`, `ReplanWithModelAdaption`, `LogThroughCallback` |
+| Erreurs de lecture | `ReadInvalidScenario` (lot 2 : 7 scénarios invalides, 6 codes `FMTexc`) | -- |
+| Objets du cœur (masques, yields, opérabilité, transitions) | `ReadScenario` (lot 2 : opérabilité aux bornes d'âge, de yield et d'agrégat, `_DEATH` tiré du lifespan, interpolation des yields d'âge, opérateurs de yields complexes), `GetNoChoice` (développements sans choix d'un masque), `GetYieldsFromFactor` (monotonie), `ComputeTimeYieldOutputs` (2 outputs de yields temporels) ; transitions et vieillissement : indirectement par les objectifs | `AddYieldHandlers` (vérification de valeur morte) |
+| Présolve et postsolve | `Presolve` (objectif avec ou sans présolve ; NOT_MASK, plus 6 scénarios au lot 4) ; `DoPlanning` (présolve de 10 itérations) | -- |
+| Graphe et matrice | `PlanScenario` `STATS` (lot 4 : sommets, arcs, lignes et colonnes de 3 scénarios) ; indirect (objectifs) | `ResolveAfterConstraintChange` (vérifie seulement la résolution après retrait et remise d'une contrainte) |
+| Optimisation | `DoPlanning` (16), `OptimizeWithLevels` (9), `PlanWithLandAggregates` ; `SolveWithEachSolver` (chaque solveur résout, sans valeur) | `SolveAndWriteSchedules`, `CreateModel` |
+| Résultats et rejeu | `ComputeLevelOutputs` (26 outputs), `ReplayScheduleOutputs` (3 outputs après rejeu d'une cédule), `ForceSolution` (6 valeurs et conservation de la superficie), `SumAndAverageOutputs` (somme et moyenne), `SimulateNonSpatially` (5 lignes sur 7) ; `PlanScenario` `REPLAY` (lot 4 : rejeu de la cédule optimale, tous les outputs de toutes les périodes, 4 scénarios) | `SolveAndWriteSchedules` (écrit la cédule), `GetModelFromProportions`, `GetVariabilities` |
+| Écriture et relecture | `WriteModel` (5 scénarios, objectif après relecture), `WriteAndReadOutputTypes` (nombre d'outputs), `WrapperCoreWriteToProject` (fichiers présents) | `WriteAndReadProject`, `UpdateNonSpatialModel` |
+| Tâches (planification, replanification) | `SumAndAverageOutputs`, `WrapperCoreRunPlanning` | `RunPlanningTask`, `ReplanConcurrently`, `ReplanWithModelAdaption`, `LogThroughCallback` |
+| Spatial (SES, cartes, rasters) | `DoSpatiallyExplicitPlanning` (une vérification valide), `WrapperCoreRasterize` | `SimulateSpatially`, `MapToForest`, `ConvertVectorFieldToRaster`, `GetCarbonPredictors` |
+| Divers | `WriteAndReadGCBMTransitions` (aller-retour), `ListGDALDrivers`, `ClusterOperatingAreas` (une solution existe), `WrapperCoreRunAreaVariability`, `WrapperCoreDescribeEnvironment`, `UseExcelCache` | `SimulateWithYieldModel`, `PlanWithLpYieldModel`, `OptimizeWithLpYieldModel` |
 
 ### 2.3 Exécutables base sans vérification (17)
 
-`Simpleplanning`, `Spatialyexplicitsimulation`, `GetCarbonpredictors`, `maptoFMTforest`,
-`testyieldmodel`, `testareavariabilities`, `replanningtest`, `testmultisolutions`,
-`testlpyieldmodel`, `testlpyieldmodelopt`, `planningtest`, `createmodel`,
-`vectorfieldtoraster`, `nonspatialupdate`, `testreadwriteproject`,
-`replanningmodeladaption`, `UnitTestCallbackLogger` (construit sa tâche sans la lancer).
+`SolveAndWriteSchedules`, `SimulateSpatially`, `GetCarbonPredictors`, `MapToForest`,
+`SimulateWithYieldModel`, `GetModelFromProportions`, `ReplanConcurrently`, `GetVariabilities`,
+`PlanWithLpYieldModel`, `OptimizeWithLpYieldModel`, `RunPlanningTask`, `CreateModel`,
+`ConvertVectorFieldToRaster`, `UpdateNonSpatialModel`, `WriteAndReadProject`,
+`ReplanWithModelAdaption`, `LogThroughCallback` (construit sa tâche sans la lancer).
 
 ### 2.4 Vérifications mortes
 
-- `Spatialyexplicitsimulation_doplanning.cpp:87-88` : le contrôle des patchs découpe `stats`
+- `DoSpatiallyExplicitPlanning.cpp:87-88` : le contrôle des patchs découpe `stats`
   au lieu de `result`, et `spresults.at(1) != "2"` est toujours vrai quand la première
   condition l'est.
-- `testaddtomodel.cpp` : le vecteur `totest` n'est jamais rempli ; la boucle qui compare les
+- `AddYieldHandlers.cpp` : le vecteur `totest` n'est jamais rempli ; la boucle qui compare les
   valeurs ne s'exécute pas. Seul `isYld` est vérifié.
-- `Tests/System/Cpp/FMTWrapperCore/testWrapperCoreSA.cpp:150` : l'écart de plus de 5 % ne fait
+- `Tests/System/Cpp/FMTWrapperCore/WrapperCoreRunSimulatedAnnealing.cpp:150` : l'écart de plus de 5 % ne fait
   qu'afficher un avertissement (hors ctest de toute façon).
 
 ### 2.5 Hors ctest, désactivés ou jamais exécutés
 
-- `teststdconstraints` : **supprimé au lot 2**, remplacé par 8 lignes de `testScenarioReading`
+- `teststdconstraints` : **supprimé au lot 2**, remplacé par 8 lignes de `ReadScenario`
   sur le scénario `stdconstraints`.
   - Sa ligne de `basetests.csv` s'appelait `stdconstraints` depuis sa création (`e97d30d4`,
     2022-05-13) : il n'a jamais tourné.
@@ -452,21 +457,21 @@ une ligne de plus ne coûte qu'une reconfiguration.
     `567 + 1000,45345.322` donne 100045912.322. Une liste de périodes `1..3,6,8` donne une
     contrainte par morceau (1..3, 6, 8).
 - Ligne `coordinatetest` : retirée au lot 1, sa source avait été supprimée.
-- `testWrapperCoreSA` : pas de jeu de données (repli `TODO`).
-- `UnitTestFMTmodelcache` (Excel) : compilé, jamais inscrit.
+- `WrapperCoreRunSimulatedAnnealing` : pas de jeu de données (repli `TODO`).
+- `ConvertThemeSelectionToMask` (Excel) : compilé, jamais inscrit.
 - `UnitTestFMTAreaParser` : **supprimé avec sa ligne de `basetests.csv` par `f06f55fd`**
   (correctif d'adjacence, 2026-07-20). C'était un test unitaire de géométries synthétiques,
   sans données externes : `git show f06f55fd^:Examples/C++/UnitTestFMTAreaParser.cpp`.
 
 ### 2.6 Exécutables qui n'ont que des tests BFEC (25)
 
-`FMTsetsolution`, `FMTsetsolutionbylp`, `ParsersTests`, `PointToRasters`,
-`Spatial_doplanning`, `TestSimpleplanning20p`, `UnitTestFMToutputCache`, `replanner`,
-`sasolve`, `testActionsAggregations`, `testActionsBuilder`, `testActionsBuilderMap`,
-`testActionsSplit`, `testOAAdjacency`, `testOAschedulerBFEC`, `testOAschedulertask`,
-`testWrapperCoreAggregateAllActions`, `testWrapperCoreBuildAction`,
-`testWrapperCoreOperatingArea`, `testWrapperCoreSES`, `testWrapperCoreSplitActions`,
-`test_rotations`, `testgetYields`, `testreadOAschedulerparameters`, `testsesevaluation`.
+`SetSolution`, `SetSolutionByLp`, `ReadDatabaseSections`, `ConvertPointsToRasters`,
+`DoSpatialPlanning`, `SolveTwentyPeriods`, `GetOutputCacheValues`, `ReplanOnDemand`,
+`SolveWithSimulatedAnnealing`, `AggregateActions`, `BuildAction`, `BuildActionOnMap`,
+`SplitActions`, `GetOperatingAreaNeighbors`, `ScheduleOperatingAreas`, `RunOpAreaSchedulerTask`,
+`WrapperCoreAggregateAllActions`, `WrapperCoreBuildAction`,
+`WrapperCoreScheduleOperatingAreas`, `WrapperCoreRunSes`, `WrapperCoreSplitActions`,
+`GetRotations`, `GetYieldsFromGraph`, `ReadOaSchedulerParameters`, `EvaluateSesConstraints`.
 
 ### 2.7 Bogues révélés, inscrits dans `knownbugs.csv`
 
@@ -633,13 +638,13 @@ Critère : une étape que tout modèle traverse passe avant une fonction de nich
 | 4 | **Objets du cœur** : `FMTDevelopment::grow`, `operable`, `operate` (`Include/FMTDevelopment.h:209-274`), `FMTMask::isSubsetOf`, `FMTTheme::validate`, `FMTYields::get` (`Include/FMTYields.h:230`), lifespan et `_DEATH` par défaut | Aucune vérification unitaire de l'opérabilité (bornes d'âge, de yield, de période, `_LOCK`), des transitions (proportions, cibles) ni du vieillissement ; seulement des objectifs. |
 | 5 | **Présolve et postsolve** : `FMTModel::preSolve` / `postSolve` (`Include/FMTModel.h:279-285`) | Le test métamorphique ne couvre qu'un scénario (NOT_MASK) ; les outputs après postsolve ne sont pas comparés. |
 | 6 | **Graphe et matrice** : `FMTSrModel::buildPeriod` (`Include/FMTSrModel.h:261`), `FMTGraph::build` (`Include/FMTGraph.hpp:462`), `FMTLpModel::setObjective` / `setConstraint` | Les statistiques du graphe (`FMTGraphStats` : sommets, arcs, lignes, colonnes) ne sont jamais vérifiées. |
-| 7 | **Résultats et rejeu** : `getSolution`, `setSolution` / `boundSolution` (`Include/FMTSrModel.h:173,329`), `doPlanning(false, cédules)` | Le rejeu d'une cédule optimale n'est pas comparé à l'optimisation ; `FMTsetsolution` n'a que des tests BFEC. |
-| 8 | **Écriture et relecture** : `FMTModelParser::write` (`Source/FMTModelParser.cpp:467`), `writeToProject` (`Include/FMTModelParser.h:118`), `FMTScheduleParser` | Pas d'idempotence (écrire, relire, réécrire) ni d'aller-retour de cédule ; `testreadwriteproject` n'a aucune vérification. |
+| 7 | **Résultats et rejeu** : `getSolution`, `setSolution` / `boundSolution` (`Include/FMTSrModel.h:173,329`), `doPlanning(false, cédules)` | Le rejeu d'une cédule optimale n'est pas comparé à l'optimisation ; `SetSolution` n'a que des tests BFEC. |
+| 8 | **Écriture et relecture** : `FMTModelParser::write` (`Source/FMTModelParser.cpp:467`), `writeToProject` (`Include/FMTModelParser.h:118`), `FMTScheduleParser` | Pas d'idempotence (écrire, relire, réécrire) ni d'aller-retour de cédule ; `WriteAndReadProject` n'a aucune vérification. |
 
 L'optimisation elle-même (objectifs) est l'étape la mieux protégée : 26 objectifs vérifiés.
 
-**État au lot 4** : les lacunes 1, 2 et 3 ont leurs premiers tests (`testScenarioReading`,
-`testJointScenarioReading`, `testReadingErrors`). La lacune 4 est couverte : opérabilité (âge,
+**État au lot 4** : les lacunes 1, 2 et 3 ont leurs premiers tests (`ReadScenario`,
+`ReadScenariosTogether`, `ReadInvalidScenario`). La lacune 4 est couverte : opérabilité (âge,
 yield, verrou, `_LOCKEXEMPT`), `operate` et les transitions (cibles, proportions, `_AGE` et
 `_LOCK` de cible, sources conditionnées), vieillissement, et les fonctions de yield sauf
 `_ENDPOINT` et `_DELTA`. Le lot 4 entame les lacunes 5, 6 et 7 : présolve sur 7 scénarios,
@@ -659,16 +664,16 @@ d'aménagement sans que personne ne s'en aperçoive.
    un yield mal interpolé ou une contrainte mal bornée, et tout le reste est faux sans qu'aucune
    exception ne soit levée. Avant le lot 2, rien ne regardait le modèle lu : les tests
    vérifiaient des objectifs, qui ne bougent pas forcément quand la lecture change.
-   `testScenarioReading` interroge maintenant le modèle lu, une ligne CSV par question.
+   `ReadScenario` interroge maintenant le modèle lu, une ligne CSV par question.
 2. **Lecture de plusieurs scénarios d'un coup.** `referenceRead` réutilise les sections déjà
    lues d'un autre scénario pour éviter de tout relire ; l'interface et plusieurs tâches
    lisent ainsi. Si la réutilisation prend une section au mauvais scénario, le modèle obtenu
-   n'est pas celui du fichier, sans message. `testJointScenarioReading` lit les mêmes
+   n'est pas celui du fichier, sans message. `ReadScenariosTogether` lit les mêmes
    scénarios ensemble puis un par un, écrit les deux modèles et compare les fichiers : aucune
    valeur de référence à maintenir.
 3. **Erreurs de lecture.** Un modèle invalide doit lever un `FMTexc` précis, que l'interface
    traduit pour l'aménagiste. Si une erreur cesse d'être signalée, ou change de code, un
-   modèle faux passe pour bon. `testReadingErrors` lit des scénarios `INVALID_*`, chacun copié
+   modèle faux passe pour bon. `ReadInvalidScenario` lit des scénarios `INVALID_*`, chacun copié
    de la racine avec une seule ligne fautive, et exige le code attendu.
 4. **Objets du cœur** (étape 2). L'opérabilité décide de ce qu'on peut couper, la transition
    de ce que ça devient, le vieillissement de l'état suivant. Ces trois fonctions sont
@@ -701,39 +706,39 @@ d'aménagement sans que personne ne s'en aperçoive.
 Chacune demande une reconfiguration de CMake et, sauf pour les tests métamorphiques, une
 valeur mesurée une fois puis vue rouge.
 
-- `presolvetest` sur d'autres scénarios (métamorphique, aucune valeur à fixer ; il reste en
+- `Presolve` sur d'autres scénarios (métamorphique, aucune valeur à fixer ; il reste en
   CLP) : par exemple `LP`, `COS`, `Shift`, `TSLA`, `fullcarbon`, `equation`.
-- `testmodelwriter` sur d'autres scénarios (métamorphique, en MOSEK).
-- `doplanning` sur des scénarios inutilisés (section 4.4), après avoir vérifié qu'ils sont faits
+- `WriteModel` sur d'autres scénarios (métamorphique, en MOSEK).
+- `DoPlanning` sur des scénarios inutilisés (section 4.4), après avoir vérifié qu'ils sont faits
   pour être optimisés.
-- `FMTNsstest` : les lignes `randomYield` et `randomYieldUnit` n'ont pas de valeur attendue ; à
+- `SimulateNonSpatially` : les lignes `randomYield` et `randomYieldUnit` n'ont pas de valeur attendue ; à
   fixer si le résultat est déterministe (graine 0).
 
 ### 3.4 Niveau 2 : flux courants
 
-- **Tâches** : `planningtest`, `replanningtest`, `replanningmodeladaption`,
-  `UnitTestCallbackLogger` ne vérifient rien ; `replanner` n'a que des tests BFEC.
-- **SES** : `Spatialyexplicitsimulation` ne vérifie rien ; le contrôle des patchs de
-  `Spatialyexplicitsimulation_doplanning` est mort ; `testsesevaluation`, `Spatial_doplanning`
-  et `testWrapperCoreSES` n'ont que des tests BFEC.
-- **Cartes et rasters** : `maptoFMTforest` et `vectorfieldtoraster` ne vérifient rien ;
-  `PointToRasters` n'a que des tests BFEC.
-- **NSS** : `FMTNsstest` vérifie 5 lignes sur 7.
+- **Tâches** : `RunPlanningTask`, `ReplanConcurrently`, `ReplanWithModelAdaption`,
+  `LogThroughCallback` ne vérifient rien ; `ReplanOnDemand` n'a que des tests BFEC.
+- **SES** : `SimulateSpatially` ne vérifie rien ; le contrôle des patchs de
+  `DoSpatiallyExplicitPlanning` est mort ; `EvaluateSesConstraints`, `DoSpatialPlanning`
+  et `WrapperCoreRunSes` n'ont que des tests BFEC.
+- **Cartes et rasters** : `MapToForest` et `ConvertVectorFieldToRaster` ne vérifient rien ;
+  `ConvertPointsToRasters` n'a que des tests BFEC.
+- **NSS** : `SimulateNonSpatially` vérifie 5 lignes sur 7.
 - **Core du wrapper** : couvert en base, sauf `AggregateAllActions`, `SplitActions`,
   `BuildAction`, `OperatingArea` et `SES` (BFEC) et `SA` (hors ctest).
 
 ### 3.5 Niveau 3 : fonctions spécialisées
 
-- Recuit simulé : `sasolve` (BFEC), `testWrapperCoreSA` (hors ctest).
-- Ordonnanceur d'aires d'opération et adjacence : `testOAschedulertask`,
-  `testOAschedulerBFEC`, `testOAAdjacency`, `testreadOAschedulerparameters` (BFEC).
-- Transformations d'actions (TBE) : `testActions*` et leurs équivalents du Core (BFEC).
-- Modèles de rendement ONNX : `testyieldmodel`, `testlpyieldmodel(opt)` ne vérifient rien ;
+- Recuit simulé : `SolveWithSimulatedAnnealing` (BFEC), `WrapperCoreRunSimulatedAnnealing` (hors ctest).
+- Ordonnanceur d'aires d'opération et adjacence : `RunOpAreaSchedulerTask`,
+  `ScheduleOperatingAreas`, `GetOperatingAreaNeighbors`, `ReadOaSchedulerParameters` (BFEC).
+- Transformations d'actions (TBE) : `AggregateActions`, `BuildAction`, `BuildActionOnMap`, `SplitActions` et leurs équivalents du Core (BFEC).
+- Modèles de rendement ONNX : `SimulateWithYieldModel`, `PlanWithLpYieldModel` et `OptimizeWithLpYieldModel` ne vérifient rien ;
   les scénarios `DECISION`, `randomYield`, `TSLA`, `UNIT_COVERAGE` et `COMPLEX_NSS` sont
-  vérifiés par `FMTNsstest` ou `doplanning`.
-- Regroupement d'UA : `testOPAreaclustering` (une solution existe) ; prédicteurs :
-  `GetCarbonpredictors` (rien) ; `test_rotations`, `testgetYields`, `ParsersTests`,
-  `TestSimpleplanning20p`, `FMTsetsolutionbylp` (BFEC).
+  vérifiés par `SimulateNonSpatially` ou `DoPlanning`.
+- Regroupement d'UA : `ClusterOperatingAreas` (une solution existe) ; prédicteurs :
+  `GetCarbonPredictors` (rien) ; `GetRotations`, `GetYieldsFromGraph`, `ReadDatabaseSections`,
+  `SolveTwentyPeriods`, `SetSolutionByLp` (BFEC).
 - Géométries : `UnitTestFMTAreaParser` à restaurer si son API existe encore.
 
 ## 4. Scénarios bidons (TWD_land)
@@ -752,9 +757,9 @@ valeur mesurée une fois puis vue rouge.
 - 82 scénarios dans `Scenarios/` : 74 d'origine, plus 8 créés au lot 2 (`yieldoperators` et
   7 `INVALID_*`) ; `stdconstraints` a reçu un `_out`.
 - `Carte/TWD_land.shp` : 8 polygones, champs `AGE`, `THEME1`-`THEME3`, `SUPERFICIE`, sans
-  `STANLOCK`. `Carte/TWD_LAND_forcesolution_modif.*` sert à `forcesolution`.
+  `STANLOCK`. `Carte/TWD_LAND_forcesolution_modif.*` sert à `ForceSolution`.
 - `rasters/` : `AGE.tif`, `THEME1-3.tif`, sans `STANLOCK.tif`.
-- `TWD_land.db` (SQLite) sert aux scénarios `DB_test*` ; `Templates/` à `templatestest`.
+- `TWD_land.db` (SQLite) sert aux scénarios `DB_test*` ; `Templates/` à `ReadTemplates`.
 
 ### 4.2 Règles
 
@@ -800,10 +805,10 @@ Le reste de la marche à suivre :
 | Opérabilité, transitions, vieillissement (lacune 4) | **fait au lot 3** | racine pour les 5 actions et le `_DEATH` ; `transitions` pour les proportions 60/40, l'`_AGE` et le `_LOCK` de cible, et deux sources conditionnées par `@AGE` et `@YLD` |
 | Fonctions de yield qu'aucun scénario n'utilise | **fait au lot 3** sauf `_ENDPOINT` et `_DELTA` (sémantique à clarifier) | `yieldoperatorsalone` (`_SHIFT`, `_MAX`, `_MIN`, `_YTP`, `_DISTANCE`, `_MAI`, `_CAI`) ; `timeyields` pour un yield de temps et `_DISCOUNTFACTOR` (section 2.7) |
 | `*PARTIAL`, `*STRATA`, `_SEQ`, `_INVLOCK` | texte seul, à confirmer | liste heuristique : vérifier d'abord dans les parseurs que ces mots-clés existent |
-| Rejeu `FMTsetsolution` (lacune 7) | texte seul | `LP` a une cédule, mais le test exige un output `OVOLTOTREC` codé en dur : scénario bidon qui définit `OVOLTOTREC`, ou nom d'output en argument (il optimise déjà en MOSEK) |
+| Rejeu `SetSolution` (lacune 7) | texte seul | `LP` a une cédule, mais le test exige un output `OVOLTOTREC` codé en dur : scénario bidon qui définit `OVOLTOTREC`, ou nom d'output en argument (il optimise déjà en MOSEK) |
 | SES, rastérisation | carte existante | aucune |
-| Recuit simulé | à évaluer | scénario `Spatial` et rasters existants ; `sasolve` lit aussi `STANLOCK.tif`, absent |
-| Ordonnanceur d'UA | carte synthétique probable | yield `YOUVERT` utilisé par une action, CSV de paramètres, thème d'UA en argument (codé 14 dans `testOAschedulertask`), plus de polygones |
+| Recuit simulé | à évaluer | scénario `Spatial` et rasters existants ; `SolveWithSimulatedAnnealing` lit aussi `STANLOCK.tif`, absent |
+| Ordonnanceur d'UA | carte synthétique probable | yield `YOUVERT` utilisé par une action, CSV de paramètres, thème d'UA en argument (codé 14 dans `RunOpAreaSchedulerTask`), plus de polygones |
 | Adjacence, patchs | carte synthétique | `FMTLayer` construit en mémoire (constructeur depuis `std::map<FMTCoordinate,T>`), ou écrit par `FMTAreaParser::writeForest` / `writeLayer` : ni Python ni GDAL Python requis |
 | Transformations d'actions | à évaluer | structure d'actions agrégées à reproduire |
 
@@ -1197,13 +1202,13 @@ Quand les corrections seront faites, la session de tests reprend ainsi :
   n'ont été vus qu'en écrivant un modèle à la main au lot 2, par hasard.
 - **Comment.** L'aller-retour est métamorphique, donc sans valeur de référence à maintenir :
   écrire un modèle lu dans `build/release/tests/`, le relire, le réécrire, et comparer les deux
-  écritures fichier par fichier. `testJointScenarioReading` fait déjà cette comparaison ligne à
+  écritures fichier par fichier. `ReadScenariosTogether` fait déjà cette comparaison ligne à
   ligne, son code est réutilisable tel quel. Même chose pour une cédule : écrire, relire,
   comparer.
 - **Où.** Un exécutable de plus dans `Tests/System/Cpp/`, sur le patron des tests génériques, plus
-  des vérifications ajoutées à `testreadwriteproject`, `Simpleplanning`, `createmodel` et
-  `nonspatialupdate`, qui tournent aujourd'hui sans rien vérifier (section 2.3), et la vérification
-  morte de `testaddtomodel` à réparer (section 2.4).
+  des vérifications ajoutées à `WriteAndReadProject`, `SolveAndWriteSchedules`, `CreateModel` et
+  `UpdateNonSpatialModel`, qui tournent aujourd'hui sans rien vérifier (section 2.3), et la vérification
+  morte de `AddYieldHandlers` à réparer (section 2.4).
 - **Attention.** Les défauts 1 et 2 de la section 2.7 font échouer l'aller-retour dès qu'un scénario
   utilise `_SUM` ou un objectif `_PENALTY` : ce sont des lignes désactivées dans
   `knownbugs.csv`, pas un contournement à écrire dans le test.
@@ -1280,7 +1285,7 @@ Les statistiques par période tiennent dans une requête de plus, d'où `medium`
   d'une requête `STATS|<longueur>|<période>`.
 - **`setSolution` période par période.** `REPLAY` passe par `doPlanning(false, cédules)`, qui
   rejoue tout d'un coup. `setSolution(période, cédule, tolérance)` et `boundSolution` sont ce
-  qu'utilisent la replanification et `FMTsetsolution` ; ils méritent leur propre test, avec le
+  qu'utilisent la replanification et `SetSolution` ; ils méritent leur propre test, avec le
   même patron métamorphique.
 
 #### 6.3.8 Lots suivants : niveaux 2 et 3 — effort `high`
@@ -1316,18 +1321,18 @@ abandonne.
 
 ## 7. Pièges connus
 
-- **Encodage** : `planningtest.cpp`, `testmodelwriter.cpp`, `testreadwriteproject.cpp` et
-  `sumandavgtest.cpp` sont en cp1252. Les éditer en Python latin-1 (`newline=''`), jamais avec
+- **Encodage** : `RunPlanningTask.cpp`, `WriteModel.cpp`, `WriteAndReadProject.cpp` et
+  `SumAndAverageOutputs.cpp` sont en cp1252. Les éditer en Python latin-1 (`newline=''`), jamais avec
   un outil qui suppose l'UTF-8. Les fichiers CMake et `basetests.csv` sont en UTF-8 ; le
   dépôt est en `core.autocrlf=true` (CRLF dans l'arbre de travail).
 - **`TWD_land.out`** contient déjà des U+FFFD dans les descriptions d'outputs (accents perdus
   autrefois) : ne pas le « corriger » en passant.
 - **Format CSV** : séparateur `;`, pas de commentaire possible, première ligne = en-tête. Une
-  colonne vide disparaît de la commande : `argc` change (les lignes `FMTNsstest` sans valeur
+  colonne vide disparaît de la commande : `argc` change (les lignes `SimulateNonSpatially` sans valeur
   ne vérifient rien).
 - **Nom de cible exact** : casse comprise. Une ligne mal nommée n'est pas inscrite ; depuis le
   lot 1, la configuration l'annonce par `no target named` : lire les alertes après chaque
-  reconfiguration. Avant, `testWrapperCoreGetYield` n'a pas tourné de 2024 à 2026, et
+  reconfiguration. Avant, `WrapperCoreGetYield` n'a pas tourné de 2024 à 2026, et
   `teststdconstraints` jamais.
 - **`BFECtests.csv` est local à chaque worktree, et ses copies divergent.** Au 2026-09-25,
   celles de `new_test` et de `FMT` dataient du 2026-07-27 et gardaient deux lignes mortes :
@@ -1336,11 +1341,17 @@ abandonne.
   `dev` (2026-09-16) a en plus la ligne `testWrapperCoreOperatingArea` de la migration. Après
   une copie, lire les alertes `no target named` de la configuration. Depuis la phase 6, il se lit
   dans `Tests/System/Cpp/` ; une copie restée dans `Examples/C++/tests/` est lue à sa place, avec
-  un avertissement, jusqu'à ce qu'on la déplace.
+  un avertissement, jusqu'à ce qu'on la déplace. Depuis la phase 7, une copie aux anciens noms
+  d'exécutables est lue par la table `Tests/Support/RenamedTests.csv`, avec un avertissement qui
+  compte ses lignes, jusqu'à ce que `tools/testMigration/Update_PrivateTests.bat` la renomme : le
+  script la déplace au besoin, garde une sauvegarde `BFECtests.csv.<date>-<heure>.bak` ignorée par
+  git, et ne change rien à un second passage. Les dossiers de sortie passés en argument,
+  `../../tests/<exécutable>`, suivent le renommage, comme dans `basetests.csv` : le dossier d'un
+  ancien nom n'est plus créé par la configuration, et `MapToForest` plante sans le sien.
 - **Modifier un CSV exige de reconfigurer CMake.**
 - **Un jeu de données de sortie qui existe déjà est supprimé** (`FMTParser::createOGRDataset`,
   CSV, GeoTIFF...) : ne jamais placer la copie d'un projet dans le dossier de sortie d'une
-  tâche (voir `sumandavgtest`).
+  tâche (voir `SumAndAverageOutputs`).
 - **Nouvel exécutable dont plusieurs lignes écrivent dans les mêmes fichiers** : l'ajouter à
   `FMTTESTSsharedoutputs` dans `Tests/System/Cpp/CMakeLists.txt`.
 - **L'empreinte de `Examples/Models` compare le contenu** : un test qui réécrit un fichier à
@@ -1351,17 +1362,17 @@ abandonne.
 - **Dans l'environnement de Claude**, `cmd` ne cherche pas les exécutables dans le dossier
   courant : lancer un test par son chemin (`./test.exe`).
 - **Valeurs par défaut des sources** : plusieurs pointent vers des chemins privés ou locaux
-  (restes de débogage, par ex. `testoutput`, `testmodelwriter`, `presolvetest`,
-  `templatestest`). Une ligne base sans argument dépend de ses défauts.
+  (restes de débogage, par ex. `ReplayScheduleOutputs`, `WriteModel`, `Presolve`,
+  `ReadTemplates`). Une ligne base sans argument dépend de ses défauts.
 - **Solveur des tests existants (2026-09-17), laissé tel quel** :
   - 25 exécutables base optimisent en CLP ;
-  - en MOSEK : `testmodelwriter`, `planningtest`, `nonspatialupdate`, `createmodel`,
-    `testOutputType` ;
-  - `doplanning` prend MOSEK quand `FMTWITHMOSEK` est défini, CLP sinon : c'est le patron des
+  - en MOSEK : `WriteModel`, `RunPlanningTask`, `UpdateNonSpatialModel`, `CreateModel`,
+    `WriteAndReadOutputTypes` ;
+  - `DoPlanning` prend MOSEK quand `FMTWITHMOSEK` est défini, CLP sinon : c'est le patron des
     nouveaux tests (règle 6) ;
-  - `templatestest` prend CLP dès qu'il reçoit des arguments, donc toujours dans ctest ;
-  - `testSolvers` essaie tous les solveurs disponibles ;
-  - `UnitTestCallbackLogger` et les tests Excel sont entièrement sous `FMTWITHMOSEK`.
+  - `ReadTemplates` prend CLP dès qu'il reçoit des arguments, donc toujours dans ctest ;
+  - `SolveWithEachSolver` essaie tous les solveurs disponibles ;
+  - `LogThroughCallback` et les tests Excel sont entièrement sous `FMTWITHMOSEK`.
 
   Une valeur attendue prise sur un optimum non unique peut changer d'un solveur à l'autre.
 - **Course connue** sur certains modèles privés (caches de yields partagés entre threads) :
@@ -1379,7 +1390,7 @@ abandonne.
   pointeur imbriqué est donc vide, et `std::rethrow_if_nested` appelle alors `std::terminate`.
   - Parcourir une chaîne avec `Testing::visitNested`, jamais avec `std::rethrow_if_nested`
     directement.
-  - `testWrapperCoreAreaVariability`, `testWrapperCorePlanning` et `testWrapperCoreSA`
+  - `WrapperCoreRunAreaVariability`, `WrapperCoreRunPlanning` et `WrapperCoreRunSimulatedAnnealing`
     l'appellent encore dans leur affichage d'erreur : à corriger quand on les touche.
 - **Macros de `windows.h`** (par GDAL) : outre `min`, `max`, `ERROR`, `NEAR`, `FAR`, `IN`,
   `OUT`, `DELETE`, aussi `DIFFERENCE` (lot 2). Écrire `(std::max)(...)` et
@@ -1389,7 +1400,7 @@ abandonne.
 - **Argument vide** : CMake retire une colonne vide de la commande, donc un test ne peut pas
   attendre une valeur vide. Par exemple, les thèmes de la racine n'ont pas de nom.
 - **Longueur des chemins** : le dossier de sortie d'un test ne doit pas porter une liste de
-  noms. `testJointScenarioReading` le nomme par un hachage, car 9 noms de scénarios
+  noms. `ReadScenariosTogether` le nomme par un hachage, car 9 noms de scénarios
   dépassaient la limite de 260 caractères de Windows. Un fichier de scénario au-delà de cette
   limite (dossier courant et chemin relatif mis bout à bout) est ignoré sans message : FMT lit
   la section de la racine à la place.
@@ -1407,7 +1418,7 @@ abandonne.
 - **Rejeu d'une cédule** : `doPlanning(false, cédules)` reproduit les outputs calculés à
   partir de la cédule, mais pas les outputs `_LEVEL`, qui sont des variables du modèle : sur
   `ndywlevel`, `SUPRECLEVEL` vaut 4,7e-231 au rejeu contre 362,95 à l'optimisation. Le rejeu
-  demande aussi `FORCE_PARTIAL_BUILD` et une `TOLERANCE`, comme dans `FMTsetsolution`.
+  demande aussi `FORCE_PARTIAL_BUILD` et une `TOLERANCE`, comme dans `SetSolution`.
 - **Outputs sans valeur finie** : `DIVIDEZERO` de la racine (`yieldzero / yieldzero`) et
   `OSUPRATIOBASE` de `division` rendent « pas un nombre », et `TEST3` de `equation` rend
   l'infini. Une comparaison numérique doit les traiter à part, sans quoi elle échoue même
@@ -1430,7 +1441,7 @@ abandonne.
   ancienne (« version [16] is not supported »). Copier `onnxruntime.dll` à côté de
   l'exécutable de sonde.
 - Plusieurs tests lèvent avec un nom de méthode copié d'un autre test (`"presolvetest"` dans
-  `doplanning`) : lire le numéro de ligne plutôt que le nom.
+  `DoPlanning`) : lire le numéro de ligne plutôt que le nom.
 
 ## 8. Mesures
 
@@ -1527,6 +1538,26 @@ compatibility), dans `Documentation/CodingStandards.md`, l'ancrage des étiquett
 Ils attendent la réponse de gcyr sur #350 : un refus se corrige dans le document, sans rouvrir le
 reste.
 
+**Décision de Gabriel (2026-10-15).** gcyr n'a pas répondu à la demande de relecture du 2026-10-09
+sur #350. La table des nouveaux noms d'exécutables (`Tests/Support/RenamedTests.csv`) est donc
+validée par Gabriel seul, et gcyr en est informé après coup par un commentaire sur #350.
+
+**Décisions de Gabriel (2026-10-16), après une réponse de gcyr hors de #350.** gcyr préfère des
+noms given/when/then qui disent ce que fait le test, et pas de `Test` dans les noms. La table du
+2026-10-15 (`<Fonction>Test`) n'a pas été commitée ; elle est remplacée :
+
+- noms en PascalCase sans souligné, comme le recommande GoogleTest : `Given<…>When<…>Then<…>`, par
+  exemple `GivenAValidLpModelScheduleWhenSetSolutionThenObtainsAValidObjectiveValue` ; le seul
+  souligné reste le préfixe `DISABLED_` ;
+- un exécutable de test système porte la partie When, sans le mot `When` : l'action qu'il exerce,
+  verbe en tête (`SetSolution`, `ReadScenario`). La table des 81 nouveaux noms a été validée par
+  Gabriel telle quelle ;
+- une suite GoogleTest porte le nom de la classe sous test, sans `Test` : `FMTModelCache` ;
+- les noms given/when/then des cas arrivent avec les phases 8 (GoogleTest) et 9 (lignes CSV
+  publiques), écrits à la main : un nom tiré des seuls arguments dirait les données, pas leur
+  sens, et perdrait le `T:/` qui sépare les tests privés ;
+- un tableau de ces noms sera revu avec gcyr plus tard.
+
 ### 9.3 Cible
 
 **Arborescence.**
@@ -1587,20 +1618,26 @@ tests ignorés avec leur raison. Sortie de test, donc en anglais. Quand tout pas
 
 **Noms.**
 
-- Format `<Niveau>.<Suite>[.<Cas>]` : `Unit.FMTOperatorTest.<Cas>`,
-  `System.ScenarioReadingTest.<Cas>`, `System.Python.<Domaine>`.
+- Format `<Niveau>.<Suite>[.<Cas>]` : `Unit.FMTOperator.<Cas>`,
+  `System.ReadScenario.<Cas>`, `System.Python.<Domaine>`. Un cas nommé à la main s'écrit
+  `Given<…>When<…>Then<…>` (section 9.2, décisions du 2026-10-16).
 - Nom automatique d'une ligne CSV : arguments 1 et 2 joints par `|`, le chemin
   `../../../../Examples/Models/<M>/<M>.pri` réduit à `<M>`, un chemin absolu réduit à
   `<lecteur>:/.../<dossier>/<fichier>` (le marqueur `T:/` reste), espaces remplacés par `_`, et
   au-delà de 60 caractères les 51 premiers suivis de `~` et de 8 caractères de l'empreinte SHA1 du
   cas réduit. Le fichier s'ajoute au dossier depuis la phase 1 (décision de Gabriel, 2026-10-08) :
-  le dossier seul donnait le même nom aux trois lignes `testreadOAschedulerparameters` de
+  le dossier seul donnait le même nom aux trois lignes `ReadOaSchedulerParameters` de
   `BFECtests.csv`, dont les fichiers de paramètres partagent un dossier.
-- Nom explicite : cinquième colonne optionnelle `name` des CSV publics, contrôlée par
-  `^[A-Z][A-Za-z0-9]*$`. Ignorée, avec un avertissement, dans `BFECtests.csv`.
-- Exécutables : `<Fonction>Test` en PascalCase, sans préfixe `test` ni `UnitTest` —
-  `testScenarioReading` → `ScenarioReadingTest`, `doplanning` → `DoPlanningTest`. La table des
-  80 noms va dans `Tests/Support/RenamedTests.csv`, revue par gcyr.
+- Nom explicite (phase 9) : de préférence deux colonnes optionnelles des CSV publics, `given` et
+  `then`, en PascalCase ; la configuration compose `Given<given>When<exécutable>Then<then>`, de
+  sorte que le When est toujours le nom de l'exécutable. À trancher en phase 9 ; ignorées, avec un
+  avertissement, dans `BFECtests.csv`.
+- Exécutables : l'action qu'ils exercent, verbe en tête, en PascalCase, sans `When` ni `Test`
+  (section 9.2) — `testScenarioReading` → `ReadScenario`, `doplanning` → `DoPlanning`,
+  `testWrapperCoreGetYield` → `WrapperCoreGetYield`. La table des 81 noms, colonnes `former;new`,
+  est dans `Tests/Support/RenamedTests.csv` depuis la phase 7, validée par Gabriel (section 9.2). La configuration s'en sert pour lire une copie privée
+  de `BFECtests.csv` restée aux anciens noms, avec un avertissement qui compte ses lignes ;
+  `tools/testMigration/Update_PrivateTests.bat` renomme la copie.
 
 ### 9.4 Orchestration
 
@@ -1620,7 +1657,8 @@ tests ignorés avec leur raison. Sortie de test, donc en anglais. Quand tout pas
 - **Prévenir** la campagne `FMTWrapperCore` avant la phase 6, et Marc-Alex de la correction de son
   preset de build en phase 1. Chaque worktree qui a un `BFECtests.csv` le déplace dans
   `Tests/System/Cpp/` après la phase 6 (la configuration l'en avertit), puis lance le script de
-  migration après la phase 7.
+  migration après la phase 7 : `tools/testMigration/Update_PrivateTests.bat`, ou
+  `Update_PrivateTests.bat -Worktree <dossier>` pour un autre worktree, qui doit avoir la phase 7.
 
 ### 9.5 Phases et état
 
@@ -1635,7 +1673,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | 4 | Interrupteur unique `WITHOUT_TESTS`, squelette `Tests/`, boucle CSV en fonctions | `high` | fait (2026-10-09, `99dd05e4`) |
 | 5 | Python et R dans ctest au niveau système : l'installation ne les lance plus qu'à travers ctest | `high` | fait (2026-10-13, `cae97f61`) ; R validé sous MSYS2 le 2026-10-14 |
 | 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | fait (2026-10-15, `7886ca2b` et `7fdcea94`) ; 261 verts et 12 désactivés |
-| 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | à faire |
+| 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | livrée (2026-10-16), à valider après le build de Gabriel |
 | 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | à faire |
 | 9 | Noms explicites des lignes publiques ; Arrange / Act / Assert quand un test est touché | `high` | à faire |
 
@@ -2017,6 +2055,85 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
   - non relu : la console de la configuration. L'absence d'avertissement `no target named` se
     déduit des 371 tests identiques, celle de l'avertissement de l'ancien emplacement de
     `BFECtests.csv` du fichier déplacé avant la configuration.
+
+**Phase 7 (2026-10-15 et 2026-10-16)** :
+
+- **table** : `Tests/Support/RenamedTests.csv`, 81 lignes `former;new`, hors du glob qui inscrit
+  les tests. Une première table en `<Fonction>Test` (2026-10-15) n'a pas été commitée ; la table
+  retenue nomme chaque exécutable par l'action qu'il exerce, la partie When de ses tests
+  (section 9.2, décisions du 2026-10-16), et Gabriel l'a validée telle quelle. Quatre renommages
+  ne changent que la casse (`CreateModel`, `DoPlanning`, `ForceSolution`, `GetCarbonPredictors`) :
+  `core.ignorecase` étant vrai, ils passent par un nom intermédiaire, en deux `git mv` ;
+- **déplacements** par `git mv`, contenu inchangé, seuls dans un premier commit : 81 renommages à
+  100 % ;
+- **noms**, dans le deuxième commit :
+  - première colonne de `basetests.csv` (228 lignes) et de `knownbugs.csv` (12),
+    `FMTTESTSsharedoutputs` et les tests Excel de `Tests/System/Cpp/CMakeLists.txt` ;
+  - dossiers de sortie `../../tests/<exécutable>` : dans 37 sources, et en argument dans les
+    lignes 6, 71 et 76 de `basetests.csv` (décision de Gabriel, 2026-10-15). La configuration ne
+    crée plus le dossier d'un ancien nom : `maptoFMTforest.exe` plante (0xC0000409, GDAL ne peut
+    créer `THEME1.tif`) quand le sien manque, vu dans un miroir du scratchpad ;
+    `WrapperCoreWriteToProject` et `WrapperCoreRasterize` créent le leur. Les lignes 19
+    (`../../tests/planning`) et 89 (`testWrapperCoreRasterizationPass`) ne nomment pas un
+    exécutable et ne changent pas ;
+  - le dossier de la ligne 71 est dans son deuxième argument : son nom ctest change aussi, et
+    tient maintenant sans empreinte,
+    `System.WrapperCoreWriteToProject.TWD_land|actionseries|../../tests/WrapperCoreWriteToProject/`,
+    le plus long nom public (93 caractères, 97 avant) ;
+  - `registercsvtests` lit une ligne à l'ancien nom sous son nouveau nom (`getrenamedtests`), avec
+    un avertissement par fichier qui compte ces lignes ;
+  - `tools/testMigration/Update-PrivateTests.ps1`, lancé par `Update_PrivateTests.bat`, en ASCII
+    pour Windows PowerShell 5.1 : il déplace au besoin la copie d'`Examples/C++/tests`, renomme la
+    première colonne et les dossiers `../../tests/<ancien nom>` des arguments, garde une
+    sauvegarde `BFECtests.csv.<date>-<heure>.bak` ignorée par git, refuse un worktree sans la
+    table et n'écrit que des comptes et des chemins ;
+  - règle des noms réécrite dans `CodingStandards.md` (section Test names) : given/when/then en
+    PascalCase sans souligné, sans `Test` ; suite GoogleTest au nom de la classe ; exécutable au
+    nom de son action ;
+  - références : `AGENTS.md`, `PerformanceTesting.md`, `tools/README.md`, `BANC_INTERFACE.md`,
+    les commentaires de 12 scénarios de TWD_land, les sections vivantes de ce fichier, de
+    `Tests/Performance/ETAT.md` et de `FMTWrapperCore/ETAT.md`, `INTERFACE_MIGRATION.md`, les
+    commentaires des sources de test et des benchmarks, `HeapCorruptionDebug.bat` et l'exemple de
+    `RunPrivateTests.bat`. `README.md` et `README.fr.md` ne nomment aucun exécutable de test (leur
+    `doplanning` est la méthode de Python et de R) ;
+  - restent : les chaînes de nom de méthode passées aux exceptions (`"presolvetest"`,
+    `"FMTsetsolution"`...), qui changeraient la sortie des tests, et les classes `Testing::UnitTest*`
+    des sources. `UnitTestFMTParser` et `UnitTestFMTmodelcache` sont amies dans des en-têtes de
+    FMTlib : ligne de dette dans `Architecture.md` ;
+- **en-têtes de licence**, dans le troisième commit : 80 sources C++ (`QueryVersionFeature.cpp`
+  l'avait), `TestTools.h`, `TestsDataSnapshot.cmake`, 8 fichiers Python et 9 fichiers R
+  (`runTestFile.py` et `runTestFile.R` l'avaient). Chacun dans son encodage : les 63 fichiers C++
+  en ASCII passent en cp1252, les fichiers CMake, Python et R en UTF-8 ; les 13 sources en UTF-8
+  le restent, dont 8 avec BOM, l'en-tête après lui (7 de ces 8 avaient un corps en ASCII).
+  Vérifié par fichier : seul l'en-tête s'ajoute, CRLF partout, « Québec » lisible dans
+  l'encodage du fichier, aucun U+FFFD. Les renvois à des lignes de ces sources (section 2.4,
+  section 2.8 de `Tests/Performance/ETAT.md`) avancent de 7 ;
+- **contrôles avant le build**, sur la configuration du `.bat` GL rejouée dans le scratchpad
+  avant toute modification, puis après :
+  - `--show-only=json-v1` : mêmes 371 tests ; chaque nom se déduit de l'ancien par la table, sauf
+    celui de la ligne 71 ; commandes identiques hormis le nom de l'exécutable et le dossier des
+    lignes 6, 71 et 76 ; propriétés identiques, `RESOURCE_LOCK` et `DEPENDS` traduits. Comptes
+    par preset inchangés : `all-public` 273, `system` 250, `system-private` 94, `performance` 25,
+    `unit` 0, `integration` 0. Aucun avertissement `no target named` ;
+  - avertissement de traduction vu sur la copie privée de `new_test`, encore aux anciens noms
+    (92 lignes). Dans un projet jetable qui inclut `TestRegistration.cmake`, une copie migrée
+    donne les mêmes 92 tests, sans avertissement ; 6 changent aussi par leur dossier
+    (5 `ReplanOnDemand`, 1 `ConvertPointsToRasters`) ;
+  - script de migration, par le `.bat`, sur des copies jetables : 92 lignes renommées, 6 dossiers,
+    sauvegarde identique à l'original, second passage sans changement, refus sans table (code 1) ;
+  - les 189 `.vcxproj`, `.filters` et `.sln` sont identiques, anciens noms remplacés, sauf
+    l'ordre des entrées de `ALL_BUILD.vcxproj` et de `FMT.sln`, rangées par nom ;
+  - dossiers créés sous `tests/` : les 77 d'avant, renommés. Plus long chemin prévu : 91
+    caractères depuis `build/release` (`tests/WrapperCoreRunPlanning/...`), 146 en absolu ;
+  - script de la fixture avec son en-tête : `save` puis `compare` rendent 0, et 1 après une
+    modification ;
+- **défaut préexistant relevé, non corrigé** (`getcsvtestcase`, phase 1) : la condition
+  `NOT CMAKE_MATCH_4 STREQUAL ""` lit une variable que `if(MATCHES)` ne définit pas quand le
+  dernier groupe est vide ; elle prend alors la valeur de la portée appelante, ou le nom de la
+  variable. Dans la configuration MSVC, cette valeur existe et est vide : les 2 lignes privées dont
+  le chemin finit par `/` n'ont pas de `/` final dans leur nom. Sans elle, elles l'ont (démontré
+  par `cmake -P` et le projet jetable). À corriger à part, sans lire `CMAKE_MATCH_4` quand le
+  groupe peut être vide : par exemple, tester si le champ finit par `/`.
 
 ### 9.6 Vérifications communes
 

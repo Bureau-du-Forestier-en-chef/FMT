@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 	//const std::string primarylocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 	Parser::FMTModelParser modelparser;
 	modelparser.setDefaultExceptionHandler();
-	const std::string outdir = "../../tests/testOutputType/";
+	const std::string outdir = "../../tests/WriteAndReadOutputTypes/";
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);

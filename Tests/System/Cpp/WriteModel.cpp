@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 	//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Feux_2023_ouest/feux_2023_ouest_V01.pri";
 	Parser::FMTModelParser modelparser;
 	modelparser.setDefaultExceptionHandler();
-	const std::string outdir = "../../tests/testmodelwriter/";
+	const std::string outdir = "../../tests/WriteModel/";
 
 	std::vector<Exception::FMTexc> errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);

@@ -18,9 +18,9 @@
 // therefore works on a copy of TWD_land, never on the repository example.
 //
 // - Planning: LP is optimized and its schedule rewritten; LP3 is played back from its
-//   schedule (planningtest scenario); Globalreplanning, which has no schedule, checks
+//   schedule (RunPlanningTask scenario); Globalreplanning, which has no schedule, checks
 //   that a failed schedule read is reported without interrupting the planning.
-// - Replanning: the replanningtest scenarios, with the replicate schedules written.
+// - Replanning: the ReplanConcurrently scenarios, with the replicate schedules written.
 namespace
 {
 	int failures = 0;
@@ -87,7 +87,7 @@ namespace
 int main()
 {
 	const std::filesystem::path SOURCE_PROJECT = "../../../../Examples/Models/TWD_land";
-	const std::filesystem::path TEST_FOLDER = "../../tests/testWrapperCorePlanning";
+	const std::filesystem::path TEST_FOLDER = "../../tests/WrapperCoreRunPlanning";
 	const std::filesystem::path PROJECT = TEST_FOLDER / "TWD_land";
 	const std::filesystem::path PRIMARY_FILE = PROJECT / "TWD_land.pri";
 	const std::filesystem::path OPTIMIZED_SCHEDULE = PROJECT / "Scenarios" / "LP" / "TWD_land._seq";

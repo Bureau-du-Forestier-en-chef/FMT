@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 	{
 		params.primaryFilePath = "T:\\Donnees\\02_Courant\\07_Outil_moyen_methode\\01_Entretien_developpement\\Interne\\FMT\\Entretien\\Modeles_test\\ForetMontmorency\\PC_7001892_U03772_SSP02_2022_DET\\PC_7001892_U03772_SSP02.pri";
 		params.rastersPath = "T:\\Donnees\\02_Courant\\07_Outil_moyen_methode\\01_Entretien_developpement\\Interne\\FMT\\Entretien\\Modeles_test\\ForetMontmorency\\PC_7001892_U03772_SSP02_2022_DET\\rasters\\";
-		params.outputPath = "..\\..\\tests\\testWrapperCoreSES\\ForetMontmorency";
+		params.outputPath = "..\\..\\tests\\WrapperCoreRunSes\\ForetMontmorency";
 		params.scenarioName = "15_Sc5_Determin_apsp_carbone";
 		params.numberOfPeriods = 20;
 		params.greedySearchIterations = 5;

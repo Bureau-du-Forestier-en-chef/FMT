@@ -12,7 +12,7 @@ int main()
         Logging::FMTDefaultLogger().logStamp();
         const std::string modellocation = "../../../../Examples/Models/TWD_land/";
         const std::string	maplocation = modellocation + "/Carte/TWD_land.shp";
-        const std::string	writelocation = "../../tests/vectorfieldtoraster/";
+        const std::string	writelocation = "../../tests/ConvertVectorFieldToRaster/";
         Parser::FMTAreaParser areaparser;
         areaparser.vectorFieldToRaster(maplocation,writelocation+"AGE.tif",1420,"AGE",true);
         areaparser.vectorFieldToRaster(maplocation,writelocation+"THEME1.tif",1420,"THEME1",true);

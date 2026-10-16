@@ -902,7 +902,7 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
   transformation et l'optimisation spatiale, cette dernière par `spatial_fail_rasters`. Restent :
   - **la simulation spatiale**, bloquée par la validation de son écran, qui exige
     `rasters/STANLOCK.tif` même quand l'option de verrou est décochée. Le Core, lui, ne le lit
-    que si elle est cochée (`SES::prepareInitialForest`), `testWrapperCoreSES` fait tourner
+    que si elle est cochée (`SES::prepareInitialForest`), `WrapperCoreRunSes` fait tourner
     `sse_pass` sans ce fichier, et l'écran de l'optimisation spatiale démarre sur le même
     dossier de rasters alors que les deux modules appellent la même fonction. La validation de
     l'écran est donc en trop : défaut du UI .NET, hors de ce dépôt ;
@@ -913,7 +913,7 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
     une erreur ;
   - les accents des messages de progression (Pièges, « Encodage des messages »).
 - **La génération du calendrier de COS**, qu'aucun test ne couvre sur un modèle public.
-  `testOAschedulertask` et `testWrapperCoreOperatingArea` figent le numéro de thème -- 14 et 13,
+  `RunOpAreaSchedulerTask` et `WrapperCoreScheduleOperatingAreas` figent le numéro de thème -- 14 et 13,
   pour des modèles privés -- et la sortie de temps de retour `OATTEINTE7M`. Sur TWD_land, qui n'a
   que trois thèmes, les masques d'aires d'opération deviennent tous `? ? ?` et se recoupent.
   Vérifié quand même : `cos_pass` a bien une action qui lit le yield youvert et `cos_fail` non,
@@ -949,11 +949,11 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
   extensions MSVC courantes (`std::exception("...")`, fonctions `_s`, `#pragma warning`) ne
   relève rien, et `windows.h` comme `WinExec` existent sous MinGW : seule une compilation
   tranchera.
-  Depuis le lot « Tests dans ctest », elle compile aussi `UnitTestCallbackLogger`.
+  Depuis le lot « Tests dans ctest », elle compile aussi `LogThroughCallback`.
 
 ### Ensuite
 
-- **Un jeu de données pour `testWrapperCoreSA`** : JSON d'entrée et de référence, comme
+- **Un jeu de données pour `WrapperCoreRunSimulatedAnnealing`** : JSON d'entrée et de référence, comme
   `InputSES_1.json` et `ResultSES_1.json`, puis sa ligne dans `BFECtests.csv`.
 - **Refuser les valeurs vides dans le Core** là où elles écrivent au mauvais endroit :
   dossier de résultat des aires d'opération, nom de scénario des transformations, et à
@@ -972,14 +972,14 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
 - **Encodage cp1252** -- depuis le nettoyage, tous les fichiers de `UI/` et de
   `FMTWrapperCore/` sont en UTF-8 sans BOM : les deux derniers tests en cp1252 sont devenus
   ASCII en passant à l'anglais. Des fichiers cp1252 subsistent ailleurs dans FMT (ex.
-  `Source/FMTReplanningTask.cpp`, `Tests/System/Cpp/planningtest.cpp`) : les éditer avec un
+  `Source/FMTReplanningTask.cpp`, `Tests/System/Cpp/RunPlanningTask.cpp`) : les éditer avec un
   outil qui suppose l'UTF-8 corrompt les accents ; les réécrire entièrement, ou les éditer
   au niveau octet.
 - **La planification écrit dans le projet** -- quand `FMTPlanningTask` reçoit le fichier
   primaire, `FMTParallelWriter::getAndWrite` réécrit
   `Scenarios/<scénario>/<projet>._seq` pour chaque scénario optimisé. Planifier sur
   `Examples/Models` modifie donc des fichiers suivis : un test travaille sur une copie,
-  comme `testWrapperCorePlanning`. Et `FMTParser::createOGRDataset` tente de supprimer la
+  comme `WrapperCoreRunPlanning`. Et `FMTParser::createOGRDataset` tente de supprimer la
   destination des sorties si elle existe déjà.
 - **Normaliser un fichier en Python** : lire *avant* d'ouvrir en écriture.
   `open(p, 'wb').write(f(open(p, 'rb').read()))` tronque le fichier avant de le lire et
@@ -1001,7 +1001,7 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
   modèle, dont l'encodage est à vérifier avant.
 - **Filtrage des contraintes / outputs** -- unifié au lot 2 dans `Selection` (retrait des
   CR/LF puis trim, ordre du modèle, chaque élément retenu une fois). **L'ordre influence la
-  matrice LP** : toute modification de `Selection` se valide par `testWrapperCoreSES`
+  matrice LP** : toute modification de `Selection` se valide par `WrapperCoreRunSes`
   avant/après.
 - **`public class`** est une syntaxe C++/CLI : à abandonner dans tout code déplacé.
 - **Macros Windows** -- `windows.h` arrive par inclusion transitive (GDAL via
@@ -1078,20 +1078,20 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
   colonnes suivantes pour arguments. Les cibles du Core existent à ce moment-là : le même
   fichier les crée juste avant, depuis `Tests/System/Cpp/FMTWrapperCore/`, et leurs tests
   portent l'étiquette `wrappercore` (phase 6 de la réorganisation des tests, 2026-10-15).
-- **Inscrits depuis le 2026-09-16** : tous les tests du Core sauf `testWrapperCoreSA`. Sans
+- **Inscrits depuis le 2026-09-16** : tous les tests du Core sauf `WrapperCoreRunSimulatedAnnealing`. Sans
   le préfixe `testWrapperCore` :
   - `basetests.csv` : `GetMaxAge`, `GetYield`, `GetAllMasks`, `WriteToProject`,
     `Rasterization`, `AreaVariability`, `Planning`, `Environment`, ainsi que
-    `UnitTestCallbackLogger` ;
+    `LogThroughCallback` ;
   - `BFECtests.csv` : `SES`, `GetYield`, `GetAllMasks`, `AggregateAllActions`,
     `SplitActions`, `BuildAction` et `OperatingArea`.
-- **Hors ctest** : `testWrapperCoreSA`, faute de jeu de données (son repli est un gabarit
+- **Hors ctest** : `WrapperCoreRunSimulatedAnnealing`, faute de jeu de données (son repli est un gabarit
   `TODO`).
 - **Une ligne mal nommée ne produit aucune erreur** : elle est ignorée. C'est ainsi que
   `testWrapperCoreGetYield` n'a jamais tourné de 2024 à 2026 (`testWrapperCoreGetyield`
   dans un CSV, `testWrapperCoreGetYield.cpp` dans l'autre). Après une modification,
   vérifier le nom dans `build/release/CTestTestfile.cmake`.
-- Les tests `Tests/System/Cpp/FMTWrapperCore/*` suivent le patron de `testWrapperCoreSES.cpp` :
+- Les tests `Tests/System/Cpp/FMTWrapperCore/*` suivent le patron de `WrapperCoreRunSes.cpp` :
   paramètres via un JSON en `argv[1]`, valeurs de référence en `argv[2]`, repli codé en dur
   sur un modèle `T:\`.
 - **Ne pas** ajouter d'`add_test()` dans `FMTWrapperCore/CMakeLists.txt` : un test du Core
@@ -1100,12 +1100,12 @@ lots A et B compris, avec les sept tests du Core inscrits au lot « Tests dans c
   appellent les entrées pures des services, jamais `Controller` : ils n'ont pas à peupler
   le singleton.
 - Un test qui écrit dans un projet (planification) travaille sur une copie du jeu de
-  données, jamais sur `Examples/Models` : voir `testWrapperCorePlanning`.
+  données, jamais sur `Examples/Models` : voir `WrapperCoreRunPlanning`.
 - Quand un jeu de données public existe, le test l'utilise par défaut et reprend la forme
-  d'arguments de son cousin de `basetests.csv` : `testWrapperCoreRasterization` tourne sur
-  `Examples/Models/TWD_land` avec les mêmes arguments que `maptoFMTforest`, et sa ligne
+  d'arguments de son cousin de `basetests.csv` : `WrapperCoreRasterize` tourne sur
+  `Examples/Models/TWD_land` avec les mêmes arguments que `MapToForest`, et sa ligne
   de ce CSV reprend la sienne. Les tests SES, qui n'ont que des modèles privés, prennent
   un JSON.
 - Sinon, le test tourne sur un modèle privé et reprend la forme d'arguments de son cousin
-  de `BFECtests.csv` : `testWrapperCoreOperatingArea` a les mêmes arguments que
-  `testOAschedulertask`, aucun modèle public n'ayant de yield `YOUVERT`.
+  de `BFECtests.csv` : `WrapperCoreScheduleOperatingAreas` a les mêmes arguments que
+  `RunOpAreaSchedulerTask`, aucun modèle public n'ayant de yield `YOUVERT`.

@@ -47,7 +47,7 @@ YBM_RTM_MEH _EQUATION(1.1017722459999999*12^0.83493872400000002)
 _AGE volumezero
 0    0
 
-; Complex yields with values computed by hand, for testScenarioReading.
+; Complex yields with values computed by hand, for ReadScenario.
 *YC ? ? ?
 FIRST _EQUATION(2*3)
 SECOND _EQUATION(10/2)

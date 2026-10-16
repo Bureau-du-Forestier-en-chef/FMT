@@ -488,11 +488,11 @@ On TWD_land, each flow reads its model at every call:
 
 | Benchmark | Data | Phases | Expected result |
 | --- | --- | --- | --- |
-| `Flow.Optimize` | `NOT_MASK`, 5 periods | read, build, solve | objective 90738, as `doplanning` checks it |
+| `Flow.Optimize` | `NOT_MASK`, 5 periods | read, build, solve | objective 90738, as `DoPlanning` checks it |
 | `Flow.Optimize.Long` | `NOT_MASK`, 20 periods: a graph twelve times larger | read, build, solve | objective 362952 |
 | `Flow.Replay` | schedule of `LP`, 10 periods, without a solver | read, build | `OVOLREC` at period 2: 48008.953705 |
 | `Flow.Outputs` | schedule of `LP`, 10 periods, built once by `prepare` | none | sum of the totals of every output of every period: 3079696.8362052 |
-| `Flow.Simulate` | `DECISION`, non-spatial simulation | read, simulate | `UNIT_REC` at period 5: 60, as `FMTNsstest` checks it |
+| `Flow.Simulate` | `DECISION`, non-spatial simulation | read, simulate | `UNIT_REC` at period 5: 60, as `SimulateNonSpatially` checks it |
 | `Flow.Replanning` | `Globalreplanning`, `Globalfire` and `Localreplanning`: 2 replicates of 5 periods, on one thread | read, setup, replanning, result | 20 rows written: 2 replicates × 5 periods × 2 outputs |
 | `Flow.Replanning.Threads<N>` | the same scenarios, 10 replicates of 5 periods replanned as the interface does, on N = 1, 2, 5 (as in production) or 10 threads | read, setup, replanning, result | 100 rows written: 10 replicates × 5 periods × 2 outputs, the same rows as on one thread |
 
@@ -548,7 +548,7 @@ two measurements compare only on the same fingerprint. The file, the names of th
 stay on the machine. `tools\performance\Measure_Performance.bat -Label bfec-perf` measures them (see
 [Measuring a change](#measuring-a-change)).
 
-On a production model, a flow reads the errors that `doplanning` turns into warnings as warnings, so
+On a production model, a flow reads the errors that `DoPlanning` turns into warnings as warnings, so
 that the model reads and plans as it does in production (`Performance::quietFmt`). A private flow that
 computes complex yields bounds its retained memory at the most the yields cache can keep during one
 call: on a production model, several megabytes.

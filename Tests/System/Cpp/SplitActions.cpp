@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
 		const std::vector<std::string>SPLITTED_MASK = { "? ? ? ? ? ? ? ? ? ? ? ? ? UTA11 ? ? ? ? ? ?",
 														"? ? ? ? ? ? ? ? ? ? ? ? ? !UTA11 ? ? ? ? ? ?" };*/
 		//const std::string OUTPUT_DIRECTORY = "outputs/";
-		const std::string OUTPUT_DIRECTORY = "../../tests/testActionsSplit/";
+		const std::string OUTPUT_DIRECTORY = "../../tests/SplitActions/";
 		Parser::FMTModelParser ModelParser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);

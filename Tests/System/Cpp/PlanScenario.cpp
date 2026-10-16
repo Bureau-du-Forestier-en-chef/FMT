@@ -35,7 +35,7 @@
 #ifdef FMTWITHOSI
 namespace
 {
-	// Tolerance of the replayed schedule, as in FMTsetsolution.
+	// Tolerance of the replayed schedule, as in SetSolution.
 	const double REPLAY_TOLERANCE = 0.01;
 
 	std::vector<std::string> split(const std::string& p_value)
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
 		#ifdef FMTWITHOSI
 		if (argc < 2)
 		{
-			throw std::invalid_argument("Usage: testScenarioPlanning <primary file>|<scenario>|<query>|<length> [expected value]");
+			throw std::invalid_argument("Usage: PlanScenario <primary file>|<scenario>|<query>|<length> [expected value]");
 		}
 		const std::vector<std::string> ARGUMENTS = split(argv[1]);
 		if (ARGUMENTS.size() != 4)

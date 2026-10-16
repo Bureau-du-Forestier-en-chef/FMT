@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 		length = 5;
 		spatialOutputs = { "OVOLTOTREC" };*/
 	}
-	const std::string outdir = "../../tests/Spatial_doplanning/";
+	const std::string outdir = "../../tests/DoSpatialPlanning/";
 	Parser::FMTModelParser mparser;
 	mparser.setDebugLogger();
 	std::vector<Exception::FMTexc>errors;

@@ -16,9 +16,9 @@
 // Test of FMTWrapper::Backend::Rasterization, registered in basetests.csv.
 //
 // Without arguments, it runs on the public TWD_land model, with the same data as the
-// maptoFMTforest base test.
+// MapToForest base test.
 //
-// With arguments, same form as maptoFMTforest, whose basetests.csv line it mirrors:
+// With arguments, same form as MapToForest, whose basetests.csv line it mirrors:
 //   argv[1] = "<.pri file>|<scenario>|<resolution>"
 //   argv[2] = vector file
 //   argv[3] = output folder
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
 		scenario = "ROOT";
 		params.resolution = 1420;
 		params.vectorFilePath = "../../../../Examples/Models/TWD_land/Carte/TWD_land.shp";
-		params.outputFolder = "../../tests/testWrapperCoreRasterization/";
+		params.outputFolder = "../../tests/WrapperCoreRasterize/";
 	}
 
 	Parser::FMTModelParser modelParser;
