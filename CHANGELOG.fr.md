@@ -1,4 +1,4 @@
-## [Non publié] - 2026-10-08 (eaed70a8)
+## [Non publié] - 2026-10-19 (91121e5e)
 
 ### Ajouté
 
@@ -6,14 +6,22 @@
 - Migration des fonctionnalités de gestion des unités d’aménagement, de variabilité des superficies, de rastérisation, de sélection et de planification vers des composants portables de `FMTWrapperCore`.
 - Ajout d’un système d’événements typés pour transmettre les journaux, avertissements, erreurs et résultats entre le Core et les interfaces.
 - Ajout de scénarios de validation de l’interface couvrant notamment la planification, la rastérisation, les transformations, l’optimisation spatialement explicite et la replanification.
-- Ajout de suites de tests automatisés pour les interfaces Python et R, intégrées au processus d’installation.
+- Ajout de suites de tests automatisés pour les interfaces Python et R, lancées comme tests système de CTest.
 - Ajout d’une construction automatisée de la pile COIN-OR pour RTools, incluant CLP, GLPK et l’intégration de MOSEK (#335 Compiler Osi avec Mosek+Clp+Glpk pour Rtools, #276 Support for GLPK).
 - Ajout d’une documentation détaillée sur l’architecture, les normes de programmation, la compilation, les tests et les règles de contribution du projet.
 - Ajout de modèles GitHub structurés pour les rapports de bogues et les demandes de fonctionnalités.
+- Ajout de trois niveaux de tests dans `Tests/`, `Unit`, `Integration` et `System`, à côté des bancs de performance de `Performance`. Chaque test porte une étiquette de niveau, et des presets de test lancent un niveau à la fois : `ctest --preset unit`, `integration`, `system`, `system-private`, `performance` ou `all-public` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace).
+- Ajout d’un résumé à la fin de chaque passage de tests, à l’installation comme par `tools/tests/RunTests.bat <preset>` : tests réussis, en échec, ignorés et désactivés par niveau, puis la liste des échecs et des tests ignorés avec leur raison.
+- Ajout de GoogleTest aux dépendances (`vcpkg.json`) et des premiers tests unitaires du Core, sur `FMTOperator`, `FMTBounds` et `FMTSpec`. Sans GoogleTest, les niveaux unitaire et d’intégration ne sont pas inscrits, et tout le reste se compile et s’exécute comme avant.
+- Ajout de tests système sur le modèle public `TWD_land` : lecture des scénarios (rendements, sorties, opérabilité, transitions, croissance), erreurs de lecture et leurs codes d’exception, scénarios lus ensemble, statistiques de planification et rejeu du calendrier optimal. Une fixture vérifie qu’aucun test ne modifie `Examples/Models`, et les défauts connus restent inscrits comme tests désactivés.
+- Ajout de bancs de performance et d’allocation avec leurs bornes attendues, et de `tools/performance/Measure_Performance.bat`, qui mesure un changement en comparant des passages d’avant et d’après (#349 [FEATURE] Add performance and allocation benchmarks).
+- Ajout de `tools/tests/RunPrivateTests.bat`, qui vérifie que les modèles privés sont accessibles, puis lance la campagne de tests privée et son résumé.
+- Ajout de `tools/testMigration/Update_PrivateTests.bat`, qui déplace et renomme une liste locale de tests privés (`BFECtests.csv`), et des tables des anciens et des nouveaux noms de tests (`Tests/Support/RenamedTests.csv`, `Tests/Support/RenamedTestCases.csv`).
 
 ### Modifié
 
 - **Cassant :** renommage de l’espace de noms public C++ du Core, de `FMTWrapperCore` vers `FMTWrapper::Backend`. Le code client utilisant `FMTWrapperCore::*` doit être adapté.
+- **Cassant :** `WITHOUT_TESTS` devient une option lue par sa valeur partout : `-DWITHOUT_TESTS=OFF` ou `false` configure maintenant les tests, alors qu’il les retirait de la compilation racine. `ON` ou `true` les retire toujours.
 - Restructuration de l’interface et du wrapper afin de déléguer les traitements métier au contrôleur et aux services de `FMTWrapperCore`, réduisant la logique propre à l’interface (#340 Créer un controleur de Larman et restructurer Wrapper et WrapperCore).
 - Division de `FMTBounds.hpp` en classes spécialisées pour les bornes d’âge, de verrouillage, de période et de rendement, ainsi que pour les spécifications (#202 Diviser le fichier FMTbounds.hpp en 6 fichier 1 par classe).
 - Réorganisation du système d’installation CMake en modules distincts pour les composants d’exécution, Python, R et les tests.
@@ -22,9 +30,23 @@
 - Renforcement du générateur de messages de commit avec une validation centralisée, une meilleure gestion des erreurs et des instructions plus robustes.
 - Mise à jour de la configuration Doxygen et de la documentation de l’API pour refléter la nouvelle architecture.
 - Clarification des exigences de performance et de mémoire, notamment la préallocation et la réutilisation des ressources dans les traitements intensifs et multithreads.
+- `cmake --install` ne lance plus par défaut que les tests publics ; la variable de cache `INSTALL_TEST_SUITE` choisit `public`, `all` ou `none`. La campagne privée se lance à part, avant une version. L’installation ne lance plus elle-même les suites Python et R : CTest les lance avec les autres tests.
+- Déplacement des tests C++ dans `Tests/System/Cpp`, avec les sous-dossiers `FMTWrapperCore` et `Excel`, et des suites Python et R dans `Tests/System/Python` et `Tests/System/R` ; `Examples/C++` n’existe plus.
+- Renommage des exécutables de test C++ d’après l’action qu’ils exercent (`testScenarioReading` devient `ReadScenario`, `doplanning` devient `DoPlanning`), et nom Given/When/Then pour chaque test public. Les noms CTest suivent la forme `<Niveau>.<Suite>.<Cas>`.
+- Déplacement des scripts de la racine du dépôt dans `tools/` (`build`, `tests`, `changelog`, `commitMessage`), répertoriés dans `tools/README.md`.
+- Réécriture des règles de test de `Documentation/CodingStandards.md` (trois niveaux de tests, Arrange / Act / Assert, noms Given/When/Then) et ajout de consignes Clean Code ; `Documentation/Architecture.md` consigne désormais la dette d’architecture que révèlent les tests, et la portabilité des tests et des chaînes d’intégration.
+- `FMTlib` n’est plus lié à mimalloc, qu’il ne chargeait jamais : les exécutables utilisent le tas de l’environnement d’exécution C et, avec MSVC, `-DWITH_MIMALLOC=ON` lie mimalloc en premier dans chaque exécutable.
+- Les bancs de performance compilés avec MinGW ont leurs propres bornes (`Tests/Performance/performance-mingw.csv`) et tournent avec `OMP_NUM_THREADS=32` (#373 [BUG] Paquet R (Rtools45) : OpenBLAS compilé avec OpenMP engage environ 65 Mo par processeur logique au chargement de FMT).
+- Le générateur de changelog fusionne désormais une section non publiée existante au lieu d’en ajouter une seconde.
+
+### Obsolète
+
+- `WITHOUT_TESTING` est obsolète au profit de `WITHOUT_TESTS` : il retire toujours les tests, avec un avertissement.
 
 ### Corrigé
 
+- **Cassant :** `_DISCOUNTFACTOR` utilise maintenant le taux qu’il lit, au lieu du nombre d’années par période, et l’exposant de `HALF` devient la période moins 0,5. Les modèles qui utilisent `_DISCOUNTFACTOR` obtiennent de nouveaux facteurs d’actualisation (#357 `_DISCOUNTFACTOR` n’utilise pas le taux lu).
+- `_DISCOUNTFACTOR` lit maintenant un taux décimal, comme `0.04` ou `4.5%`, et une constante, au lieu de tronquer le premier et de s’arrêter sur la seconde (#374 [BUG] _DISCOUNTFACTOR tronque un taux décimal et refuse une constante).
 - Inclusion de `actionsmapping.json` dans le paquet Python afin de rétablir le fonctionnement des distributions publiées (#365 Build FMT release 1.3.0 non fonctionnel).
 - Correction de la détection de la fonctionnalité ONNX Runtime par `hasFeature("ONNXRUNTIME")` dans les compilations utilisant `FMTWITHONNXR` (#362 hasFeature("ONNXRUNTIME") rend toujours faux).
 - Correction de la comparaison des thèmes dans le constructeur des tables d’actions et des valeurs par défaut associées (#341 ; de trop dans un if).
@@ -34,6 +56,10 @@
 - Correction d’un problème empêchant la réinterprétation du scénario `ROOT` (#244 On ne peut pas réinterpréter le scénario ROOT!).
 - Correction de l’export des symboles de `FMTWrapperCore` pour les bibliothèques partagées.
 - Stabilisation de la journalisation, du traitement des avertissements et du cache de modèles pendant la migration vers la nouvelle architecture.
+- Correction de la durée de vie du journal de `FMTLpSolver`, qui pouvait faire planter un programme qui copie un modèle résolu : chaque solveur garde maintenant sa propre copie du journal.
+- Correction de la compilation MinGW avec RTools 4.5 : `FindOSI` ne réutilise plus les chemins COIN-OR mis en cache par une configuration plus ancienne, `build-coin-stack.sh` reçoit le git que trouve `FindOSI`, et le harnais des bancs de performance cherche les fonctions de processeur de Windows 10 à l’exécution.
+- Correction de `CMakePresets.json`, que CMake refusait parce que le preset de compilation `release-mam` renvoyait à un preset de configuration inexistant.
+- Correction du générateur de changelog, qui corrompait son invite quand les données insérées contenaient l’un de ses jetons.
 
 ## [v1.3.0] - 2026-09-11 (e5a606bc)
 
