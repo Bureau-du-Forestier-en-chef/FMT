@@ -9,7 +9,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 The functions that register the tests with ctest, included by Tests/CMakeLists.txt before any test is
 registered:
 
-- getcsvtestcase builds the case part of the name of a CSV row;
+- getcsvtestcase builds the case part of the name of a CSV row from its arguments;
+- checkcsvtestnameparts checks the given and then columns of a CSV row, which name its test by hand;
 - getrenamedtests reads the former names of the test executables;
 - registersystemtest registers one system test;
 - registercsvtests registers the rows of CSV files, one system test per row;
@@ -24,9 +25,10 @@ and a name given twice stops the configuration with the origin of both tests.
 include(GoogleTest)
 
 #Case part of the ctest name of a CSV row, built from its first two arguments joined by |:
-#../../../../Examples/Models/<M>/<M>.pri becomes <M>, an absolute path becomes <drive>:/.../<folder>/<file>
-#(so the private rows keep T:/ in their name), spaces become _, and a case longer than 60 characters
-#keeps its first 51 followed by ~ and 8 characters of its SHA1. Empty when the row has no argument.
+#../../../../Examples/Models/<M>/<M>.pri becomes <M>, an absolute path becomes <drive>:/.../<folder>/<file>,
+#<file> empty when the path ends with / (so the private rows keep T:/ in their name), spaces become _, and a
+#case longer than 60 characters keeps its first 51 followed by ~ and 8 characters of its SHA1. Empty when
+#the row has no argument.
 function(getcsvtestcase primarylocation scenario testcase)
 	set(arguments "")
 	foreach(argument IN ITEMS "${primarylocation}" "${scenario}")
@@ -41,11 +43,14 @@ function(getcsvtestcase primarylocation scenario testcase)
 			if ("${CMAKE_MATCH_1}" STREQUAL "${CMAKE_MATCH_2}")
 				set(field "${CMAKE_MATCH_1}")
 			endif()
-		elseif (field MATCHES "^([A-Za-z]:/)(.*/)?([^/]+)/([^/]*)$")
-			set(field "${CMAKE_MATCH_1}.../${CMAKE_MATCH_3}")
-			if (NOT CMAKE_MATCH_4 STREQUAL "")
-				string(APPEND field "/${CMAKE_MATCH_4}")
-			endif()
+		elseif (field MATCHES "^([A-Za-z]:/)(.*/)?([^/]+)/[^/]*$")
+			set(reducedfield "${CMAKE_MATCH_1}.../${CMAKE_MATCH_3}/")
+			#The file is not read from a group of the expression: if(MATCHES) sets no CMAKE_MATCH_<n> for a group
+			#that matches an empty string, as the file of a path that ends with /, and the variable would keep the
+			#value of an earlier match or of the calling scope. string(REGEX MATCH) sets the groups again: it
+			#comes after them.
+			string(REGEX MATCH "[^/]+$" file "${field}")
+			set(field "${reducedfield}${file}")
 		endif()
 		list(APPEND reducedfields "${field}")
 	endforeach()
@@ -59,6 +64,22 @@ function(getcsvtestcase primarylocation scenario testcase)
 		string(APPEND case "~${casehash}")
 	endif()
 	set(${testcase} "${case}" PARENT_SCOPE)
+endfunction()
+
+#Stops the configuration when <given> and <then>, the given and then columns of a CSV row, cannot name its test:
+#the two go together, and each is in PascalCase, ^[A-Z][A-Za-z0-9]*$. <origin> names the row, such as
+#"basetests.csv, line 12".
+function(checkcsvtestnameparts origin given then)
+	if (then STREQUAL "")
+		message(FATAL_ERROR "${origin}: the given and then columns go together, and this row has a given without a then")
+	elseif (given STREQUAL "")
+		message(FATAL_ERROR "${origin}: the given and then columns go together, and this row has a then without a given")
+	endif()
+	foreach(column IN ITEMS given then)
+		if (NOT "${${column}}" MATCHES "^[A-Z][A-Za-z0-9]*$")
+			message(FATAL_ERROR "${origin}: the ${column} column, \"${${column}}\", is not in PascalCase (^[A-Z][A-Za-z0-9]*$)")
+		endif()
+	endforeach()
 endfunction()
 
 #Reads Tests/Support/RenamedTests.csv, the table of the test executables renamed under #350 (former;new),
@@ -130,8 +151,14 @@ function(registersystemtest testname origin)
 endfunction(registersystemtest testname origin)
 
 #Registers the rows of the CSV files <csvfiles>, one system test per row. A row reads
-#<target>;<argument 1>;<argument 2>;<argument 3>: the test runs <target> with its arguments, an empty one
-#left out, and is named System.<target>, followed by .<case> when the row has arguments (getcsvtestcase).
+#<target>;<argument 1>;<argument 2>;<argument 3>[;<given>;<then>]: the test runs <target> with its arguments, an
+#empty one left out, and is named System.<target>.<case>.
+#- The case of a row that has a given and a then is Given<given>When<target>Then<then>, a name written by hand:
+#  the when is always the target. The two go together, and each is in PascalCase: otherwise the configuration
+#  stops, naming the file and the line (checkcsvtestnameparts).
+#- The case of a row without them is built from its arguments (getcsvtestcase), and a row without argument is
+#  named System.<target>. The rows of BFECtests.csv, the private rows, always keep this automatic name, and the
+#  T:/ of their path in it: their given and then are ignored, with a warning.
 #- The first row of a file, TEST, is its header; an empty row is skipped.
 #- A row whose target does not exist is not registered, with a warning: every target a row may name must
 #  exist before the call.
@@ -147,6 +174,7 @@ function(registercsvtests csvfiles sharedoutputs)
 	foreach(testfile IN LISTS csvfiles)
 		get_filename_component(testfilename "${testfile}" NAME)
 		set(renamedrows 0)
+		set(ignorednamelines "")
 		file(READ "${testfile}" data)
 		string(REPLACE "\r" "" data "${data}")
 		string(REPLACE ";" "," data "${data}")
@@ -157,9 +185,30 @@ function(registercsvtests csvfiles sharedoutputs)
 			if (line)
 				string(REPLACE "," ";" line "${line}")
 				list(GET line 0 testname)
+				if (testname STREQUAL "TEST")#TEST is the header of the files
+					continue()
+				endif()
 				list(GET line 1 primarylocation)
 				list(GET line 2 scenario)
 				list(GET line 3 dblvalue)
+				set(given "")
+				set(then "")
+				list(LENGTH line fieldcount)
+				if (fieldcount GREATER 4)
+					list(GET line 4 given)
+				endif()
+				if (fieldcount GREATER 5)
+					list(GET line 5 then)
+				endif()
+				if (NOT "${given}${then}" STREQUAL "")
+					if (testfilename STREQUAL "BFECtests.csv")
+						list(APPEND ignorednamelines ${linenumber})
+						set(given "")
+						set(then "")
+					else()
+						checkcsvtestnameparts("${testfilename}, line ${linenumber}" "${given}" "${then}")
+					endif()
+				endif()
 				if (NOT TARGET "${testname}")
 					list(FIND formernames "${testname}" renamedindex)
 					if (renamedindex GREATER -1)
@@ -172,7 +221,11 @@ function(registercsvtests csvfiles sharedoutputs)
 				endif()
 				if (TARGET "${testname}")#Got the executable!
 					file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/tests/${testname}")
-					getcsvtestcase("${primarylocation}" "${scenario}" testcase)
+					if (NOT given STREQUAL "")
+						set(testcase "Given${given}When${testname}Then${then}")
+					else()
+						getcsvtestcase("${primarylocation}" "${scenario}" testcase)
+					endif()
 					set(fullname "System.${testname}")
 					if (NOT testcase STREQUAL "")
 						string(APPEND fullname ".${testcase}")
@@ -185,13 +238,18 @@ function(registercsvtests csvfiles sharedoutputs)
 					if (testfilename STREQUAL "knownbugs.csv")
 						set_tests_properties("${fullname}" PROPERTIES DISABLED TRUE)
 					endif()
-				elseif (NOT testname STREQUAL "TEST")#TEST is the header of the files
+				else()
 					message(WARNING "${testfilename}: no target named \"${testname}\", this row is not registered in ctest")
 				endif(TARGET "${testname}")
 			endif(line)
 		endforeach()
 		if (renamedrows GREATER 0)
 			message(WARNING "${testfilename}: ${renamedrows} rows name a test executable by its former name, read as its new name (Tests/Support/RenamedTests.csv): rename them in ${testfile} with tools/testMigration/Update_PrivateTests.bat")
+		endif()
+		if (NOT ignorednamelines STREQUAL "")
+			list(LENGTH ignorednamelines ignorednamecount)
+			string(REPLACE ";" ", " ignorednamelines "${ignorednamelines}")
+			message(WARNING "${testfilename}: the given and then columns of ${ignorednamecount} rows are ignored (lines ${ignorednamelines}): the private rows keep their automatic name, and the T:/ of their path in it")
 		endif()
 	endforeach()
 endfunction(registercsvtests csvfiles sharedoutputs)

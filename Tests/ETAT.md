@@ -243,7 +243,8 @@ sur le modèle public `Examples/Models/TWD_land`, sans `T:\`, en une minute envi
 ```
 
 `ctest.exe` n'est pas dans le `PATH`. Le preset `all-public` (`CMakePresets.json`) lance tout
-sauf les tests BFEC, dont le nom garde `T:/`, huit à la fois, avec la sortie des échecs. Un niveau
+sauf les tests BFEC, dont le nom garde `T:/`, huit à la fois, avec la sortie des échecs. Une ligne
+privée ne reçoit jamais de nom écrit à la main (section 2.1) : son nom garde donc toujours `T:/`. Un niveau
 seul : `--preset system`, `system-private` (la campagne BFEC, par Gabriel) ou `performance` ; sans
 preset, par étiquette ancrée, par exemple `--test-dir build/release -C Release -L "^system$"`.
 Depuis la phase 2, `RunTests.bat <preset>` (dans `tools\tests\` depuis le 2026-10-14, avec
@@ -353,9 +354,15 @@ macros (`min`, `max`, `NEAR`, `ERROR`...) arrivent par GDAL : ne pas y introduir
 ### 2.1 Des CSV à ctest
 
 - `Tests/System/Cpp/CMakeLists.txt` passe `Tests/System/Cpp/*.csv` à `registercsvtests`
-  (`Tests/Support/TestRegistration.cmake`, depuis la phase 4). Colonnes : cible, puis trois
-  arguments ; le `|` sépare des valeurs dans une colonne. Le nom ctest est la concaténation
-  cible + arguments 1 et 2 (espaces remplacés par `_`).
+  (`Tests/Support/TestRegistration.cmake`, depuis la phase 4). Colonnes : cible, trois
+  arguments, puis, depuis la phase 9a, `given` et `then`, facultatives, qui ne servent qu'au nom ;
+  le `|` sépare des valeurs dans une colonne. Le nom ctest a deux formes (section 9.3) :
+  - `System.<cible>.Given<given>When<cible>Then<then>`, écrit à la main, quand la ligne a ses deux
+    colonnes, en PascalCase. La configuration s'arrête, en nommant le fichier et la ligne, sur une
+    colonne seule, sur un nom hors de `^[A-Z][A-Za-z0-9]*$` et sur un nom déjà donné ;
+  - sinon, la cible suivie des arguments 1 et 2 réduits (espaces remplacés par `_`). Les lignes de
+    `BFECtests.csv` gardent toujours cette forme, et donc leur `T:/` : leurs colonnes `given` et
+    `then` sont ignorées, avec un avertissement.
 - `basetests.csv` est suivi par git ; `BFECtests.csv` est local et ignoré par git (invisible
   pour ripgrep : le lire directement). Une copie restée dans `Examples/C++/tests/`, son dossier
   avant la phase 6, est lue à sa place, avec un avertissement qui dit où la déplacer.
@@ -390,16 +397,19 @@ macros (`min`, `max`, `NEAR`, `ERROR`...) arrivent par GDAL : ne pas y introduir
 **Un exemple complet.** La ligne
 
 ```
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|? ? ?;1814.76;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|? ? ?;1814.76;;TheRootInventory;SumsTheAreaOfAllDevelopments
 ```
 
-inscrit un test dont le nom est la cible suivie des deux premiers arguments, espaces remplacés
-par `_`. ctest lance `ReadScenario.exe` depuis `build/release/bin/Release` avec deux
-arguments : `../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|? ? ?`, qui dit quoi
-lire et quoi demander, puis `1814.76`, la valeur attendue. La quatrième colonne, vide, disparaît
-de la commande.
+inscrit le test
+`System.ReadScenario.GivenTheRootInventoryWhenReadScenarioThenSumsTheAreaOfAllDevelopments`.
+ctest lance `ReadScenario.exe` depuis `build/release/bin/Release` avec deux arguments :
+`../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|? ? ?`, qui dit quoi lire et quoi
+demander, puis `1814.76`, la valeur attendue. La quatrième colonne, vide, disparaît de la
+commande, et les deux dernières ne servent qu'au nom. Sans elles, le test s'appellerait
+`System.ReadScenario.TWD_land|ROOT|AREA|?_?_?|1814.76`, la cible suivie des deux premiers
+arguments réduits.
 
-**Pourquoi ce découpage.** Le CSV n'offre que quatre colonnes alors qu'une requête en demande
+**Pourquoi ce découpage.** Le CSV n'offre à la commande que quatre colonnes, alors qu'une requête en demande
 souvent plus : le `|` sert donc de séparateur à l'intérieur d'une colonne, et chaque test
 redécoupe ses arguments lui-même. Les valeurs attendues vivent dans le CSV, et non dans le
 code, pour deux raisons : on peut en fausser une sans recompiler, ce qu'exige la règle 1, et
@@ -1609,6 +1619,31 @@ noms given/when/then qui disent ce que fait le test, et pas de `Test` dans les n
 - GoogleTest a été installé par vcpkg dans le scratchpad pour compiler les témoins avant le build.
 - Les DLL de GoogleTest suivent les autres DLL de vcpkg dans les paquets (section 7).
 
+**Découpage de la phase 9 (proposé à Gabriel le 2026-10-19).**
+
+- La phase 9 se fait en deux sessions : 9a, les colonnes `given` et `then`, le défaut de
+  `getcsvtestcase` relevé en phase 7, et les noms des lignes de `knownbugs.csv` et des lignes
+  `ReadScenario` ; puis 9b, les autres lignes publiques, l'avertissement des lignes publiques sans
+  nom et le tableau des noms pour gcyr.
+- Les vérifications qui manquent aux tests qui ne vérifient rien (section 2.3) sortent de la
+  réorganisation et vont aux lots suivants (section 6.3). La règle Arrange / Act / Assert de
+  `CodingStandards.md` s'applique quand un test est touché.
+
+**Style des noms des lignes CSV (Gabriel, 2026-10-19, en phase 9a)**, validé sur douze propositions
+et suivi par la phase 9b :
+
+- le nom dit le sens de la ligne, pas ses données : ni chemin ni nom de fichier, et un nombre en
+  chiffres seulement quand il est le sens (`AtPeriod2`, `AtAge0`) ; une borne se dit par son sens
+  (`JustBelowItsLifespan`, `AtTheMinimumAge`) ;
+- le Given dit le scénario et la situation : la racine par l'adjectif `Root` (`ARootYield`,
+  `TheRootOutputs`), un autre scénario par ce qui le distingue (`WithTwoTargets`,
+  `BesideANumericEquation`, `AwayFromNumericEquations`) plutôt que par son nom ; le Then dit ce
+  qui est attendu (`IsOperable`, `InterpolatesLinearly`) ;
+- les actions de TWD_land sont nommées par leur sens, en anglais : `COUPETOTALE` Clearcut, `AFIRE`
+  Fire, `ARECUP` Salvage, `ACARIBOU` CaribouProtection, `PLANTATION` Planting, `_DEATH` Death ;
+- une ligne désactivée garde le Then du comportement attendu, pas celui que FMT donne : les lignes
+  de #347 et leurs témoins de `yieldoperatorsalone` ne diffèrent que par le Given.
+
 ### 9.3 Cible
 
 **Arborescence.**
@@ -1678,11 +1713,20 @@ tests ignorés avec leur raison. Sortie de test, donc en anglais. Quand tout pas
   au-delà de 60 caractères les 51 premiers suivis de `~` et de 8 caractères de l'empreinte SHA1 du
   cas réduit. Le fichier s'ajoute au dossier depuis la phase 1 (décision de Gabriel, 2026-10-08) :
   le dossier seul donnait le même nom aux trois lignes `ReadOaSchedulerParameters` de
-  `BFECtests.csv`, dont les fichiers de paramètres partagent un dossier.
-- Nom explicite (phase 9) : de préférence deux colonnes optionnelles des CSV publics, `given` et
-  `then`, en PascalCase ; la configuration compose `Given<given>When<exécutable>Then<then>`, de
-  sorte que le When est toujours le nom de l'exécutable. À trancher en phase 9 ; ignorées, avec un
-  avertissement, dans `BFECtests.csv`.
+  `BFECtests.csv`, dont les fichiers de paramètres partagent un dossier. Depuis la phase 9a, un
+  chemin qui finit par `/` garde ce `/` (`<lecteur>:/.../<dossier>/`) : le fichier se lit après le
+  dernier `/`, et non plus dans `CMAKE_MATCH_4`, que `if(MATCHES)` ne définit pas pour un groupe
+  vide (défaut relevé en phase 7, section 9.5).
+- Nom explicite (depuis la phase 9a) : deux colonnes facultatives après `doublevalue`, `given` et
+  `then`, que les en-têtes de `basetests.csv` et de `knownbugs.csv` nomment. La configuration
+  compose le cas `Given<given>When<exécutable>Then<then>`, de sorte que le When est toujours le
+  nom de l'exécutable : `System.<exécutable>.Given<given>When<exécutable>Then<then>`. Les deux
+  colonnes vont ensemble, et chacune suit `^[A-Z][A-Za-z0-9]*$` ; sinon la configuration s'arrête
+  en nommant le fichier et la ligne (`checkcsvtestnameparts`). Le contrôle d'unicité de
+  `registersystemtest` couvre ces noms. Une ligne sans ces colonnes, dont toute ligne à quatre
+  colonnes, garde son nom automatique. Dans `BFECtests.csv`, elles sont ignorées, avec un
+  avertissement qui donne leurs lignes : les lignes privées gardent leur nom automatique, et leur
+  `T:/`. Le style des noms est en section 9.2 (2026-10-19).
 - Exécutables : l'action qu'ils exercent, verbe en tête, en PascalCase, sans `When` ni `Test`
   (section 9.2) — `testScenarioReading` → `ReadScenario`, `doplanning` → `DoPlanning`,
   `testWrapperCoreGetYield` → `WrapperCoreGetYield`. La table des 81 noms, colonnes `former;new`,
@@ -1726,7 +1770,8 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | fait (2026-10-15, `7886ca2b` et `7fdcea94`) ; 261 verts et 12 désactivés |
 | 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | fait (2026-10-16, `5ae7fa75`, `31f3e288` et `ab5b27b3`) ; 261 verts et 12 désactivés |
 | 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | fait (2026-10-19, `c1553d4b`) ; 268 verts, dont 7 unitaires, et 12 désactivés |
-| 9 | Noms explicites des lignes publiques ; Arrange / Act / Assert quand un test est touché | `high` | à faire |
+| 9a | Colonnes `given` et `then`, défaut de `getcsvtestcase` (phase 7), noms écrits à la main des 12 lignes de `knownbugs.csv` et des 112 lignes `ReadScenario` de `basetests.csv` | `high` | fait et validé après le build (2026-10-19), à commiter ; 268 verts, dont 7 unitaires, et 12 désactivés |
+| 9b | Noms des autres lignes publiques, avertissement des lignes publiques sans nom, tableau des noms pour gcyr (section 9.2, découpage du 2026-10-19) | `high` | à faire |
 
 **Phase 0 en détail.** La fusion de `master` (`c2760ff4`, 2026-10-08) apporte, par rapport au
 dernier état validé (`720010bb`, PR #367) :
@@ -2296,6 +2341,69 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
     GoogleTest se déduit de `GTest_DIR` et des 7 cas inscrits ;
   - l'issue de la dette de `FMTBounds<int>` est rédigée (reproduction minimale sans GoogleTest, quatre
     cas A à D, origine `6bd900dc`), à ouvrir par Gabriel.
+
+**Phase 9a (2026-10-19)** :
+
+- **mécanisme**, dans `TestRegistration.cmake` (section 9.3) : `registercsvtests` lit `given` et
+  `then` après `doublevalue` ; `checkcsvtestnameparts` arrête la configuration sur une colonne
+  seule ou hors du motif, en nommant le fichier et la ligne, même quand la cible de la ligne manque.
+  L'en-tête `TEST` est sauté avant tout contrôle. Une colonne vide ne compte pas : les lignes 69 et
+  71 de `basetests.csv`, qui ont déjà des colonnes vides en trop, gardent leur nom automatique.
+  Dans `BFECtests.csv`, un seul avertissement par fichier donne les lignes ignorées ;
+- **défaut de `getcsvtestcase`** (phase 7) : le fichier d'un chemin absolu se lit après le dernier
+  `/` par `string(REGEX MATCH)`, placé après la lecture des groupes 1 et 3, qu'il redéfinit. Les
+  2 lignes privées dont le chemin finit par `/` gagnent ce `/` dans leur nom (`ReadDatabaseSections`,
+  et `DoSpatialPlanning`, dont l'empreinte change), sans doublon ;
+- **noms** : 124 lignes, et non 135 comme l'annonçait le prompt de la phase, qui comptait deux fois
+  les 11 lignes `ReadScenario` de `knownbugs.csv` (12 + 123) : les 112 lignes `ReadScenario` de
+  `basetests.csv` et les 12 lignes de `knownbugs.csv`. Style validé par Gabriel sur douze
+  propositions (section 9.2). Noms de 75 à 114 caractères, `System.` compris. Vérifié par script
+  contre `HEAD` : quatre premières colonnes intactes, autres lignes inchangées, CRLF et ASCII,
+  chaque given et then dans le motif, 240 noms publics uniques ;
+- **références** : `CodingStandards.md` (Test names : les deux formes du cas), `AGENTS.md` (Adding a
+  C++ system test), sections 1.3, 2.1, 9.2 et 9.3 de ce fichier. La section 2.7 ne cite aucun nom
+  ctest ;
+- **contrôles avant le build**, sur la configuration du `.bat` GL rejouée dans le scratchpad avant
+  le diff, puis après :
+  - avant : 371 tests identiques à `test-reorg-baseline\P8-after\tests.json`, hormis la casse de
+    44 exécutables (phase 7). Les 7 cas `Unit.` ne sont découverts qu'avec le `UnitCore.exe` du
+    build copié dans le rejeu, le `bin/Release` du build dans le `PATH` ;
+  - après : les mêmes 371 tests et 7 cas `Unit.` ; seuls changent les noms des 124 lignes et des
+    2 lignes privées. Commandes, dossiers de travail et propriétés identiques à la référence
+    rejouée et à P8-after, `DEPENDS` de `ExamplesModelsUnchanged` traduit compris, dans le même
+    ordre ;
+  - `ctest -N` par preset : `unit` 7, `integration` 0, `system` 250, `system-private` 94,
+    `performance` 25, `all-public` 280, avec les mêmes noms que les fichiers `preset_<p>.txt` de
+    P8-after, une fois les noms traduits. Les 12 lignes désactivées le restent, sous leur nouveau
+    nom ;
+  - aucun avertissement `no target named`, ni de colonnes ignorées : la copie privée de `new_test`
+    n'a pas de colonnes `given` et `then` ;
+  - projet jetable qui inclut `TestRegistration.cmake`, sur des copies des CSV : un given sans then,
+    un then sans given, un nom qui commence par une minuscule ou qui contient un souligné ou une
+    espace arrêtent la configuration sur `basetests.csv, line 91`. Deux lignes au même nom l'arrêtent
+    sur le contrôle d'unicité. Une copie de `BFECtests.csv` avec un given et un then sur deux lignes
+    donne l'avertissement (« lines 2, 3 ») et les mêmes 92 noms privés que le rejeu ;
+- **validation après le build de Gabriel** (2026-10-19, reconfiguration par
+  `CMakeFMTVS2022vcpkg_GL.bat`, avant le commit) :
+  - passage de l'installation (`INSTALL_TEST_SUITE=public`, aucun `T:/`) : 0 échec sur 280, 18 s ;
+    268 exécutés et 12 désactivés, ceux-ci sous leur nouveau nom. `LastTest.log`,
+    `InstallTests.xml`, `InstallTests.json` et `LastTestsDisabled.log` copiés dans
+    `test-reorg-baseline\P9a-after`, avec `--show-only=json-v1`, les étiquettes et les listes par
+    preset ;
+  - `--show-only=json-v1` de `build/release` comparé à P8-after : les 371 tests d'avant, et les
+    mêmes 7 cas `Unit.` ; seuls changent les noms des 124 lignes et des 2 lignes privées ;
+    commandes, dossiers de travail et propriétés identiques, `DEPENDS` traduit compris. Les 378 noms
+    sont ceux du rejeu d'après, qui ne diffère que par la casse de 44 exécutables (phase 7) ;
+  - `ctest --preset <p> -N` : `unit` 7, `integration` 0, `system` 250, `system-private` 94,
+    `performance` 25, `all-public` 280, avec les mêmes noms que P8-after une fois les noms
+    traduits ; aucun nom de `all-public` ne contient `T:/` ;
+  - `RunTests.bat all-public` : « 0 tests failed out of 268 », 16,5 s réelles ; tableau unit
+    7 verts, system 236 verts et 12 désactivés sur 248, performance 23, other 2 ; Total 268 verts
+    et 12 désactivés sur 280. Les 112 lignes `ReadScenario` nommées passent, les 12 lignes de
+    `knownbugs.csv` restent désactivées ; fixture `ExamplesModelsUnchanged` verte ;
+  - non relue : la console de la configuration de Gabriel. L'absence d'avertissement
+    `no target named` se déduit des 371 tests identiques, et le rejeu du scratchpad n'en avait
+    aucun.
 
 ### 9.6 Vérifications communes
 

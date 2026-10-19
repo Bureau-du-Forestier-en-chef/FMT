@@ -1413,7 +1413,10 @@ GivenAPlanningHorizonWhenCopyConstructedThenPreservesIt
 
 The only underscore allowed is the `DISABLED_` prefix, on a test that reveals an open defect: `DISABLED_GivenAValidPeriodWhenSetLengthThenUpdatesPlanningHorizon`. The prefix goes when the defect is fixed.
 
-In CTest, a test is named `<Level>.<Suite>[.<Case>]`, the level written as in [Test levels](#test-levels): `Unit.FMTModelCache.GivenAValidPeriodWhenSetLengthThenUpdatesPlanningHorizon`. For a system test, the suite is its executable, and the case of a CSV row is built from its arguments (`registercsvtests` in `Tests/Support/TestRegistration.cmake`).
+In CTest, a test is named `<Level>.<Suite>[.<Case>]`, the level written as in [Test levels](#test-levels): `Unit.FMTModelCache.GivenAValidPeriodWhenSetLengthThenUpdatesPlanningHorizon`. For a system test, the suite is its executable. The case of a CSV row takes one of two forms (`registercsvtests` in `Tests/Support/TestRegistration.cmake`):
+
+- written by hand, in the `given` and `then` columns of the row: the case is `Given<given>When<executable>Then<then>`, so that the when is always the executable, as in `System.ReadScenario.GivenTheRootInventoryWhenReadScenarioThenSumsTheAreaOfAllDevelopments`. The name says what the row means, not its data: no path or file name, and a number only when it is the meaning, such as a period or an age;
+- built from its arguments, for a row without these two columns. The private rows of `BFECtests.csv` always keep this form, whose name keeps the `T:/` of their path.
 
 A system test executable is named after the action it runs, the when of its tests, in PascalCase and verb first, without `When` or `Test`: `ReadScenario`, `SetSolution`. Where it exists, the name of the FMT method under test is the action: `DoPlanning`, `BuildAction`. An executable of `Tests/System/Cpp/FMTWrapperCore` starts with `WrapperCore`, the component that acts: `WrapperCoreGetYield`. The executables written before this rule were renamed together under issue #350; `Tests/Support/RenamedTests.csv` gives the former name of each, such as `testScenarioReading`.
 

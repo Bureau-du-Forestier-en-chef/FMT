@@ -1,4 +1,4 @@
-TEST;primarylocation;scenario;doublevalue
+TEST;primarylocation;scenario;doublevalue;given;then
 SolveAndWriteSchedules;;;
 SimulateSpatially;;;
 DoSpatiallyExplicitPlanning;;;
@@ -88,78 +88,78 @@ DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|replanification_tac
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|replanification_stochastique;5;0
 WrapperCoreRasterize;../../../../Examples/Models/TWD_land/TWD_land.pri|rasterisation_pass|1420;../../../../Examples/Models/TWD_land/Carte/TWD_land.shp;../../tests/testWrapperCoreRasterizationPass/
 SolveWithEachSolver;loggerlifetime;;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|THEMES;3;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ATTRIBUTES|1;UNITE1|UNITE2|UNITE3;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ATTRIBUTES|2;PEUPLEMENT1|PEUPLEMENT2|PEUPLEMENT3|FEU;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ATTRIBUTES|3;UTR1|UTR2|UTR3;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AGGREGATE|1|UC;UNITE1|UNITE2;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AGGREGATE|2|PROD;PEUPLEMENT1|PEUPLEMENT2|PEUPLEMENT3;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AGGREGATE|2|POURPL;PEUPLEMENT2|PEUPLEMENT3;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AGGREGATE|3|UTA1;UTR1|UTR2;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AGGREGATE|3|UTA2;UTR3;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|DEVELOPMENTS|? ? ?;8;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|? ? ?;1814.76;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|UC ? ?;1411.48;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|UNITE3 ? ?;403.28;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|DEVELOPMENTS|? POURPL UTA1;4;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|? POURPL UTA1;806.56;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ACTIONS;AFIRE|ARECUP|COUPETOTALE|ACARIBOU|PLANTATION|_DEATH;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ACTION|AFIRE;NONE;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ACTION|COUPETOTALE;RESETAGE;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ACTION|PLANTATION;RESETAGE|LOCKEXEMPT;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ACTION|_DEATH;RESETAGE|LOCKEXEMPT;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|AFIRE|UNITE1 PEUPLEMENT1 UTR1|0;0;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|AFIRE|UNITE1 PEUPLEMENT1 UTR1|1;1;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|AFIRE|UNITE1 FEU UTR1|5;0;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|ACARIBOU|UNITE1 PEUPLEMENT2 UTR2|7;0;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|ACARIBOU|UNITE1 PEUPLEMENT2 UTR2|8;1;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|ACARIBOU|UNITE3 PEUPLEMENT2 UTR2|8;0;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|PLANTATION|UNITE1 PEUPLEMENT3 UTR1|3;1;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|PLANTATION|UNITE1 PEUPLEMENT3 UTR1|4;0;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|4;0;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5;1;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|ARECUP|UNITE1 FEU UTR1|9;0;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|ARECUP|UNITE1 FEU UTR1|10;1;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|_DEATH|UNITE1 FEU UTR1|0;1;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|_DEATH|UNITE1 PEUPLEMENT1 UTR1|79;0;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|_DEATH|UNITE1 PEUPLEMENT1 UTR1|80;1;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|VOLUMETOTAL;120;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|YIELD|UNITE1 PEUPLEMENT2 UTR1|27|VOLUMETOTAL;198;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|YIELD|UNITE1 PEUPLEMENT1 UTR1|40|VOLUMETOTAL;350;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OUTPUTS;OSUPREC|OVOLREC|OSUPMASSCAR|P2AREA|BURNEDAREA|RECUPAREA|OPERABLERECUPAREA|TOTALAREA|TOTALCAR|OVOLLOCALTARGET|OSUPPL|VOLINVENT|OVOLRECPEUPLEMENT1|OVOLRECPEUPLEMENT2|YIELDZERO|DIVIDEZERO;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|CONSTRAINTS;4;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|CONSTRAINT|1;STANDARD|OSUPMASSCAR|400|400|1|LENGTH;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|CONSTRAINT|2;STANDARD|OVOLREC|-INF|4000|1|LENGTH;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|CONSTRAINT|3;STANDARD|OVOLREC|4000|INF|1|LENGTH;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|THEMENAME|1;UNITE;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|THEMENAME|2;PEUPLEMENTS;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|THEMENAME|3;UTR;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|AREA|? ? ?;1814.76;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|CONSTRAINTS;3;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|CONSTRAINT|0;MAXMIN|OVOLREC|0|0|1|LENGTH;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|CONSTRAINT|1;STANDARD|BURNEDAREA|0|0|1|LENGTH;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINTS;7;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINT|0;MAXMIN|TEST2|0|0|1|LENGTH;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINT|1;STANDARD|TEST2|-INF|100045912.322|1|3;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINT|2;STANDARD|TEST2|-INF|100045912.322|6|6;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINT|3;STANDARD|TEST2|-INF|100045912.322|8|8;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINT|4;STANDARD|TEST2|200090690.644|200090690.644|1|LENGTH;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINT|5;STANDARD|TEST2|200090690.644|INF|5|5;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINT|6;STANDARD|TEST2|200090690.644|INF|7|7;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|FIRST;6;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SECOND;5;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|EQUATIONSUM;11;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|POWERFIRST;16;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PARENTHESES;18;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|TWICE;240;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUMWITHNUMBER;150;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DOUBLE;240;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|HALF;60;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|LESS;100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|INRANGE;1;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|OUTRANGE;0;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|GROWTH;17.14285714;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|CURRENT;10;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|THEMES;3;;TheRootLandscape;CountsItsThemes
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ATTRIBUTES|1;UNITE1|UNITE2|UNITE3;;TheFirstRootTheme;ListsItsAttributesInOrder
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ATTRIBUTES|2;PEUPLEMENT1|PEUPLEMENT2|PEUPLEMENT3|FEU;;TheSecondRootTheme;ListsItsAttributesInOrder
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ATTRIBUTES|3;UTR1|UTR2|UTR3;;TheThirdRootTheme;ListsItsAttributesInOrder
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AGGREGATE|1|UC;UNITE1|UNITE2;;ARootAggregateOfTheFirstTheme;ListsItsAttributes
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AGGREGATE|2|PROD;PEUPLEMENT1|PEUPLEMENT2|PEUPLEMENT3;;ARootAggregateOfTheProductiveStands;LeavesOutTheBurntOnes
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AGGREGATE|2|POURPL;PEUPLEMENT2|PEUPLEMENT3;;ARootAggregateWithinAnother;ListsOnlyItsOwnAttributes
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AGGREGATE|3|UTA1;UTR1|UTR2;;ARootAggregateOfTheThirdTheme;ListsItsAttributes
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AGGREGATE|3|UTA2;UTR3;;ARootAggregateOfASingleAttribute;ListsThatAttribute
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|DEVELOPMENTS|? ? ?;8;;TheRootInventory;CountsEachInitialDevelopment
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|? ? ?;1814.76;;TheRootInventory;SumsTheAreaOfAllDevelopments
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|UC ? ?;1411.48;;ARootMaskWithAnAggregate;SumsTheAreaOfItsAttributes
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|UNITE3 ? ?;403.28;;ARootMaskWithOneAttribute;SumsTheAreaOfThatAttribute
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|DEVELOPMENTS|? POURPL UTA1;4;;ARootMaskWithTwoAggregates;CountsTheDevelopmentsInBoth
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|AREA|? POURPL UTA1;806.56;;ARootMaskWithTwoAggregates;SumsTheAreaOfTheDevelopmentsInBoth
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ACTIONS;AFIRE|ARECUP|COUPETOTALE|ACARIBOU|PLANTATION|_DEATH;;TheRootActions;ListsThemInOrderWithDeathLast
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ACTION|AFIRE;NONE;;TheRootFireAction;NeitherResetsTheAgeNorBypassesLocks
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ACTION|COUPETOTALE;RESETAGE;;TheRootClearcutAction;ResetsTheAgeWithoutBypassingLocks
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ACTION|PLANTATION;RESETAGE|LOCKEXEMPT;;TheRootPlantingAction;ResetsTheAgeAndBypassesLocks
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|ACTION|_DEATH;RESETAGE|LOCKEXEMPT;;TheRootDeathAction;ResetsTheAgeAndBypassesLocks
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|AFIRE|UNITE1 PEUPLEMENT1 UTR1|0;0;;AFireOnARootStandJustBelowTheMinimumAge;IsNotOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|AFIRE|UNITE1 PEUPLEMENT1 UTR1|1;1;;AFireOnARootStandAtTheMinimumAge;IsOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|AFIRE|UNITE1 FEU UTR1|5;0;;AFireOnABurntRootStand;IsNotOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|ACARIBOU|UNITE1 PEUPLEMENT2 UTR2|7;0;;ACaribouProtectionOfARootStandJustBelowTheMinimumAge;IsNotOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|ACARIBOU|UNITE1 PEUPLEMENT2 UTR2|8;1;;ACaribouProtectionOfARootStandAtTheMinimumAge;IsOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|ACARIBOU|UNITE3 PEUPLEMENT2 UTR2|8;0;;ACaribouProtectionOfARootStandOutsideTheOperableUnits;IsNotOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|PLANTATION|UNITE1 PEUPLEMENT3 UTR1|3;1;;APlantingOfARootStandAtTheMaximumAge;IsOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|PLANTATION|UNITE1 PEUPLEMENT3 UTR1|4;0;;APlantingOfARootStandJustAboveTheMaximumAge;IsNotOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|4;0;;AClearcutOfARootStandJustBelowTheMinimumYield;IsNotOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5;1;;AClearcutOfARootStandAtTheMinimumYield;IsOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|ARECUP|UNITE1 FEU UTR1|9;0;;ASalvageOfABurntRootStandJustBelowTheMinimumYield;IsNotOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|ARECUP|UNITE1 FEU UTR1|10;1;;ASalvageOfABurntRootStandAtTheMinimumYield;IsOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|_DEATH|UNITE1 FEU UTR1|0;1;;TheDeathOfABurntRootStandAtAge0;IsOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|_DEATH|UNITE1 PEUPLEMENT1 UTR1|79;0;;TheDeathOfARootStandJustBelowItsLifespan;IsNotOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|_DEATH|UNITE1 PEUPLEMENT1 UTR1|80;1;;TheDeathOfARootStandAtItsLifespan;IsOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|VOLUMETOTAL;120;;AnAgeBetweenTwoPointsOfARootYield;InterpolatesLinearly
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|YIELD|UNITE1 PEUPLEMENT2 UTR1|27|VOLUMETOTAL;198;;AnAgeOnTheDecliningPartOfARootYield;InterpolatesLinearly
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|YIELD|UNITE1 PEUPLEMENT1 UTR1|40|VOLUMETOTAL;350;;AnAgeBeyondTheLastPointOfARootYield;KeepsTheLastValue
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OUTPUTS;OSUPREC|OVOLREC|OSUPMASSCAR|P2AREA|BURNEDAREA|RECUPAREA|OPERABLERECUPAREA|TOTALAREA|TOTALCAR|OVOLLOCALTARGET|OSUPPL|VOLINVENT|OVOLRECPEUPLEMENT1|OVOLRECPEUPLEMENT2|YIELDZERO|DIVIDEZERO;;TheRootOutputs;ListsThemInOrder
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|CONSTRAINTS;4;;TheRootOptimizeSection;CountsTheObjectiveAndEachConstraint
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|CONSTRAINT|1;STANDARD|OSUPMASSCAR|400|400|1|LENGTH;;ARootEqualityConstraint;SetsBothBoundsOverAllPeriods
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|CONSTRAINT|2;STANDARD|OVOLREC|-INF|4000|1|LENGTH;;ARootUpperBoundConstraint;HasNoLowerBound
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|CONSTRAINT|3;STANDARD|OVOLREC|4000|INF|1|LENGTH;;ARootLowerBoundConstraint;HasNoUpperBound
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|THEMENAME|1;UNITE;;AScenarioThatNamesItsFirstTheme;ReadsThatName
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|THEMENAME|2;PEUPLEMENTS;;AScenarioThatNamesItsSecondTheme;ReadsThatName
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|THEMENAME|3;UTR;;AScenarioThatNamesItsThirdTheme;ReadsThatName
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|AREA|? ? ?;1814.76;;AScenarioWithoutItsOwnInventory;InheritsTheRootArea
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|CONSTRAINTS;3;;AScenarioWithItsOwnOptimizeSection;CountsOnlyItsOwnLines
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|CONSTRAINT|0;MAXMIN|OVOLREC|0|0|1|LENGTH;;AMaxMinObjectiveOnARootOutput;ReadsItOverAllPeriods
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|CONSTRAINT|1;STANDARD|BURNEDAREA|0|0|1|LENGTH;;AScenarioEqualityToZero;SetsBothBoundsToZero
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINTS;7;;ConstraintsOverPeriodLists;CountsOneLinePerPeriodRange
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINT|0;MAXMIN|TEST2|0|0|1|LENGTH;;AMaxMinObjectiveOnAScenarioOutput;ReadsItOverAllPeriods
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINT|1;STANDARD|TEST2|-INF|100045912.322|1|3;;AnUpperBoundOverAPeriodList;ReadsPeriods1To3AsOneConstraint
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINT|2;STANDARD|TEST2|-INF|100045912.322|6|6;;AnUpperBoundOverAPeriodList;ReadsPeriod6AsOneConstraint
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINT|3;STANDARD|TEST2|-INF|100045912.322|8|8;;AnUpperBoundOverAPeriodList;ReadsPeriod8AsOneConstraint
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINT|4;STANDARD|TEST2|200090690.644|200090690.644|1|LENGTH;;AnEqualityWithThousandsSeparators;SetsBothBoundsToTheSum
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINT|5;STANDARD|TEST2|200090690.644|INF|5|5;;ALowerBoundOverTwoPeriods;ReadsPeriod5AsOneConstraint
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|stdconstraints|CONSTRAINT|6;STANDARD|TEST2|200090690.644|INF|7|7;;ALowerBoundOverTwoPeriods;ReadsPeriod7AsOneConstraint
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|FIRST;6;;ANumericEquationWithAProduct;MultipliesTheNumbers
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SECOND;5;;ANumericEquationWithAQuotient;DividesTheNumbers
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|EQUATIONSUM;11;;AnEquationThatAddsTwoYields;AddsTheirValues
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|POWERFIRST;16;;APowerBeforeAProductInAnEquation;AppliesThePowerFirst
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PARENTHESES;18;;APowerInParenthesesAfterAProduct;AppliesThePowerFirst
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|TWICE;240;;ASumOfTwoAgeYieldsAwayFromNumericEquations;AddsThem
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUMWITHNUMBER;150;;ASumWithANumberAwayFromNumericEquations;AddsTheNumber
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DOUBLE;240;;AProductByANumberAwayFromNumericEquations;MultipliesTheYield
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|HALF;60;;AQuotientByANumberAwayFromNumericEquations;DividesTheYield
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|LESS;100;;ASubtractionOfANumberAwayFromNumericEquations;SubtractsIt
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|INRANGE;1;;AYieldInsideARangeAwayFromNumericEquations;ReturnsOne
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|OUTRANGE;0;;AYieldOutsideARangeAwayFromNumericEquations;ReturnsZero
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|GROWTH;17.14285714;;AMeanAnnualIncrementAwayFromNumericEquations;DividesTheYieldByTheAge
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|CURRENT;10;;ACurrentAnnualIncrementAwayFromNumericEquations;GivesTheLastYearGrowth
 ReadScenariosTogether;../../../../Examples/Models/TWD_land/TWD_land.pri|LP|LP2|LP4|LP5;;
 ReadScenariosTogether;../../../../Examples/Models/TWD_land/TWD_land.pri|levelopt1|levelopt2|levelopt3|levelopt4|levelopt5|levelopt6|levelopt7|levelopt8|levelopt9;;
 ReadScenariosTogether;../../../../Examples/Models/TWD_land/TWD_land.pri|Globalreplanning|Globalfire|Localreplanning;;
@@ -174,46 +174,46 @@ ReadInvalidScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_in
 ReadInvalidScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_undefinedyield;8;
 ReadInvalidScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_leakingtransition;38;
 ReadInvalidScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_unclosedforloop;81;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5;UNITE1 PEUPLEMENT1 UTR1|0|0|100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|ACARIBOU|UNITE1 PEUPLEMENT1 UTR1|8;UNITE1 PEUPLEMENT1 UTR1|8|1|100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|PLANTATION|UNITE1 PEUPLEMENT2 UTR1|2;UNITE1 PEUPLEMENT1 UTR1|0|0|100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|AFIRE|UNITE1 PEUPLEMENT1 UTR1|7;UNITE1 FEU UTR1|7|0|100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|ARECUP|UNITE1 FEU UTR1|10;UNITE1 PEUPLEMENT1 UTR1|0|0|100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|_DEATH|UNITE1 FEU UTR1|0;UNITE1 PEUPLEMENT1 UTR1|0|0|100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|_DEATH|UNITE1 PEUPLEMENT1 UTR1|80;UNITE1 PEUPLEMENT1 UTR1|0|0|100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5|2;UNITE1 PEUPLEMENT1 UTR1|0|2|100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|ACARIBOU|UNITE1 PEUPLEMENT1 UTR1|8|3;FMTexc(79);
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|GROW|UNITE1 PEUPLEMENT1 UTR1|5;UNITE1 PEUPLEMENT1 UTR1|6|0|2;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|GROW|UNITE1 PEUPLEMENT1 UTR1|5|2;UNITE1 PEUPLEMENT1 UTR1|6|1|2;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5|0;1;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5|1;0;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|PLANTATION|UNITE1 PEUPLEMENT1 UTR1|2|1;1;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5;UNITE1 PEUPLEMENT1 UTR1|0|0|60|UNITE1 PEUPLEMENT2 UTR1|0|0|40;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|PLANTATION|UNITE1 PEUPLEMENT2 UTR1|2;UNITE1 PEUPLEMENT1 UTR1|3|0|100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|ACARIBOU|UNITE1 PEUPLEMENT1 UTR1|8;UNITE1 PEUPLEMENT1 UTR1|8|2|100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|ARECUP|UNITE1 FEU UTR1|12;UNITE1 PEUPLEMENT1 UTR1|0|0|100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|ARECUP|UNITE1 FEU UTR1|5;UNITE1 PEUPLEMENT2 UTR1|0|0|100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|AFIRE|UNITE1 PEUPLEMENT1 UTR1|12;UNITE1 FEU UTR1|12|0|100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|AFIRE|UNITE1 PEUPLEMENT1 UTR1|3;UNITE1 PEUPLEMENT3 UTR1|3|0|100;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SHIFTED;130;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|BIGGEST;120;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SMALLEST;0;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|TOPEAK;23;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|TOVOLUME;7;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PERIODVALUE|1;10;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PERIODVALUE|2;20;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PERIODVALUE|3;30;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PERIODVALUE|5;30;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTFULL|1;0.821927106759;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTFULL|2;0.675564168826;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTNONE|1;1;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTNONE|2;0.821927106759;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTHALF|1;0.906601956075;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTHALF|2;0.745160722739;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTHALF|3;0.612467796912;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTDECIMAL|1;0.821927106759;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTDECIMALPERCENT|1;0.802451046501;
-ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|discountconstant|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTCONSTANT|1;0.802451046501;
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5;UNITE1 PEUPLEMENT1 UTR1|0|0|100;;ARootClearcut;ResetsTheAgeOfTheStand
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|ACARIBOU|UNITE1 PEUPLEMENT1 UTR1|8;UNITE1 PEUPLEMENT1 UTR1|8|1|100;;ARootCaribouProtection;LocksTheStandAndKeepsItsAge
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|PLANTATION|UNITE1 PEUPLEMENT2 UTR1|2;UNITE1 PEUPLEMENT1 UTR1|0|0|100;;ARootPlanting;TurnsTheStandIntoTheTargetTypeAtAge0
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|AFIRE|UNITE1 PEUPLEMENT1 UTR1|7;UNITE1 FEU UTR1|7|0|100;;ARootFire;BurnsTheStandWithoutResettingItsAge
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|ARECUP|UNITE1 FEU UTR1|10;UNITE1 PEUPLEMENT1 UTR1|0|0|100;;ARootSalvage;TurnsTheBurntStandIntoTheTargetTypeAtAge0
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|_DEATH|UNITE1 FEU UTR1|0;UNITE1 PEUPLEMENT1 UTR1|0|0|100;;TheDeathOfABurntRootStandAtAge0;TurnsItIntoTheTargetType
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|_DEATH|UNITE1 PEUPLEMENT1 UTR1|80;UNITE1 PEUPLEMENT1 UTR1|0|0|100;;TheDeathOfARootStandAtItsLifespan;ResetsItsAge
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5|2;UNITE1 PEUPLEMENT1 UTR1|0|2|100;;ARootClearcutOfALockedStand;ResetsTheAgeAndKeepsTheLock
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERATE|ACARIBOU|UNITE1 PEUPLEMENT1 UTR1|8|3;FMTexc(79);;ACaribouProtectionOfAStandLockedLonger;RefusesATransitionToItself
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|GROW|UNITE1 PEUPLEMENT1 UTR1|5;UNITE1 PEUPLEMENT1 UTR1|6|0|2;;AGrowingRootStand;AddsOneToItsAgeAndPeriod
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|GROW|UNITE1 PEUPLEMENT1 UTR1|5|2;UNITE1 PEUPLEMENT1 UTR1|6|1|2;;AGrowingLockedRootStand;ShortensItsLockByOnePeriod
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5|0;1;;AClearcutOfAnUnlockedRootStand;IsOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5|1;0;;AClearcutOfALockedRootStand;IsNotOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|OPERABLE|PLANTATION|UNITE1 PEUPLEMENT1 UTR1|2|1;1;;APlantingOfALockedRootStand;IsOperable
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|COUPETOTALE|UNITE1 PEUPLEMENT1 UTR1|5;UNITE1 PEUPLEMENT1 UTR1|0|0|60|UNITE1 PEUPLEMENT2 UTR1|0|0|40;;AClearcutWithTwoTargets;SplitsTheAreaByTheirProportions
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|PLANTATION|UNITE1 PEUPLEMENT2 UTR1|2;UNITE1 PEUPLEMENT1 UTR1|3|0|100;;APlantingWithATargetAge;SetsThatAge
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|ACARIBOU|UNITE1 PEUPLEMENT1 UTR1|8;UNITE1 PEUPLEMENT1 UTR1|8|2|100;;ACaribouProtectionWithATargetLock;SetsThatLock
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|ARECUP|UNITE1 FEU UTR1|12;UNITE1 PEUPLEMENT1 UTR1|0|0|100;;ASalvageThatMeetsTheAgeCondition;FollowsTheFirstSource
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|ARECUP|UNITE1 FEU UTR1|5;UNITE1 PEUPLEMENT2 UTR1|0|0|100;;ASalvageThatMissesTheAgeCondition;FollowsTheSecondSource
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|AFIRE|UNITE1 PEUPLEMENT1 UTR1|12;UNITE1 FEU UTR1|12|0|100;;AFireThatMeetsTheYieldCondition;FollowsTheFirstSource
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|transitions|OPERATE|AFIRE|UNITE1 PEUPLEMENT1 UTR1|3;UNITE1 PEUPLEMENT3 UTR1|3|0|100;;AFireThatMissesTheYieldCondition;FollowsTheSecondSource
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SHIFTED;130;;AYieldShiftedByOneAgeAwayFromNumericEquations;TakesTheNextAgeValue
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|BIGGEST;120;;AMaximumOfTwoYieldsAwayFromNumericEquations;TakesTheLargest
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SMALLEST;0;;AMinimumOfTwoYieldsAwayFromNumericEquations;TakesTheSmallest
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|TOPEAK;23;;TheYearsToAYieldPeakAwayFromNumericEquations;CountsFromTheCurrentAge
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperatorsalone|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|TOVOLUME;7;;ADistanceBetweenTwoYieldValuesAwayFromNumericEquations;CountsTheYears
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PERIODVALUE|1;10;;ATimeYieldAtPeriod1;TakesTheValueOfThatPeriod
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PERIODVALUE|2;20;;ATimeYieldAtPeriod2;TakesTheValueOfThatPeriod
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PERIODVALUE|3;30;;ATimeYieldAtPeriod3;TakesTheValueOfThatPeriod
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PERIODVALUE|5;30;;ATimeYieldAfterItsLastPeriod;KeepsItsLastValue
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTFULL|1;0.821927106759;;AFullDiscountFactorAtPeriod1;DiscountsOnePeriod
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTFULL|2;0.675564168826;;AFullDiscountFactorAtPeriod2;DiscountsTwoPeriods
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTNONE|1;1;;ANoneDiscountFactorAtPeriod1;DiscountsNoPeriod
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTNONE|2;0.821927106759;;ANoneDiscountFactorAtPeriod2;DiscountsOnePeriod
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTHALF|1;0.906601956075;;AHalfDiscountFactorAtPeriod1;DiscountsHalfAPeriod
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTHALF|2;0.745160722739;;AHalfDiscountFactorAtPeriod2;DiscountsOneAndAHalfPeriods
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTHALF|3;0.612467796912;;AHalfDiscountFactorAtPeriod3;DiscountsTwoAndAHalfPeriods
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTDECIMAL|1;0.821927106759;;ADiscountRateWithoutPercentSign;ReadsItAsAFraction
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|timeyields|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTDECIMALPERCENT|1;0.802451046501;;ADecimalPercentDiscountRate;KeepsItsDecimals
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|discountconstant|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|DISCOUNTCONSTANT|1;0.802451046501;;ADiscountRateFromAConstant;UsesTheConstantValue
 PlanScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|LP|STATS|5;296|395|166|327;
 PlanScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|division|STATS|5;426|730|299|674;
 PlanScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|equation|STATS|5;426|730|299|675;
