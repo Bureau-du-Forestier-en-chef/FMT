@@ -1725,7 +1725,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | 5 | Python et R dans ctest au niveau système : l'installation ne les lance plus qu'à travers ctest | `high` | fait (2026-10-13, `cae97f61`) ; R validé sous MSYS2 le 2026-10-14 |
 | 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | fait (2026-10-15, `7886ca2b` et `7fdcea94`) ; 261 verts et 12 désactivés |
 | 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | fait (2026-10-16, `5ae7fa75`, `31f3e288` et `ab5b27b3`) ; 261 verts et 12 désactivés |
-| 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | livrée le 2026-10-16 ; à valider après le build de Gabriel |
+| 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | fait (2026-10-19, `c1553d4b`) ; 268 verts, dont 7 unitaires, et 12 désactivés |
 | 9 | Noms explicites des lignes publiques ; Arrange / Act / Assert quand un test est touché | `high` | à faire |
 
 **Phase 0 en détail.** La fusion de `master` (`c2760ff4`, 2026-10-08) apporte, par rapport au
@@ -2276,8 +2276,26 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
   - projet jetable, vrai GoogleTest et fausse `FMTlib` : niveau `Integration`, étiquettes
     `integration;gdal`, cas réussi, en échec, `DISABLED_` et `GTEST_SKIP` vus dans ctest et dans le
     résumé ; avec deux exécutables qui ont le même cas, ctest s'arrête sur ce nom (code 8) ;
-- **à valider après le build de Gabriel** : `ctest --preset unit -N`, `all-public -N` et les autres
-  presets, `RunTests.bat unit` puis `all-public`, et le passage de l'installation.
+- **validation après le build de Gabriel** (2026-10-19, sur `c1553d4b`) :
+  - le commit contient les 14 fichiers livrés ; la configuration a installé gtest dans le
+    `vcpkg_installed` de `build/release` (`GTest_DIR` dans le cache), et `gtest.dll`,
+    `gtest_main.dll` et `gmock.dll` sont dans `bin/Release` à côté de `UnitCore.exe` ;
+  - passage de l'installation (`INSTALL_TEST_SUITE=public`, aucun `T:/`) : 0 échec sur 280, 20 s ;
+    tableau unit 7 verts, system 236 verts et 12 désactivés sur 248, performance 23, other 2 ; Total
+    268 verts et 12 désactivés. `LastTest.log`, `InstallTests.xml` et `InstallTests.json` copiés dans
+    `test-reorg-baseline\P8-after`, avec les listes par preset et `--show-only=json-v1` ;
+  - `ctest --preset <p> -N` : `unit` 7, les cas `Unit.<Classe>.Given…When…Then` étiquetés
+    `unit;core` (`-L "^core$"` : 7) ; `integration` 0 ; `all-public` 280 ; `system` 250,
+    `system-private` 94 et `performance` 25, avec les mêmes noms que P7-after ;
+  - `--show-only=json-v1` comparé à `test-reorg-baseline\P7-after\tests.json` : les 371 tests
+    d'avant identiques (commandes, dossiers de travail, propriétés), et les 7 cas en plus, lancés
+    depuis `bin/Release` ;
+  - `RunTests.bat unit` : 7 verts, tableau d'une ligne `unit` ; `RunTests.bat all-public` : « 0 tests
+    failed out of 268 », 12 désactivés, 17,2 s réelles, fixture `ExamplesModelsUnchanged` verte ;
+  - non relue : la console de la configuration de Gabriel. L'absence de l'avertissement de
+    GoogleTest se déduit de `GTest_DIR` et des 7 cas inscrits ;
+  - l'issue de la dette de `FMTBounds<int>` est rédigée (reproduction minimale sans GoogleTest, quatre
+    cas A à D, origine `6bd900dc`), à ouvrir par Gabriel.
 
 ### 9.6 Vérifications communes
 
