@@ -1811,7 +1811,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | fait (2026-10-16, `5ae7fa75`, `31f3e288` et `ab5b27b3`) ; 261 verts et 12 désactivés |
 | 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | fait (2026-10-19, `c1553d4b`) ; 268 verts, dont 7 unitaires, et 12 désactivés |
 | 9a | Colonnes `given` et `then`, défaut de `getcsvtestcase` (phase 7), noms écrits à la main des 12 lignes de `knownbugs.csv` et des 112 lignes `ReadScenario` de `basetests.csv` | `high` | fait (2026-10-19, `791a09ae`) ; 268 verts, dont 7 unitaires, et 12 désactivés |
-| 9b | Noms des autres lignes publiques, avertissement des lignes publiques sans nom, tableau des noms pour gcyr (section 9.2, découpage du 2026-10-19) | `high` | livré (2026-10-19), à valider après le build de Gabriel ; fin de la réorganisation (section 9.7) |
+| 9b | Noms des autres lignes publiques, avertissement des lignes publiques sans nom, tableau des noms pour gcyr (section 9.2, découpage du 2026-10-19) | `high` | fait (2026-10-19, `fea23253`, table des anciens noms `f8676a84`) ; 268 verts, dont 7 unitaires, et 12 désactivés ; fin de la réorganisation (section 9.7) |
 
 **Phase 0 en détail.** La fusion de `master` (`c2760ff4`, 2026-10-08) apporte, par rapport au
 dernier état validé (`720010bb`, PR #367) :
@@ -2506,9 +2506,31 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
     une ligne 230 sans nom, donne trois avertissements, qui nomment `basetests.csv, line 90`,
     `basetests.csv, line 230` et `knownbugs.csv, line 3`. Ces lignes prennent leur nom automatique
     (`System.SolveWithEachSolver.loggerlifetime`), et les lignes privées ne donnent aucun avertissement ;
-- **validation après le build de Gabriel** : à faire (reconfiguration par
-  `CMakeFMTVS2022vcpkg_GL.bat`, mêmes contrôles sur `build/release`, `RunTests.bat all-public`,
-  référence copiée dans `test-reorg-baseline\P9b-after`).
+- **commits** : `fea23253` (noms, avertissement, références), puis `f8676a84` (table des anciens
+  noms), tous deux de Gabriel ;
+- **validation après le build de Gabriel** (2026-10-19, reconfiguration par
+  `CMakeFMTVS2022vcpkg_GL.bat` sur `f8676a84`) :
+  - passage de l'installation (`INSTALL_TEST_SUITE=public`, aucun `T:/`) : 0 échec sur 280, 20 s ;
+    268 exécutés et 12 désactivés. `LastTest.log`, `InstallTests.xml`, `InstallTests.json` et
+    `LastTestsDisabled.log` copiés dans `test-reorg-baseline\P9b-after` avant tout appel de ctest,
+    avec `--show-only=json-v1`, les étiquettes, les listes par preset et la sortie de
+    `RunTests.bat all-public` ;
+  - `--show-only=json-v1` de `build/release` comparé à P9a-after : les mêmes 378 tests, dans le même
+    ordre ; seuls changent les noms des 116 lignes. Commandes, dossiers de travail et propriétés
+    identiques, `DEPENDS` traduit compris. Comparé au rejeu d'après, il ne diffère que par la casse de
+    44 exécutables (phase 7) ;
+  - `ctest --preset <p> -N` : `unit` 7, `integration` 0, `system` 250, `system-private` 94,
+    `performance` 25, `all-public` 280, avec les mêmes noms que P9a-after une fois les noms
+    traduits ; 12 désactivés ; aucun nom de `all-public` ne contient `T:/`. Les 240 noms publics des
+    lignes CSV ont leur Given ; les noms d'aujourd'hui de `RenamedTestCases.csv`, tests R mis à
+    part, sont exactement les 280 noms de `all-public` ;
+  - `RunTests.bat all-public` : « 0 tests failed out of 268 », 12,7 s réelles ; tableau unit
+    7 verts, system 236 verts et 12 désactivés sur 248, performance 23, other 2 ; Total 268 verts
+    et 12 désactivés sur 280. Les 116 lignes renommées passent ; fixture `ExamplesModelsUnchanged`
+    verte, `git status` propre ;
+  - non relue : la console de la configuration de Gabriel. L'absence d'avertissement
+    `no target named` ou de ligne publique sans nom se déduit des 378 tests identiques au rejeu, qui
+    n'en avait aucun, et des CSV, dont toutes les lignes publiques ont leurs deux colonnes.
 
 ### 9.6 Vérifications communes
 
