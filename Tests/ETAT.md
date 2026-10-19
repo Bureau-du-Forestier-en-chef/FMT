@@ -498,6 +498,10 @@ dans `basetests.csv`, et `knownbugs.csv` ne garde que les 12 lignes de #346, #34
 suite BFEC, qui les teste sur des modèles réels. Leurs lignes de `knownbugs.csv` attendent donc
 un comportement que FMT n'a pas choisi d'avoir ; elles restent désactivées en attendant une revue
 commune des tests BFEC, qui dira ce qu'on ramène dans la suite publique et sous quelle forme.
+Depuis les phases 8 et 9a, #346 a deux tests qui se contredisent : le cas unitaire activé
+`Unit.FMTOperator.GivenPowerAndMultiplyWhenPrecedenceThenTheyAreEqual` fixe le comportement
+actuel, et les deux lignes désactivées de `knownbugs.csv` (`…ThenAppliesThePowerFirst`) attendent
+la priorité mathématique. La revue commune gardera l'un des deux.
 Démonstrations refaites le
 2026-09-17 avec les exécutables du build de `new_test`, sur des copies de TWD_land hors dépôt.
 
@@ -1770,7 +1774,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | fait (2026-10-15, `7886ca2b` et `7fdcea94`) ; 261 verts et 12 désactivés |
 | 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | fait (2026-10-16, `5ae7fa75`, `31f3e288` et `ab5b27b3`) ; 261 verts et 12 désactivés |
 | 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | fait (2026-10-19, `c1553d4b`) ; 268 verts, dont 7 unitaires, et 12 désactivés |
-| 9a | Colonnes `given` et `then`, défaut de `getcsvtestcase` (phase 7), noms écrits à la main des 12 lignes de `knownbugs.csv` et des 112 lignes `ReadScenario` de `basetests.csv` | `high` | fait et validé après le build (2026-10-19), à commiter ; 268 verts, dont 7 unitaires, et 12 désactivés |
+| 9a | Colonnes `given` et `then`, défaut de `getcsvtestcase` (phase 7), noms écrits à la main des 12 lignes de `knownbugs.csv` et des 112 lignes `ReadScenario` de `basetests.csv` | `high` | fait (2026-10-19, `791a09ae`) ; 268 verts, dont 7 unitaires, et 12 désactivés |
 | 9b | Noms des autres lignes publiques, avertissement des lignes publiques sans nom, tableau des noms pour gcyr (section 9.2, découpage du 2026-10-19) | `high` | à faire |
 
 **Phase 0 en détail.** La fusion de `master` (`c2760ff4`, 2026-10-08) apporte, par rapport au
@@ -2342,7 +2346,7 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
   - l'issue de la dette de `FMTBounds<int>` est rédigée (reproduction minimale sans GoogleTest, quatre
     cas A à D, origine `6bd900dc`), à ouvrir par Gabriel.
 
-**Phase 9a (2026-10-19)** :
+**Phase 9a (2026-10-19, `791a09ae`)** :
 
 - **mécanisme**, dans `TestRegistration.cmake` (section 9.3) : `registercsvtests` lit `given` et
   `then` après `doublevalue` ; `checkcsvtestnameparts` arrête la configuration sur une colonne
