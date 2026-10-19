@@ -1695,6 +1695,7 @@ Tests/
     TestRegistration.cmake  phase 4 : la boucle CSV en fonctions (noms, étiquettes, contrôles)
     TestsDataSnapshot.cmake depuis cmake/
     RenamedTests.csv        phase 7 : ancien;nouveau nom d'exécutable
+    RenamedTestCases.csv    phase 9b : ancien;nouveau nom ctest de chaque test public
   Unit/Core/                GoogleTest, cible UnitCore (phase 8)
   Integration/              GoogleTest, squelette vide au départ
   System/
@@ -2467,9 +2468,22 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
 - **tableau pour gcyr** : un commentaire en français, rédigé pour #350, que Gabriel publie : le
   style, les 240 noms publics par exécutable dans un bloc `<details>`, et ce qui reste à décider
   avec gcyr (section 9.7) ;
+- **table des anciens noms** (demande de Gabriel, 2026-10-19) : `Tests/Support/RenamedTestCases.csv`,
+  `former;new`, en ASCII et CRLF, donne pour chaque test public de `master` le nom qu'il porte
+  aujourd'hui. Les noms intermédiaires des phases 1 à 8 ne sont jamais arrivés dans `master`, qui
+  ne diffère du commit de la référence P0 (`89f500d4`) que par la documentation : les anciens noms
+  sont ceux de `test-reorg-baseline\P0`. Les 259 tests de P0 ont été appariés par leur commande
+  (exécutable et dossier de sortie traduits par `RenamedTests.csv`, chemins normalisés) aux 280 tests
+  publics du rejeu d'après : chacun a exactement un successeur, dont 25 au nom inchangé (les
+  2 fixtures et les 23 benchmarks). 28 lignes ont un ancien nom vide : les tests ajoutés pendant la
+  réorganisation, soit les 7 cas `Unit.`, les 7 lignes `ReadScenario` de `_DISCOUNTFACTOR` de #357
+  et de #374, les 7 tests `System.Python.<Domaine>`, et les 7 tests `System.R.<Domaine>`, qui ne
+  sont inscrits que par un build avec R. Aucune ligne privée, aucun chemin `T:/` ni nom de modèle
+  privé. CMake ne lit pas ce fichier ; un test ajouté après la réorganisation n'y entre pas ;
 - **références** : `CodingStandards.md` (Test names) et `AGENTS.md` (Adding a C++ system test)
-  disent qu'une ligne publique sans nom donne un avertissement ; sections 2.1, 2.3, 9.2, 9.3 et
-  9.7 de ce fichier, et son en-tête ;
+  disent qu'une ligne publique sans nom donne un avertissement ; `CodingStandards.md` (Test names)
+  et `AGENTS.md` (Testing) citent `RenamedTestCases.csv` ; sections 2.1, 2.3, 9.2, 9.3 et 9.7 de
+  ce fichier, et son en-tête ;
 - **contrôles avant le build**, sur la configuration du `.bat` GL rejouée dans le scratchpad avant
   le diff, puis après :
   - avant : 378 tests, dont les 7 cas `Unit.` (le `UnitCore.exe` du build copié dans le rejeu),
@@ -2517,7 +2531,8 @@ La réorganisation est terminée avec la phase 9b (2026-10-19). Les tests vivent
 niveau : `Unit`, `Integration` (vide), `System` et `Performance`. Chaque test porte son étiquette de niveau, les
 presets lancent un niveau seul, et chaque passage finit par un résumé. Les exécutables portent le
 nom de leur action, et les 240 lignes CSV publiques comme les 7 cas GoogleTest ont un nom
-Given/When/Then écrit à la main. Restent ouverts :
+Given/When/Then écrit à la main ; `Tests/Support/RenamedTestCases.csv` donne, pour chaque test
+public de `master`, son nom d'aujourd'hui. Restent ouverts :
 
 - **la revue commune des tests BFEC** (section 2.7) : ce qu'on ramène dans la suite publique et sous
   quelle forme, et le sort des lignes de #346, #347 et #358 de `knownbugs.csv`. Pour #346, deux

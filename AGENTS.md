@@ -91,7 +91,9 @@ interface (`cpp`, `python` or `r`), a test of a component the label of that comp
 unit tests of FMTlib, `wrappercore` or `excel` for the C++ system tests of the wrapper core or of
 Excel), and its CTest name follows
 [Test names](Documentation/CodingStandards.md#test-names). The private tests,
-rows of the local `BFECtests.csv` on models of `T:\`, keep `T:/` in their name. Test presets in
+rows of the local `BFECtests.csv` on models of `T:\`, keep `T:/` in their name. The public tests were
+renamed under issue #350: `Tests/Support/RenamedTestCases.csv` (`former;new`) gives the CTest name
+each had before, the former name empty for a test added during that work. Test presets in
 `CMakePresets.json` select a level on `build/release` (configure preset `release-gl`), eight tests at a
 time:
 
