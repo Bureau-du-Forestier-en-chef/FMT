@@ -1167,13 +1167,15 @@ Validation (après le build de Gabriel, 2026-09-18) :
 
 ## 6. Prochain lot
 
-### 6.1 État au 2026-10-08
+### 6.1 État au 2026-10-19
 
-- **La réorganisation en trois niveaux passe d'abord** (section 9). Le lot 5 ci-dessous attend sa
-  fin ; le lot 6 y devient la phase 8.
-- Lots 0 à 4 livrés, validés et commités ; rien ne bloque. Les quatre défauts de la section 2.7 ont
-  leur issue (#346, #347, #357, #358), et la suite base est verte : 226 tests, 211 verts,
-  15 désactivés.
+- **La réorganisation en trois niveaux est terminée** (section 9, ce qui reste ouvert en 9.7) ;
+  elle part vers `master` par une demande de tirage. Le lot 6 y est devenu la phase 8. La feuille
+  de route reprend au lot 5.
+- Lots 0 à 4 et phase 8 livrés, validés et commités ; rien ne bloque. Suite publique : 280 tests,
+  268 verts, dont 7 unitaires, et 12 désactivés. #357 est corrigé (`15427a6d`), avec #374 que sa
+  vérification a révélé (`62f9e288`) ; #346, #347 et #358 sont des comportements connus, dont les
+  12 lignes de `knownbugs.csv` attendent la revue commune des tests BFEC (section 2.7).
 - Les lacunes de la chaîne sont listées ci-dessous et en section 3.1 ; elles ne sont suivies que
   dans ce fichier, pas dans des issues GitHub.
 - **Décision du 2026-09-25 : ce chantier va jusqu'à la fermeture de l'issue #350** (« Add
@@ -1211,6 +1213,12 @@ qui suit la réorganisation, après la phase 9.
 
 
 #### 6.3.1 D'abord : corriger les quatre défauts de la section 2.7 — session séparée
+
+**Clos (2026-10-19).** Précision de Gabriel du 2026-10-08 (section 2.7) : seul #357 était un vrai
+défaut. Il est corrigé (`15427a6d`), avec #374 que sa vérification a révélé (`62f9e288`), et ses
+lignes sont dans `basetests.csv`. #346, #347 et #358 sont des comportements connus : leurs lignes
+restent désactivées jusqu'à la revue commune des tests BFEC (section 9.7). Le plan ci-dessous est
+gardé pour mémoire.
 
 Décision du 2026-09-25 : les défauts #346, #347, #357 et #358 sont corrigés **avant la suite du
 chantier**, dans une session distincte de celle qui écrit les tests. Ce chantier ne touche pas à
@@ -1357,8 +1365,9 @@ L'issue peut être fermée quand, ensemble :
 - `ctest -L core` tourne, et la suite de chaîne reste verte ;
 - les exigences transverses du lot 9 sont satisfaites ou explicitement écartées dans l'issue, en
   disant pourquoi ;
-- les quatre défauts de la section 2.7 sont corrigés ou portés par un test unitaire en plus de leur
-  ligne désactivée ;
+- #357 est corrigé (`15427a6d`) ; pour #346, #347 et #358, comportements connus, la revue commune
+  des tests BFEC a décidé du sort de leurs lignes de `knownbugs.csv` et de leurs tests (section
+  9.7) ;
 - ce fichier et `CoreTestCoverage.md` disent chacun ce qu'ils couvrent et pointent l'un vers
   l'autre.
 
