@@ -158,7 +158,8 @@ endfunction(registersystemtest testname origin)
 #  stops, naming the file and the line (checkcsvtestnameparts).
 #- The case of a row without them is built from its arguments (getcsvtestcase), and a row without argument is
 #  named System.<target>. The rows of BFECtests.csv, the private rows, always keep this automatic name, and the
-#  T:/ of their path in it: their given and then are ignored, with a warning.
+#  T:/ of their path in it: their given and then are ignored, with a warning. A public row, of any other file,
+#  is named by hand: one without them gets a warning that names its file and line.
 #- The first row of a file, TEST, is its header; an empty row is skipped.
 #- A row whose target does not exist is not registered, with a warning: every target a row may name must
 #  exist before the call.
@@ -208,6 +209,8 @@ function(registercsvtests csvfiles sharedoutputs)
 					else()
 						checkcsvtestnameparts("${testfilename}, line ${linenumber}" "${given}" "${then}")
 					endif()
+				elseif (NOT testfilename STREQUAL "BFECtests.csv")
+					message(WARNING "${testfilename}, line ${linenumber}: this public row has no given and then columns, and gets a name built from its arguments: name it by hand (Documentation/CodingStandards.md, Test names)")
 				endif()
 				if (NOT TARGET "${testname}")
 					list(FIND formernames "${testname}" renamedindex)

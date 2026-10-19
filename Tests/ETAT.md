@@ -19,8 +19,9 @@ section 8, phases de la section 9.5) gardent ceux de leur époque.
 > on ajoute un test ; la section 1 donne les règles et le patron ; la section 6 dit quoi faire
 > ensuite ; la section 7 se lit avant de toucher au code, elle tient les pièges déjà payés. Les
 > sections 2 à 5 sont l'inventaire, les lacunes, les scénarios et le journal, à consulter au
-> besoin. **Depuis le 2026-10-08, la réorganisation en trois niveaux (section 9) passe avant la
-> suite de la feuille de route** : une session de phase lit d'abord la section 9.
+> besoin. **La réorganisation en trois niveaux (section 9), passée avant la suite de la feuille de
+> route le 2026-10-08, est terminée depuis la phase 9b (2026-10-19)** : la feuille de route de la
+> section 6.3 reprend, et la section 9.7 dit ce qui reste ouvert.
 >
 > Les sections et sous-sections sont numérotées : « section 2.7 » renvoie à la sous-section 2.7
 > de ce fichier. Les lots (lot 1, lot 2...) sont les étapes du chantier, sans lien avec ces
@@ -362,7 +363,9 @@ macros (`min`, `max`, `NEAR`, `ERROR`...) arrivent par GDAL : ne pas y introduir
     colonne seule, sur un nom hors de `^[A-Z][A-Za-z0-9]*$` et sur un nom déjà donné ;
   - sinon, la cible suivie des arguments 1 et 2 réduits (espaces remplacés par `_`). Les lignes de
     `BFECtests.csv` gardent toujours cette forme, et donc leur `T:/` : leurs colonnes `given` et
-    `then` sont ignorées, avec un avertissement.
+    `then` sont ignorées, avec un avertissement. Depuis la phase 9b, toutes les lignes publiques
+    sont nommées à la main, et une ligne de `basetests.csv` ou de `knownbugs.csv` sans ces colonnes
+    donne un avertissement qui nomme le fichier et la ligne.
 - `basetests.csv` est suivi par git ; `BFECtests.csv` est local et ignoré par git (invisible
   pour ripgrep : le lire directement). Une copie restée dans `Examples/C++/tests/`, son dossier
   avant la phase 6, est lue à sa place, avec un avertissement qui dit où la déplacer.
@@ -441,6 +444,23 @@ une ligne de plus ne coûte qu'une reconfiguration.
 `PlanWithLpYieldModel`, `OptimizeWithLpYieldModel`, `RunPlanningTask`, `CreateModel`,
 `ConvertVectorFieldToRaster`, `UpdateNonSpatialModel`, `WriteAndReadProject`,
 `ReplanWithModelAdaption`, `LogThroughCallback` (construit sa tâche sans la lancer).
+
+**Lignes qui ne vérifient que l'absence d'erreur (phase 9b, 2026-10-19), pour les lots suivants.**
+Leur nom le dit, sans promettre de résultat (section 9.2). 22 lignes de `basetests.csv` :
+
+- `…ThenEndsWithoutError`, 18 lignes : la ligne de chacun des 15 exécutables ci-dessus autres que
+  `ReplanConcurrently` et `WriteAndReadProject`, les deux lignes `SimulateNonSpatially` sans valeur
+  attendue (scénarios `randomYield` et `randomYieldUnit`, section 7), et la ligne `loggerlifetime` de
+  `SolveWithEachSolver`, qui ne voit qu'un plantage (section 9.5, phase 0) ;
+- `…ThenRereadsTheWrittenProjectWithoutError`, les 3 lignes de `WriteAndReadProject` : la relecture
+  du projet écrit ne doit pas lever, rien n'est comparé ;
+- `…ThenWritesAReadableScheduleForTheFirstReplicate`, la ligne de `ReplanConcurrently` : il relit la
+  cédule de son premier réplicat, et `FMTScheduleParser::read` lève (`FMTexc` de chemin invalide)
+  quand elle manque. L'inventaire du lot 0 ne l'avait pas vu ; rien d'autre n'est vérifié.
+
+Vérification faible, relevée au même moment : la ligne `DoPlanning` du scénario `mai` attend un
+objectif 0, et le présolve vide le modèle (aucune variable dans `LastTest.log` du 2026-10-19) ; elle
+vérifie surtout que la lecture et la planification d'un `_MAI` ne lèvent pas.
 
 ### 2.4 Vérifications mortes
 
@@ -1537,8 +1557,8 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 
 ## 9. Réorganisation en trois niveaux (#350, depuis le 2026-10-08)
 
-Section de travail de la réorganisation. Une session de phase la lit en entier avant de toucher à
-quoi que ce soit, puis met à jour le tableau de la section 9.5 à la fin de sa phase.
+Section de travail de la réorganisation, **terminée le 2026-10-19 avec la phase 9b** (section 9.5).
+Elle reste la référence de ce qui a été décidé et fait ; ce qui reste ouvert est en section 9.7.
 
 ### 9.1 Pourquoi
 
@@ -1648,6 +1668,19 @@ et suivi par la phase 9b :
 - une ligne désactivée garde le Then du comportement attendu, pas celui que FMT donne : les lignes
   de #347 et leurs témoins de `yieldoperatorsalone` ne diffèrent que par le Given.
 
+**Compléments de la phase 9b (Gabriel, 2026-10-19)**, validés sur treize propositions :
+
+- le Then dit ce que le test vérifie vraiment, lu dans la source de l'exécutable :
+  `FindsTheKnownOptimum` pour un objectif comparé à une valeur, `FindsTheSameOptimumAsWithoutPresolve`
+  pour `Presolve`, `RereadsItWithTheSameOptimum` pour `WriteModel` ;
+- une ligne qui ne vérifie que l'absence d'erreur le dit, sans promettre de résultat :
+  `EndsWithoutError`, ou ce que le test relit sans erreur quand il relit ce qu'il a écrit
+  (`RereadsTheWrittenProjectWithoutError`) ; la liste est en section 2.3 ;
+- les scénarios `_pass` du banc de l'interface (`Examples/Models/TWD_land/BANC_INTERFACE.md`) sont
+  nommés par leur rôle dans le banc (`ThePlanningScenarioOfTheInterfaceBench`) : ce sont des copies
+  d'autres scénarios, que leur contenu ne distinguerait pas de leur original ;
+- `ReadInvalidScenario` garde le `RejectsIt` de la phase 9a ; le Given dit le défaut du scénario.
+
 ### 9.3 Cible
 
 **Arborescence.**
@@ -1730,7 +1763,9 @@ tests ignorés avec leur raison. Sortie de test, donc en anglais. Quand tout pas
   `registersystemtest` couvre ces noms. Une ligne sans ces colonnes, dont toute ligne à quatre
   colonnes, garde son nom automatique. Dans `BFECtests.csv`, elles sont ignorées, avec un
   avertissement qui donne leurs lignes : les lignes privées gardent leur nom automatique, et leur
-  `T:/`. Le style des noms est en section 9.2 (2026-10-19).
+  `T:/`. Le style des noms est en section 9.2 (2026-10-19). Depuis la phase 9b, les 240 lignes
+  publiques ont un nom écrit à la main, et une ligne publique sans ces colonnes donne un
+  avertissement qui nomme le fichier et la ligne ; une ligne privée n'en donne pas.
 - Exécutables : l'action qu'ils exercent, verbe en tête, en PascalCase, sans `When` ni `Test`
   (section 9.2) — `testScenarioReading` → `ReadScenario`, `doplanning` → `DoPlanning`,
   `testWrapperCoreGetYield` → `WrapperCoreGetYield`. La table des 81 noms, colonnes `former;new`,
@@ -1775,7 +1810,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | fait (2026-10-16, `5ae7fa75`, `31f3e288` et `ab5b27b3`) ; 261 verts et 12 désactivés |
 | 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | fait (2026-10-19, `c1553d4b`) ; 268 verts, dont 7 unitaires, et 12 désactivés |
 | 9a | Colonnes `given` et `then`, défaut de `getcsvtestcase` (phase 7), noms écrits à la main des 12 lignes de `knownbugs.csv` et des 112 lignes `ReadScenario` de `basetests.csv` | `high` | fait (2026-10-19, `791a09ae`) ; 268 verts, dont 7 unitaires, et 12 désactivés |
-| 9b | Noms des autres lignes publiques, avertissement des lignes publiques sans nom, tableau des noms pour gcyr (section 9.2, découpage du 2026-10-19) | `high` | à faire |
+| 9b | Noms des autres lignes publiques, avertissement des lignes publiques sans nom, tableau des noms pour gcyr (section 9.2, découpage du 2026-10-19) | `high` | livré (2026-10-19), à valider après le build de Gabriel ; fin de la réorganisation (section 9.7) |
 
 **Phase 0 en détail.** La fusion de `master` (`c2760ff4`, 2026-10-08) apporte, par rapport au
 dernier état validé (`720010bb`, PR #367) :
@@ -2409,6 +2444,58 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
     `no target named` se déduit des 371 tests identiques, et le rejeu du scratchpad n'en avait
     aucun.
 
+**Phase 9b (2026-10-19)** :
+
+- **noms** : les 116 lignes publiques de `basetests.csv` encore sans nom, sur 51 exécutables
+  (`DoPlanning` 24 ; `ReadScenariosTogether`, `SimulateNonSpatially`, `PlanScenario`,
+  `ReadInvalidScenario` et `Presolve` 7 chacun ; `WriteModel` 5 ; puis 1 à 3), reçoivent un nom
+  écrit à la main, dans le style de la section 9.2 et ses compléments de la phase 9b, validés par
+  Gabriel sur treize propositions. Le Then de chaque ligne vient de la lecture de la source de son
+  exécutable. Les lignes 69 (`WrapperCoreGetAllMasks`) et 71 (`WrapperCoreWriteToProject`) perdent
+  leurs colonnes vides en trop : leur given et leur then sont en colonnes 5 et 6. Les 240 lignes
+  publiques sont nommées ; noms de 75 à 139 caractères, `System.` compris. Vérifié par script
+  contre `HEAD` : quatre premières colonnes intactes, 116 lignes changées et aucune autre, CRLF et
+  ASCII, chaque given et then dans le motif, 240 noms publics uniques, aucun ne contient `Test` ;
+- **vérifications qui manquent** : 22 lignes ne vérifient que l'absence d'erreur, et leur nom le
+  dit (section 2.3). `ReplanConcurrently` relit la cédule de son premier réplicat, ce que
+  l'inventaire du lot 0 n'avait pas vu, et la ligne `mai` de `DoPlanning` attend l'objectif d'un
+  modèle vidé par le présolve ;
+- **avertissement** : dans `registercsvtests`, une ligne d'un autre fichier que `BFECtests.csv`
+  sans `given` ni `then` donne `<fichier>, line <n>: this public row has no given and then
+  columns, and gets a name built from its arguments: name it by hand`. Elle garde son nom
+  automatique. Les lignes privées gardent le leur sans avertissement ;
+- **tableau pour gcyr** : un commentaire en français, rédigé pour #350, que Gabriel publie : le
+  style, les 240 noms publics par exécutable dans un bloc `<details>`, et ce qui reste à décider
+  avec gcyr (section 9.7) ;
+- **références** : `CodingStandards.md` (Test names) et `AGENTS.md` (Adding a C++ system test)
+  disent qu'une ligne publique sans nom donne un avertissement ; sections 2.1, 2.3, 9.2, 9.3 et
+  9.7 de ce fichier, et son en-tête ;
+- **contrôles avant le build**, sur la configuration du `.bat` GL rejouée dans le scratchpad avant
+  le diff, puis après :
+  - avant : 378 tests, dont les 7 cas `Unit.` (le `UnitCore.exe` du build copié dans le rejeu),
+    identiques à `test-reorg-baseline\P9a-after\tests.json`, hormis la casse de 44 exécutables
+    (phase 7) ; mêmes noms par preset ;
+  - après : les mêmes 378 tests, dans le même ordre ; seuls changent les noms des 116 lignes.
+    Commandes, dossiers de travail et propriétés identiques à P9a-after et au rejeu d'avant,
+    `DEPENDS` de `ExamplesModelsUnchanged` traduit compris ;
+  - `ctest -N` par preset : `unit` 7, `integration` 0, `system` 250, `system-private` 94,
+    `performance` 25, `all-public` 280, avec les mêmes noms que P9a-after une fois les noms
+    traduits ; 12 désactivés ; aucun nom de `all-public` ne contient `T:/` ;
+  - les 240 noms publics des lignes CSV ont leur Given. Restent sans Given `System.UseExcelCache`,
+    inscrit hors CSV, et les 7 tests `System.Python.<Domaine>` : leur nom est à décider avec gcyr
+    (section 9.7) ;
+  - console de la configuration : aucun avertissement `no target named` ni de ligne publique sans
+    nom ; seul reste l'avertissement de développement de Boost (CMP0167), préexistant ;
+  - projet jetable qui inclut `TestRegistration.cmake`, sur des copies des CSV : les copies telles
+    quelles donnent 332 tests et aucun avertissement, les 92 lignes privées comprises. Une copie qui
+    retire le nom de la ligne 90 de `basetests.csv` et de la ligne 3 de `knownbugs.csv`, et ajoute
+    une ligne 230 sans nom, donne trois avertissements, qui nomment `basetests.csv, line 90`,
+    `basetests.csv, line 230` et `knownbugs.csv, line 3`. Ces lignes prennent leur nom automatique
+    (`System.SolveWithEachSolver.loggerlifetime`), et les lignes privées ne donnent aucun avertissement ;
+- **validation après le build de Gabriel** : à faire (reconfiguration par
+  `CMakeFMTVS2022vcpkg_GL.bat`, mêmes contrôles sur `build/release`, `RunTests.bat all-public`,
+  référence copiée dans `test-reorg-baseline\P9b-after`).
+
 ### 9.6 Vérifications communes
 
 - Comptes par niveau (`ctest -N -L "^<niveau>$"`) et par preset, comparés à la référence de la
@@ -2423,3 +2510,31 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
   n'émet aucun avertissement `no target named`.
 - Après les déplacements : `git diff -M --stat` montre des renommages à 100 %, et le plus long
   chemin sous `build/release/tests` reste sous 260 caractères.
+
+### 9.7 Fin de la réorganisation et ce qui reste ouvert
+
+La réorganisation est terminée avec la phase 9b (2026-10-19). Les tests vivent dans `Tests/`, par
+niveau : `Unit`, `Integration` (vide), `System` et `Performance`. Chaque test porte son étiquette de niveau, les
+presets lancent un niveau seul, et chaque passage finit par un résumé. Les exécutables portent le
+nom de leur action, et les 240 lignes CSV publiques comme les 7 cas GoogleTest ont un nom
+Given/When/Then écrit à la main. Restent ouverts :
+
+- **la revue commune des tests BFEC** (section 2.7) : ce qu'on ramène dans la suite publique et sous
+  quelle forme, et le sort des lignes de #346, #347 et #358 de `knownbugs.csv`. Pour #346, deux
+  tests se contredisent : le cas unitaire activé `Unit.FMTOperator.GivenPowerAndMultiplyWhenPrecedenceThenTheyAreEqual`
+  et les deux lignes désactivées `…ThenAppliesThePowerFirst`. La revue gardera l'un des deux ;
+- **la réponse de gcyr** sur #350 :
+  - à la demande de relecture du 2026-10-09 (choix de la phase 3, section 9.2) ;
+  - au tableau des noms de la phase 9b, que Gabriel publie ;
+  - aux deux points à décider avec lui : les noms automatiques des 92 lignes privées, et les noms
+    des tests Python et R, un test par fichier (`System.Python.<Domaine>`, `System.R.<Domaine>`),
+    comme `System.UseExcelCache`, seul test C++ inscrit hors CSV ;
+- **la migration des copies privées** de `BFECtests.csv` du clone `/home/FMT` (rtools45) et du
+  worktree `dev`, quand ils auront la phase 7 : `tools/testMigration/Update_PrivateTests.bat`
+  (section 9.4) ;
+- **la validation R des phases 7 à 9 par Gabriel**, sous MSYS2 ; la dernière validation R consignée
+  ici est celle de la phase 5 (2026-10-14) ;
+- **les lots suivants** (section 6.3) : le lot 5 (écriture et relecture) d'abord, puis l'inventaire
+  par classe reporté de la phase 8, les lots 7 à 9 et la fermeture de #350. Les 22 lignes de la
+  section 2.3 qui ne vérifient que l'absence d'erreur y attendent leurs vérifications ; la règle
+  Arrange / Act / Assert s'applique à tout test qu'on touche (section 9.2).

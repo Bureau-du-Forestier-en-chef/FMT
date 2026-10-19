@@ -169,8 +169,9 @@ Registration is data-driven. There is no `add_test` call to copy.
    `TEST;primarylocation;scenario;doublevalue;given;then`: the executable, its three arguments, then
    the given and the then of the test name, each in PascalCase. The test is named
    `System.<executable>.Given<given>When<executable>Then<then>`, as in
-   [Test names](Documentation/CodingStandards.md#test-names); the two columns go together, and a row
-   without them gets a name built from its arguments. The row registers the test with CTest only if a
+   [Test names](Documentation/CodingStandards.md#test-names); the two columns go together, and a public row
+   without them gets a name built from its arguments, with a warning that names its file and line.
+   The row registers the test with CTest only if a
    target of that name exists (`registercsvtests` in
    [Tests/Support/TestRegistration.cmake](Tests/Support/TestRegistration.cmake)). A name already given
    to another test, or a given or a then that is alone or not in PascalCase, stops the configuration.
