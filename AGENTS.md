@@ -23,13 +23,14 @@ lives in exactly one document, and changes to it belong in that document only.
 | `Excel/` | Excel integration. |
 | `Examples/Models/` | Woodstock models used by the tests. |
 | `Tests/` | Test registration and the tests by level: see [Testing](#testing). |
+| `Tests/Unit/Core/`, `Tests/Integration/` | GoogleTest tests: the unit tests of FMTlib, one source per class, built into `UnitCore`; the integration tests, none yet. |
 | `Tests/System/Cpp/` | C++ system tests: each `.cpp` becomes a test executable, which the rows of the CSV files of the folder run; `FMTWrapperCore/` and `Excel/` hold those of the wrapper core and of Excel. |
 | `Tests/System/Python/`, `Tests/System/R/` | pytest and testthat suites, one system test per file, run by ctest. |
 | `Tests/Performance/` | Performance and allocation benchmarks: `FMTPerformanceTests`, its harness and `performance.csv`. |
 | `Templates/` | Packaging inputs and generated artifacts: R package, `setup.py.in`, `__init__.py.in`, stub normalization. |
 | `cmake/`, `Modules/` | Install and configuration scripts; `Find*.cmake` for GEOS, MOSEK, OSI, R, Rcpp, ONNX Runtime. |
 | `tools/` | `commitMessage/`, `changelog/`, `HeapCorruption/`, `RToolsSetup/`. |
-| `vcpkg.json`, `vcpkg-custom-ports/`, `vcpkg-overlays/` | Dependencies: GDAL, Arrow, COIN-OR, Python. |
+| `vcpkg.json`, `vcpkg-custom-ports/`, `vcpkg-overlays/` | Dependencies: GDAL, Arrow, COIN-OR, Python, and GoogleTest for the unit and integration tests. |
 | `Documentation/` | Architecture, coding standards, Doxygen configuration, training material. |
 
 ## Building
@@ -73,18 +74,22 @@ The root `CMakeLists.txt` includes `Tests/CMakeLists.txt`, unless `WITHOUT_TESTS
 and `FMTWrapperCore/`, whose libraries the C++ tests link to. That file declares the `ExamplesModels`
 fixture, which every system test and benchmark requires: `Tests/Support/TestsDataSnapshot.cmake`
 hashes `Examples/Models` before the tests and fails after them if a file changed. It then includes one
-folder per level, `Unit/` and `Integration/`, empty until their tests arrive, and `System/`, which
-holds the C++ tests and the Python and R suites, then `Performance/`. The functions that register a
-test are in `Tests/Support/TestRegistration.cmake`, included first: `registersystemtest` registers one
-system test, under a name that no other test may have, and `registercsvtests` registers the rows of
-CSV files with it. `Tests/System/Cpp/CMakeLists.txt` calls `registercsvtests` for its CSV files and
-`registersystemtest` for the Excel test, and `Tests/System/Python/CMakeLists.txt` and
-`Tests/System/R/CMakeLists.txt` call `registersystemtest` for their tests.
+folder per level: `Unit/` and `Integration/`, the GoogleTest levels, when `find_package(GTest CONFIG)`
+finds GoogleTest (without it, as in the MSYS2 build of the R package, a warning says that these two
+levels are not registered), then `System/`, which holds the C++ tests and the Python and R suites, then
+`Performance/`. The functions that register a test are in `Tests/Support/TestRegistration.cmake`,
+included first: `registersystemtest` registers one system test, under a name that no other test may
+have, `registercsvtests` registers the rows of CSV files with it, and `registergoogletests` creates a
+GoogleTest executable and registers each of its cases. `Tests/System/Cpp/CMakeLists.txt` calls
+`registercsvtests` for its CSV files and `registersystemtest` for the Excel test,
+`Tests/System/Python/CMakeLists.txt` and `Tests/System/R/CMakeLists.txt` call `registersystemtest` for
+their tests, and `Tests/Unit/Core/CMakeLists.txt` calls `registergoogletests` for `UnitCore`.
 
-Each test carries one level label (`system` for every C++, Python and R test today, `performance` for
-the benchmarks), a system test also the label of its interface (`cpp`, `python` or `r`), a C++ test of
-the wrapper core or of Excel the label of its component (`wrappercore` or `excel`), and its CTest name
-follows
+Each test carries one level label (`unit` for the GoogleTest tests of `Tests/Unit`, `system` for every
+C++, Python and R system test, `performance` for the benchmarks), a system test also the label of its
+interface (`cpp`, `python` or `r`), a test of a component the label of that component (`core` for the
+unit tests of FMTlib, `wrappercore` or `excel` for the C++ system tests of the wrapper core or of
+Excel), and its CTest name follows
 [Test names](Documentation/CodingStandards.md#test-names). The private tests,
 rows of the local `BFECtests.csv` on models of `T:\`, keep `T:/` in their name. Test presets in
 `CMakePresets.json` select a level on `build/release` (configure preset `release-gl`), eight tests at a
@@ -92,13 +97,15 @@ time:
 
 ```bash
 ctest --preset all-public
+ctest --preset unit
+ctest --preset integration
 ctest --preset system
 ctest --preset system-private
 ctest --preset performance
 ```
 
-`all-public` runs everything but the private tests. `unit` and `integration` exist and select
-nothing yet. Without a preset, filter by label, always anchored since `-L` takes a regular expression:
+`all-public` runs everything but the private tests; `integration` selects nothing yet. Without a
+preset, filter by label, always anchored since `-L` takes a regular expression:
 
 ```bash
 ctest --test-dir build/release -C Release -L "^system$" -E "T:/" -j 8 --output-on-failure
@@ -118,7 +125,39 @@ rest. The private campaign runs apart, before a release: `ctest --preset system-
 `tools\tests\RunPrivateTests.bat [ctest options...]`, which checks that `T:\` is reachable, then
 runs `RunTests.bat system-private` and its summary.
 
-### Adding a C++ test
+### Adding a unit or integration test
+
+A unit or integration test is a GoogleTest case, `TEST(<Class>, Given<...>When<...>Then<...>)`, written
+as in [Arrange, Act, Assert](Documentation/CodingStandards.md#arrange-act-assert) and named as in
+[Test names](Documentation/CodingStandards.md#test-names). There is no `add_test` call to write.
+
+1. Add the case to the source of its class in `Tests/Unit/Core/`, named after the class: the suite
+   `FMTSpec` is in `FMTSpec.cpp`. A new source is built into `UnitCore` at the next configuration,
+   since every `.cpp` file of the folder is ([Tests/Unit/Core/CMakeLists.txt](Tests/Unit/Core/CMakeLists.txt)).
+   A new case in an existing source needs only the build.
+2. A case that reveals an open defect is prefixed by `DISABLED_` and gets an issue: ctest registers it
+   disabled, under its name without the prefix.
+3. A test that has to work around the code adds a row to
+   [Known Architectural Debt](Documentation/Architecture.md#known-architectural-debt).
+4. The tests of another component, or the first integration tests, get their own folder in
+   `Tests/Unit/` or `Tests/Integration/`, included by the `CMakeLists.txt` of the level. Its
+   `CMakeLists.txt` calls `registergoogletests(<Level><Component> <Level> <component> <sources>)`, as
+   `Tests/Unit/Core/CMakeLists.txt` does, then links the real dependency of an integration test to that
+   executable with `target_link_libraries`.
+
+ctest lists the cases when it runs, from the executable (`--gtest_list_tests`, `registergoogletests` in
+[Tests/Support/TestRegistration.cmake](Tests/Support/TestRegistration.cmake)): the build runs nothing.
+Each case is the CTest test `<Level>.<Class>.<Case>`, labelled with its level and its component
+(`unit;core`), and a name already given to a case of another GoogleTest executable stops ctest, which
+names both. They run with their level, or alone:
+
+```bash
+tools\tests\RunTests.bat unit
+tools\tests\RunTests.bat integration
+ctest --preset unit -R "^Unit\.FMTSpec\."
+```
+
+### Adding a C++ system test
 
 Registration is data-driven. There is no `add_test` call to copy.
 

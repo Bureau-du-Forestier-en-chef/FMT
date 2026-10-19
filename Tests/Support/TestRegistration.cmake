@@ -12,12 +12,16 @@ registered:
 - getcsvtestcase builds the case part of the name of a CSV row;
 - getrenamedtests reads the former names of the test executables;
 - registersystemtest registers one system test;
-- registercsvtests registers the rows of CSV files, one system test per row.
+- registercsvtests registers the rows of CSV files, one system test per row;
+- registergoogletests creates a GoogleTest executable of the unit or integration tests and registers its
+  tests, one ctest test per case.
 
 A test name is given once. registersystemtest keeps the origin of each name in a GLOBAL property, so
 that the check covers every registration, the CSV rows, the Excel test and the Python and R tests alike,
 and a name given twice stops the configuration with the origin of both tests.
 ]]
+
+include(GoogleTest)
 
 #Case part of the ctest name of a CSV row, built from its first two arguments joined by |:
 #../../../../Examples/Models/<M>/<M>.pri becomes <M>, an absolute path becomes <drive>:/.../<folder>/<file>
@@ -191,3 +195,44 @@ function(registercsvtests csvfiles sharedoutputs)
 		endif()
 	endforeach()
 endfunction(registercsvtests csvfiles sharedoutputs)
+
+#Creates the GoogleTest executable <target> from the sources that follow, the tests of the level <level>, Unit
+#or Integration, on the component <component>, such as core, and registers each of its cases with ctest.
+#- The executable links to FMTlib and to GoogleTest, which gives it its main, and is written to the folder of
+#  the other test executables, bin/<build type>, where it finds its DLLs (createnamedexecutable).
+#- ctest lists the cases when it runs, from bin/<build type>, by --gtest_list_tests (DISCOVERY_MODE PRE_TEST):
+#  the build runs nothing. The list is taken again when the executable is newer than it.
+#- A case is named <level>.<suite>.<case>, such as Unit.FMTOperator.GivenMultiplyAndAddWhenPrecedenceThenMultiplyComesFirst,
+#  and labelled with the level in lowercase and the component: unit;core. A case whose name starts with
+#  DISABLED_ (an open defect) is registered disabled, under its name without the prefix.
+#- The names of the cases are only known when ctest runs, after the check of registersystemtest. They cannot
+#  take the name of a system test, which starts with System., and GoogleTest refuses two cases of the same name
+#  in one executable. Across executables, a script that ctest reads after the cases of <target>,
+#  <target>_names.cmake in the build folder, stops ctest when one of them has the name of a case of another
+#  GoogleTest executable, naming both executables.
+function(registergoogletests target level component)
+	createnamedexecutable(${target} ${ARGN})
+	target_link_libraries(${target} PRIVATE GTest::gtest GTest::gtest_main)
+	string(TOLOWER "${level}" levellabel)
+	#The ; of the labels is escaped: in PRE_TEST mode, the properties are parsed twice before they reach the
+	#tests, and an unescaped list keeps only its first label (CMake 3.31).
+	gtest_discover_tests(${target}
+			DISCOVERY_MODE PRE_TEST
+			DISCOVERY_TIMEOUT 60
+			TEST_PREFIX "${level}."
+			WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+			PROPERTIES LABELS "${levellabel}\\;${component}"
+			)
+	#gtest_discover_tests lists the names of the cases in <target>_TESTS, once ctest has read them.
+	string(CONFIGURE [=[
+#Written by registergoogletests (Tests/Support/TestRegistration.cmake), read by ctest after the cases of @target@.
+foreach(FMTTESTSname IN LISTS @target@_TESTS)
+	if (DEFINED "FMTTESTSorigin.${FMTTESTSname}")
+		message(FATAL_ERROR "@target@: the test name \"${FMTTESTSname}\" is already given to ${FMTTESTSorigin.${FMTTESTSname}}")
+	endif()
+	set("FMTTESTSorigin.${FMTTESTSname}" "@target@")
+endforeach()
+]=] namescheck @ONLY)
+	file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/${target}_names.cmake" "${namescheck}")
+	set_property(DIRECTORY APPEND PROPERTY TEST_INCLUDE_FILES "${CMAKE_CURRENT_BINARY_DIR}/${target}_names.cmake")
+endfunction(registergoogletests target level component)

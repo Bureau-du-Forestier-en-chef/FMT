@@ -31,7 +31,14 @@ add_test(
 		)
 set_tests_properties(ExamplesModelsUnchanged PROPERTIES FIXTURES_CLEANUP ExamplesModels)
 
-include("${CMAKE_CURRENT_LIST_DIR}/Unit/CMakeLists.txt")
-include("${CMAKE_CURRENT_LIST_DIR}/Integration/CMakeLists.txt")
+# The unit and integration tests run on GoogleTest, which vcpkg.json provides. Without it, as in the MSYS2
+# build of the R package, these two levels are not registered, and every other test is.
+find_package(GTest CONFIG QUIET)
+if (GTest_FOUND)
+	include("${CMAKE_CURRENT_LIST_DIR}/Unit/CMakeLists.txt")
+	include("${CMAKE_CURRENT_LIST_DIR}/Integration/CMakeLists.txt")
+else()
+	message(WARNING "GoogleTest was not found: the unit and integration tests are not registered")
+endif()
 include("${CMAKE_CURRENT_LIST_DIR}/System/CMakeLists.txt")
 include("${CMAKE_CURRENT_LIST_DIR}/Performance/CMakeLists.txt")

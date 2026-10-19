@@ -31,13 +31,18 @@ function(target_include includetotarget)
 	endif(NOT MSVC AND DEFINED ENV{R_DIR})
 endfunction(target_include  includetotarget)
 
+#Creates the executable named after its source file <executablecpplocation> (createnamedexecutable)
 function(createexecutable executablecpplocation executablename)
-  set(newprojectsourcefiles "${executablecpplocation}")
-  #list(APPEND newprojectsourcefiles "${FMTSOURCEFILES}")
   get_filename_component(executablename "${executablecpplocation}" NAME_WE)
-  message("Generating build for ${executablename}")
   SET(executablename "${executablename}" PARENT_SCOPE)
-  add_executable(${executablename} ${newprojectsourcefiles})
+  createnamedexecutable(${executablename} "${executablecpplocation}")
+endfunction(createexecutable executablecpplocation)
+
+#Creates the test executable <executablename> from the sources that follow, linked to FMTlib and written to
+#the folder of the FMT binaries, where it finds its DLLs
+function(createnamedexecutable executablename)
+  message("Generating build for ${executablename}")
+  add_executable(${executablename} ${ARGN})
   #The executables run on the C runtime heap, like FMT in Python, Excel and the .NET interface, which load
   #FMTlib.dll too late for mimalloc. WITH_MIMALLOC puts them on mimalloc, to measure what it would bring.
   #mimalloc replaces the C runtime heap only when mimalloc-redirect.dll starts before ucrtbase.dll, that is
@@ -65,7 +70,7 @@ function(createexecutable executablecpplocation executablename)
 	#if (MOSEK_FOUND AND MSVC)
 	#	target_sources(${executablename} PRIVATE ${OSIMSK_DEFINITION})
 	#endif(MOSEK_FOUND AND MSVC)
-endfunction(createexecutable executablecpplocation)
+endfunction(createnamedexecutable executablename)
 
 function(TargetDependency DependencyDirectory DllList)
     if (DEFINED ${DependencyDirectory})

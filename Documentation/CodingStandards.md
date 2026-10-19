@@ -1417,6 +1417,8 @@ In CTest, a test is named `<Level>.<Suite>[.<Case>]`, the level written as in [T
 
 A system test executable is named after the action it runs, the when of its tests, in PascalCase and verb first, without `When` or `Test`: `ReadScenario`, `SetSolution`. Where it exists, the name of the FMT method under test is the action: `DoPlanning`, `BuildAction`. An executable of `Tests/System/Cpp/FMTWrapperCore` starts with `WrapperCore`, the component that acts: `WrapperCoreGetYield`. The executables written before this rule were renamed together under issue #350; `Tests/Support/RenamedTests.csv` gives the former name of each, such as `testScenarioReading`.
 
+A GoogleTest executable holds the unit or integration tests of one component, and is named after its level and its component, without `Test`: `UnitCore`, the unit tests of FMTlib.
+
 ### Tests that reveal architectural debt
 
 A test reaches the behavior it checks through the public interface. When it cannot, because a class it needs is not exported or a result cannot be read with the standard library, the test may work around the code, but not silently: the same change adds a row to [Architecture.md, Known Architectural Debt](Architecture.md#known-architectural-debt), which defines when a row is added and when it is removed.

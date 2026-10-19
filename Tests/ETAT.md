@@ -70,10 +70,11 @@ Un test base ne fait jamais rien d'autre que ceci : partir de TWD_land, s'arrêt
 | Quoi | Où |
 |---|---|
 | Sources des exécutables de test | `Tests/System/Cpp/*.cpp`, `Tests/System/Cpp/FMTWrapperCore/*.cpp` pour le Core et `Tests/System/Cpp/Excel/*.cpp` pour Excel (depuis la phase 6) |
+| Tests unitaires (GoogleTest) | `Tests/Unit/Core/<Classe>.cpp`, une suite par classe, dans l'exécutable `UnitCore` (depuis la phase 8) ; comment en ajouter : `AGENTS.md`, « Adding a unit or integration test » |
 | Lignes qui inscrivent les tests | `Tests/System/Cpp/basetests.csv` (public), `knownbugs.csv` (désactivées), `BFECtests.csv` (local, privé, ignoré par git) |
 | En-tête commun des tests | `Tests/Support/TestTools.h` |
 | Modèle public et ses scénarios | `Examples/Models/TWD_land`, `Examples/Models/TWD_land/Scenarios/<nom>/` |
-| Inscription dans ctest | `Tests/Support/TestRegistration.cmake` (fonctions), appelées par `Tests/System/Cpp/CMakeLists.txt` pour ses CSV et le test Excel ; fixture `ExamplesModels` dans `Tests/CMakeLists.txt` (depuis la phase 4) |
+| Inscription dans ctest | `Tests/Support/TestRegistration.cmake` (fonctions), appelées par `Tests/System/Cpp/CMakeLists.txt` pour ses CSV et le test Excel, et par `Tests/Unit/Core/CMakeLists.txt` pour `UnitCore` (phase 8) ; fixture `ExamplesModels` dans `Tests/CMakeLists.txt` (depuis la phase 4) |
 | Empreinte du modèle entre deux passages | `Tests/Support/TestsDataSnapshot.cmake` |
 | Sorties des tests | `build/release/tests/<test>/` |
 | Suivi du chantier | ce fichier |
@@ -132,9 +133,9 @@ est, et quel lot s'en charge :
 
 | Demande de #350 | État | Lot |
 |---|---|---|
-| Inventaire des composants et de leur couverture | partiel : fait par étape de la chaîne (section 2.2), reste à faire par classe | 6 |
-| Cible et infrastructure de test dans CMake et ctest | fait pour les tests de chaîne (section 2.1) ; reste la cible `FMTCoreTests` et l'étiquette `unit;core` | 6 |
-| Cadre de test unitaire choisi et documenté | à trancher | 6 |
+| Inventaire des composants et de leur couverture | partiel : fait par étape de la chaîne (section 2.2), reste à faire par classe ; reporté au lot qui suit la réorganisation (section 6.3) | après la phase 9 |
+| Cible et infrastructure de test dans CMake et ctest | fait : tests de chaîne (section 2.1), puis cible `UnitCore` et étiquettes `unit;core` (phase 8, section 9.5) | 6, phase 8 |
+| Cadre de test unitaire choisi et documenté | fait : GoogleTest (décision du 2026-09-25), dans `vcpkg.json` et décrit dans `AGENTS.md` depuis la phase 8 | 6, phase 8 |
 | Tests unitaires des classes déjà suspectes (défauts de la section 2.7) | non fait ; leur comportement n'est touché qu'indirectement | 7 |
 | Tests unitaires du reste de Core (jalons 5 à 7 de #350) | non fait, même remarque | 8 |
 | Constructeurs, copies, comparaisons, hachage | non fait | 7 et 8 |
@@ -1170,6 +1171,10 @@ sert à trouver les trous qui restent, pas à décider par quoi commencer. C'est
 Chaque lot vaut une demande de tirage, comme #350 le souhaite : des changements focalisés plutôt
 qu'un gros lot unique.
 
+**Inventaire par classe reporté (2026-10-16).** `Documentation/Testing/CoreTestCoverage.md`, prévu au
+lot 6 (section 6.3.3, point 3), n'est pas fait par la phase 8, qui reprend ce lot : il passe au lot
+qui suit la réorganisation, après la phase 9.
+
 
 #### 6.3.1 D'abord : corriger les quatre défauts de la section 2.7 — session séparée
 
@@ -1214,6 +1219,13 @@ Quand les corrections seront faites, la session de tests reprend ainsi :
   `knownbugs.csv`, pas un contournement à écrire dans le test.
 
 #### 6.3.3 Lot 6 : socle unitaire de Core (jalon 1 de #350) — effort `high`
+
+**Fait par la phase 8 de la réorganisation (2026-10-16, section 9.5)**, avec ces écarts au plan
+ci-dessous : la cible s'appelle `UnitCore` et vit dans `Tests/Unit/Core` (sections 9.2 et 9.3),
+l'en-tête de licence est tranché depuis la phase 7, et l'inventaire `CoreTestCoverage.md` (point 3)
+est reporté au lot qui suit la réorganisation (section 6.3). Le témoin `FMTOperator::precedence` fixe
+le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à côté de la priorité de
+`*` sur `+`.
 
 - **Pourquoi.** Sans cible ni inventaire, les lots suivants n'ont nulle part où aller. C'est
   aussi ce qui débloque la fermeture de #350 : sa première demande est un socle, pas des tests.
@@ -1406,6 +1418,27 @@ abandonne.
   `(std::numeric_limits<int>::max)()`.
 - **Classes non exportées** : `Core::FMTActionComparator` (et d'autres comparateurs) n'a pas
   `FMTEXPORT`. Un test qui l'utilise ne se lie pas.
+- **`FMTBounds<int>` à côté d'une classe de bornes exportée** (phase 8) : un exécutable dont une
+  source utilise `Core::FMTBounds<int>` directement et une autre `FMTAgeBounds`, `FMTPerBounds` ou
+  `FMTLockBounds` (par `FMTSpec`, par exemple) ne se lie pas : LNK2005 sur `~FMTBounds<int>`. MSVC
+  importe `FMTBounds<int>` du DLL dans la source qui voit une classe dérivée exportée (`__imp_` dans
+  son objet) et le définit dans l'autre ; même chose pour `FMTBounds<double>` et `FMTYldBounds`.
+  Depuis `6bd900dc` (2026-09-15, #202), `FMTBounds.hpp` ne contient plus que le gabarit ; avant, les
+  classes dérivées étaient dans le même en-tête. Les tests passent par `FMTAgeBounds` ; ligne de dette
+  dans `Documentation/Architecture.md`.
+- **Tests GoogleTest** (phase 8) :
+  - ctest lance l'exécutable avec `--gtest_list_tests` (même `ctest -N` ou `--show-only`) quand il
+    est plus récent que sa liste : il lui faut ses DLL, dans `bin/Release`. Configuré mais pas
+    construit, `UnitCore` donne un seul test, `UnitCore_NOT_BUILT`, sans étiquette et en échec ;
+  - les étiquettes passent à `gtest_discover_tests` sous la forme `unit\;core` : non échappée, la
+    liste ne garde que `unit` (CMake 3.31, vu dans un projet jetable) ;
+  - le vu rouge d'un test unitaire demande de recompiler : une copie faussée hors du dépôt, compilée
+    par `cl` contre le `FMTlib.lib` du build ;
+  - le résumé ne montre pas la raison d'un `GTEST_SKIP` (il cherche `SKIPPED: `) : à reprendre avec
+    les premiers tests d'intégration ;
+  - les DLL de GoogleTest (`gtest`, `gtest_main`, `gmock`, `gmock_main`) partent dans
+    `bin/Release` et dans la roue Python, comme toutes les DLL de vcpkg : laissé tel quel (décision
+    de Gabriel, 2026-10-16), à reprendre avec la liste des DLL de l'installation.
 - **Argument vide** : CMake retire une colonne vide de la commande, donc un test ne peut pas
   attendre une valeur vide. Par exemple, les thèmes de la racine n'ont pas de nom.
 - **Longueur des chemins** : le dossier de sortie d'un test ne doit pas porter une liste de
@@ -1567,6 +1600,15 @@ noms given/when/then qui disent ce que fait le test, et pas de `Test` dans les n
   sens, et perdrait le `T:/` qui sépare les tests privés ;
 - un tableau de ces noms sera revu avec gcyr plus tard.
 
+**Décisions de Gabriel (2026-10-16), en phase 8.**
+
+- La cible des tests unitaires de Core s'appelle `UnitCore`, niveau puis composant, sans `Test`, et
+  non `FMTCoreUnitTests` ; la règle est écrite dans `CodingStandards.md` (Test names).
+- Le témoin `FMTOperator::precedence` a deux cas : `*` passe avant `+`, et `^` a la priorité de `*`,
+  le comportement connu de #346 fixé tel quel.
+- GoogleTest a été installé par vcpkg dans le scratchpad pour compiler les témoins avant le build.
+- Les DLL de GoogleTest suivent les autres DLL de vcpkg dans les paquets (section 7).
+
 ### 9.3 Cible
 
 **Arborescence.**
@@ -1581,7 +1623,7 @@ Tests/
     TestRegistration.cmake  phase 4 : la boucle CSV en fonctions (noms, étiquettes, contrôles)
     TestsDataSnapshot.cmake depuis cmake/
     RenamedTests.csv        phase 7 : ancien;nouveau nom d'exécutable
-  Unit/Core/                GoogleTest, cible FMTCoreUnitTests
+  Unit/Core/                GoogleTest, cible UnitCore (phase 8)
   Integration/              GoogleTest, squelette vide au départ
   System/
     Cpp/                    les tests C++, basetests.csv, knownbugs.csv, BFECtests.csv (local)
@@ -1683,7 +1725,7 @@ Une demande de tirage par phase, en français, qui renvoie à #350.
 | 5 | Python et R dans ctest au niveau système : l'installation ne les lance plus qu'à travers ctest | `high` | fait (2026-10-13, `cae97f61`) ; R validé sous MSYS2 le 2026-10-14 |
 | 6 | Déplacement des tests C++ dans `Tests/System` (`git mv` d'abord, chemins ensuite) | `medium` | fait (2026-10-15, `7886ca2b` et `7fdcea94`) ; 261 verts et 12 désactivés |
 | 7 | Renommage des exécutables, migration des copies privées, en-têtes de licence | `high` | fait (2026-10-16, `5ae7fa75`, `31f3e288` et `ab5b27b3`) ; 261 verts et 12 désactivés |
-| 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | à faire |
+| 8 | Socle GoogleTest dans `Tests/Unit/Core` et `Tests/Integration` (l'ancien lot 6) | `high` | livrée le 2026-10-16 ; à valider après le build de Gabriel |
 | 9 | Noms explicites des lignes publiques ; Arrange / Act / Assert quand un test est touché | `high` | à faire |
 
 **Phase 0 en détail.** La fusion de `master` (`c2760ff4`, 2026-10-08) apporte, par rapport au
@@ -2172,6 +2214,70 @@ défaut, corrigé le 2026-10-15, avant la phase 6 (section 2.7, item 3) :
   - plus long chemin sous `build/release/tests` : 91 caractères, 146 en absolu, comme prévu ;
   - reste à migrer les copies privées du clone `/home/FMT` de rtools45 et du worktree `dev`, une
     fois qu'ils auront la phase 7.
+
+**Phase 8 (2026-10-16)** :
+
+- **dépendance** : `gtest` dans `vcpkg.json` (1.14.0 à la baseline du manifeste).
+  `Tests/CMakeLists.txt` appelle `find_package(GTest CONFIG QUIET)` et n'inclut `Unit/` et
+  `Integration/` que s'il trouve GoogleTest ; sinon, l'avertissement « GoogleTest was not found: the
+  unit and integration tests are not registered », et le reste se configure comme avant. Avec
+  `-DWITHOUT_TESTS=ON`, `Tests/CMakeLists.txt` n'est pas lu : `find_package(GTest)` n'est pas appelé ;
+- **inscription** : `registergoogletests(<cible> <niveau> <composant> <sources>)`, dans
+  `TestRegistration.cmake` :
+  - l'exécutable vient de `createnamedexecutable`, le corps de `createexecutable` mis à part pour
+    recevoir un nom et plusieurs sources (mêmes liens et dossiers, `bin/<type>`, mimalloc avec
+    `WITH_MIMALLOC`), puis il est lié à `GTest::gtest` et `GTest::gtest_main` ;
+  - `gtest_discover_tests` en `DISCOVERY_MODE PRE_TEST` (le build ne lance rien), depuis
+    `bin/<type>`, délai de découverte de 60 s, préfixe `<Niveau>.`, étiquettes `<niveau>;<composant>` ;
+    un cas `DISABLED_` est inscrit désactivé, sous son nom sans le préfixe ;
+  - unicité : les noms ne sont connus qu'au passage de ctest. Un script `<cible>_names.cmake`, lu
+    par ctest après les cas de chaque exécutable, arrête ctest (code 8) quand un nom est déjà donné à
+    un cas d'un autre exécutable GoogleTest, en nommant les deux. Un nom système commence par
+    `System.`, et GoogleTest refuse deux cas du même nom dans un exécutable ;
+- **cible** `UnitCore` (`Tests/Unit/Core/CMakeLists.txt`) : tous les `.cpp` du dossier, une source
+  par classe, au nom de la classe. `Tests/Integration/CMakeLists.txt` dit comment y inscrire un
+  composant, sans exécutable ;
+- **témoins**, 7 cas en cp1252 avec l'en-tête de licence, en Arrange / Act / Assert :
+  - `FMTOperator` : `GivenMultiplyAndAddWhenPrecedenceThenMultiplyComesFirst` et
+    `GivenPowerAndMultiplyWhenPrecedenceThenTheyAreEqual` (#346, comportement connu) ;
+  - `FMTBounds`, par `FMTAgeBounds` : `GivenBoundsFromTenToTwentyWhenInThenAcceptsBothBounds`,
+    `GivenBoundsFromTenToTwentyWhenInThenRejectsTheValuesJustOutside` et
+    `GivenUnusedBoundsWhenInThenAcceptsAnyValue` ;
+  - `FMTSpec` : `GivenAnAgeRangeWhenAllowWithoutYieldThenAllowsBothAgeBounds` et
+    `GivenAnAgeRangeWhenAllowWithoutYieldThenRefusesTheAgesJustOutside` ;
+  - aucun défaut révélé, donc aucun cas `DISABLED_` ni issue ;
+- **dette révélée** : `FMTBounds<int>` utilisé directement à côté de `FMTSpec` ne se lie pas
+  (section 7) ; ligne dans `Documentation/Architecture.md` ;
+- **documentation** : `AGENTS.md` (carte du dépôt, inscription, étiquettes, presets, « Adding a unit
+  or integration test » ; « Adding a C++ test » devient « Adding a C++ system test »),
+  `CodingStandards.md` (nom d'un exécutable GoogleTest), `Architecture.md`, et les sections 0.4, 6.3,
+  6.3.3, 7, 9.2 et 9.3 de ce fichier ;
+- **contrôles avant le build**, sur la configuration du `.bat` GL rejouée dans le scratchpad :
+  - sans GoogleTest (`vcpkg_installed` de `build/release`) : l'avertissement attendu ; 371 tests
+    identiques à `test-reorg-baseline\P7-after\tests.json` (hormis la casse de 44 exécutables,
+    connue en phase 7) et, sans aucune différence, à une configuration prise avant le diff ; aucun
+    test `Unit.` ; mêmes noms par preset que P7-after. Les 189 `.vcxproj`, `.filters` et `.sln` sont
+    identiques à ceux d'avant, sauf les entrées de reconfiguration de 91 d'entre eux (`Unit/` et
+    `Integration/` ne sont plus lus, `GoogleTest.cmake` l'est) ;
+  - `-DWITHOUT_TESTS=ON` : aucun test, pas de `GTest` dans le cache, les 8 projets des bibliothèques
+    et des cibles utilitaires ;
+  - variables exportées vers l'installation : seules s'ajoutent celles de `find_package(GTest)`
+    (`GTest_DIR`, `GTest_FOUND`...), qu'aucun script d'installation ne lit ;
+  - avec GoogleTest, installé par vcpkg dans le scratchpad (`-DGTest_DIR`) : `UnitCore` est généré,
+    seul ajout aux projets ; compilé par `cl` avec les options de son `.vcxproj` et lié au
+    `FMTlib.lib` de `build/release`, il passe ses 7 cas. ctest découvre les 7 cas
+    `Unit.<Classe>.Given…`, étiquetés `unit;core`, et les 371 autres tests restent identiques. `-N` :
+    `unit` 7, `all-public` 280, `system` 250, `system-private` 94, `performance` 25, `integration` 0 ;
+    `-L "^unit$"` : 7 verts, et le résumé montre une ligne `unit` ;
+  - vu rouge : une copie faussée, attentes inversées, hors du dépôt, fait échouer les 12 attentes,
+    donc les 7 cas ;
+  - `/W4 /permissive-` : aucun avertissement dans les sources des tests (24 dans les en-têtes de
+    FMTlib, préexistants) ;
+  - projet jetable, vrai GoogleTest et fausse `FMTlib` : niveau `Integration`, étiquettes
+    `integration;gdal`, cas réussi, en échec, `DISABLED_` et `GTEST_SKIP` vus dans ctest et dans le
+    résumé ; avec deux exécutables qui ont le même cas, ctest s'arrête sur ce nom (code 8) ;
+- **à valider après le build de Gabriel** : `ctest --preset unit -N`, `all-public -N` et les autres
+  presets, `RunTests.bat unit` puis `all-public`, et le passage de l'installation.
 
 ### 9.6 Vérifications communes
 
