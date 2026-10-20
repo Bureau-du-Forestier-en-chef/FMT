@@ -1,4 +1,4 @@
-; Transitions written for testGCBMtransitions: the root section, except that the plantation
+; Transitions written for GetGCBMTransitions: the root section, except that the plantation
 ; of unite2 moves its stands to UTR1. Planted cells of one GCBM key on THEME3 then end with
 ; different THEME3 attributes, and the most present one is not the first in alphabetical order.
 

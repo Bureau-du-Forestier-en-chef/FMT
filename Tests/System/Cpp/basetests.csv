@@ -23,6 +23,7 @@ ConvertVectorFieldToRaster;;;;FieldsOfAVectorMap;EndsWithoutError
 UpdateNonSpatialModel;../../../../Examples/Models/TWD_land/TWD_land.pri;LP_uddate;1814.76;AnOptimalModelMovedToALaterPeriod;KeepsItsTotalAreaAndRereadsItsShiftedConstraints
 ComputeTimeYieldOutputs;;;;OutputsMultipliedByATimeYield;GivesTheKnownValueOfEachOutput
 WriteAndReadGCBMTransitions;;;;GcbmTransitions;WritesTheKnownTextAndReadsThemBack
+GetGCBMTransitions;../../../../Examples/Models/TWD_land/TWD_land.pri;Spatial|GCBMtransitions;3;PlantedStandsOfOneKeyEndingWithDifferentAttributes;KeepsTheMostPresentAttributeOfEachKey
 SumAndAverageOutputs;;;;LevelsBoundToTheSumAndAverageOfAnOutput;GivesTheKnownSumAndAverage
 PlanWithLandAggregates;;;;AnObjectiveOnALandscapeAggregate;FindsTheKnownOptimum
 WriteModel;../../../../Examples/Models/TWD_land/TWD_land.pri;complextoage;;AnnualIncrementsOfAComplexYield;RereadsItWithTheSameOptimum

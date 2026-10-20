@@ -436,7 +436,7 @@ une ligne de plus ne coûte qu'une reconfiguration.
 | Résultats et rejeu | `ComputeLevelOutputs` (26 outputs), `ReplayScheduleOutputs` (3 outputs après rejeu d'une cédule), `ForceSolution` (6 valeurs et conservation de la superficie), `SumAndAverageOutputs` (somme et moyenne), `SimulateNonSpatially` (5 lignes sur 7) ; `PlanScenario` `REPLAY` (lot 4 : rejeu de la cédule optimale, tous les outputs de toutes les périodes, 4 scénarios) ; `SolveAndWriteSchedules` (lot 5 : cédule optimale écrite et relue, superficie par action et développement), `UpdateNonSpatialModel` (lot 5 : superficie conservée à la période 3) | `GetModelFromProportions`, `GetVariabilities` |
 | Écriture et relecture | `WriteModel` (5 scénarios, objectif après relecture), `WriteAndReadOutputTypes` (nombre d'outputs), `WrapperCoreWriteToProject` (fichiers présents) ; lot 5 : `IntegrationParser` (allers-retours de `write`, `writeToProject` et `FMTScheduleParser`, section 5.7), `WriteAndReadProject` (même optimum relu par scénario), `UpdateNonSpatialModel` (superficie et contraintes décalées relues), `CreateModel` | -- |
 | Tâches (planification, replanification) | `SumAndAverageOutputs`, `WrapperCoreRunPlanning` | `RunPlanningTask`, `ReplanConcurrently`, `ReplanWithModelAdaption`, `LogThroughCallback` |
-| Spatial (SES, cartes, rasters) | `DoSpatiallyExplicitPlanning` (une vérification valide), `WrapperCoreRasterize` | `SimulateSpatially`, `MapToForest`, `ConvertVectorFieldToRaster`, `GetCarbonPredictors` |
+| Spatial (SES, cartes, rasters) | `DoSpatiallyExplicitPlanning` (une vérification valide), `WrapperCoreRasterize`, `GetGCBMTransitions` (issue #369 : attribut final majoritaire de chaque clé GCBM) | `SimulateSpatially`, `MapToForest`, `ConvertVectorFieldToRaster`, `GetCarbonPredictors` |
 | Divers | `WriteAndReadGCBMTransitions` (aller-retour), `ListGDALDrivers`, `ClusterOperatingAreas` (une solution existe), `WrapperCoreRunAreaVariability`, `WrapperCoreDescribeEnvironment`, `UseExcelCache` | `SimulateWithYieldModel`, `PlanWithLpYieldModel`, `OptimizeWithLpYieldModel` |
 
 ### 2.3 Exécutables base sans vérification (13)
@@ -902,6 +902,7 @@ Le reste de la marche à suivre :
 | Ordonnanceur d'UA | carte synthétique probable | yield `YOUVERT` utilisé par une action, CSV de paramètres, thème d'UA en argument (codé 14 dans `RunOpAreaSchedulerTask`), plus de polygones |
 | Adjacence, patchs | carte synthétique | `FMTLayer` construit en mémoire (constructeur depuis `std::map<FMTCoordinate,T>`), ou écrit par `FMTAreaParser::writeForest` / `writeLayer` : ni Python ni GDAL Python requis |
 | Transformations d'actions | à évaluer | structure d'actions agrégées à reproduire |
+| Transitions GCBM d'un SES (issue #369) | **fait** | `GCBMtransitions` : la racine, sauf la plantation de `unite2` qui passe en `UTR1` ; une clé GCBM sur THEME3 finit alors avec deux attributs, dont le majoritaire n'est pas le premier en ordre alphabétique. `GetGCBMTransitions` le lit avec la cédule de `Spatial` |
 
 **Scénarios existants qu'aucun test C++ n'utilise** : `actionrecurse`, `AVERAGEP`, `peak`,
 `Predeclared_Primary`, `Predeclared_Primary_ref`, `Spatial_8`, `LPwfire`, `Globalex4`,

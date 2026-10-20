@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 		{
 		if (argc < 4)
 		{
-			throw std::invalid_argument("usage: testGCBMtransitions <primary file> <schedule scenario>|<transitions scenario> <periods>");
+			throw std::invalid_argument("usage: GetGCBMTransitions <primary file> <schedule scenario>|<transitions scenario> <periods>");
 		}
 		const std::string PRIMARY_LOCATION = argv[1];
 		const std::string SCENARIOS_ARGUMENT = argv[2];
