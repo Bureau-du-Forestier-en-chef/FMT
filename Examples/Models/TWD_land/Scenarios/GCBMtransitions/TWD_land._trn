@@ -1,0 +1,31 @@
+; Transitions written for testGCBMtransitions: the root section, except that the plantation
+; of unite2 moves its stands to UTR1. Planted cells of one GCBM key on THEME3 then end with
+; different THEME3 attributes, and the most present one is not the first in alphabetical order.
+
+*CASE Coupetotale
+*SOURCE  ? ? ?
+*TARGET  ? ? ?  100.0
+
+*CASE aCaribou
+*SOURCE ? ? ?
+*TARGET ? ? ? 100.00 _LOCK 1
+
+*CASE plantation
+*SOURCE  unite2 ? ?
+*TARGET  ? peuplement1 UTR1  100.00
+*SOURCE  ? ? ?
+*TARGET  ? peuplement1 ?  100.00
+
+*CASE aFire
+*SOURCE ? ? ?
+*TARGET ? feu ? 100.00
+
+*CASE arecup
+*SOURCE ? feu ?
+*TARGET  ? peuplement1 ?  100.00
+
+*CASE _DEATH
+*SOURCE ? feu ?
+*TARGET  ? peuplement1 ?  100.00
+*SOURCE ? ? ?
+*TARGET  ? ? ?  100.00

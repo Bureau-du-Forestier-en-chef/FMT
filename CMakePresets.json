@@ -78,7 +78,7 @@
   "buildPresets": [
     {
       "name": "release-mam",
-      "configurePreset": "release",
+      "configurePreset": "release-mam",
       "configuration": "Release"
     },
     {

@@ -41,6 +41,7 @@ gdal/*
 compile_commands.json
 .cmake/*
 .junie/*
+.claude/*
 /Examples/C++/tests/BFECtests.csv
 /Tests/Performance/performance-private.csv
 .vscode/*
