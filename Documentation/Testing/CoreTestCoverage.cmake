@@ -613,6 +613,8 @@ endforeach()
 set(_md "")
 file(READ "${CMAKE_CURRENT_LIST_DIR}/CoreTestCoverage.md.in" _template)
 string(REPLACE "\r" "" _template "${_template}")
+# The comment that opens the template speaks to its editors: it stays out of the document.
+string(REGEX REPLACE "^<!--[^>]*-->\n" "" _template "${_template}")
 
 set(_changes "")
 if(NOT _added AND NOT _removed)
