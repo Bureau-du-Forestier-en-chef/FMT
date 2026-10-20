@@ -1,5 +1,10 @@
 ::Set the dependencies with MSVC_dependencies_setup.bat
 ::Run from the repository root, even when started from the Explorer
+::Usage: CMakeFMTVS2022vcpkg_GL.bat [-PrivateTests]
+::  -PrivateTests: once the release build succeeded, runs tools\tests\RunPrivateTests.bat
+set "PRIVATE_TESTS="
+set "BUILD_FAILED="
+if /i "%~1"=="-PrivateTests" set "PRIVATE_TESTS=1"
 pushd "%~dp0..\.."
 call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars64.bat"
 
@@ -15,8 +20,15 @@ set VCPKG_KEEP_ENV_VARS=MOSEK_DIR;MODULE_PATH;CMAKE_MAKE_PROGRAM;VCPKG_VISUAL_ST
 cmake -S . -B build/release -G "Visual Studio 17 2022" -A x64 -T v143 -DBUILD_TYPE=Release -DPARALLEL_TESTS=8 -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DVCPKG_MANIFEST_MODE=ON
 
 cmake --build build/release --config Release
+if errorlevel 1 set "BUILD_FAILED=1"
 
 cmake --install build/release --config Release
 
 popd
+::RunTests.bat waits for a key itself
+if defined PRIVATE_TESTS if not defined BUILD_FAILED (
+    call "%~dp0..\tests\RunPrivateTests.bat"
+    exit /b
+)
+if defined PRIVATE_TESTS echo The release build failed: the private tests did not run.
 pause
