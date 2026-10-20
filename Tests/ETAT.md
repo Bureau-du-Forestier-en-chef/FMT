@@ -60,8 +60,9 @@ ne redéfinit pas, il l'hérite. FMT traverse toujours ce modèle dans le même 
    (`doPlanning(false, cédules)`). → requête `REPLAY` de `PlanScenario` (lot 4),
    lacune 7.
 6. **Écriture.** `FMTModelParser::write` réécrit un modèle lu, `writeToProject` un projet
-   complet, `FMTScheduleParser` les cédules. C'est la seule étape encore sans test de valeur.
-   → lacune 8, lot 5 à venir.
+   complet, `FMTScheduleParser` les cédules. → allers-retours de `IntegrationParser`, premier
+   exécutable du niveau intégration, et `WriteAndReadProject`, `SolveAndWriteSchedules`,
+   `UpdateNonSpatialModel` (lot 5), lacune 8.
 
 Un test base ne fait jamais rien d'autre que ceci : partir de TWD_land, s'arrêter à une de ces
 étapes, et comparer ce qu'il y trouve à une valeur écrite dans le CSV.
@@ -72,6 +73,7 @@ Un test base ne fait jamais rien d'autre que ceci : partir de TWD_land, s'arrêt
 |---|---|
 | Sources des exécutables de test | `Tests/System/Cpp/*.cpp`, `Tests/System/Cpp/FMTWrapperCore/*.cpp` pour le Core et `Tests/System/Cpp/Excel/*.cpp` pour Excel (depuis la phase 6) |
 | Tests unitaires (GoogleTest) | `Tests/Unit/Core/<Classe>.cpp`, une suite par classe, dans l'exécutable `UnitCore` (depuis la phase 8) ; comment en ajouter : `AGENTS.md`, « Adding a unit or integration test » |
+| Tests d'intégration (GoogleTest) | `Tests/Integration/Parser/<Parseur>.cpp`, une suite par parseur, dans l'exécutable `IntegrationParser`, étiquettes `integration;parser`, avec la fixture `ExamplesModels` (depuis le lot 5) ; outils communs dans `ParserRoundTrip.h` du même dossier |
 | Lignes qui inscrivent les tests | `Tests/System/Cpp/basetests.csv` (public), `knownbugs.csv` (désactivées), `BFECtests.csv` (local, privé, ignoré par git) |
 | En-tête commun des tests | `Tests/Support/TestTools.h` |
 | Modèle public et ses scénarios | `Examples/Models/TWD_land`, `Examples/Models/TWD_land/Scenarios/<nom>/` |
@@ -144,7 +146,7 @@ est, et quel lot s'en charge :
 | Absence d'allocation, concurrence | non fait | 9 |
 | Portabilité Linux et Clang | non fait ; la suite ne tourne que sous Windows, et le dépôt n'a pas d'intégration continue visible | 9 |
 | Couverture publiée | non fait ; informative après un lot, consignée dans la documentation aux versions | 9 |
-| Tests de caractérisation avant refonte | fait pour quatre défauts (section 2.7), à étendre | continu |
+| Tests de caractérisation avant refonte | fait pour quatre défauts (section 2.7), puis cinq défauts d'écriture au lot 5 (section 2.7, défauts 6 à 10), à étendre | continu |
 
 À chaque lot, noter au journal ce qu'il apporte à #350. Les conditions de fermeture sont en
 section 6.3.10 ; le jour venu, écrire ici ce qui l'a fermée et ce que ce chantier reprend ou
@@ -425,35 +427,38 @@ une ligne de plus ne coûte qu'une reconfiguration.
 | Étape | Vérifie une valeur | Exécute sans vérifier |
 |---|---|---|
 | Lecture d'un scénario | direct : `ReadScenario` (lot 2 : thèmes, attributs, agrégats, aire par masque, actions et drapeaux, outputs et contraintes de ROOT ; noms de thèmes, aire héritée et contraintes de `LP3` ; contraintes de `stdconstraints`), constantes (`ConvertStringsToConstants`, 3 cas), un yield complexe (`WrapperCoreGetYield`), nombre de masques (`WrapperCoreGetAllMasks`), âge maximal (`WrapperCoreGetMaxAge`, borne seulement), gabarits (`ReadTemplates`, au moins un modèle) ; indirect : objectifs de `DoPlanning` (16 scénarios), `PlanWithLandAggregates`, `OptimizeWithLevels` | tous les autres tests |
-| Lecture de plusieurs scénarios d'un coup | direct : `ReadScenariosTogether` (lot 2 : 7 combinaisons, 32 scénarios) ; indirect : `OptimizeWithLevels` (9 scénarios, objectifs) | `WriteAndReadProject`, `RunPlanningTask`, `ReplanConcurrently`, `ReplanWithModelAdaption`, `LogThroughCallback` |
+| Lecture de plusieurs scénarios d'un coup | direct : `ReadScenariosTogether` (lot 2 : 7 combinaisons, 32 scénarios) ; indirect : `OptimizeWithLevels` (9 scénarios, objectifs), `WriteAndReadProject` (lot 5 : 4 scénarios relus d'un projet écrit, objectifs) | `RunPlanningTask`, `ReplanConcurrently`, `ReplanWithModelAdaption`, `LogThroughCallback` |
 | Erreurs de lecture | `ReadInvalidScenario` (lot 2 : 7 scénarios invalides, 6 codes `FMTexc`) | -- |
-| Objets du cœur (masques, yields, opérabilité, transitions) | `ReadScenario` (lot 2 : opérabilité aux bornes d'âge, de yield et d'agrégat, `_DEATH` tiré du lifespan, interpolation des yields d'âge, opérateurs de yields complexes), `GetNoChoice` (développements sans choix d'un masque), `GetYieldsFromFactor` (monotonie), `ComputeTimeYieldOutputs` (2 outputs de yields temporels) ; transitions et vieillissement : indirectement par les objectifs | `AddYieldHandlers` (vérification de valeur morte) |
+| Objets du cœur (masques, yields, opérabilité, transitions) | `ReadScenario` (lot 2 : opérabilité aux bornes d'âge, de yield et d'agrégat, `_DEATH` tiré du lifespan, interpolation des yields d'âge, opérateurs de yields complexes), `GetNoChoice` (développements sans choix d'un masque), `GetYieldsFromFactor` (monotonie), `ComputeTimeYieldOutputs` (2 outputs de yields temporels), `AddYieldHandlers` (lot 5 : yield ajouté par type de peuplement, à chaque âge de base et interpolé) ; transitions et vieillissement : indirectement par les objectifs | -- |
 | Présolve et postsolve | `Presolve` (objectif avec ou sans présolve ; NOT_MASK, plus 6 scénarios au lot 4) ; `DoPlanning` (présolve de 10 itérations) | -- |
 | Graphe et matrice | `PlanScenario` `STATS` (lot 4 : sommets, arcs, lignes et colonnes de 3 scénarios) ; indirect (objectifs) | `ResolveAfterConstraintChange` (vérifie seulement la résolution après retrait et remise d'une contrainte) |
-| Optimisation | `DoPlanning` (16), `OptimizeWithLevels` (9), `PlanWithLandAggregates` ; `SolveWithEachSolver` (chaque solveur résout, sans valeur) | `SolveAndWriteSchedules`, `CreateModel` |
-| Résultats et rejeu | `ComputeLevelOutputs` (26 outputs), `ReplayScheduleOutputs` (3 outputs après rejeu d'une cédule), `ForceSolution` (6 valeurs et conservation de la superficie), `SumAndAverageOutputs` (somme et moyenne), `SimulateNonSpatially` (5 lignes sur 7) ; `PlanScenario` `REPLAY` (lot 4 : rejeu de la cédule optimale, tous les outputs de toutes les périodes, 4 scénarios) | `SolveAndWriteSchedules` (écrit la cédule), `GetModelFromProportions`, `GetVariabilities` |
-| Écriture et relecture | `WriteModel` (5 scénarios, objectif après relecture), `WriteAndReadOutputTypes` (nombre d'outputs), `WrapperCoreWriteToProject` (fichiers présents) | `WriteAndReadProject`, `UpdateNonSpatialModel` |
+| Optimisation | `DoPlanning` (16), `OptimizeWithLevels` (9), `PlanWithLandAggregates` ; `SolveWithEachSolver` (chaque solveur résout, sans valeur) ; `CreateModel` (lot 5 : modèle construit en code optimal, même optimum relu) | -- |
+| Résultats et rejeu | `ComputeLevelOutputs` (26 outputs), `ReplayScheduleOutputs` (3 outputs après rejeu d'une cédule), `ForceSolution` (6 valeurs et conservation de la superficie), `SumAndAverageOutputs` (somme et moyenne), `SimulateNonSpatially` (5 lignes sur 7) ; `PlanScenario` `REPLAY` (lot 4 : rejeu de la cédule optimale, tous les outputs de toutes les périodes, 4 scénarios) ; `SolveAndWriteSchedules` (lot 5 : cédule optimale écrite et relue, superficie par action et développement), `UpdateNonSpatialModel` (lot 5 : superficie conservée à la période 3) | `GetModelFromProportions`, `GetVariabilities` |
+| Écriture et relecture | `WriteModel` (5 scénarios, objectif après relecture), `WriteAndReadOutputTypes` (nombre d'outputs), `WrapperCoreWriteToProject` (fichiers présents) ; lot 5 : `IntegrationParser` (allers-retours de `write`, `writeToProject` et `FMTScheduleParser`, section 5.7), `WriteAndReadProject` (même optimum relu par scénario), `UpdateNonSpatialModel` (superficie et contraintes décalées relues), `CreateModel` | -- |
 | Tâches (planification, replanification) | `SumAndAverageOutputs`, `WrapperCoreRunPlanning` | `RunPlanningTask`, `ReplanConcurrently`, `ReplanWithModelAdaption`, `LogThroughCallback` |
 | Spatial (SES, cartes, rasters) | `DoSpatiallyExplicitPlanning` (une vérification valide), `WrapperCoreRasterize` | `SimulateSpatially`, `MapToForest`, `ConvertVectorFieldToRaster`, `GetCarbonPredictors` |
 | Divers | `WriteAndReadGCBMTransitions` (aller-retour), `ListGDALDrivers`, `ClusterOperatingAreas` (une solution existe), `WrapperCoreRunAreaVariability`, `WrapperCoreDescribeEnvironment`, `UseExcelCache` | `SimulateWithYieldModel`, `PlanWithLpYieldModel`, `OptimizeWithLpYieldModel` |
 
-### 2.3 Exécutables base sans vérification (17)
+### 2.3 Exécutables base sans vérification (13)
 
-`SolveAndWriteSchedules`, `SimulateSpatially`, `GetCarbonPredictors`, `MapToForest`,
-`SimulateWithYieldModel`, `GetModelFromProportions`, `ReplanConcurrently`, `GetVariabilities`,
-`PlanWithLpYieldModel`, `OptimizeWithLpYieldModel`, `RunPlanningTask`, `CreateModel`,
-`ConvertVectorFieldToRaster`, `UpdateNonSpatialModel`, `WriteAndReadProject`,
+`SimulateSpatially`, `GetCarbonPredictors`, `MapToForest`, `SimulateWithYieldModel`,
+`GetModelFromProportions`, `ReplanConcurrently`, `GetVariabilities`, `PlanWithLpYieldModel`,
+`OptimizeWithLpYieldModel`, `RunPlanningTask`, `ConvertVectorFieldToRaster`,
 `ReplanWithModelAdaption`, `LogThroughCallback` (construit sa tâche sans la lancer).
 
-**Lignes qui ne vérifient que l'absence d'erreur (phase 9b, 2026-10-19), pour les lots suivants.**
-Leur nom le dit, sans promettre de résultat (section 9.2). 22 lignes de `basetests.csv` :
+Le lot 5 (2026-10-19, section 5.7) en a sorti `SolveAndWriteSchedules`, `CreateModel`,
+`UpdateNonSpatialModel` et `WriteAndReadProject`, qui vérifient maintenant ce qu'ils écrivent.
 
-- `…ThenEndsWithoutError`, 18 lignes : la ligne de chacun des 15 exécutables ci-dessus autres que
-  `ReplanConcurrently` et `WriteAndReadProject`, les deux lignes `SimulateNonSpatially` sans valeur
-  attendue (scénarios `randomYield` et `randomYieldUnit`, section 7), et la ligne `loggerlifetime` de
+**Lignes qui ne vérifient que l'absence d'erreur (phase 9b, 2026-10-19), pour les lots suivants.**
+Leur nom le dit, sans promettre de résultat (section 9.2). 16 lignes de `basetests.csv` depuis le
+lot 5, qui en a sorti 6 (les lignes `…ThenEndsWithoutError` de `SolveAndWriteSchedules`,
+`CreateModel` et `UpdateNonSpatialModel`, les 3 lignes `…ThenRereadsTheWrittenProjectWithoutError`
+de `WriteAndReadProject`) :
+
+- `…ThenEndsWithoutError`, 15 lignes : la ligne de chacun des 12 exécutables ci-dessus autres que
+  `ReplanConcurrently`, les deux lignes `SimulateNonSpatially` sans valeur attendue (scénarios
+  `randomYield` et `randomYieldUnit`, section 7), et la ligne `loggerlifetime` de
   `SolveWithEachSolver`, qui ne voit qu'un plantage (section 9.5, phase 0) ;
-- `…ThenRereadsTheWrittenProjectWithoutError`, les 3 lignes de `WriteAndReadProject` : la relecture
-  du projet écrit ne doit pas lever, rien n'est comparé ;
 - `…ThenWritesAReadableScheduleForTheFirstReplicate`, la ligne de `ReplanConcurrently` : il relit la
   cédule de son premier réplicat, et `FMTScheduleParser::read` lève (`FMTexc` de chemin invalide)
   quand elle manque. L'inventaire du lot 0 ne l'avait pas vu ; rien d'autre n'est vérifié.
@@ -467,8 +472,9 @@ vérifie surtout que la lecture et la planification d'un `_MAI` ne lèvent pas.
 - `DoSpatiallyExplicitPlanning.cpp:94-95` : le contrôle des patchs découpe `stats`
   au lieu de `result`, et `spresults.at(1) != "2"` est toujours vrai quand la première
   condition l'est.
-- `AddYieldHandlers.cpp` : le vecteur `totest` n'est jamais rempli ; la boucle qui compare les
-  valeurs ne s'exécute pas. Seul `isYld` est vérifié.
+- ~~`AddYieldHandlers.cpp` : le vecteur `totest` n'est jamais rempli ; la boucle qui compare les
+  valeurs ne s'exécute pas. Seul `isYld` est vérifié.~~ **Réparée au lot 5** (section 5.7) : la
+  comparaison parcourt chaque type de peuplement, et une valeur calculée à la main vient du CSV.
 - `Tests/System/Cpp/FMTWrapperCore/WrapperCoreRunSimulatedAnnealing.cpp:157` : l'écart de plus de 5 % ne fait
   qu'afficher un avertissement (hors ctest de toute façon).
 
@@ -653,6 +659,44 @@ Démonstrations refaites le
    - Vu vert après le build de Gabriel (2026-10-15, `62f9e288`) : les 3 lignes passent, lancées
      une à une puis dans `RunTests.bat all-public` (section 9.5).
 
+**Défauts d'écriture révélés par le lot 5 (2026-10-19).** Cinq défauts de `FMTModelParser::write`,
+révélés par les allers-retours de `IntegrationParser` (section 5.7) et démontrés avec les exécutables
+du build (A/B, exécutable officiel, origine git). Chacun a un cas `DISABLED_` dans
+`Tests/Integration/Parser/FMTModelParser.cpp`, pas de ligne `knownbugs.csv`, et une issue rédigée
+pour Gabriel, qui l'ouvre (règle 3). Aucun n'est corrigé dans ce chantier.
+
+6. **Objectif `_PENALTY` sans signe réécrit `y_PENALTY`** : `FMTConstraint::operator std::string`
+   reprend le dernier caractère du nom `Penalty<opérateur>_<variable>`, `y` quand l'opérateur est
+   vide. Relu, l'opérateur vaut `Y`, traité comme `+` : même optimum, objectif relu différent. Depuis
+   `2e3dc129` (2019-06-07). Cas `GivenAPenaltyObjectiveWithoutSignWhenWriteThenRereadsTheSameObjective`.
+7. **`_DISCOUNTFACTOR` réécrit en série temporelle de ses paramètres** (`DISCOUNTFULL 1 0.04 5`),
+   silencieux : relu, `DISCOUNTFULL` vaut 0,04 à la période 1 et 5 à la période 2. Et l'écriture
+   lève (« invalid vector subscript ») quand le bloc `*YT` n'a pas de base, comme dans
+   `discountconstant`. `FMTTimeYieldHandler::operator std::string` ignore l'opérateur du `FMTData` ;
+   série depuis `d5ef0e2e` (2019-11-15), plantage depuis `949f301f` (2022-12-08). Cas
+   `GivenDiscountFactorsWhenWriteThenRereadsTheirValues` et
+   `GivenADiscountRateFromAConstantWhenWriteThenWritesTheModel`.
+8. **Sorties cachées d'un output écrites comme des outputs** : `FMTOutput::_toWsFormat` (sources
+   d'inventaire et d'action mêlées, `~RATIO0IN`, `~RATIO1OUT` dans `TSLA`) et `_operatorFormat`
+   (opérateurs enchaînés, `~<nom>_<n>` dans `division`, `level`...) ; relues comme des outputs, elles
+   sont répétées ou redécoupées à chaque réécriture. Même optimum sur `TSLA`. Depuis `4261a23e`
+   (2024-07-30) et `3a589899` (2024-09-10). Cas
+   `GivenARatioOfAnInventoryOutputToAnActionOutputWhenWriteThenRereadsTheSameOutputs`.
+9. **`_RANDOM(<output>)` réécrite sans `_RANDOM`** : le type `FMTrandomaction`, marqué « need to be
+   deleted » dans `Include/FMTConstraint.h`, est écrit comme une contrainte ordinaire et relu comme
+   tel. Depuis `95a9185e` (2021-01-22). Cas
+   `GivenRandomActionConstraintsWhenWriteThenRereadsTheSameModelAndRewritesTheSameFiles`.
+10. **`FMTYields::operator==` compare les adresses des gestionnaires** (`std::unique_ptr` dans la
+    `FMTList`) : deux copies d'un modèle sont inégales (`FMTModel::operator==`), et `writeToProject`
+    écrit le `._yld` de chaque scénario, même identique à la racine (`WrapperCoreWriteToProject` le
+    montre sur ses deux copies). Depuis `2cbb45a6` (2021-10-29). Cas
+    `GivenAScenarioThatOnlyChangesItsObjectiveWhenWriteToProjectThenWritesItsOptimizeAndScheduleSectionsOnly`.
+
+Le comportement connu de #347 bloque aussi l'aller-retour de la racine et des scénarios qui gardent
+son `.yld` : `YBM_RTM_F`, écrit `_EQUATION(YBM_RTM_BOGYBM_RTM_MEH)`, se relit 0 (cas désactivé
+`GivenTheRootModelWhenWriteThenRereadsTheSameModelAndRewritesTheSameFiles`, avec le défaut 6). #346 ne
+change rien à l'aller-retour : l'expression est réécrite telle qu'elle a été lue.
+
 Dans TWD_land, `YBM_RTM_BOG`, `YBM_RTM_MEH` et `YBM_RTM_F` ne servent qu'à l'output `TOTALCAR`,
 qu'aucun objectif ni aucune contrainte n'utilise. À la correction, relancer la suite base pour
 repérer les valeurs attendues qui changent, et justifier au journal toute valeur modifiée
@@ -674,7 +718,7 @@ Critère : une étape que tout modèle traverse passe avant une fonction de nich
 | 5 | **Présolve et postsolve** : `FMTModel::preSolve` / `postSolve` (`Include/FMTModel.h:279-285`) | Le test métamorphique ne couvre qu'un scénario (NOT_MASK) ; les outputs après postsolve ne sont pas comparés. |
 | 6 | **Graphe et matrice** : `FMTSrModel::buildPeriod` (`Include/FMTSrModel.h:261`), `FMTGraph::build` (`Include/FMTGraph.hpp:462`), `FMTLpModel::setObjective` / `setConstraint` | Les statistiques du graphe (`FMTGraphStats` : sommets, arcs, lignes, colonnes) ne sont jamais vérifiées. |
 | 7 | **Résultats et rejeu** : `getSolution`, `setSolution` / `boundSolution` (`Include/FMTSrModel.h:173,329`), `doPlanning(false, cédules)` | Le rejeu d'une cédule optimale n'est pas comparé à l'optimisation ; `SetSolution` n'a que des tests BFEC. |
-| 8 | **Écriture et relecture** : `FMTModelParser::write` (`Source/FMTModelParser.cpp:467`), `writeToProject` (`Include/FMTModelParser.h:118`), `FMTScheduleParser` | Pas d'idempotence (écrire, relire, réécrire) ni d'aller-retour de cédule ; `WriteAndReadProject` n'a aucune vérification. |
+| 8 | **Écriture et relecture** : `FMTModelParser::write` (`Source/FMTModelParser.cpp:467`), `writeToProject` (`Include/FMTModelParser.h:118`), `FMTScheduleParser` | ~~Pas d'idempotence (écrire, relire, réécrire) ni d'aller-retour de cédule ; `WriteAndReadProject` n'a aucune vérification.~~ Couverte au lot 5 (voir ci-dessous) ; restent les sections que cinq défauts empêchent de relire à l'identique (section 2.7, défauts 6 à 10). |
 
 L'optimisation elle-même (objectifs) est l'étape la mieux protégée : 26 objectifs vérifiés.
 
@@ -685,6 +729,15 @@ yield, verrou, `_LOCKEXEMPT`), `operate` et les transitions (cibles, proportions
 `_ENDPOINT` et `_DELTA`. Le lot 4 entame les lacunes 5, 6 et 7 : présolve sur 7 scénarios,
 statistiques de la matrice, rejeu de la cédule optimale. Restent les statistiques période par
 période, `setSolution` ligne à ligne, et toute la lacune 8, objet du lot 5.
+
+**État au lot 5** (2026-10-19) : la lacune 8 a ses tests de valeur. Au niveau intégration,
+`IntegrationParser` écrit, relit et réécrit des scénarios de TWD_land, et compare le modèle relu
+(sections, valeurs des yields) et les deux écritures, fichier par fichier : 6 scénarios entiers et 3
+sections (transitions, contraintes, outputs) passent, `writeToProject` est vérifié sur un projet neuf
+et sur un scénario ajouté, et une cédule l'est par écriture simple et par ajout. 7 cas sont
+désactivés, sur #347 et sur les défauts 6 à 10 de la section 2.7. Au niveau système,
+`WriteAndReadProject`, `SolveAndWriteSchedules`, `UpdateNonSpatialModel` et `CreateModel` vérifient ce
+qu'ils écrivent. Détail en section 5.7.
 
 ### 3.2 Ce que chaque lacune veut dire
 
@@ -732,9 +785,11 @@ d'aménagement sans que personne ne s'en aperçoive.
    `doPlanning(false, cédules)`.
 8. **Écriture et relecture** (étape 6). FMT écrit des modèles que d'autres relisent : sauvegarde
    depuis l'interface, modèle présolvé, projet transformé par une tâche. Deux défauts
-   d'écriture sont déjà connus (section 7) et personne ne les avait vus, faute de test.
+   d'écriture étaient connus avant le lot 5 (section 7) et personne ne les avait vus, faute de test.
    L'aller-retour est métamorphique : écrire, relire, réécrire, et les fichiers doivent être
-   identiques. C'est l'objet du lot 5.
+   identiques. Le lot 5 a montré que cela ne suffit pas : un `_DISCOUNTFACTOR` perdu à la première
+   écriture se relit et se réécrit à l'identique. Le modèle relu est donc aussi comparé au modèle
+   écrit, section par section et par les valeurs de ses yields.
 
 ### 3.3 Gains rapides : des lignes CSV sans code
 
@@ -1165,6 +1220,136 @@ Validation (après le build de Gabriel, 2026-09-18) :
   faussées rendent 0.
 - **Fixture** verte et `git status` inchangé sous `Examples/Models`.
 
+### 5.7 Lot 5 : écriture et relecture (2026-10-19)
+
+**Décision de Gabriel (2026-10-19)** : l'aller-retour d'un modèle et celui d'une cédule sont des tests
+d'intégration (un composant, les parseurs, avec sa vraie dépendance, les formats de fichiers), et non
+un nouvel exécutable système. Ils forment le premier composant de `Tests/Integration` : l'exécutable
+GoogleTest `IntegrationParser`, étiquettes `integration;parser` (section 9.2).
+
+**Sonde A/B sur les exceptions de `FMTModelParser::write`** (exécutable `WriteModel.exe` du build,
+lancé d'un dossier de travail du scratchpad, scénario `LEVEL1`) :
+- A, dossier de sortie présent : écriture des 10 fichiers, relecture, même optimum, code 0 ;
+- B, dossier de sortie absent : `FMTexc(13)` sur `LEVEL1.pri`, puis la relecture n'a jamais lieu et
+  le processus finit en `0xC0000409` (exception sortie de `main`) ;
+- C, `LEVEL1.pri` présent en lecture seule : même fin que B, et aucun autre fichier n'est écrit.
+
+`write` relance donc son exception hors du build R, comme la phase 3 l'avait lu dans le code
+(`printExceptions`, puis `throwNested`) : la note de la section 7 était fausse et a été corrigée.
+Pas de ligne de dette ni d'issue.
+
+**Ajouts.**
+- `Tests/Support/TestRegistration.cmake` : `registergoogletests(<cible> <niveau> <composant>
+  [EXAMPLES_MODELS] <sources>)`. L'option donne aux cas la fixture `ExamplesModels`. Vérifié dans un
+  projet CMake jetable (cmake et ninja de VS 2022, GoogleTest de vcpkg) : les cas `Integration.*` ont
+  `FIXTURES_REQUIRED=ExamplesModels` et les étiquettes `integration;parser`, un cas `DISABLED_` est
+  inscrit désactivé, les cas unitaires restent sans fixture.
+- `Tests/Integration/CMakeLists.txt` inclut `Parser/CMakeLists.txt`, qui crée `IntegrationParser` à
+  partir des `.cpp` du dossier. `ParserRoundTrip.h` : dossier de sortie par cas
+  (`build/release/tests/IntegrationParser/<cas>/`), lecture d'un scénario, aller-retour
+  (`writeRereadAndRewrite`), comparaison des fichiers ligne à ligne (reprise de
+  `ReadScenariosTogether`), des sections par leur `operator==`, et des yields par leurs valeurs.
+- Les yields se comparent par valeurs, car `FMTYields::operator==` compare des adresses (défaut 10 de
+  la section 2.7) : tout yield du modèle lu, hors noms en `_` et `~`, pour chaque développement de
+  l'inventaire, aux âges 0 à 30 et aux périodes 1 à 3, à 1e-9 près en relatif ; un yield qui lève doit
+  lever des deux côtés. Une requête par appel : une `FMTYieldRequest` garde le premier `FMTYields` qui
+  l'a servie (section 7, ligne de dette de `FMTYieldRequest` complétée dans `Architecture.md`).
+
+**Cas de `FMTModelParser`** (`Tests/Integration/Parser/FMTModelParser.cpp`, 18 cas, 11 verts) :
+
+| Cas | Scénario | Vérifie | État |
+|---|---|---|---|
+| `GivenTheRootModelWhenWrite…ThenRereadsTheSameModelAndRewritesTheSameFiles` | ROOT | modèle et fichiers | désactivé : #347, défaut 6 |
+| `GivenYieldsOnNegatedMasks…` | `NOT_MASK` | modèle et fichiers | vert |
+| `GivenEquationsInYieldsOutputsAndConstraints…` | `equation` | modèle et fichiers | vert |
+| `GivenItsOwnLandscapeActionsAndTimeYields…` | `COS` | modèle et fichiers | vert |
+| `GivenAMeanAnnualIncrementYield…` | `mai` | modèle et fichiers | vert |
+| `GivenAShiftedYield…` | `Shift` | modèle et fichiers | vert |
+| `GivenADistanceYieldAndARatioOfInventoryOutputs…` | `DISTANCE` | modèle et fichiers | vert |
+| `GivenRandomActionConstraints…` | `COMPLEX_NSS` | modèle et fichiers | désactivé : défaut 9 |
+| `GivenSplitTargetsAgesLocksAndSourceConditions…ThenRereadsTheSameTransitions` | `transitions` | transitions et `.trn` | vert |
+| `GivenThousandsSeparatorsAndListsOfPeriods…ThenRereadsTheSameConstraints` | `stdconstraints` | contraintes et `.opt` | vert |
+| `GivenAPenaltyObjectiveWithoutSign…ThenRereadsTheSameObjective` | ROOT | contraintes et `.opt` | désactivé : défaut 6 |
+| `GivenOutputsBuiltByForLoops…ThenRereadsTheSameOutputs` | `ForLoops` | outputs et `.out` | vert |
+| `GivenARatioOfAnInventoryOutputToAnActionOutput…ThenRereadsTheSameOutputs` | `TSLA` | outputs et `.out` | désactivé : défaut 8 |
+| `GivenDiscountFactors…ThenRereadsTheirValues` | `timeyields` | valeurs des `DISCOUNT*` | désactivé : défaut 7 |
+| `GivenADiscountRateFromAConstant…ThenWritesTheModel` | `discountconstant` | `write` ne lève pas | désactivé : défaut 7 |
+| `GivenNoPrimaryFileWhenWriteToProjectThenWritesTheSameFilesAsWrite` | `NOT_MASK` | fichiers de `writeToProject` = ceux de `write` | vert |
+| `GivenAProjectWhenWriteToProjectThenRereadsTheScenarioAsTheModelWritten` | `NOT_MASK`, puis `equation` en scénario | modèle relu du projet et fichiers | vert |
+| `GivenAScenarioThatOnlyChangesItsObjectiveWhenWriteToProject…OnlyItsOptimizeAndScheduleSections` | `NOT_MASK` modifié | sections écrites du scénario | désactivé : défaut 10 |
+
+Les scénarios qui gardent le `.yld` de la racine (`transitions`, `stdconstraints`, `ForLoops`) ne
+sont comparés que sur leur section, sans quoi #347 les ferait tous échouer : ce n'est pas un
+contournement, chaque cas vérifie la section que son scénario définit, et la racine a son cas désactivé.
+
+**Cas de `FMTScheduleParser`** (`Tests/Integration/Parser/FMTScheduleParser.cpp`, 2 cas verts), sur la
+cédule de `LP`, sans solveur :
+`GivenTheSchedulesOfAScenarioWhenWriteThenRereadsAndRewritesTheSameSchedules` (relecture égale par
+`FMTSchedule::operator==`, réécriture identique) et
+`GivenAScheduleFileWhenWriteWithAppendThenRereadsTheSchedulesOfBothWrites` (période 1 écrite, les
+suivantes ajoutées).
+
+**Exécutables système** (sources en Arrange / Act / Assert, solveurs inchangés) :
+- `WriteAndReadProject` (CLP) : vide son dossier de sortie au départ, ce qu'il ne faisait pas (le
+  projet d'un passage précédent devenait la racine des scénarios suivants, sans que rien ne le voie) ;
+  chaque scénario relu du projet, résolu de nouveau, doit atteindre l'optimum du modèle écrit.
+  `argv[3]` facultatif donne l'ordre de relecture ; un autre ordre doit échouer. Then
+  `RereadsEachScenarioWithItsOptimum` (3 lignes) ;
+- `SolveAndWriteSchedules` (CLP) : le modèle doit être résolu, et la cédule écrite, relue par
+  `FMTScheduleParser::read`, doit redonner la superficie de chaque développement de chaque action à
+  chaque période, à 1e-5 près (écriture à 6 décimales). Entrées explicites (`TWD_land.pri`, `LP`),
+  `argv[3]` facultatif le scénario dont la cédule est attendue. Then `RereadsTheOptimalSchedules` ;
+- `UpdateNonSpatialModel` (MOSEK) : le modèle déplacé à la période 3 garde la superficie totale de
+  l'inventaire, 1814,76 ha calculés à la main (403,28 + 7 × 201,64, dans le CSV), et le modèle écrit
+  se relit avec le même nombre de développements, cette superficie et les contraintes décalées. Then
+  `KeepsItsTotalAreaAndRereadsItsShiftedConstraints` ;
+- `CreateModel` (MOSEK) : le modèle construit en code est optimal, et le modèle écrit puis relu
+  atteint le même optimum (175810,134619). Ses sections ne sont pas comparées : un modèle construit en
+  code n'a pas les noms d'attributs qu'une lecture remplit, et FMT y ajoute un `_DEATH` par défaut
+  (thèmes, transitions et contraintes relus diffèrent, sans effet sur l'optimum ; non analysé plus
+  loin). Then `IsOptimalAndRereadsWithTheSameOptimum` ;
+- `AddYieldHandlers` : la vérification morte de la section 2.4 compare maintenant, pour chaque type de
+  peuplement, `VOLUMETOTALNEXTAGE` à chaque âge de base au `VOLUMETOTAL` cinq ans plus vieux ; une
+  valeur interpolée vient du CSV : `UNITE1 PEUPLEMENT1 UTR1` à 2 ans vaut 120, le `volumetotal` de
+  `peuplement1` à 7 ans (100 + 2/5 × 50, `TWD_land.yld`). Then `GivesEachStandTheVolumeFiveYearsOlder`.
+
+Les 7 lignes de `basetests.csv` changent de Then ; 3 reçoivent leurs entrées. Les 7 noms d'aujourd'hui
+de `Tests/Support/RenamedTestCases.csv` suivent. Projet CMake jetable sur des copies des CSV, cibles
+factices : 240 lignes publiques inscrites, aucun avertissement, les 7 noms attendus, les arguments
+transmis tels qu'au paragraphe ci-dessus.
+
+**Vu rouge** (règle 1), sur le build de `new_test` (FMTlib du 2026-10-16), rien de commité :
+- `IntegrationParser`, copie hors dépôt compilée par `cl` contre `FMTlib.lib` (section 7) : modèle
+  relu remplacé par un modèle vide, seconde écriture prise d'un autre scénario (`LEVEL1`), références
+  de `writeToProject` prises d'un autre scénario, cédules attendues décalées d'une période et cédule
+  écrite comparée au `_seq` d'origine : les 13 cas verts échouent, et chaque vérification échoue au
+  moins une fois (les 7 sections, les valeurs des yields, les fichiers `.act` `.are` `.lan` `.opt`
+  `.out` `.pri` `.trn` `.yld`, les trois cas de section, les deux de `writeToProject` et les deux de
+  cédule). Une seconde copie vide les fichiers écrits et cherche un préfixe de yield inconnu : les deux
+  garde-fous échouent. Les 7 cas désactivés échouent, chacun pour sa raison, avec
+  `--gtest_also_run_disabled_tests` ;
+- sans recompiler, par un argument faussé : `AddYieldHandlers` attendu à 121 ; `UpdateNonSpatialModel`
+  à 1814 (les deux superficies) ; `WriteAndReadProject` relu dans l'ordre `LP2|LP|LP4|LP5` (LP et LP2
+  ont des optimums différents, 34660,742098 et 4240) ; `SolveAndWriteSchedules` comparé à la cédule de
+  `LP2`, puis de `ose_infaisable` (non résolu) ;
+- par une copie faussée compilée : la comparaison par type de peuplement et les garde-fous de
+  `AddYieldHandlers`, les deux « optimal » et l'optimum de `CreateModel`, la résolution, le nombre de
+  développements et les contraintes de `UpdateNonSpatialModel`, le compte et la résolution de
+  `WriteAndReadProject`.
+
+**Vu vert avant le build de Gabriel** : les mêmes copies, non faussées, compilées hors dépôt et
+lancées depuis `build/release/bin/Release` : 13 cas d'intégration verts en moins d'une seconde, et les 7 lignes
+système vertes avec les arguments de `basetests.csv`. Les sources du dépôt (cp1252, CRLF) ont été
+recompilées telles quelles, sans avertissement à `/W4` dans les nouvelles sources.
+
+**Ce que le lot apporte à #350** : le premier composant du niveau intégration, et cinq défauts
+caractérisés par des cas désactivés, des tests de caractérisation avant correction.
+
+**Observations laissées ouvertes** : la transition `_DEATH` ajoutée par défaut par FMT n'est pas égale
+(`FMTTransition::operator==`) à sa forme écrite puis relue, à texte identique (`level`, `CreateModel`) ;
+`WrapperCoreWriteToProject` ne vide pas son dossier de sortie, si bien que ses passages suivants
+écrivent le modèle comme scénario d'un projet resté du premier (fichiers racine du 2026-10-16).
+
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
@@ -1172,8 +1357,14 @@ Validation (après le build de Gabriel, 2026-09-18) :
 - **La réorganisation en trois niveaux est terminée** (section 9, ce qui reste ouvert en 9.7) ;
   elle part vers `master` par une demande de tirage. Le lot 6 y est devenu la phase 8. La feuille
   de route reprend au lot 5.
-- Lots 0 à 4 et phase 8 livrés, validés et commités ; rien ne bloque. Suite publique : 280 tests,
-  268 verts, dont 7 unitaires, et 12 désactivés. #357 est corrigé (`15427a6d`), avec #374 que sa
+- **Lot 5 livré le 2026-10-19** (section 5.7), en attente du build de Gabriel et de sa validation :
+  premier niveau intégration (`IntegrationParser`, 20 cas dont 7 désactivés), vérifications de
+  `WriteAndReadProject`, `SolveAndWriteSchedules`, `CreateModel`, `UpdateNonSpatialModel` et
+  `AddYieldHandlers`, cinq défauts d'écriture dont les issues sont à ouvrir (section 2.7, défauts 6 à
+  10). Ne pas pousser `new_test` tant que la demande de tirage de la réorganisation n'est pas
+  fusionnée, ou commiter le lot sur une branche à part.
+- Lots 0 à 4 et phase 8 livrés, validés et commités ; rien ne bloque. Suite publique avant le lot 5 :
+  280 tests, 268 verts, dont 7 unitaires, et 12 désactivés. #357 est corrigé (`15427a6d`), avec #374 que sa
   vérification a révélé (`62f9e288`) ; #346, #347 et #358 sont des comportements connus, dont les
   12 lignes de `knownbugs.csv` attendent la revue commune des tests BFEC (section 2.7).
 - Les lacunes de la chaîne sont listées ci-dessous et en section 3.1 ; elles ne sont suivies que
@@ -1242,6 +1433,14 @@ Quand les corrections seront faites, la session de tests reprend ainsi :
 4. reprendre la feuille de route au lot 5.
 
 #### 6.3.2 Lot 5 : écriture et relecture (lacune 8) — effort `high`
+
+**Fait le 2026-10-19 (section 5.7)**, avec ces écarts au plan ci-dessous : les allers-retours sont au
+niveau intégration (`IntegrationParser`, décision de Gabriel), pas dans un exécutable de
+`Tests/System/Cpp/` ; ils comparent aussi le modèle relu au modèle écrit, car un défaut de la première
+écriture se relit et se réécrit à l'identique ; et ce qui désactive des cas est #347 (le `_SUM` de
+`YBM_RTM_F`) et cinq défauts nouveaux, dont l'objectif `_PENALTY` (section 2.7, défauts 6 à 10), et
+non #346, que le plan nommait aussi. Les cas désactivés sont des `DISABLED_`, pas des lignes de
+`knownbugs.csv`. Reste la validation après le build de Gabriel.
 
 - **Pourquoi.** C'est la dernière étape de la chaîne de la section 0.1 sans aucun test de valeur.
   FMT écrit des modèles que d'autres relisent : sauvegarde depuis l'interface, modèle présolvé écrit
@@ -1477,8 +1676,11 @@ abandonne.
     liste ne garde que `unit` (CMake 3.31, vu dans un projet jetable) ;
   - le vu rouge d'un test unitaire demande de recompiler : une copie faussée hors du dépôt, compilée
     par `cl` contre le `FMTlib.lib` du build ;
-  - le résumé ne montre pas la raison d'un `GTEST_SKIP` (il cherche `SKIPPED: `) : à reprendre avec
-    les premiers tests d'intégration ;
+  - même chose pour un test d'intégration (lot 5) : le vu rouge passe par une copie faussée hors du
+    dépôt, compilée par `cl` contre le `FMTlib.lib` du build et lancée depuis `bin/Release`, avec ce
+    dossier dans le `PATH` et `onnxruntime.dll` à côté de l'exécutable ;
+  - le résumé ne montre pas la raison d'un `GTEST_SKIP` (il cherche `SKIPPED: `) : les premiers
+    tests d'intégration (lot 5) n'en ont pas, à reprendre avec le premier qui en aura besoin ;
   - les DLL de GoogleTest (`gtest`, `gtest_main`, `gmock`, `gmock_main`) partent dans
     `bin/Release` et dans la roue Python, comme toutes les DLL de vcpkg : laissé tel quel (décision
     de Gabriel, 2026-10-16), à reprendre avec la liste des DLL de l'installation.
@@ -1511,16 +1713,37 @@ abandonne.
 - **`operate` qui ne change rien lève `FMTexc(79)`** (`FMTFork::_getPath`) : c'est le garde-fou
   contre une boucle dans le graphe. Une cible `? ? ?` sans changement d'âge ni de verrou le
   déclenche, par exemple `aCaribou` sur un développement déjà verrouillé au niveau de la cible.
-- **`FMTModelParser::write`** attrape ses exceptions sans les relancer : vérifier que les
-  fichiers existent.
+- **`FMTModelParser::write` relance ses exceptions** hors du build R (sonde A/B du lot 5, section
+  5.7 ; la note d'avant, « attrape ses exceptions sans les relancer », était fausse) : un dossier
+  absent ou un fichier en lecture seule fait lever `FMTexc(13)` dès le `.pri`, et rien d'autre n'est
+  écrit. Sortie de `main`, l'exception finit le processus en `0xC0000409` ; un test passe par
+  `Testing::runTest` ou GoogleTest, qui l'attrapent.
 - **Lecture de `output_type`** : seule, avec le gestionnaire par défaut, elle lève
   `FMTexc(64)`. Ce scénario n'est lu qu'avec des erreurs converties en avertissements.
 - **Transition d'une action inconnue** : simple avertissement `FMTignore` (41), pas une
   erreur. Pas de test négatif possible.
-- **Écriture (pour le lot 5)** :
+- **Écriture** (relevé au lot 2, testé au lot 5) :
   - `_SUM(YBM_RTM_BOG,YBM_RTM_MEH)` est réécrit `_EQUATION(YBM_RTM_BOGYBM_RTM_MEH)` sans
-    opérateur, que la relecture remplace par 0 ;
-  - l'objectif `_MIN _PENALTY(...)` est réécrit `_MIN y_PENALTY(...)`.
+    opérateur, que la relecture remplace par 0 (#347) ;
+  - l'objectif `_MIN _PENALTY(...)` est réécrit `_MIN y_PENALTY(...)` (section 2.7, défaut 6) ;
+  - quatre autres défauts d'écriture, révélés au lot 5 : section 2.7, défauts 7 à 10 ;
+  - écrire, relire et réécrire ne suffit pas : un défaut de la première écriture peut se relire et se
+    réécrire à l'identique (`_DISCOUNTFACTOR`, défaut 7). Comparer aussi le modèle relu au modèle
+    écrit (`Tests/Integration/Parser/ParserRoundTrip.h`).
+- **`FMTYields` ne se compare pas** : `operator==` compare les adresses des gestionnaires (section
+  2.7, défaut 10), si bien que deux copies sont inégales. Comparer des valeurs de yields.
+- **`FMTYieldRequest` garde le premier `FMTYields` qui l'a servie** (`_updateData`), avec des
+  itérateurs vers lui. Réutilisée avec un autre objet de yields, elle lit le premier ; réutilisée
+  après la destruction de la copie que rend `FMTModel::getYields()`, elle lit de la mémoire libérée
+  (noms de yields illisibles et exceptions en série dans une sonde du lot 5). Construire une requête
+  par appel : `yields.get(development.getYieldRequest(), nom)`, `yields` gardé en vie.
+- **Un modèle construit en code ne se compare pas section par section à sa relecture** : la lecture
+  remplit des noms d'attributs que le code laisse vides, et FMT ajoute un `_DEATH` par défaut, dont la
+  transition n'est pas égale à sa forme écrite et relue (`CreateModel`, `level`). Comparer l'optimum.
+- **Dossier de sortie d'un test qui écrit un projet** : `writeToProject` écrit un modèle comme
+  scénario quand le `.pri` existe déjà. Un test qui ne vide pas son dossier relit le projet d'un
+  passage précédent : `WriteAndReadProject` le fait depuis le lot 5, `WrapperCoreWriteToProject` pas
+  encore.
 - **Sondes hors build** (compilation dans le scratchpad contre le FMTlib de `dev`) : un
   exécutable placé hors de `bin/Release` charge `C:\Windows\System32\onnxruntime.dll`, trop
   ancienne (« version [16] is not supported »). Copier `onnxruntime.dll` à côté de
@@ -1546,6 +1769,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-09-18 (lot 4) | 226 (208 lignes, 15 désactivées, 2 fixtures, `UnitTestFMTexcelcache`) | 22,0 s réelles ; 169,2 s cumulées | 52 | 17 | 3 | 0 | 15 | 25 |
 | 2026-10-15 (#357, `15427a6d`) | 270 `all-public` (266 + 4 lignes `DISCOUNT*`) ; résumé : system 233 verts et 12 désactivés sur 245, performance 23, other 2 | 27,1 s réelles | — | — | — | — | 12 | — |
 | 2026-10-15 (taux décimal, `62f9e288`) | 273 `all-public` (270 + 3 lignes `DISCOUNT*`) ; résumé : system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 13,2 s réelles | — | — | — | — | 12 | — |
+| 2026-10-19 (lot 5, **attendu avant le build**, à remplacer par la mesure) | 300 `all-public` (280 + 20 cas `Integration.`) ; résumé attendu : unit 7, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | — | — | 13 | 2 | 0 | 19 | — |
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
@@ -1689,6 +1913,15 @@ et suivi par la phase 9b :
   nommés par leur rôle dans le banc (`ThePlanningScenarioOfTheInterfaceBench`) : ce sont des copies
   d'autres scénarios, que leur contenu ne distinguerait pas de leur original ;
 - `ReadInvalidScenario` garde le `RejectsIt` de la phase 9a ; le Given dit le défaut du scénario.
+
+**Décision de Gabriel (2026-10-19), au lot 5 : premier composant du niveau Integration.** Les
+allers-retours de `FMTModelParser` (écrire, relire, réécrire, comparer) et de `FMTScheduleParser` sont
+des tests d'intégration au sens de `CodingStandards.md` (un composant avec sa vraie dépendance, les
+formats de fichiers), écrits en GoogleTest dans `Tests/Integration/Parser/`, exécutable
+`IntegrationParser`, étiquettes `integration;parser`, avec la fixture `ExamplesModels` pour lire
+TWD_land (option `EXAMPLES_MODELS` de `registergoogletests`) et des sorties sous
+`build/release/tests/IntegrationParser/`. Les exécutables qui écrivent et existaient déjà restent au
+niveau système. Détail en section 5.7.
 
 ### 9.3 Cible
 
@@ -2583,4 +2816,5 @@ public de `master`, son nom d'aujourd'hui. Restent ouverts :
 - **les lots suivants** (section 6.3) : le lot 5 (écriture et relecture) d'abord, puis l'inventaire
   par classe reporté de la phase 8, les lots 7 à 9 et la fermeture de #350. Les 22 lignes de la
   section 2.3 qui ne vérifient que l'absence d'erreur y attendent leurs vérifications ; la règle
-  Arrange / Act / Assert s'applique à tout test qu'on touche (section 9.2).
+  Arrange / Act / Assert s'applique à tout test qu'on touche (section 9.2). Le lot 5, livré le
+  2026-10-19 (section 5.7), a ouvert le niveau Integration et ramené ces lignes à 16.

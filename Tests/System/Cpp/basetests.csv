@@ -1,5 +1,5 @@
 TEST;primarylocation;scenario;doublevalue;given;then
-SolveAndWriteSchedules;;;;AMaxMinHarvest;EndsWithoutError
+SolveAndWriteSchedules;../../../../Examples/Models/TWD_land/TWD_land.pri;LP;;AMaxMinHarvest;RereadsTheOptimalSchedules
 SimulateSpatially;;;;ASpatialScheduleOnRasters;EndsWithoutError
 DoSpatiallyExplicitPlanning;;;;ASpatialScheduleOnAVectorMap;CountsTheWholeHarvestInItsStandTypes
 GetCarbonPredictors;;;;AnOptimalScheduleSpreadOnAVectorMap;EndsWithoutError
@@ -9,7 +9,7 @@ ClusterOperatingAreas;;;;OperatingAreasOnAVectorMap;FindsASolution
 GetModelFromProportions;;;;AnOptimalModelAndAreaProportions;EndsWithoutError
 ReplanConcurrently;;;;TheModelsOfAReplanning;WritesAReadableScheduleForTheFirstReplicate
 GetVariabilities;;;;AnOptimalModelAndItsHarvestedArea;EndsWithoutError
-AddYieldHandlers;;;;AgeYieldHandlersForEachStandType;RegistersTheNewYield
+AddYieldHandlers;../../../../Examples/Models/TWD_land/TWD_land.pri;LP|UNITE1 PEUPLEMENT1 UTR1|2;120;AgeYieldHandlersForEachStandType;GivesEachStandTheVolumeFiveYearsOlder
 GetYieldsFromFactor;;;;VolumesScaledDownAndUp;KeepsTheBaseHarvestBetweenThem
 ResolveAfterConstraintChange;;;;EachConstraintRemovedThenRestored;ResolvesEveryTime
 PlanWithLpYieldModel;;;;AScenarioWithAYieldModel;EndsWithoutError
@@ -18,15 +18,15 @@ ComputeLevelOutputs;;;;OutputsThatCombineLevels;GivesTheKnownValueOfEachOutput
 OptimizeWithLevels;;;;ScenariosOptimizingLevels;FindsTheKnownOptimumOfEach
 RunPlanningTask;../../../../Examples/Models/TWD_land/TWD_land.pri|LP3|LP4|LP5;../../tests/planning;5;ScenariosReplayingTheirSchedule;EndsWithoutError
 ForceSolution;;;;ProportionSchedulesOnAModifiedInventory;GivesTheKnownTreatedAreasAndKeepsTheTotalArea
-CreateModel;;;;AModelBuiltInCode;EndsWithoutError
+CreateModel;;;;AModelBuiltInCode;IsOptimalAndRereadsWithTheSameOptimum
 ConvertVectorFieldToRaster;;;;FieldsOfAVectorMap;EndsWithoutError
-UpdateNonSpatialModel;;;;AnOptimalModelMovedToALaterPeriod;EndsWithoutError
+UpdateNonSpatialModel;../../../../Examples/Models/TWD_land/TWD_land.pri;LP_uddate;1814.76;AnOptimalModelMovedToALaterPeriod;KeepsItsTotalAreaAndRereadsItsShiftedConstraints
 ComputeTimeYieldOutputs;;;;OutputsMultipliedByATimeYield;GivesTheKnownValueOfEachOutput
 WriteAndReadGCBMTransitions;;;;GcbmTransitions;WritesTheKnownTextAndReadsThemBack
 SumAndAverageOutputs;;;;LevelsBoundToTheSumAndAverageOfAnOutput;GivesTheKnownSumAndAverage
 PlanWithLandAggregates;;;;AnObjectiveOnALandscapeAggregate;FindsTheKnownOptimum
 WriteModel;../../../../Examples/Models/TWD_land/TWD_land.pri;complextoage;;AnnualIncrementsOfAComplexYield;RereadsItWithTheSameOptimum
-WriteAndReadProject;../../../../Examples/Models/TWD_land/TWD_land.pri;LP|LP2|LP4|LP5;;ScenariosThatShareMostSections;RereadsTheWrittenProjectWithoutError
+WriteAndReadProject;../../../../Examples/Models/TWD_land/TWD_land.pri;LP|LP2|LP4|LP5;;ScenariosThatShareMostSections;RereadsEachScenarioWithItsOptimum
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|infinitforloops;5;363;OutputsFromNestedForEachLoops;FindsTheKnownOptimum
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|ndywlevel;5;363;ANonDecliningYieldOnALevel;FindsTheKnownOptimum
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|actionseries;5;363;AnActionSeries;FindsTheKnownOptimum
@@ -47,8 +47,8 @@ ListGDALDrivers;raster;GTiff;tiff;TheGeoTiffRasterDriver;ListsItWithItsExtension
 ReplayScheduleOutputs;../../../../Examples/Models/TWD_land/TWD_land.pri|order;OSUPRATIO;20.202;AQuotientThenAProductInAnOutput;EvaluatesFromLeftToRight
 ReplayScheduleOutputs;../../../../Examples/Models/TWD_land/TWD_land.pri|order;OSUPRATIO2;0.20202;TwoQuotientsInAnOutput;EvaluatesFromLeftToRight
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|NOT_MASK;5;90738;YieldsOnNegatedMasks;FindsTheKnownOptimum
-WriteAndReadProject;../../../../Examples/Models/TWD_land/TWD_land.pri;NOT_MASK;;YieldsOnNegatedMasks;RereadsTheWrittenProjectWithoutError
-WriteAndReadProject;../../../../Examples/Models/TWD_land/TWD_land.pri;operator_separator;;ChainedProductsOfOutputsAndYields;RereadsTheWrittenProjectWithoutError
+WriteAndReadProject;../../../../Examples/Models/TWD_land/TWD_land.pri;NOT_MASK;;YieldsOnNegatedMasks;RereadsEachScenarioWithItsOptimum
+WriteAndReadProject;../../../../Examples/Models/TWD_land/TWD_land.pri;operator_separator;;ChainedProductsOfOutputsAndYields;RereadsEachScenarioWithItsOptimum
 Presolve;../../../../Examples/Models/TWD_land/TWD_land.pri;NOT_MASK;5;YieldsOnNegatedMasks;FindsTheSameOptimumAsWithoutPresolve
 WriteModel;../../../../Examples/Models/TWD_land/TWD_land.pri;NOT_MASK;;YieldsOnNegatedMasks;RereadsItWithTheSameOptimum
 WriteModel;../../../../Examples/Models/TWD_land/TWD_land.pri;operator_separator;;ChainedProductsOfOutputsAndYields;RereadsItWithTheSameOptimum

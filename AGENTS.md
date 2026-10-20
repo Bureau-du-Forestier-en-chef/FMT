@@ -23,7 +23,7 @@ lives in exactly one document, and changes to it belong in that document only.
 | `Excel/` | Excel integration. |
 | `Examples/Models/` | Woodstock models used by the tests. |
 | `Tests/` | Test registration and the tests by level: see [Testing](#testing). |
-| `Tests/Unit/Core/`, `Tests/Integration/` | GoogleTest tests: the unit tests of FMTlib, one source per class, built into `UnitCore`; the integration tests, none yet. |
+| `Tests/Unit/Core/`, `Tests/Integration/` | GoogleTest tests: the unit tests of FMTlib, one source per class, built into `UnitCore`; the integration tests, one folder per component, `Parser/` for the parsers of FMTlib with the Woodstock files they write and read back, built into `IntegrationParser`. |
 | `Tests/System/Cpp/` | C++ system tests: each `.cpp` becomes a test executable, which the rows of the CSV files of the folder run; `FMTWrapperCore/` and `Excel/` hold those of the wrapper core and of Excel. |
 | `Tests/System/Python/`, `Tests/System/R/` | pytest and testthat suites, one system test per file, run by ctest. |
 | `Tests/Performance/` | Performance and allocation benchmarks: `FMTPerformanceTests`, its harness and `performance.csv`. |
@@ -72,7 +72,8 @@ This section covers where tests live and how they run.
 
 The root `CMakeLists.txt` includes `Tests/CMakeLists.txt`, unless `WITHOUT_TESTS` is on, after `Excel/`
 and `FMTWrapperCore/`, whose libraries the C++ tests link to. That file declares the `ExamplesModels`
-fixture, which every system test and benchmark requires: `Tests/Support/TestsDataSnapshot.cmake`
+fixture, which every system test and benchmark requires, and every integration test that reads
+`Examples/Models`: `Tests/Support/TestsDataSnapshot.cmake`
 hashes `Examples/Models` before the tests and fails after them if a file changed. It then includes one
 folder per level: `Unit/` and `Integration/`, the GoogleTest levels, when `find_package(GTest CONFIG)`
 finds GoogleTest (without it, as in the MSYS2 build of the R package, a warning says that these two
@@ -83,13 +84,15 @@ have, `registercsvtests` registers the rows of CSV files with it, and `registerg
 GoogleTest executable and registers each of its cases. `Tests/System/Cpp/CMakeLists.txt` calls
 `registercsvtests` for its CSV files and `registersystemtest` for the Excel test,
 `Tests/System/Python/CMakeLists.txt` and `Tests/System/R/CMakeLists.txt` call `registersystemtest` for
-their tests, and `Tests/Unit/Core/CMakeLists.txt` calls `registergoogletests` for `UnitCore`.
+their tests, `Tests/Unit/Core/CMakeLists.txt` calls `registergoogletests` for `UnitCore`, and
+`Tests/Integration/Parser/CMakeLists.txt` for `IntegrationParser`.
 
-Each test carries one level label (`unit` for the GoogleTest tests of `Tests/Unit`, `system` for every
-C++, Python and R system test, `performance` for the benchmarks), a system test also the label of its
-interface (`cpp`, `python` or `r`), a test of a component the label of that component (`core` for the
-unit tests of FMTlib, `wrappercore` or `excel` for the C++ system tests of the wrapper core or of
-Excel), and its CTest name follows
+Each test carries one level label (`unit` for the GoogleTest tests of `Tests/Unit`, `integration` for
+those of `Tests/Integration`, `system` for every C++, Python and R system test, `performance` for the
+benchmarks), a system test also the label of its interface (`cpp`, `python` or `r`), a test of a
+component the label of that component (`core` for the unit tests of FMTlib, `parser` for the
+integration tests of its parsers, `wrappercore` or `excel` for the C++ system tests of the wrapper core
+or of Excel), and its CTest name follows
 [Test names](Documentation/CodingStandards.md#test-names). The private tests,
 rows of the local `BFECtests.csv` on models of `T:\`, keep `T:/` in their name. The public tests were
 renamed under issue #350: `Tests/Support/RenamedTestCases.csv` (`former;new`) gives the CTest name
@@ -106,8 +109,8 @@ ctest --preset system-private
 ctest --preset performance
 ```
 
-`all-public` runs everything but the private tests; `integration` selects nothing yet. Without a
-preset, filter by label, always anchored since `-L` takes a regular expression:
+`all-public` runs everything but the private tests. Without a preset, filter by label, always anchored
+since `-L` takes a regular expression:
 
 ```bash
 ctest --test-dir build/release -C Release -L "^system$" -E "T:/" -j 8 --output-on-failure
@@ -145,7 +148,10 @@ as in [Arrange, Act, Assert](Documentation/CodingStandards.md#arrange-act-assert
    `Tests/Unit/` or `Tests/Integration/`, included by the `CMakeLists.txt` of the level. Its
    `CMakeLists.txt` calls `registergoogletests(<Level><Component> <Level> <component> <sources>)`, as
    `Tests/Unit/Core/CMakeLists.txt` does, then links the real dependency of an integration test to that
-   executable with `target_link_libraries`.
+   executable with `target_link_libraries`. Tests that read `Examples/Models` add `EXAMPLES_MODELS`
+   after the component, as `Tests/Integration/Parser/CMakeLists.txt` does: their cases then require the
+   `ExamplesModels` fixture, and write under `tests/<Executable>/` in the build folder, never under
+   `Examples/Models`.
 
 ctest lists the cases when it runs, from the executable (`--gtest_list_tests`, `registergoogletests` in
 [Tests/Support/TestRegistration.cmake](Tests/Support/TestRegistration.cmake)): the build runs nothing.

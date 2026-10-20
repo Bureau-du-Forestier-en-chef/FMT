@@ -258,9 +258,12 @@ function(registercsvtests csvfiles sharedoutputs)
 endfunction(registercsvtests csvfiles sharedoutputs)
 
 #Creates the GoogleTest executable <target> from the sources that follow, the tests of the level <level>, Unit
-#or Integration, on the component <component>, such as core, and registers each of its cases with ctest.
+#or Integration, on the component <component>, such as core, and registers each of its cases with ctest:
+#registergoogletests(<target> <level> <component> [EXAMPLES_MODELS] <sources>...).
 #- The executable links to FMTlib and to GoogleTest, which gives it its main, and is written to the folder of
 #  the other test executables, bin/<build type>, where it finds its DLLs (createnamedexecutable).
+#- With EXAMPLES_MODELS, the cases read the models of Examples/Models: like the system tests, they require the
+#  ExamplesModels fixture of Tests/CMakeLists.txt, which checks that they leave these models unchanged.
 #- ctest lists the cases when it runs, from bin/<build type>, by --gtest_list_tests (DISCOVERY_MODE PRE_TEST):
 #  the build runs nothing. The list is taken again when the executable is newer than it.
 #- A case is named <level>.<suite>.<case>, such as Unit.FMTOperator.GivenMultiplyAndAddWhenPrecedenceThenMultiplyComesFirst,
@@ -272,9 +275,14 @@ endfunction(registercsvtests csvfiles sharedoutputs)
 #  <target>_names.cmake in the build folder, stops ctest when one of them has the name of a case of another
 #  GoogleTest executable, naming both executables.
 function(registergoogletests target level component)
-	createnamedexecutable(${target} ${ARGN})
+	cmake_parse_arguments(PARSE_ARGV 3 FMTTESTS "EXAMPLES_MODELS" "" "")
+	createnamedexecutable(${target} ${FMTTESTS_UNPARSED_ARGUMENTS})
 	target_link_libraries(${target} PRIVATE GTest::gtest GTest::gtest_main)
 	string(TOLOWER "${level}" levellabel)
+	set(fixtureproperties "")
+	if (FMTTESTS_EXAMPLES_MODELS)
+		set(fixtureproperties FIXTURES_REQUIRED ExamplesModels)
+	endif(FMTTESTS_EXAMPLES_MODELS)
 	#The ; of the labels is escaped: in PRE_TEST mode, the properties are parsed twice before they reach the
 	#tests, and an unescaped list keeps only its first label (CMake 3.31).
 	gtest_discover_tests(${target}
@@ -282,7 +290,7 @@ function(registergoogletests target level component)
 			DISCOVERY_TIMEOUT 60
 			TEST_PREFIX "${level}."
 			WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-			PROPERTIES LABELS "${levellabel}\\;${component}"
+			PROPERTIES LABELS "${levellabel}\\;${component}" ${fixtureproperties}
 			)
 	#gtest_discover_tests lists the names of the cases in <target>_TESTS, once ctest has read them.
 	string(CONFIGURE [=[

@@ -17,7 +17,8 @@ directories of the targets created after it.
 include("${CMAKE_CURRENT_LIST_DIR}/Support/TestRegistration.cmake")
 
 # No test may modify Examples/Models: its files are hashed before the tests and compared after them
-# (Support/TestsDataSnapshot.cmake). Every system test and benchmark requires this fixture.
+# (Support/TestsDataSnapshot.cmake). Every system test and benchmark requires this fixture, and every integration
+# test that reads these models (registergoogletests with EXAMPLES_MODELS, Support/TestRegistration.cmake).
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/tests")
 set(FMTTESTSsnapshot "${CMAKE_BINARY_DIR}/tests/ExamplesModels.snapshot")
 add_test(

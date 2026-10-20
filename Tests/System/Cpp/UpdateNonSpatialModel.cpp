@@ -6,19 +6,40 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include <vector>
+#include "TestTools.h"
 #ifdef FMTWITHOSI
+	#include <filesystem>
+	#include <string>
 	#include "FMTLpModel.h"
 	#include "FMTModelParser.h"
-	#include "FMTVersion.h"
 	#include "FMTDefaultLogger.h"
 	#include "FMTConstraint.h"
-	#include "FMTFreeExceptionHandler.h"
 	#include "FMTActualDevelopment.h"
 	#include "FMTTimeYieldHandler.h"
 	#include "FMTData.h"
-	#include "FMTConstraint.h"
 	#include "FMTBounds.hpp"
 	#include <boost/algorithm/string.hpp>
+
+// Checks a solved model moved to a later period, as a replanning does: its area becomes the area of the solution at
+// that period (FMTLpModel::getArea), its constraints, actions, transitions and time yields are shifted by as many
+// periods, and it is written by FMTModelParser::write. The area of the model moved must be the total area of the
+// inventory, and the model read back from what was written must have this area and the shifted constraints.
+//
+// argv[1]: the primary file, TWD_land by default.
+// argv[2]: the scenario, LP_uddate by default.
+// argv[3]: the total area of its inventory, computed by hand from its area section.
+namespace
+{
+	double getTotalArea(const std::vector<Core::FMTActualDevelopment>& p_area)
+	{
+		double totalArea = 0.0;
+		for (const Core::FMTActualDevelopment& development : p_area)
+		{
+			totalArea += development.getArea();
+		}
+		return totalArea;
+	}
+}
 
 bool keepandupdate(Core::FMTSpec& spec, const int& updateto)
 {
@@ -43,21 +64,22 @@ bool keepandupdate(Core::FMTSpec& spec, const int& updateto)
 }
 #endif
 
-
-
-
 int main(int argc, char *argv[])
 {
 #ifdef FMTWITHOSI
-	Logging::FMTDefaultLogger().logStamp();
-	
-	if (Version::FMTVersion().hasFeature("OSI"))
-	{
-		const std::string folder = "../../../../Examples/Models/TWD_land/";
-		const std::string primarylocation = folder + "TWD_land.pri";
-		const std::string scenario = "LP_uddate";
+	return Testing::runTest([&]()
+		{
+		// Arrange
+		Logging::FMTDefaultLogger().logStamp();
+		const std::string primarylocation = (argc > 1) ? argv[1] : "../../../../Examples/Models/TWD_land/TWD_land.pri";
+		const std::string scenario = (argc > 2) ? argv[2] : "LP_uddate";
+		const double EXPECTED_TOTAL_AREA = (argc > 3) ? std::stod(argv[3]) : 1814.76;
+		const double AREA_TOLERANCE = 1e-4;
 		const int length = 5;
 		const int updateto = 3;
+		const std::filesystem::path OUTPUT_FOLDER = "../../tests/UpdateNonSpatialModel/";
+		std::filesystem::remove_all(OUTPUT_FOLDER);
+		std::filesystem::create_directories(OUTPUT_FOLDER);
 		Parser::FMTModelParser modelparser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -73,7 +95,9 @@ int main(int argc, char *argv[])
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,length);
 		optimizationmodel.FMTModel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
-		optimizationmodel.doPlanning(true);
+		const bool SOLVED = optimizationmodel.doPlanning(true);
+
+		// Act
 		const std::vector<Core::FMTActualDevelopment>newarea = optimizationmodel.getArea(updateto);
 		optimizationmodel.setArea(newarea);
 		std::vector<Core::FMTConstraint>constraints;
@@ -150,12 +174,22 @@ int main(int argc, char *argv[])
 			}
 		}
 		optimizationmodel.setYields(yields);
-		modelparser.write(optimizationmodel,"../../tests/UpdateNonSpatialModel/");
+		modelparser.write(optimizationmodel, OUTPUT_FOLDER.string());
+		const Models::FMTModel REREAD = modelparser.readproject((OUTPUT_FOLDER / (optimizationmodel.getName() + ".pri")).string(),
+			std::vector<std::string>(1, "ROOT")).at(0);
 
-
-	}else {
-		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
-	}
-#endif 
-	return 0;
+		// Assert
+		Testing::Checker checker;
+		checker.check(SOLVED, scenario + " is solved over " + std::to_string(length) + " periods");
+		checker.checkNear(getTotalArea(optimizationmodel.getArea()), EXPECTED_TOTAL_AREA, AREA_TOLERANCE,
+			"total area of the model moved to period " + std::to_string(updateto));
+		checker.check(REREAD.getArea().size() == optimizationmodel.getArea().size(),
+			std::to_string(REREAD.getArea().size()) + " developments read back, " + std::to_string(optimizationmodel.getArea().size()) + " written");
+		checker.checkNear(getTotalArea(REREAD.getArea()), EXPECTED_TOTAL_AREA, AREA_TOLERANCE, "total area read back");
+		checker.check(REREAD.getConstraints() == optimizationmodel.getConstraints(), "shifted constraints read back");
+		return checker.exitCode();
+		});
+#else
+	return Testing::skip("FMT is compiled without OSI");
+#endif
 }
