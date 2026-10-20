@@ -24,7 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 // The disabled cases fail on a behavior of FMTlib, named above each of them.
 
 // Disabled: the yield YBM_RTM_F, a _SUM in a block with a numeric equation, is written _EQUATION(YBM_RTM_BOGYBM_RTM_MEH)
-// and read back as 0 (#347), and the objective _MIN _PENALTY(...) is written _MIN y_PENALTY(...) (see
+// and read back as 0 (#347), and the objective _MIN _PENALTY(...) is written _MIN y_PENALTY(...) (#379, see
 // GivenAPenaltyObjectiveWithoutSignWhenWriteThenRereadsTheSameObjective).
 TEST(FMTModelParser, DISABLED_GivenTheRootModelWhenWriteThenRereadsTheSameModelAndRewritesTheSameFiles)
 {
@@ -124,7 +124,8 @@ TEST(FMTModelParser, GivenADistanceYieldAndARatioOfInventoryOutputsWhenWriteThen
     Testing::expectSameFiles(roundTrip.firstFiles, roundTrip.secondFiles);
 }
 
-// Disabled: a _RANDOM(<output>) constraint is written without _RANDOM, and read back as a standard constraint.
+// Disabled: a _RANDOM(<output>) constraint is written without _RANDOM, and read back as a standard constraint
+// (#382).
 TEST(FMTModelParser, DISABLED_GivenRandomActionConstraintsWhenWriteThenRereadsTheSameModelAndRewritesTheSameFiles)
 {
     // Arrange
@@ -140,7 +141,7 @@ TEST(FMTModelParser, DISABLED_GivenRandomActionConstraintsWhenWriteThenRereadsTh
 }
 
 // The scenario transitions takes the yields and the objective of the root, which do not survive a round trip (#347
-// and the objective _PENALTY): this case compares its transitions only.
+// and #379): this case compares its transitions only.
 TEST(FMTModelParser, GivenSplitTargetsAgesLocksAndSourceConditionsWhenWriteThenRereadsTheSameTransitions)
 {
     // Arrange
@@ -171,7 +172,7 @@ TEST(FMTModelParser, GivenThousandsSeparatorsAndListsOfPeriodsWhenWriteThenRerea
 }
 
 // Disabled: the objective _MIN _PENALTY(caribou,recolte) of the root is written _MIN y_PENALTY(CARIBOU,RECOLTE), the
-// last letter of Penalty taking the place of the missing sign (FMTConstraint::operator std::string).
+// last letter of Penalty taking the place of the missing sign (FMTConstraint::operator std::string, #379).
 TEST(FMTModelParser, DISABLED_GivenAPenaltyObjectiveWithoutSignWhenWriteThenRereadsTheSameObjective)
 {
     // Arrange
@@ -202,7 +203,7 @@ TEST(FMTModelParser, GivenOutputsBuiltByForLoopsWhenWriteThenRereadsTheSameOutpu
 }
 
 // Disabled: an output that mixes inventory and action sources is written as hidden outputs ~<name><n>IN and
-// ~<name><n>OUT, which a read takes as outputs of the model and a second write repeats.
+// ~<name><n>OUT, which a read takes as outputs of the model and a second write repeats (#381).
 TEST(FMTModelParser, DISABLED_GivenARatioOfAnInventoryOutputToAnActionOutputWhenWriteThenRereadsTheSameOutputs)
 {
     // Arrange
@@ -218,9 +219,9 @@ TEST(FMTModelParser, DISABLED_GivenARatioOfAnInventoryOutputToAnActionOutputWhen
 }
 
 // Disabled: a _DISCOUNTFACTOR is written as a series of its parameters, DISCOUNTFULL 1 0.04 5, so that the model
-// read back has a rate of 0.04 at period 1 and 5 at period 2 (FMTTimeYieldHandler::operator std::string). The
-// scenario timeyields takes the yield YBM_RTM_F and the objective of the root (#347 and the objective _PENALTY):
-// this case compares the discount factors only.
+// read back has a rate of 0.04 at period 1 and 5 at period 2 (FMTTimeYieldHandler::operator std::string, #380).
+// The scenario timeyields takes the yield YBM_RTM_F and the objective of the root (#347 and #379): this case
+// compares the discount factors only.
 TEST(FMTModelParser, DISABLED_GivenDiscountFactorsWhenWriteThenRereadsTheirValues)
 {
     // Arrange
@@ -235,7 +236,7 @@ TEST(FMTModelParser, DISABLED_GivenDiscountFactorsWhenWriteThenRereadsTheirValue
 }
 
 // Disabled: a *YT block whose only yield is a _DISCOUNTFACTOR has no base, and its writing throws (invalid vector
-// subscript, FMTTimeYieldHandler::operator std::string).
+// subscript, FMTTimeYieldHandler::operator std::string, #380).
 TEST(FMTModelParser, DISABLED_GivenADiscountRateFromAConstantWhenWriteThenWritesTheModel)
 {
     // Arrange
@@ -287,7 +288,7 @@ TEST(FMTModelParser, GivenAProjectWhenWriteToProjectThenRereadsTheScenarioAsTheM
 }
 
 // Disabled: writeToProject writes the sections of a scenario that differ from the root, and the yields always
-// differ, since FMTYields::operator== compares the addresses of their handlers: the yields are written too.
+// differ, since FMTYields::operator== compares the addresses of their handlers: the yields are written too (#383).
 TEST(FMTModelParser, DISABLED_GivenAScenarioThatOnlyChangesItsObjectiveWhenWriteToProjectThenWritesItsOptimizeAndScheduleSectionsOnly)
 {
     // Arrange

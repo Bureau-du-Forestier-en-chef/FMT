@@ -146,7 +146,7 @@ est, et quel lot s'en charge :
 | Absence d'allocation, concurrence | non fait | 9 |
 | Portabilité Linux et Clang | non fait ; la suite ne tourne que sous Windows, et le dépôt n'a pas d'intégration continue visible | 9 |
 | Couverture publiée | non fait ; informative après un lot, consignée dans la documentation aux versions | 9 |
-| Tests de caractérisation avant refonte | fait pour quatre défauts (section 2.7), puis cinq défauts d'écriture au lot 5 (section 2.7, défauts 6 à 10), à étendre | continu |
+| Tests de caractérisation avant refonte | fait pour quatre défauts (section 2.7), puis cinq défauts d'écriture au lot 5 (section 2.7, défauts 6 à 10, #379 à #383), à étendre | continu |
 
 À chaque lot, noter au journal ce qu'il apporte à #350. Les conditions de fermeture sont en
 section 6.3.10 ; le jour venu, écrire ici ce qui l'a fermée et ce que ce chantier reprend ou
@@ -662,31 +662,32 @@ Démonstrations refaites le
 **Défauts d'écriture révélés par le lot 5 (2026-10-19).** Cinq défauts de `FMTModelParser::write`,
 révélés par les allers-retours de `IntegrationParser` (section 5.7) et démontrés avec les exécutables
 du build (A/B, exécutable officiel, origine git). Chacun a un cas `DISABLED_` dans
-`Tests/Integration/Parser/FMTModelParser.cpp`, pas de ligne `knownbugs.csv`, et une issue rédigée
-pour Gabriel, qui l'ouvre (règle 3). Aucun n'est corrigé dans ce chantier.
+`Tests/Integration/Parser/FMTModelParser.cpp`, pas de ligne `knownbugs.csv`, et son issue, #379 à
+#383, ouvertes par Gabriel le 2026-10-20 (règle 3), dont les numéros sont aussi dans les commentaires
+des cas. Aucun n'est corrigé dans ce chantier.
 
-6. **Objectif `_PENALTY` sans signe réécrit `y_PENALTY`** : `FMTConstraint::operator std::string`
+6. **Objectif `_PENALTY` sans signe réécrit `y_PENALTY` (issue #379)** : `FMTConstraint::operator std::string`
    reprend le dernier caractère du nom `Penalty<opérateur>_<variable>`, `y` quand l'opérateur est
    vide. Relu, l'opérateur vaut `Y`, traité comme `+` : même optimum, objectif relu différent. Depuis
    `2e3dc129` (2019-06-07). Cas `GivenAPenaltyObjectiveWithoutSignWhenWriteThenRereadsTheSameObjective`.
-7. **`_DISCOUNTFACTOR` réécrit en série temporelle de ses paramètres** (`DISCOUNTFULL 1 0.04 5`),
+7. **`_DISCOUNTFACTOR` réécrit en série temporelle de ses paramètres (issue #380)** (`DISCOUNTFULL 1 0.04 5`),
    silencieux : relu, `DISCOUNTFULL` vaut 0,04 à la période 1 et 5 à la période 2. Et l'écriture
    lève (« invalid vector subscript ») quand le bloc `*YT` n'a pas de base, comme dans
    `discountconstant`. `FMTTimeYieldHandler::operator std::string` ignore l'opérateur du `FMTData` ;
    série depuis `d5ef0e2e` (2019-11-15), plantage depuis `949f301f` (2022-12-08). Cas
    `GivenDiscountFactorsWhenWriteThenRereadsTheirValues` et
    `GivenADiscountRateFromAConstantWhenWriteThenWritesTheModel`.
-8. **Sorties cachées d'un output écrites comme des outputs** : `FMTOutput::_toWsFormat` (sources
+8. **Sorties cachées d'un output écrites comme des outputs (issue #381)** : `FMTOutput::_toWsFormat` (sources
    d'inventaire et d'action mêlées, `~RATIO0IN`, `~RATIO1OUT` dans `TSLA`) et `_operatorFormat`
    (opérateurs enchaînés, `~<nom>_<n>` dans `division`, `level`...) ; relues comme des outputs, elles
    sont répétées ou redécoupées à chaque réécriture. Même optimum sur `TSLA`. Depuis `4261a23e`
    (2024-07-30) et `3a589899` (2024-09-10). Cas
    `GivenARatioOfAnInventoryOutputToAnActionOutputWhenWriteThenRereadsTheSameOutputs`.
-9. **`_RANDOM(<output>)` réécrite sans `_RANDOM`** : le type `FMTrandomaction`, marqué « need to be
+9. **`_RANDOM(<output>)` réécrite sans `_RANDOM` (issue #382)** : le type `FMTrandomaction`, marqué « need to be
    deleted » dans `Include/FMTConstraint.h`, est écrit comme une contrainte ordinaire et relu comme
    tel. Depuis `95a9185e` (2021-01-22). Cas
    `GivenRandomActionConstraintsWhenWriteThenRereadsTheSameModelAndRewritesTheSameFiles`.
-10. **`FMTYields::operator==` compare les adresses des gestionnaires** (`std::unique_ptr` dans la
+10. **`FMTYields::operator==` compare les adresses des gestionnaires (issue #383)** (`std::unique_ptr` dans la
     `FMTList`) : deux copies d'un modèle sont inégales (`FMTModel::operator==`), et `writeToProject`
     écrit le `._yld` de chaque scénario, même identique à la racine (`WrapperCoreWriteToProject` le
     montre sur ses deux copies). Depuis `2cbb45a6` (2021-10-29). Cas
@@ -694,7 +695,7 @@ pour Gabriel, qui l'ouvre (règle 3). Aucun n'est corrigé dans ce chantier.
 
 Le comportement connu de #347 bloque aussi l'aller-retour de la racine et des scénarios qui gardent
 son `.yld` : `YBM_RTM_F`, écrit `_EQUATION(YBM_RTM_BOGYBM_RTM_MEH)`, se relit 0 (cas désactivé
-`GivenTheRootModelWhenWriteThenRereadsTheSameModelAndRewritesTheSameFiles`, avec le défaut 6). #346 ne
+`GivenTheRootModelWhenWriteThenRereadsTheSameModelAndRewritesTheSameFiles`, avec le défaut 6, #379). #346 ne
 change rien à l'aller-retour : l'expression est réécrite telle qu'elle a été lue.
 
 Dans TWD_land, `YBM_RTM_BOG`, `YBM_RTM_MEH` et `YBM_RTM_F` ne servent qu'à l'output `TOTALCAR`,
@@ -735,7 +736,7 @@ période, `setSolution` ligne à ligne, et toute la lacune 8, objet du lot 5.
 (sections, valeurs des yields) et les deux écritures, fichier par fichier : 6 scénarios entiers et 3
 sections (transitions, contraintes, outputs) passent, `writeToProject` est vérifié sur un projet neuf
 et sur un scénario ajouté, et une cédule l'est par écriture simple et par ajout. 7 cas sont
-désactivés, sur #347 et sur les défauts 6 à 10 de la section 2.7. Au niveau système,
+désactivés, sur #347 et sur les défauts 6 à 10 de la section 2.7 (#379 à #383). Au niveau système,
 `WriteAndReadProject`, `SolveAndWriteSchedules`, `UpdateNonSpatialModel` et `CreateModel` vérifient ce
 qu'ils écrivent. Détail en section 5.7.
 
@@ -1249,7 +1250,7 @@ Pas de ligne de dette ni d'issue.
   (`build/release/tests/IntegrationParser/<cas>/`), lecture d'un scénario, aller-retour
   (`writeRereadAndRewrite`), comparaison des fichiers ligne à ligne (reprise de
   `ReadScenariosTogether`), des sections par leur `operator==`, et des yields par leurs valeurs.
-- Les yields se comparent par valeurs, car `FMTYields::operator==` compare des adresses (défaut 10 de
+- Les yields se comparent par valeurs, car `FMTYields::operator==` compare des adresses (#383, défaut 10 de
   la section 2.7) : tout yield du modèle lu, hors noms en `_` et `~`, pour chaque développement de
   l'inventaire, aux âges 0 à 30 et aux périodes 1 à 3, à 1e-9 près en relatif ; un yield qui lève doit
   lever des deux côtés. Une requête par appel : une `FMTYieldRequest` garde le premier `FMTYields` qui
@@ -1259,24 +1260,24 @@ Pas de ligne de dette ni d'issue.
 
 | Cas | Scénario | Vérifie | État |
 |---|---|---|---|
-| `GivenTheRootModelWhenWrite…ThenRereadsTheSameModelAndRewritesTheSameFiles` | ROOT | modèle et fichiers | désactivé : #347, défaut 6 |
+| `GivenTheRootModelWhenWrite…ThenRereadsTheSameModelAndRewritesTheSameFiles` | ROOT | modèle et fichiers | désactivé : #347, #379 |
 | `GivenYieldsOnNegatedMasks…` | `NOT_MASK` | modèle et fichiers | vert |
 | `GivenEquationsInYieldsOutputsAndConstraints…` | `equation` | modèle et fichiers | vert |
 | `GivenItsOwnLandscapeActionsAndTimeYields…` | `COS` | modèle et fichiers | vert |
 | `GivenAMeanAnnualIncrementYield…` | `mai` | modèle et fichiers | vert |
 | `GivenAShiftedYield…` | `Shift` | modèle et fichiers | vert |
 | `GivenADistanceYieldAndARatioOfInventoryOutputs…` | `DISTANCE` | modèle et fichiers | vert |
-| `GivenRandomActionConstraints…` | `COMPLEX_NSS` | modèle et fichiers | désactivé : défaut 9 |
+| `GivenRandomActionConstraints…` | `COMPLEX_NSS` | modèle et fichiers | désactivé : #382 |
 | `GivenSplitTargetsAgesLocksAndSourceConditions…ThenRereadsTheSameTransitions` | `transitions` | transitions et `.trn` | vert |
 | `GivenThousandsSeparatorsAndListsOfPeriods…ThenRereadsTheSameConstraints` | `stdconstraints` | contraintes et `.opt` | vert |
-| `GivenAPenaltyObjectiveWithoutSign…ThenRereadsTheSameObjective` | ROOT | contraintes et `.opt` | désactivé : défaut 6 |
+| `GivenAPenaltyObjectiveWithoutSign…ThenRereadsTheSameObjective` | ROOT | contraintes et `.opt` | désactivé : #379 |
 | `GivenOutputsBuiltByForLoops…ThenRereadsTheSameOutputs` | `ForLoops` | outputs et `.out` | vert |
-| `GivenARatioOfAnInventoryOutputToAnActionOutput…ThenRereadsTheSameOutputs` | `TSLA` | outputs et `.out` | désactivé : défaut 8 |
-| `GivenDiscountFactors…ThenRereadsTheirValues` | `timeyields` | valeurs des `DISCOUNT*` | désactivé : défaut 7 |
-| `GivenADiscountRateFromAConstant…ThenWritesTheModel` | `discountconstant` | `write` ne lève pas | désactivé : défaut 7 |
+| `GivenARatioOfAnInventoryOutputToAnActionOutput…ThenRereadsTheSameOutputs` | `TSLA` | outputs et `.out` | désactivé : #381 |
+| `GivenDiscountFactors…ThenRereadsTheirValues` | `timeyields` | valeurs des `DISCOUNT*` | désactivé : #380 |
+| `GivenADiscountRateFromAConstant…ThenWritesTheModel` | `discountconstant` | `write` ne lève pas | désactivé : #380 |
 | `GivenNoPrimaryFileWhenWriteToProjectThenWritesTheSameFilesAsWrite` | `NOT_MASK` | fichiers de `writeToProject` = ceux de `write` | vert |
 | `GivenAProjectWhenWriteToProjectThenRereadsTheScenarioAsTheModelWritten` | `NOT_MASK`, puis `equation` en scénario | modèle relu du projet et fichiers | vert |
-| `GivenAScenarioThatOnlyChangesItsObjectiveWhenWriteToProject…OnlyItsOptimizeAndScheduleSections` | `NOT_MASK` modifié | sections écrites du scénario | désactivé : défaut 10 |
+| `GivenAScenarioThatOnlyChangesItsObjectiveWhenWriteToProject…OnlyItsOptimizeAndScheduleSections` | `NOT_MASK` modifié | sections écrites du scénario | désactivé : #383 |
 
 Les scénarios qui gardent le `.yld` de la racine (`transitions`, `stdconstraints`, `ForLoops`) ne
 sont comparés que sur leur section, sans quoi #347 les ferait tous échouer : ce n'est pas un
@@ -1350,6 +1351,27 @@ caractérisés par des cas désactivés, des tests de caractérisation avant cor
 `WrapperCoreWriteToProject` ne vide pas son dossier de sortie, si bien que ses passages suivants
 écrivent le modèle comme scénario d'un projet resté du premier (fichiers racine du 2026-10-16).
 
+**Validation après le build de Gabriel** (2026-10-20, commit `90ef4ad2` de Gabriel, FMTlib inchangé
+depuis le 2026-10-16) :
+- passage de l'installation (`INSTALL_TEST_SUITE=public`) : 300 tests, 0 échec, 281 exécutés et 19
+  désactivés, 21 s. `InstallTests.xml`, `InstallTests.json`, `LastTest.log` et
+  `LastTestsDisabled.log` copiés dans le scratchpad de la session avant tout appel de ctest ;
+- `ctest --preset <p> -N` : `unit` 7, `integration` 22 (les 20 cas et les 2 fixtures, que la
+  fixture `ExamplesModels` amène), `system` 250, `system-private` 94, `performance` 25, `all-public`
+  300 ; 19 désactivés dans `all-public`, dont les 7 cas `Integration.`, et aucun nom en `T:/` ;
+- `RunTests.bat all-public` : « 0 tests failed out of 281 », 13,8 s réelles ; tableau unit 7 verts,
+  **integration 13 verts et 7 désactivés sur 20**, system 236 verts et 12 désactivés sur 248,
+  performance 23, other 2 ; Total 281 verts et 19 désactivés sur 300. Les comptes ne changent que des
+  20 cas ajoutés, dont les 7 désactivés, justifiés en section 2.7 ; les 7 lignes système renommées
+  passent, et la fixture `ExamplesModelsUnchanged` est verte ;
+- issues ouvertes par Gabriel le 2026-10-20 : #379 (`_PENALTY`), #380 (`_DISCOUNTFACTOR`), #381
+  (sorties cachées), #382 (`_RANDOM`), #383 (`FMTYields::operator==`). Leurs numéros sont dans les
+  commentaires des cas désactivés et en section 2.7 (commentaires seuls : la recompilation hors dépôt
+  des deux sources ne donne ni erreur ni avertissement) ;
+- non relue : la console de la configuration de Gabriel. L'absence de ligne ignorée se déduit des
+  250 tests `system` : 240 lignes CSV publiques, `UseExcelCache`, les 7 tests Python et les 2
+  fixtures, comme avant le lot.
+
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
@@ -1357,12 +1379,14 @@ caractérisés par des cas désactivés, des tests de caractérisation avant cor
 - **La réorganisation en trois niveaux est terminée** (section 9, ce qui reste ouvert en 9.7) ;
   elle part vers `master` par une demande de tirage. Le lot 6 y est devenu la phase 8. La feuille
   de route reprend au lot 5.
-- **Lot 5 livré le 2026-10-19** (section 5.7), en attente du build de Gabriel et de sa validation :
-  premier niveau intégration (`IntegrationParser`, 20 cas dont 7 désactivés), vérifications de
-  `WriteAndReadProject`, `SolveAndWriteSchedules`, `CreateModel`, `UpdateNonSpatialModel` et
-  `AddYieldHandlers`, cinq défauts d'écriture dont les issues sont à ouvrir (section 2.7, défauts 6 à
-  10). Ne pas pousser `new_test` tant que la demande de tirage de la réorganisation n'est pas
-  fusionnée, ou commiter le lot sur une branche à part.
+- **Lot 5 livré, commité (`90ef4ad2`) et validé le 2026-10-20** (section 5.7) : premier niveau
+  intégration (`IntegrationParser`, 20 cas dont 7 désactivés), vérifications de `WriteAndReadProject`,
+  `SolveAndWriteSchedules`, `CreateModel`, `UpdateNonSpatialModel` et `AddYieldHandlers`, cinq défauts
+  d'écriture, issues #379 à #383 (section 2.7, défauts 6 à 10). Suite publique : 300 tests, 281 verts
+  et 19 désactivés.
+- **Commits de tests sur `new_test` (Gabriel, 2026-10-20)** : ajouter des commits qui ajoutent des
+  tests et renforcent la protection de FMT n'est pas un problème, même avant la fusion de la demande
+  de tirage de la réorganisation.
 - Lots 0 à 4 et phase 8 livrés, validés et commités ; rien ne bloque. Suite publique avant le lot 5 :
   280 tests, 268 verts, dont 7 unitaires, et 12 désactivés. #357 est corrigé (`15427a6d`), avec #374 que sa
   vérification a révélé (`62f9e288`) ; #346, #347 et #358 sont des comportements connus, dont les
@@ -1438,9 +1462,9 @@ Quand les corrections seront faites, la session de tests reprend ainsi :
 niveau intégration (`IntegrationParser`, décision de Gabriel), pas dans un exécutable de
 `Tests/System/Cpp/` ; ils comparent aussi le modèle relu au modèle écrit, car un défaut de la première
 écriture se relit et se réécrit à l'identique ; et ce qui désactive des cas est #347 (le `_SUM` de
-`YBM_RTM_F`) et cinq défauts nouveaux, dont l'objectif `_PENALTY` (section 2.7, défauts 6 à 10), et
+`YBM_RTM_F`) et cinq défauts nouveaux, dont l'objectif `_PENALTY` (section 2.7, défauts 6 à 10, #379 à #383), et
 non #346, que le plan nommait aussi. Les cas désactivés sont des `DISABLED_`, pas des lignes de
-`knownbugs.csv`. Reste la validation après le build de Gabriel.
+`knownbugs.csv`. Validé après le build de Gabriel le 2026-10-20 (section 5.7) ; issues #379 à #383.
 
 - **Pourquoi.** C'est la dernière étape de la chaîne de la section 0.1 sans aucun test de valeur.
   FMT écrit des modèles que d'autres relisent : sauvegarde depuis l'interface, modèle présolvé écrit
@@ -1725,13 +1749,13 @@ abandonne.
 - **Écriture** (relevé au lot 2, testé au lot 5) :
   - `_SUM(YBM_RTM_BOG,YBM_RTM_MEH)` est réécrit `_EQUATION(YBM_RTM_BOGYBM_RTM_MEH)` sans
     opérateur, que la relecture remplace par 0 (#347) ;
-  - l'objectif `_MIN _PENALTY(...)` est réécrit `_MIN y_PENALTY(...)` (section 2.7, défaut 6) ;
-  - quatre autres défauts d'écriture, révélés au lot 5 : section 2.7, défauts 7 à 10 ;
+  - l'objectif `_MIN _PENALTY(...)` est réécrit `_MIN y_PENALTY(...)` (#379, section 2.7, défaut 6) ;
+  - quatre autres défauts d'écriture, révélés au lot 5 : section 2.7, défauts 7 à 10 (#380 à #383) ;
   - écrire, relire et réécrire ne suffit pas : un défaut de la première écriture peut se relire et se
-    réécrire à l'identique (`_DISCOUNTFACTOR`, défaut 7). Comparer aussi le modèle relu au modèle
+    réécrire à l'identique (`_DISCOUNTFACTOR`, #380). Comparer aussi le modèle relu au modèle
     écrit (`Tests/Integration/Parser/ParserRoundTrip.h`).
 - **`FMTYields` ne se compare pas** : `operator==` compare les adresses des gestionnaires (section
-  2.7, défaut 10), si bien que deux copies sont inégales. Comparer des valeurs de yields.
+  2.7, défaut 10, #383), si bien que deux copies sont inégales. Comparer des valeurs de yields.
 - **`FMTYieldRequest` garde le premier `FMTYields` qui l'a servie** (`_updateData`), avec des
   itérateurs vers lui. Réutilisée avec un autre objet de yields, elle lit le premier ; réutilisée
   après la destruction de la copie que rend `FMTModel::getYields()`, elle lit de la mémoire libérée
@@ -1769,7 +1793,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-09-18 (lot 4) | 226 (208 lignes, 15 désactivées, 2 fixtures, `UnitTestFMTexcelcache`) | 22,0 s réelles ; 169,2 s cumulées | 52 | 17 | 3 | 0 | 15 | 25 |
 | 2026-10-15 (#357, `15427a6d`) | 270 `all-public` (266 + 4 lignes `DISCOUNT*`) ; résumé : system 233 verts et 12 désactivés sur 245, performance 23, other 2 | 27,1 s réelles | — | — | — | — | 12 | — |
 | 2026-10-15 (taux décimal, `62f9e288`) | 273 `all-public` (270 + 3 lignes `DISCOUNT*`) ; résumé : system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 13,2 s réelles | — | — | — | — | 12 | — |
-| 2026-10-19 (lot 5, **attendu avant le build**, à remplacer par la mesure) | 300 `all-public` (280 + 20 cas `Integration.`) ; résumé attendu : unit 7, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | — | — | 13 | 2 | 0 | 19 | — |
+| 2026-10-20 (lot 5, `90ef4ad2`) | 300 `all-public` (280 + 20 cas `Integration.`) ; résumé : unit 7, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 13,8 s réelles | — | 13 | 2 | 0 | 19 | —
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).

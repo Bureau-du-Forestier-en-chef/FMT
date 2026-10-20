@@ -160,7 +160,7 @@ namespace Testing
     }
 
     // Expects two models to have the same sections, compared by their operator==. The yields are compared by
-    // their values (expectSameYieldValues): FMTYields::operator== compares the addresses of their handlers.
+    // their values (expectSameYieldValues): FMTYields::operator== compares the addresses of their handlers (#383).
     inline void expectSameSections(const Models::FMTModel& p_read, const Models::FMTModel& p_reread)
     {
         EXPECT_TRUE(p_read.getThemes() == p_reread.getThemes()) << "the themes differ";
