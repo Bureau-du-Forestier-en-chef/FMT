@@ -1,0 +1,13 @@
+TEST;primarylocation;scenario;doublevalue;given;then
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PRECEDENCE;18;;APowerAfterAProductInAnEquation;AppliesThePowerFirst
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|YIELD|UNITE1 PEUPLEMENT1 UTR1|1|YBM_RTM_BOG;9.05365226732;;APowerAfterAProductInARootYield;AppliesThePowerFirst
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUMOFYIELDS;11;;ASumOfTwoNumericEquations;AddsThem
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUMWITHCONSTANT;10;;ASumWithANumberBesideANumericEquation;AddsTheNumber
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUMOFAGEYIELDS;240;;ASumOfTwoAgeYieldsBesideANumericEquation;AddsThem
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PRODUCT;30;;AProductOfTwoNumericEquations;MultipliesThem
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|QUOTIENT;1.2;;AQuotientOfTwoNumericEquations;DividesThem
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUBTRACTION;1;;ASubtractionOfTwoNumericEquations;SubtractsThem
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|INRANGE;1;;AYieldInsideARangeBesideANumericEquation;ReturnsOne
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|GROWTH;17.14285714;;AMeanAnnualIncrementBesideANumericEquation;DividesTheYieldByTheAge
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|CONSTANT;6;;AnEquationWithAConstant;UsesTheValueOfTheConstant
+ReadInvalidScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_sourcecondition;31;;ATransitionSourceConditionInTheActionForm;RejectsIt

@@ -39,15 +39,7 @@ if (FMTWRAPPERCORE_SOURCES)
     #target_include_directories(FMTWrapper PRIVATE "${FMTINCLUDEDIR}")
 	# Lier FMTWrapperCore à FMTlib
 	target_link_libraries(FMTWrapperCore PRIVATE FMTlib)
-
-	if (NOT WITHOUT_TESTS)
-    		FILE(GLOB FMTWrapperCore_tests ${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/tests/*.cpp)
-    		foreach(pathtosource ${FMTWrapperCore_tests})
-        		createexecutable("${pathtosource}" executablename)
-        		target_link_libraries(${executablename} PRIVATE FMTWrapperCore)
-        		target_include_directories(${executablename} PRIVATE ${WrapperCoreINCLUDEDIR})
-    		endforeach()
-endif()
+	#Its tests are created by Tests/System/Cpp/CMakeLists.txt, from Tests/System/Cpp/FMTWrapperCore
 
 else()
     message("No source files found for FMTWrapperCore in ${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/Source")

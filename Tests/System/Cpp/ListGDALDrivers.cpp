@@ -1,0 +1,71 @@
+/*
+Copyright (c) 2019 Gouvernement du Québec
+
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+*/
+
+#include <vector>
+#include <algorithm>
+#ifdef FMTWITHGDAL
+	#include "FMTAreaParser.h"
+	#include "FMTFreeExceptionHandler.h"
+#endif
+#include "FMTDefaultLogger.h"
+
+int main(int argc, char* argv[])
+{
+	#ifdef FMTWITHGDAL
+		Logging::FMTDefaultLogger().logStamp();
+		std::string DriverType;
+		std::string DriverName;
+		std::string DriverExtension;
+		if (argc>1)
+			{
+				DriverType = argv[1];
+				DriverName = argv[2];
+				DriverExtension = argv[3];
+			}else{
+				DriverType = "vector";
+				DriverName = "ESRI Shapefile";
+				DriverExtension = "shp";
+			}
+		Parser::FMTAreaParser AreaParser;
+		std::vector<std::string>Drivers;
+		std::vector<std::string>Extensions;
+		if (DriverType == "vector")
+			{
+				Drivers = AreaParser.getGDALVectorDriverNames();
+				std::vector<std::vector<std::string>> LocalExtensions = AreaParser.getGDALVectorDriverExtensions();
+				for (const std::vector<std::string>& ExtV : LocalExtensions)
+				{
+					for (const std::string& Ext : ExtV)
+					{
+						Extensions.push_back(Ext);
+					}
+				}
+			}else{
+				Drivers = AreaParser.getGDALRasterDriverNames();
+				std::vector<std::vector<std::string>> LocalExtensions = AreaParser.getGDALRasterDriverExtensions();
+				for (const std::vector<std::string>& ExtV : LocalExtensions)
+				{
+					for (const std::string& Ext : ExtV)
+					{
+						Extensions.push_back(Ext);
+					}
+				}
+			}
+		if (std::find(Drivers.begin(),Drivers.end(),DriverName)==Drivers.end())
+			{
+			Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cant find driver "+DriverName,
+				"testgdaldrivers", __LINE__,__FILE__);
+			}
+		if (std::find(Extensions.begin(), Extensions.end(), DriverExtension) == Extensions.end())
+			{
+			Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cant find driver extension " + DriverExtension,
+				"testgdaldrivers", __LINE__, __FILE__);
+			}
+
+	#endif
+	return 0;
+}

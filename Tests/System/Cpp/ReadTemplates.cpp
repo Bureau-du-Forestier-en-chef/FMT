@@ -1,0 +1,68 @@
+/*
+Copyright (c) 2019 Gouvernement du Québec
+
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+*/
+
+#include <vector>
+#ifdef FMTWITHOSI
+	#include "FMTTaskHandler.h"
+	#include "FMTPlanningTask.h"
+	#include "FMTLpModel.h"
+	#include "FMTNssModel.h"
+	#include "FMTFreeExceptionHandler.h"
+	#include "FMTModelParser.h"
+#endif
+#include "FMTDefaultLogger.h"
+
+int main(int argc, char *argv[])
+	{
+	#ifdef FMTWITHOSI
+		Logging::FMTDefaultLogger().logStamp();
+		std::string primlocation;
+		std::string templatefolder;
+		int length;
+		if (argc > 1) 
+		{
+			primlocation = argv[1];
+			templatefolder = argv[2];
+			length = std::stoi(argv[3]);
+		}
+		else
+		{
+			primlocation = "T:\\Donnees\\Usagers\\FILDO1\\Modele_pour_Remsoft\\01272\\PC_9936_U01272_2028_MODB01.pri";
+			templatefolder = "T:\\Donnees\\Usagers\\FILDO1\\Modele_pour_Remsoft\\01272\\Scenarios";
+			length = 30;
+		}
+		Parser::FMTModelParser modelparser;
+		std::vector<Exception::FMTexc> errors;
+		errors.push_back(Exception::FMTexc::FMTmissingyield);
+		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
+		errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+		errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+		errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
+		errors.push_back(Exception::FMTexc::FMToveridedyield);
+		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
+		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
+		modelparser.setErrorsToWarnings(errors);
+		const std::vector<Models::FMTModel> models = modelparser.readTemplates(primlocation, templatefolder);
+		if (models.size() < 1)
+			{
+			Exception::FMTFreeExceptionHandler().raise(
+				Exception::FMTexc::FMTfunctionfailed, 
+				"Wrong number of models loaded from template folder","", __LINE__, "");
+			}
+		for (size_t id = 0; id < models.size(); ++id)
+		{
+			Models::FMTSolverInterface solver = (argc > 1)
+				? Models::FMTSolverInterface::CLP 
+				: Models::FMTSolverInterface::MOSEK;
+			Models::FMTLpModel test(models.at(id), solver);
+			test.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+			test.doPlanning(true);
+		}
+	#endif
+	return 0;
+	}
+

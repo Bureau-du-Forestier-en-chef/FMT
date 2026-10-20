@@ -1,5 +1,6 @@
 #[[
-Build, install, and validate the FMT R package.
+Build and install the FMT R package, and make testthat available to the tests. The testthat suite,
+Tests/System/R, runs in the ctest pass of BaseInstallTests.cmake.
 ]]
 
 set(
@@ -201,44 +202,4 @@ if(EXISTS "${FMT_R_PACKAGE_DIRECTORY}")
         --no-multiarch
         "${R_PACKAGE_PATH}"
     )
-
-    if(NOT WITHOUT_TESTS)
-        set(
-            FMT_R_TEST_DIRECTORY
-            "${CMAKE_CURRENT_SOURCE_DIR}/Examples/R/tests"
-        )
-
-        set(
-            FMT_R_TEST_RUNNER
-            "${FMT_R_TEST_DIRECTORY}/runTests.R"
-        )
-
-        if(NOT EXISTS "${FMT_R_TEST_DIRECTORY}")
-            message(
-                FATAL_ERROR
-                "R test suite is missing: "
-                "${FMT_R_TEST_DIRECTORY}"
-            )
-        endif()
-
-        if(NOT EXISTS "${FMT_R_TEST_RUNNER}")
-            message(
-                FATAL_ERROR
-                "R test runner is missing: "
-                "${FMT_R_TEST_RUNNER}"
-            )
-        endif()
-
-        fmtExecuteRequired(
-            "Run FMT R tests"
-            "${FMT_OUTPUT_DIRECTORY}"
-            "${CMAKE_COMMAND}"
-            -E
-            env
-            "FMT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
-            "${RSCRIPT_LOCATION}"
-            --vanilla
-            "${FMT_R_TEST_RUNNER}"
-        )
-    endif()
 endif()

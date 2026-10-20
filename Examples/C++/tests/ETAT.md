@@ -731,7 +731,6 @@ Le reste de la marche à suivre :
 | Ordonnanceur d'UA | carte synthétique probable | yield `YOUVERT` utilisé par une action, CSV de paramètres, thème d'UA en argument (codé 14 dans `testOAschedulertask`), plus de polygones |
 | Adjacence, patchs | carte synthétique | `FMTLayer` construit en mémoire (constructeur depuis `std::map<FMTCoordinate,T>`), ou écrit par `FMTAreaParser::writeForest` / `writeLayer` : ni Python ni GDAL Python requis |
 | Transformations d'actions | à évaluer | structure d'actions agrégées à reproduire |
-| Transitions GCBM d'un SES (issue #369) | **fait** | `GCBMtransitions` : la racine, sauf la plantation de `unite2` qui passe en `UTR1` ; une clé GCBM sur THEME3 finit alors avec deux attributs, dont le majoritaire n'est pas le premier en ordre alphabétique. `testGCBMtransitions` le lit avec la cédule de `Spatial` |
 
 **Scénarios existants qu'aucun test C++ n'utilise** : `actionrecurse`, `AVERAGEP`, `peak`,
 `Predeclared_Primary`, `Predeclared_Primary_ref`, `Spatial_8`, `LPwfire`, `Globalex4`,

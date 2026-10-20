@@ -391,6 +391,29 @@ elseif(OSI_USING_RTOOLS_BUILD)
                 "FindOSI: MOSEK disabled because ENV{Mosek_DIR} is not set")
         endif()
 
+        # build-coin-stack.sh clones the COIN-OR sources with the git of its
+        # PATH, which the shell of RTools often lacks. The git found here, the
+        # one GIT_EXECUTABLE names if set, joins the end of that PATH for the
+        # script only. Whatever its configuration (Git for Windows sets
+        # core.autocrlf=true), it checks the sources out with the line endings
+        # they are stored with, LF, as the git of MSYS2 does: their configure
+        # scripts and makefiles run under the bash of RTools.
+        find_package(Git QUIET)
+        if(NOT Git_FOUND)
+            message(FATAL_ERROR
+                "FindOSI: git is required to build the private COIN-OR stack. "
+                "Put it in the PATH or pass -DGIT_EXECUTABLE=<path of git.exe>.")
+        endif()
+        message(STATUS "FindOSI: git for the COIN-OR sources: ${GIT_EXECUTABLE}")
+        get_filename_component(_osi_git_directory "${GIT_EXECUTABLE}" DIRECTORY)
+        cmake_path(NATIVE_PATH _osi_git_directory _osi_git_directory)
+        list(APPEND _osi_env
+            "GIT_CONFIG_COUNT=1"
+            "GIT_CONFIG_KEY_0=core.autocrlf"
+            "GIT_CONFIG_VALUE_0=input")
+        set(_osi_saved_path "$ENV{PATH}")
+        set(ENV{PATH} "$ENV{PATH};${_osi_git_directory}")
+
         message(STATUS "FindOSI: building the matched private COIN-OR stack")
         execute_process(
             COMMAND "${CMAKE_COMMAND}" -E env ${_osi_env}
@@ -398,6 +421,7 @@ elseif(OSI_USING_RTOOLS_BUILD)
             WORKING_DIRECTORY "${OSI_BUILD_ROOT}"
             RESULT_VARIABLE _osi_build_result
             COMMAND_ECHO STDOUT)
+        set(ENV{PATH} "${_osi_saved_path}")
 
         if(NOT _osi_build_result EQUAL 0)
             message(FATAL_ERROR
@@ -452,6 +476,23 @@ else()
     set(OSI_EXTERNAL_LIB_DIR ${POTOSI_LIB_DIR})
     set(OSI_EXTERNAL_LIB_DEBUG_DIR ${POTOSI_LIB_DEBUG_DIR})
     set(OSI_INCLUDE_SEARCH_ROOTS "${OSI_SEARCH_ROOT}")
+endif()
+
+# In the RTools workflow, the private stack decides. A build folder configured
+# before it keeps in its cache the COIN-OR of RTools, which FindOSI used to
+# find through OSI_DIR, and a cached result is never searched again: its
+# headers and libraries would mix with those of the private stack. They are
+# searched again at each configuration.
+if(OSI_USING_RTOOLS_BUILD)
+    foreach(_osi_cached_dir
+        OSI_INCLUDE_DIR CLP_INCLUDE_DIR GLPK_INCLUDE_DIR CU_INCLUDE_DIR)
+        unset(${_osi_cached_dir} CACHE)
+    endforeach()
+    foreach(_osi_cached_library
+        COINUTILS OSI OSI_CLP OSI_GLPK CLP CLP_SOLVER GLPK GLPK_SOLVER)
+        unset(${_osi_cached_library}_LIBRARY_RELEASE CACHE)
+        unset(${_osi_cached_library}_LIBRARY_DEBUG CACHE)
+    endforeach()
 endif()
 
 # -----------------------------------------------------------------------------

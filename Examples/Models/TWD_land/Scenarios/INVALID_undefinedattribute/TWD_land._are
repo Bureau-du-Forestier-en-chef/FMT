@@ -1,4 +1,4 @@
-; Invalid on purpose for testReadingErrors: attribute UTR9 is not defined, FMTundefined_attribute (19).
+; Invalid on purpose for ReadInvalidScenario: attribute UTR9 is not defined, FMTundefined_attribute (19).
 ;Total area: 1814.760000
 ;*A TH1 TH3 AGE AREA
 *A UNITE1 PEUPLEMENT1 UTR9 12 403.280000

@@ -51,7 +51,7 @@ _AGE volumezero
 0    0
 ; Complex yields alone in their block: no equation holds a number or a constant here,
 ; so the operators are kept as they are read. Values computed by hand for
-; testScenarioReading, with volumetotal = 120 at age 7 of UNITE1 PEUPLEMENT1 UTR1.
+; ReadScenario, with volumetotal = 120 at age 7 of UNITE1 PEUPLEMENT1 UTR1.
 *YC ? ? ?
 TWICE _SUM(VOLUMETOTAL,VOLUMETOTAL)
 SUMWITHNUMBER _SUM(VOLUMETOTAL,30)
@@ -68,7 +68,7 @@ SMALLEST _MIN(VOLUMETOTAL,VOLUMEZERO)
 TOPEAK _YTP(VOLUMETOTAL)
 TOVOLUME _DISTANCE(VOLUMETOTAL,50,150)
 
-; An equation without any number, alone in its block (see Examples/C++/tests/ETAT.md, section 2.7),
+; An equation without any number, alone in its block (see Tests/ETAT.md, section 2.7),
 ; and a chain of complex yields, each using the previous one. Values at age 7 of
 ; UNITE1 PEUPLEMENT1 UTR1, where volumetotal = 120: EQUATIONSUM = 240, CHAIN1 = 240,
 ; CHAIN2 = 360, CHAIN3 = 480, CHAIN4 = 600, CHAIN5 = 720.

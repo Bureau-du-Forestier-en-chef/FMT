@@ -42,7 +42,11 @@ compile_commands.json
 .cmake/*
 .junie/*
 .claude/*
+#The private tests, local to each clone, and their former place, where a copy may remain
 /Examples/C++/tests/BFECtests.csv
+/Tests/System/Cpp/BFECtests.csv
+#The backups that tools/testMigration/Update-PrivateTests.ps1 keeps of it
+/Tests/System/Cpp/BFECtests.csv.*.bak
 /Tests/Performance/performance-private.csv
 .vscode/*
 *html

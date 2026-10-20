@@ -100,7 +100,7 @@ namespace Core {
 						const double perioddbl = static_cast<double>(target);
 						const double pertio = lvalues->data.at(1);
 						const std::string discounttype = *lvalues->getSources().at(0);
-						const double rateofreturn = lvalues->data.at(1);
+						const double rateofreturn = lvalues->data.at(0);
 						double exponant = perioddbl; //full
 						if (discounttype == "NONE")
 						{
@@ -108,7 +108,7 @@ namespace Core {
 						}
 						else if (discounttype == "HALF")
 						{
-							exponant = perioddbl * 0.5;
+							exponant = perioddbl - 0.5;
 						}
 						return (1 / std::pow((1 + rateofreturn), pertio * exponant));
 					}else {

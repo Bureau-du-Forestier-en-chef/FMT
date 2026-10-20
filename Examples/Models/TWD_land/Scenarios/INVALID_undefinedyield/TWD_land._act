@@ -1,4 +1,4 @@
-; Invalid on purpose for testReadingErrors: yield volumeinconnu is not defined, FMTinvalid_yield (8).
+; Invalid on purpose for ReadInvalidScenario: yield volumeinconnu is not defined, FMTinvalid_yield (8).
 *ACTION aFire N
 *OPERABLE AFire
 ? prod ? _AGE >= 1
