@@ -547,7 +547,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 /**
 @brief Comparator used to match output sources by whether they are variable.
 */
-class FMTOutputSourceComparator
+class FMTEXPORT FMTOutputSourceComparator
 	{
 	public:
 		// DocString: FMTOutputSourceComparator(bool)

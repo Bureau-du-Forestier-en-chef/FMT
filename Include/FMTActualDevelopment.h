@@ -168,7 +168,7 @@ class FMTEXPORT FMTActualDevelopment : public FMTDevelopment
 /**
 @brief Comparator used to check if a base development is the actual development.
 */
-class FMTActualDevelopmentComparator
+class FMTEXPORT FMTActualDevelopmentComparator
 	{
 	public:
 		// DocString: FMTActualDevelopmentComparator(const FMTDevelopment*)

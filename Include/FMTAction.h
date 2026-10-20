@@ -417,7 +417,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 /**
 @brief Comparator used to check if an action name (or aggregate) already exists in a std container.
 */
-class FMTActionComparator
+class FMTEXPORT FMTActionComparator
 	{
 	public:
 		// DocString: FMTActionComparator(std::string,bool)

@@ -1,8 +1,8 @@
 Class;Header;Priority;SystemTests;IntegrationIndirect;KnownIssues;Remarks;Status;PublicOperations;ExternalDependencies;ThreadSafety;AllocationSensitive;MissingTests
 FMTAction;FMTAction.h;1;`ReadScenario` (`ACTION`, `ACTIONS`, `OPERABLE`), `CreateModel` (actions built in code, optimum);`IntegrationParser` (`operator==` after a write and a reread);;Base `FMTList<FMTSpec>`.;Lot 8;`isResetAge`, `doRespectLock`, operability through its specs;;;;All unit behaviours
-FMTActionComparator;FMTAction.h;1;None with a check;;;Debt row of Architecture.md: comparators not exported.;Lot 8, after the debt row;;;;;Unreachable from a test until exported
+FMTActionComparator;FMTAction.h;1;None with a check;;;;Lot 8;;;;;All unit behaviours
 FMTActualDevelopment;FMTActualDevelopment.h;1;`ReadScenario` (`AREA`, `DEVELOPMENTS`);`IntegrationParser` (`operator==` on the area after a reread);;;Lot 8;`getArea`, `getMask`;;;;All unit behaviours
-FMTActualDevelopmentComparator;FMTActualDevelopment.h;1;None with a check;;;Debt row of Architecture.md: comparators not exported.;Lot 8, after the debt row;;;;;Unreachable from a test until exported
+FMTActualDevelopmentComparator;FMTActualDevelopment.h;1;None with a check;;;;Lot 8;;;;;All unit behaviours
 FMTAgeBounds;FMTAgeBounds.h;1;`ReadScenario` (`OPERABLE` at the age bounds of an action), `CreateModel`;;;The unit tests reach `FMTBounds<int>` through it.;Lot 7, step 3;;;;;Its own constructors and comparison
 FMTAgeYieldHandler;FMTAgeYieldHandler.h;1;`ReadScenario` (`YIELD` of age yields, interpolated between ages), `AddYieldHandlers`, `CreateModel`;`IntegrationParser` (yield values after a reread);;;Lot 7, step 2;`get`, interpolation between ages;;;;All unit behaviours
 FMTBounds;FMTBounds.hpp;1;Through its derived classes;;#358 (known behaviour, with `FMTSpec`);Debt row of Architecture.md: exported only through its derived classes.;Lot 7, step 3;`in`;;;;Copy, comparison, `FMTBounds<double>`, invalid bounds
@@ -12,9 +12,9 @@ FMTConstraint;FMTConstraint.h;1;`ReadScenario` (`CONSTRAINT`, `CONSTRAINTS`: typ
 FMTData;FMTData.h;1;Through `FMTComplexYieldHandler` and `FMTTimeYieldHandler` (`ReadScenario`, `YIELD`);;#347 (known behaviour, `toExpression`);;Lot 7, step 2;`toExpression`, `toString`;;;;All unit behaviours
 FMTDevelopment;FMTDevelopment.h;1;`ReadScenario` (`OPERABLE`, `OPERATE`, `GROW`, `YIELD`);;;;Lot 7, step 5;`grow`, `operable`, `operate`, `getYieldRequest`;;;;All unit behaviours
 FMTDevelopmentPath;FMTDevelopmentPath.h;1;`ReadScenario` (`OPERATE`: target and proportion of each path);;;;Lot 8;`getDevelopment`, `getProportion`;;;;All unit behaviours
-FMTExpression;FMTExpression.h;1;`ReadScenario` (`YIELD` of equations, scenario `yieldoperators`), `WrapperCoreGetYield`;;#346 and #347 (known behaviours, `_getPostFix`, `_evaluatePostFix`);Its members are defined in `Source/` without `FMTEXPORT`: like the comparators of the debt table, a test linked to the FMTlib DLL probably cannot call them (to confirm with a build when lot 7 starts).;Lot 7, step 1;;;;Hot path named by #350: expression evaluation;All unit behaviours
+FMTExpression;FMTExpression.h;1;`ReadScenario` (`YIELD` of equations, scenario `yieldoperators`), `WrapperCoreGetYield`;;#346 and #347 (known behaviours, `_getPostFix`, `_evaluatePostFix`);;Lot 7, step 1;;;;Hot path named by #350: expression evaluation;All unit behaviours
 FMTFork;FMTFork.h;1;`ReadScenario` (`OPERATE` on a transition with two targets), `CreateModel`;Through `FMTTransition`;;;Lot 8;;;;;All unit behaviours
-FMTFunctionCall;FMTFunctionCall.h;1;`WrapperCoreGetYield` (an equation with `exp` and `ln`);;;Its members are defined in `Source/` without `FMTEXPORT`: like the comparators of the debt table, a test linked to the FMTlib DLL probably cannot call them (to confirm with a build when lot 7 starts).;Lot 7, step 1;;;;;All unit behaviours
+FMTFunctionCall;FMTFunctionCall.h;1;`WrapperCoreGetYield` (an equation with `exp` and `ln`);;;;Lot 7, step 1;;;;;All unit behaviours
 FMTFuturDevelopment;FMTFuturDevelopment.h;1;`ReadScenario` (`GROW`);;;;Lot 8;;;;;All unit behaviours
 FMTGCBMTransition;FMTGCBMTransition.h;2;`WriteAndReadGCBMTransitions` (round trip);;;GCBM transitions come from spatially explicit schedules (`FMTSpatialSchedule`).;Lot 8, after priority 1;;;;;All unit behaviours
 FMTLifespans;FMTLifespans.h;1;`ReadScenario` (`OPERABLE` of `_DEATH` at the lifespan), `CreateModel`;`IntegrationParser` (`operator==` after a write and a reread);;Base `FMTList<int>`.;Lot 8;;;;;All unit behaviours
@@ -22,7 +22,7 @@ FMTList;FMTList.hpp;1;Through `FMTAction`, `FMTTransition`, `FMTLifespans` and `
 FMTLockBounds;FMTLockBounds.h;1;None with a check: the `OPERABLE` rows on a locked stand check the lock of the development, not a `_LOCK` bound;;;;Lot 7, step 3;;;;;All unit behaviours
 FMTLookup;FMTLookup.h;1;None with a check;;;Used by the graph and the matrix (`FMTGraph`, `FMTSrModel`, `FMTLpModel`).;Lot 8;;;;;All unit behaviours
 FMTMask;FMTMask.h;1;`ReadScenario` (`AREA`, `DEVELOPMENTS`: `isSubsetOf`), `GetNoChoice`, `WrapperCoreGetAllMasks` (number of masks);;;;Lot 7, step 5;`isSubsetOf`, construction from a string and the themes;;;Hot path named by #350: mask comparison;All unit behaviours
-FMTMaskComparator;FMTMask.h;1;None with a check;;;Debt row of Architecture.md: comparators not exported.;Lot 8, after the debt row;;;;;Unreachable from a test until exported
+FMTMaskComparator;FMTMask.h;1;None with a check;;;;Lot 8;;;;;All unit behaviours
 FMTMaskFilter;FMTMaskFilter.h;1;Through the presolve (`Presolve`: same optimum with and without presolve);;;Used by the presolve.;Lot 8;;;;;All unit behaviours
 FMTModelYieldHandler;FMTModelYieldHandler.h;3;Through the yield models (`DoPlanning`, `SimulateNonSpatially`);;;Handler of the yield models (`_PRED`).;Lot 8, after priority 2;;;;;All unit behaviours
 FMTObject;FMTObject.h;1;`ReadInvalidScenario` (6 `FMTexc` codes);;;Base of most classes: exception handler, logger, `setErrorsToWarnings`.;Lot 8;`setErrorsToWarnings`;;;;All unit behaviours
@@ -31,32 +31,32 @@ FMTOutput;FMTOutput.h;1;`ComputeLevelOutputs` (26 outputs), `ReplayScheduleOutpu
 FMTOutputComparator;FMTOutput.h;1;`ForceSolution` (finds the output it checks);;;;Lot 8;;;;;All unit behaviours
 FMTOutputNode;FMTOutputNode.h;1;Through `FMTOutput` (`ComputeLevelOutputs` and the other output tests);;;;Lot 8;;;;Hot path named by #350: output calculation;All unit behaviours
 FMTOutputNodeHasher;FMTOutputNode.h;1;None with a check;;;;Lot 8;;;;;All unit behaviours
-FMTOutputNodeOriginComparator;FMTOutputNode.h;1;None with a check;;;Debt row of Architecture.md: comparators not exported.;Lot 8, after the debt row;;;;;Unreachable from a test until exported
-FMTOutputNodeValueComparator;FMTOutputNode.h;1;None with a check;;;Debt row of Architecture.md: comparators not exported.;Lot 8, after the debt row;;;;;Unreachable from a test until exported
+FMTOutputNodeOriginComparator;FMTOutputNode.h;1;None with a check;;;;Lot 8;;;;;All unit behaviours
+FMTOutputNodeValueComparator;FMTOutputNode.h;1;None with a check;;;;Lot 8;;;;;All unit behaviours
 FMTOutputSource;FMTOutputSource.h;1;Through `FMTOutput`, `CreateModel`;;;;Lot 8;;;;;All unit behaviours
-FMTOutputSourceComparator;FMTOutputSource.h;1;None with a check;;;Debt row of Architecture.md: comparators not exported.;Lot 8, after the debt row;;;;;Unreachable from a test until exported
+FMTOutputSourceComparator;FMTOutputSource.h;1;None with a check;;;;Lot 8;;;;;All unit behaviours
 FMTPerBounds;FMTPerBounds.h;1;`UpdateNonSpatialModel` (constraints shifted in time, read back);;;;Lot 7, step 3;;;;;All unit behaviours
 FMTSchedule;FMTSchedule.h;1;`ReplayScheduleOutputs`, `PlanScenario` (`REPLAY`), `SolveAndWriteSchedules` (schedule written and read back), `SumAndAverageOutputs`;`IntegrationParser` (suite `FMTScheduleParser`: schedules written and read back);;;Lot 8;;;;;All unit behaviours
 FMTSerie;FMTSerie.h;3;None in the public suite (`GetRotations` has private tests only);;;Series of actions and rotations.;Lot 8, after priority 2;;;;;All unit behaviours
 FMTSpec;FMTSpec.h;1;`ReadScenario` (`OPERABLE`), `CreateModel`;;#358 (known behaviour);;Lot 7, step 3;`allowWithoutYield`;;;;All but `allowWithoutYield` on ages
 FMTTheme;FMTTheme.h;1;`ReadScenario` (`THEMES`, `THEMENAME`, `ATTRIBUTES`, `AGGREGATE`), `CreateModel`;`IntegrationParser` (`operator==` after a write and a reread);;;Lot 7, step 5;`validate`, `getAttributes`, `getBaseAttributes`;;;;All unit behaviours
-FMTThemeComparator;FMTTheme.h;1;None with a check;;;Debt row of Architecture.md: comparators not exported.;Lot 8, after the debt row;;;;;Unreachable from a test until exported
+FMTThemeComparator;FMTTheme.h;1;None with a check;;;;Lot 8;;;;;All unit behaviours
 FMTTimeYieldHandler;FMTTimeYieldHandler.h;1;`ReadScenario` (`YIELD` of time yields and `_DISCOUNTFACTOR`, scenario `timeyields`), `ComputeTimeYieldOutputs`;`IntegrationParser` (yield values after a reread);#357 (fixed, `15427a6d`), #380 (`_DISCOUNTFACTOR` written as a time series);;Lot 7, step 2;`get`, `operator std::string`;;;;All unit behaviours
 FMTTransition;FMTTransition.h;1;`ReadScenario` (`OPERATE`: targets, proportions, `_AGE` and `_LOCK` of the targets), `CreateModel`;`IntegrationParser` (`operator==` after a write and a reread);;Base `FMTList<FMTFork>`.;Lot 8;;;;;All unit behaviours
-FMTTransitionComparator;FMTTransition.h;1;None with a check;;;Debt row of Architecture.md: comparators not exported.;Lot 8, after the debt row;;;;;Unreachable from a test until exported
+FMTTransitionComparator;FMTTransition.h;1;None with a check;;;;Lot 8;;;;;All unit behaviours
 FMTTransitionMask;FMTTransitionMask.h;1;`ReadScenario` (`OPERATE`: the targets), `CreateModel`;Through `FMTTransition`;;;Lot 8;;;;;All unit behaviours
 FMTYieldDevelopment;FMTYieldDevelopment.h;1;None with a check;;;Key of the cache of complex yields (`FMTYieldsCache`).;Lot 8;;;;;All unit behaviours
 FMTYieldHandler;FMTYieldHandler.h;1;Through its derived classes (`ReadScenario`, `YIELD`);;;;Lot 8;;;;;All unit behaviours
 FMTYieldModel;FMTYieldModel.h;3;Through its derived classes;;;;Lot 8, after priority 2;;;;;All unit behaviours
-FMTYieldModelDecisionTree;FMTYieldModelDecisionTree.h;3;`SimulateNonSpatially` (scenario `DECISION`);;;;Lot 8, after priority 2;;;;;All unit behaviours
-FMTYieldModelNep;FMTYieldModelNep.h;3;`DoPlanning` (scenario `fullcarbon`, optimum);;;;Lot 8, after priority 2;;;;;All unit behaviours
-FMTYieldModelNn;FMTYieldModelNn.h;3;Through `FMTYieldModelNep` and `FMTYieldModelPools`;;;;Lot 8, after priority 2;;;;;All unit behaviours
-FMTYieldModelPools;FMTYieldModelPools.h;3;`DoPlanning` (scenario `fullcarbon`, optimum);;;;Lot 8, after priority 2;;;;;All unit behaviours
+FMTYieldModelDecisionTree;FMTYieldModelDecisionTree.h;3;`SimulateNonSpatially` (scenario `DECISION`);;;Debt row of Architecture.md: cannot be exported as it is.;Lot 8, after priority 2 and the debt row;;;;;Unreachable from a test until exported
+FMTYieldModelNep;FMTYieldModelNep.h;3;`DoPlanning` (scenario `fullcarbon`, optimum);;;Debt row of Architecture.md: cannot be exported as it is.;Lot 8, after priority 2 and the debt row;;;;;Unreachable from a test until exported
+FMTYieldModelNn;FMTYieldModelNn.h;3;Through `FMTYieldModelNep` and `FMTYieldModelPools`;;;Debt row of Architecture.md: cannot be exported as it is.;Lot 8, after priority 2 and the debt row;;;;;Unreachable from a test until exported
+FMTYieldModelPools;FMTYieldModelPools.h;3;`DoPlanning` (scenario `fullcarbon`, optimum);;;Debt row of Architecture.md: cannot be exported as it is.;Lot 8, after priority 2 and the debt row;;;;;Unreachable from a test until exported
 FMTYieldModelRandom;FMTYieldModelRandom.h;3;`SimulateNonSpatially` (scenario `COMPLEX_NSS`), not the rows of `randomYield` and `randomYieldUnit`, which check nothing;;;;Lot 8, after priority 2;;;;;All unit behaviours
 FMTYieldModelTsla;FMTYieldModelTsla.h;3;`DoPlanning` and `Presolve` (scenario `TSLA`, `_TSLA` in an operability);;;;Lot 8, after priority 2;;;;;All unit behaviours
 FMTYieldModelUnitCoverage;FMTYieldModelUnitCoverage.h;3;`SimulateNonSpatially` (scenario `UNIT_COVERAGE`);;;;Lot 8, after priority 2;;;;;All unit behaviours
-FMTYieldRequest;FMTYieldRequest.h;1;`ReadScenario` (`YIELD`, the request of a development);;;Debt row of Architecture.md: not exported, and keeps the yields of its first use.;Lot 8, after the debt row;;;;Hot path named by #350: yield lookup;Unreachable from a test until exported
+FMTYieldRequest;FMTYieldRequest.h;1;`ReadScenario` (`YIELD`, the request of a development);;;Debt row of Architecture.md: keeps the yields of its first use.;Lot 8;;;;Hot path named by #350: yield lookup;All unit behaviours
 FMTYields;FMTYields.h;1;`ReadScenario` (`YIELD`, 36 rows), `AddYieldHandlers`, `GetYieldsFromFactor` (monotony), `CreateModel`;`IntegrationParser` (yield values after a reread);#383 (`operator==` compares the addresses of the handlers);Base `FMTList<std::unique_ptr<FMTYieldHandler>>`.;Lot 7, step 4;`get`, `operator==`;;;Hot path named by #350: yield lookup;All unit behaviours
 FMTYieldsCache;FMTYieldsCache.h;1;None with a check;;;Cache of `FMTComplexYieldHandler`.;Lot 8;;;;;All unit behaviours
 FMTYldBounds;FMTYldBounds.h;1;`ReadScenario` (`OPERABLE` at the yield bounds of an action);;;;Lot 7, step 3;;;;;All unit behaviours
-cmpYieldString;FMTYieldHandler.h;1;None with a check;;;;Lot 8;;;;;All unit behaviours
+cmpYieldString;FMTYieldHandler.h;1;None with a check;;;Defined entirely in its header: a test calls it without an export.;Lot 8;;;;;All unit behaviours

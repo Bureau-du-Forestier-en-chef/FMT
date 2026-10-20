@@ -19,7 +19,7 @@ namespace Core
 	/**
 	@brief Yield model calculating the sum of a yield value over a spatial unit at period 0.
 	*/
-	class FMTYieldModelUnitCoverage :
+	class FMTEXPORT FMTYieldModelUnitCoverage :
 		public FMTYieldModel
 	{
 	public:

@@ -631,7 +631,7 @@ template<> inline void FMTMask::binarizedAppend<double>(const double& element)
 /**
 @brief Comparator used to check if a mask already exists in a std container.
 */
-class FMTMaskComparator
+class FMTEXPORT FMTMaskComparator
 	{
 	public:
 		// DocString: FMTMaskComparator:(const FMTMask&)

@@ -24,7 +24,7 @@ namespace Core
 	/**
 	@brief Cache of yield values keyed by development and yield name.
 	*/
-	class FMTYieldsCache
+	class FMTEXPORT FMTYieldsCache
 		{
 		public:
 			// DocString: FMTYieldsCache()

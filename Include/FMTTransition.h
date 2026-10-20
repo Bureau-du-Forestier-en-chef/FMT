@@ -233,7 +233,7 @@ class FMTEXPORT FMTTransition : public FMTList<FMTFork>
 /**
 @brief Comparator used to compare FMTTransition with std::find_if when transitions are in a std container.
 */
-class FMTTransitionComparator
+class FMTEXPORT FMTTransitionComparator
 {
 public:
 	// DocString: FMTTransitionComparator(std::string)

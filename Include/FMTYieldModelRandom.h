@@ -21,7 +21,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 namespace Core
 {
-    class FMTYieldModelRandom :
+    class FMTEXPORT FMTYieldModelRandom :
         public FMTYieldModel
     {
     public:

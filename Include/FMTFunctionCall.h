@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTfunctioncall_Hm_included
 #define FMTfunctioncall_Hm_included
 
+#include "FMTutility.h"
 #include <string>
 
 
@@ -29,7 +30,7 @@ namespace Core
 	/**
 	@brief Function call usable in yield or output expressions, such as exponential or natural log.
 	*/
-	class FMTFunctionCall
+	class FMTEXPORT FMTFunctionCall
 	{
 	public:
 		// DocString: FMTFunctionCall()

@@ -1373,6 +1373,103 @@ depuis le 2026-10-16) :
   250 tests `system` : 240 lignes CSV publiques, `UseExcelCache`, les 7 tests Python et les 2
   fixtures, comme avant le lot.
 
+### 5.8 Session à part : export des classes de Core (2026-10-20)
+
+**Décision de Gabriel (2026-10-20)** : les classes de Core qu'un test lié à la DLL de FMTlib ne peut
+pas atteindre sont exportées dans une session à part, avant le lot 7, plutôt que contournées. C'est une
+modification de FMTlib, hors d'un lot de tests (section 1.2) : des déclarations seulement, aucun
+comportement.
+
+**Démonstration A, avant l'export.** Une sonde hors du dépôt (`ExportProbe.cpp`, scratchpad de la
+session), compilée par `cl` avec les options de `UnitCore` (son `CL.command.1.tlog`, sans GoogleTest)
+et liée au `FMTlib.lib` de `build/release`, lit la racine de TWD_land, puis construit et appelle
+chacune des 23 classes. Le lien échoue sur 64 symboles dans 21 classes : 57 LNK2019, et 7 LNK2001
+venus de la table virtuelle de `FMTYieldModelDecisionTree`, construite par la sonde. `dumpbin
+/exports` ne trouve aucun membre de ces classes dans `FMTlib.dll` (35 pour `FMTYields`, témoin).
+
+| Classe | Symboles non résolus |
+|---|---|
+| `FMTActionComparator` | 4 : constructeur, `getAllAggregates`, `getAllAggregatesSet`, `operator()` |
+| `FMTActualDevelopmentComparator`, `FMTMaskComparator`, `FMTOutputSourceComparator`, `FMTThemeComparator`, `FMTTransitionComparator` | 2 chacune : constructeur, `operator()` |
+| `FMTOutputNodeValueComparator`, `FMTOutputNodeOriginComparator`, `FMTOutputNodeHasher` | 1 chacune : `operator()` |
+| `FMTYieldRequest` | 7 : deux constructeurs, `getDevelopment`, `getDatas`, `getResumeMask`, `getVertexGraphInfo`, `getFirstSeen` |
+| `FMTExpression` | 6 : deux constructeurs, `getVariables`, `shuntingYard`, `getInFix`, `operator std::string` |
+| `FMTFunctionCall` | 3 : constructeur, `call`, `valid` |
+| `FMTYieldsCache` | 5 : `inCache`, `get`, `tryToGet`, `set`, `reserve` |
+| `FMTYieldDevelopment` | 4 : constructeur, `operator==`, `hash`, `getPeriod` |
+| `FMTYieldModel` | 7 : constructeur, destructeur, `getModelName`, `getModelYields`, et par la table virtuelle `setModel`, `operator std::string`, `clearRandomYieldsCache` |
+| `FMTYieldModelDecisionTree` | 6 : `getModelType`, `getPeriodicValues`, et par sa table virtuelle `clone`, `predict`, `preSolve`, `postSolve` |
+| `FMTYieldModelNep`, `FMTYieldModelPools` | 1 chacune : `getModelType` |
+| `FMTYieldModelRandom` | 2 : constructeur, `getModelType` |
+| `FMTYieldModelTsla` | 3 : constructeur, `clone`, `getModelType` |
+| `FMTYieldModelUnitCoverage` | 2 : constructeur, `clone` |
+
+- `cmpYieldString` se lie : elle est entièrement définie dans son en-tête.
+- `FMTYieldModelNn` : abstraite, et ses dérivées demandent un fichier ONNX. La sonde prend l'adresse de
+  `predict`, virtuelle, que MSVC atteint par un thunk local, sans demander de symbole. Ses membres
+  définis dans `Source/` ne sont pas plus exportés que les autres (`dumpbin`).
+
+**Export.** `FMTEXPORT` devant le nom de 18 classes, comme les classes exportées de Core
+(`class FMTEXPORT FMTAction`), et `#include "FMTutility.h"`, où la macro est définie, dans les trois
+en-têtes qui ne le voyaient pas : `FMTExpression.h`, `FMTFunctionCall.h`, `FMTYieldDevelopment.h`.
+Aucune signature, aucun corps, aucun ordre de déclaration ne change. Édition octet par octet en
+Python ; vérifié après coup : chaque en-tête, ses ajouts retirés, est identique au blob de `HEAD`, en
+CRLF seulement, l'octet 0xE9 de « Québec » intact, sans U+FFFD.
+
+**Laissées, et pourquoi.**
+- `cmpYieldString` : entièrement définie dans son en-tête (ci-dessus).
+- `FMTYieldModelNn`, `FMTYieldModelNep`, `FMTYieldModelPools` et `FMTYieldModelDecisionTree` :
+  exportées, elles cassent la compilation de FMTlib. Une classe exportée voit les membres définis dans
+  son en-tête compilés dans toute source qui l'inclut, dont ses constructeurs `= default`. Or
+  `FMTYieldModelNn()` détruit, sur le chemin d'une exception, un `std::unique_ptr<Ort::Session>`, et
+  `FMTYieldModelDecisionTree()` un `std::vector<FMTConstraint>`, deux types que leur en-tête ne fait
+  que déclarer. Rejeu : C2027 et C2338 dans `FMTYieldModelNep.cpp` et `FMTYieldModelPools.cpp`, C2036
+  dans `FMTYieldParser.cpp`. `FMTYieldModelNep` ou `FMTYieldModelPools` exportée seule échoue de même
+  (C2027 et C2338, dans sa source et dans `FMTYieldParser.cpp`) : son constructeur `= default` appelle
+  celui de `FMTYieldModelNn`. Les exporter demande les types complets dans ces trois sources (des
+  `#include`), ou ces constructeurs et destructeurs définis dans `Source/` : plus que `FMTEXPORT`, à
+  décider par Gabriel. Nouvelle ligne de dette dans `Architecture.md`.
+- Hors du Core, `Models::FMTModelComparator` et `Heuristics::FMTOperatingAreaSchemeComparator` restent
+  sans export : la ligne de dette des comparateurs se réduit à eux.
+
+**Hors MSVC.** `FMTEXPORT` (`Include/FMTutility.h`) ne change pas. Avec GCC, il vaut
+`__attribute__((dllexport))` pour FMTlib, que le build MSYS2 lie déjà avec `-Wl,--export-all-symbols` :
+tous ses symboles sont déjà exportés. Il est vide dans la cible R `FMT`, qui compile les sources sans
+`FMTSHAREDLIB` ni `FMTLIBIMPORT`. Non compilé ici, faute de GCC sur le poste : le build R reste à
+Gabriel.
+
+**Avertissements.** Rejeu de toutes les unités du build avant et après (`CL.command.1.tlog` de chaque
+cible, objets et `.pch` envoyés dans le scratchpad) : 368 unités de 90 cibles, dont les 222 de FMTlib,
+`FMT`, `FMTWrapperCore`, `UnitCore`, `IntegrationParser`, les bancs, les tests système et les deux
+cibles C++/CLI, leur en-tête précompilé d'abord. Aucune différence d'erreur ni d'avertissement, unité
+par unité : avant comme après, un C4244 dans `FMTYieldModelNn.cpp` (`xmemory`) et onze C4273 dans
+`FMTExcelWrapper`. C4251 et C4275 sont de niveau 2 (vérifié sur un fichier minimal) : le build, en
+`/W1`, n'en montre aucun, pour aucune classe exportée. En `/W2`, les nouvelles classes donnent des
+C4251 du même genre que les classes déjà exportées (`FMTAction`, `FMTTheme`, le comparateur exporté
+`FMTOutputComparator`), et aucun C4275 : les bases de `FMTYieldRequest` et des modèles de rendement
+sont exportées. Rien n'est désactivé.
+
+**DLL d'essai et sonde B, avant le build de Gabriel.** Les 222 objets de FMTlib rejoués, liés par la
+commande de son `link.command.1.tlog`, sorties dans le scratchpad : `FMTlib.dll` se lie et exporte
+149 symboles de plus, aucun de moins (4590, puis 4739), tous membres ou tables virtuelles des 18
+classes. La sonde, sans les trois modèles laissés, se lie à cette DLL et passe ses 32 vérifications
+sur TWD_land (`ALL CHECKS PASSED`, code 0). Avec eux, il reste 8 symboles non résolus, tous de
+`FMTYieldModelDecisionTree`, `FMTYieldModelNep` et `FMTYieldModelPools`. `FMT.pyd` (`main.cpp`
+rejoué) se lie aussi à cette DLL ; il importe désormais de `FMTlib.dll` les quatre membres par défaut
+de `FMTYieldRequest`, qu'expose `PYexportCore.h` et qu'il compilait jusqu'ici en ligne : un `FMT.pyd`
+de ce build demande le `FMTlib.dll` du même build, ce que la roue livre déjà ensemble.
+
+**Incident.** Le premier rejeu n'envoyait pas `/Fp` dans le scratchpad : l'unité `/Yc` des deux cibles
+C++/CLI a réécrit `build/release/FMTWrapper.dir/Release/cmake_pch.pch` et
+`build/release/FMTExcelWrapper.dir/Release/cmake_pch.pch` (mêmes entrées, même taille). Effet :
+MSBuild recompilera ces deux cibles, ce que le changement des en-têtes de FMTlib impose de toute
+façon. Rien d'autre n'a été écrit dans `build/release` (`find -newer`).
+
+**À faire après le build de Gabriel** : la même sonde (B) liée au `FMTlib.lib` du build ;
+`RunTests.bat all-public`, 281 verts et 19 désactivés sur 300 comme avant ; l'installation, tests
+Python compris ; la suite BFEC (`RunPrivateTests.bat`, lancée par Gabriel), sans écart ; aucun
+avertissement nouveau dans son build. Le build R reste à Gabriel.
+
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
@@ -1385,6 +1482,10 @@ depuis le 2026-10-16) :
   `SolveAndWriteSchedules`, `CreateModel`, `UpdateNonSpatialModel` et `AddYieldHandlers`, cinq défauts
   d'écriture, issues #379 à #383 (section 2.7, défauts 6 à 10). Suite publique : 300 tests, 281 verts
   et 19 désactivés.
+- **Export des classes de Core (session à part, 2026-10-20, section 5.8)** : 18 des 23 classes sans
+  `FMTEXPORT` de l'inventaire sont exportées, à valider après le build de Gabriel ; quatre modèles de
+  rendement ne peuvent pas l'être tels quels (ligne de dette d'`Architecture.md`). Le lot 7 commence
+  après cette validation.
 - **Commits de tests sur `new_test` (Gabriel, 2026-10-20)** : ajouter des commits qui ajoutent des
   tests et renforcent la protection de FMT n'est pas un problème, même avant la fusion de la demande
   de tirage de la réorganisation.
@@ -1571,12 +1672,11 @@ le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à
     atteignable que par elles (ligne de dette d'`Architecture.md`), et leurs constructeurs sont ce que
     lit le parseur.
   Les statuts `Lot 7, step <n>` de `CoreTestCoverage.md` suivent ces étapes.
-- **À vérifier avant l'étape 1.** L'inventaire montre que `FMTExpression` et `FMTFunctionCall` sont
-  déclarées sans `FMTEXPORT`, leurs membres définis dans `Source/`, comme les comparateurs des lignes
-  de dette d'`Architecture.md` : `UnitCore`, lié à la DLL de FMTlib, ne pourrait probablement pas les
-  appeler. Ce n'est pas démontré (aucun build dans la session de l'inventaire) : le confirmer par un cas
-  qui en construit une, au début du lot. Si c'est le cas, l'étape 1 passe par ce qui est exporté
-  (`FMTOperator`, et les équations à travers `FMTYields::get`), et une ligne de dette s'ajoute.
+- **Vérifié avant l'étape 1 (2026-10-20, session à part, section 5.8).** `FMTExpression` et
+  `FMTFunctionCall` étaient déclarées sans `FMTEXPORT` : une sonde liée au `FMTlib.lib` du build ne se
+  liait pas (LNK2019 sur leurs constructeurs, `shuntingYard`, `getVariables`, `getInFix`, `call`,
+  `valid`). Elles sont exportées depuis cette session : l'étape 1 les construit directement, sans
+  passer par `FMTYields::get`, et aucune ligne de dette ne s'ajoute.
 - **Quoi pour chacune.** Construction, copie, comparaison, hachage quand il existe, bornes,
   entrées invalides et exceptions attendues, comme le détaille #350.
 
@@ -1599,13 +1699,18 @@ prend pas, puis la priorité 2, puis la 3. Ce que cela change :
   `FMTOutputComparator` et `FMTOutputNodeHasher` ;
 - puis `FMTGCBMTransition` (priorité 2), puis les modèles de rendement, `FMTModelYieldHandler` et
   `FMTSerie` (priorité 3) ;
-- `FMTYieldRequest` et huit comparateurs ne sont pas exportés : un test lié à la DLL ne peut pas les
-  appeler (lignes de dette d'`Architecture.md`). Ils attendent leur export, qui est une modification
-  de FMTlib, donc hors de ce chantier ; leur statut le dit (`Lot 8, after the debt row`). 23 classes
-  en tout sont sans `FMTEXPORT` (remarque *Not exported* de l'inventaire) : outre celles-ci et les deux
-  de la section 6.3.4, `cmpYieldString`, `FMTOutputNodeHasher`, `FMTYieldsCache`,
-  `FMTYieldDevelopment` et les huit modèles de rendement. Pour chacune, vérifier au début du lot ce
-  qu'un test peut en appeler, comme pour `FMTExpression` ;
+- `FMTYieldRequest` et les huit comparateurs du Core n'étaient pas exportés : un test lié à la DLL ne
+  pouvait pas les appeler. Ils le sont depuis la session à part du 2026-10-20 (section 5.8), avec
+  `FMTOutputNodeHasher`, `FMTYieldsCache`, `FMTYieldDevelopment`, `FMTYieldModel`,
+  `FMTYieldModelRandom`, `FMTYieldModelTsla`, `FMTYieldModelUnitCoverage` et les deux classes de la
+  section 6.3.4 : 18 des 23 classes sans `FMTEXPORT` de l'inventaire. Leur statut est redevenu
+  `Lot 8`. Restent sans `FMTEXPORT` :
+  - `cmpYieldString`, entièrement définie dans son en-tête : un test l'appelle sans export ;
+  - `FMTYieldModelNn`, `FMTYieldModelNep`, `FMTYieldModelPools` et `FMTYieldModelDecisionTree`, qu'on
+    ne peut pas exporter telles quelles (ligne de dette d'`Architecture.md`, section 5.8). Un test ne
+    peut ni les construire ni appeler leurs membres : statut `Lot 8, after priority 2 and the debt
+    row`. Leur export demande plus que `FMTEXPORT`, une modification de FMTlib à faire dans une autre
+    session avant leur tour ;
 - `FMTEvent`, `FMTGraphStats` et les types spatiaux ne sont pas dans l'espace de noms `Core`
   (`Spatial`, `Graph`) : l'inventaire ne les liste pas. Ils restent au lot 8 parce que le jalon 7 de
   #350 les nomme.
@@ -1758,8 +1863,13 @@ abandonne.
 - **Macros de `windows.h`** (par GDAL) : outre `min`, `max`, `ERROR`, `NEAR`, `FAR`, `IN`,
   `OUT`, `DELETE`, aussi `DIFFERENCE` (lot 2). Écrire `(std::max)(...)` et
   `(std::numeric_limits<int>::max)()`.
-- **Classes non exportées** : `Core::FMTActionComparator` (et d'autres comparateurs) n'a pas
-  `FMTEXPORT`. Un test qui l'utilise ne se lie pas.
+- **Classes non exportées** : une classe sans `FMTEXPORT` dont les membres sont définis dans
+  `Source/` ne se lie pas dans un test (LNK2019). Depuis le 2026-10-20 (section 5.8), les comparateurs
+  du Core, `FMTYieldRequest`, `FMTExpression` et `FMTFunctionCall` sont exportés. Restent sans export :
+  `Models::FMTModelComparator`, `Heuristics::FMTOperatingAreaSchemeComparator`, `FMTYieldModelNn` et
+  ses dérivées `FMTYieldModelNep` et `FMTYieldModelPools`, et `FMTYieldModelDecisionTree` (lignes de
+  dette d'`Architecture.md`). `ReadScenario` cherche encore les actions et les transitions par leur
+  nom, avec un commentaire qui dit leurs comparateurs non exportés : à reprendre dans un lot de tests.
 - **`FMTBounds<int>` à côté d'une classe de bornes exportée** (phase 8) : un exécutable dont une
   source utilise `Core::FMTBounds<int>` directement et une autre `FMTAgeBounds`, `FMTPerBounds` ou
   `FMTLockBounds` (par `FMTSpec`, par exemple) ne se lie pas : LNK2005 sur `~FMTBounds<int>`. MSVC

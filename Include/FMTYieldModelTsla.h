@@ -15,7 +15,7 @@ namespace Core
 	/**
 	@brief Yield model returning the time since last disturbance, always added by default by the yield parser.
 	*/
-	class FMTYieldModelTsla : public FMTYieldModel
+	class FMTEXPORT FMTYieldModelTsla : public FMTYieldModel
 	{
 	
 	public:

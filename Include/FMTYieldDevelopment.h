@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTYIELDSDEVELOPMENT_Hm_included
 #define FMTYIELDSDEVELOPMENT_Hm_included
 
+#include "FMTutility.h"
 #include <boost/unordered/concurrent_flat_map.hpp>
 #include <boost/dynamic_bitset.hpp>
 #include <string>
@@ -19,7 +20,7 @@ namespace Core
 	/**
 	@brief Development keyed by age, period, mask and yield, used to cache yield values.
 	*/
-	class FMTYieldDevelopment
+	class FMTEXPORT FMTYieldDevelopment
 	{
 	public:
 		// DocString: FMTYieldDevelopment(int,int,const boost::dynamic_bitset<uint8_t>&,const std::string&)
