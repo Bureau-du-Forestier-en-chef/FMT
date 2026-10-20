@@ -11,8 +11,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <ctime>
 #include <fstream>
 #include <sstream>
-#include <string_view>
-#include <unordered_set>
 #include "FMTSolverInterface.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -60,27 +58,43 @@ bool FMTVersion::isAtLeast(int major, int minor, int patch)
 	}
 bool FMTVersion::hasFeature(const std::string& name)
 	{
- static const std::unordered_set<std::string_view> enabledFeatures{
 	#ifdef FMTWITHR
-		"R",
+		if (name == "R")
+		{
+			return true;
+		}
 	#endif
 	#ifdef FMTWITHPYTHON
-		"PYTHON",
+	if (name == "PYTHON")
+		{
+		return true;
+		}
 	#endif
 	#ifdef FMTWITHGDAL
-		"GDAL",
+		if (name=="GDAL")
+			{
+			return true;
+			}
 	#endif
 	#ifdef FMTWITHOSI
-		"OSI",
-		#ifdef FMTWITHMOSEK
-			"MOSEK",
+		if (name == "OSI")
+			{
+			return true;
+			}
+		#ifdef  FMTWITHMOSEK
+			if (name == "MOSEK")
+			{
+				return true;
+			}
 		#endif
 	#endif
 	#ifdef FMTWITHONNXR
-		"ONNXRUNTIME",
+		if (name == "ONNXRUNTIME")
+			{
+			return true;
+			}
 	#endif
-	};
-	return enabledFeatures.find(std::string_view{name}) != enabledFeatures.end();
+	return false;
 	}
 
 std::string FMTVersion::getLicense(bool french)
