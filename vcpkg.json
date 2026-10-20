@@ -11,6 +11,7 @@
 	"onnxruntime-gpu",
     "coin-or-cbc",
 	"mimalloc",
+	"gtest",
 	{
       "name": "arrow",
       "features": [

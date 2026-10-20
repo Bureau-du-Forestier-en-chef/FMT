@@ -685,20 +685,32 @@ get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 
 set(ignoreMe "${WITHOUT_TESTS}${WITHOUT_PYTHONLIB}${COVERAGE}")
 
+#The one switch of the tests, read by its value everywhere: ON (or TRUE) configures no test and no test
+#executable, OFF configures them all.
+option(WITHOUT_TESTS "Configure without the tests and their executables" OFF)
+#Former name of the switch. A normal variable rather than the cache, so that the install scripts receive
+#it through ExportAllVariablesToInstall, and that WITHOUT_TESTING set back to OFF gives the tests back.
+if (WITHOUT_TESTING)
+	message(DEPRECATION "WITHOUT_TESTING is deprecated, use WITHOUT_TESTS instead")
+	set(WITHOUT_TESTS ON)
+endif(WITHOUT_TESTING)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/Excel/CMakeLists.txt) #will polulate Excel wrapper
 include(${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/CMakeLists.txt) #will polulate FMTWrapperCore
 
-if (NOT DEFINED WITHOUT_TESTS)
+#The tests come after Excel/ and FMTWrapperCore/: the C++ system tests link to their libraries, and the
+#include_directories of FMTWrapperCore/ comes first in the include directories of the targets created
+#after it (last in those of the targets created before).
+if (NOT WITHOUT_TESTS)
+	enable_testing()
 	if(DEFINED COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
 		SET(TEST_COVERAGE "-T Coverage")
 		include(CTest)
 	endif(DEFINED COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
-	include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt) #will polulate tests
-	include(${CMAKE_CURRENT_SOURCE_DIR}/Tests/Performance/CMakeLists.txt) #performance and allocation benchmarks
-endif (NOT DEFINED WITHOUT_TESTS)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/Tests/CMakeLists.txt) #registration, fixture, test levels and benchmarks
+endif (NOT WITHOUT_TESTS)
 
 #add_subdirectory(FMTWrapperCore) # Supposed better than include but directory Header have not .h
 include(${CMAKE_CURRENT_SOURCE_DIR}/UI/CMakeLists.txt) #will polulate UI
@@ -706,6 +718,14 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/UI/CMakeLists.txt) #will polulate UI
 if (NOT DEFINED PARALLEL_TESTS)
 	set(PARALLEL_TESTS 1)
 endif(NOT DEFINED PARALLEL_TESTS)
+
+# Tests that cmake --install runs: public (all but the private tests, whose name holds T:/),
+# all, or none. The private campaign runs apart: ctest --preset system-private.
+set(INSTALL_TEST_SUITE "public" CACHE STRING "Tests run by cmake --install: public, all or none")
+set_property(CACHE INSTALL_TEST_SUITE PROPERTY STRINGS public all none)
+if (NOT INSTALL_TEST_SUITE MATCHES "^(public|all|none)$")
+	message(FATAL_ERROR "INSTALL_TEST_SUITE must be public, all or none, not ${INSTALL_TEST_SUITE}")
+endif()
 
 list( REMOVE_DUPLICATES DLLlookuppaths)
 

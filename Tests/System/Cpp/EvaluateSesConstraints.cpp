@@ -1,0 +1,120 @@
+/*
+Copyright (c) 2019 Gouvernement du Québec
+
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+*/
+
+#include <vector>
+#ifdef FMTWITHGDAL
+#include "FMTLpModel.h"
+#include "FMTSesModel.h"
+#include "FMTModelParser.h"
+#include "FMTAreaParser.h"
+#include "FMTForest.h"
+#include "FMTVersion.h"
+#include "FMTOutput.h"
+#include "FMTFreeExceptionHandler.h"
+#endif
+
+int main(int argc, char* argv[])
+{
+#ifdef FMTWITHGDAL
+	const std::string writelocation = "../../tests/EvaluateSesConstraints/";
+	const int length = 6;
+	std::string primarylocation;
+	std::string scenario;
+	std::string maplocation;
+	if (argc>1)
+	{
+		primarylocation = argv[1];
+		scenario = argv[2];
+		maplocation = argv[3];
+	}else {
+		maplocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02471/Carte/PC_9377_COS_02471_08_09_2020t_feu_TBE.shp";
+		primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02471/PC_9377_U02471_4_Vg2_2023_vRP1f.pri";
+		scenario = "spatial";
+	}
+
+	Parser::FMTModelParser mparser;
+	std::vector<Exception::FMTexc>errors;
+	errors.push_back(Exception::FMTexc::FMTmissingyield);
+	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
+	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
+	errors.push_back(Exception::FMTexc::FMToveridedyield);
+	errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
+	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
+	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
+	mparser.setErrorsToWarnings(errors);
+	const std::vector<std::string>scenarios(1, scenario);
+	const std::vector<Models::FMTModel> models = mparser.readproject(primarylocation, scenarios);
+	Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTSolverInterface::CLP);
+	optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
+	if (optimizationmodel.doPlanning(true))
+	{
+		std::cout << "OBJECTIVE VALUE " << optimizationmodel.getObjValue() << "\n";
+		Models::FMTSesModel simmodel(optimizationmodel);
+		std::vector<Core::FMTTransition>newtransitions;
+		for (const Core::FMTTransition& transition : simmodel.getTransitions())
+		{
+			newtransitions.push_back(transition.single());
+		}
+		simmodel.setTransitions(newtransitions);
+		Parser::FMTAreaParser areaparser;
+		const Spatial::FMTForest forest = areaparser.vectormaptoFMTforest(maplocation, 1420, simmodel.getThemes(), "AGE", "SUPERFICIE", 1, 0.0001, "", 0.0,"", false);
+		simmodel.setInitialMapping(forest);
+		for (int period = 1; period <= length; ++period)
+		{
+			simmodel.greedyReferenceBuild(optimizationmodel.getSolution(period),
+				100,
+				0,
+				0.1);
+			const std::vector<Core::FMTConstraint>BASE_CONSTRAINTS = simmodel.getConstraints();
+			size_t i = 0;
+			for (const Core::FMTConstraint& constraint : BASE_CONSTRAINTS)
+			{
+				if (constraint.isSpatial())
+				{
+				if (simmodel.getConstraintEvaluation(i) > 0)
+					{
+					std::cout << std::string(constraint) << "\n";
+					Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value on " + std::string(constraint),
+						"testsesevaluation", __LINE__, primarylocation);
+					}
+				
+				double lower = 0;
+				double upper = 0;
+				constraint.getBounds(lower, upper);
+				if (lower>0 && lower < std::numeric_limits<double>::max())
+				{
+					Core::FMTConstraint bindingconstraint(constraint);
+					lower += 10000000000;
+					bindingconstraint.setRhs(lower,upper);
+					std::vector<Core::FMTConstraint>Constraints = BASE_CONSTRAINTS;
+					Constraints.push_back(bindingconstraint);
+					simmodel.setConstraints(Constraints);
+					const double penalty = simmodel.getConstraintEvaluation(Constraints.size()-1);
+					if (penalty == 0)
+					{
+						std::cout << std::string(bindingconstraint) << "\n";
+						Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value on " + std::string(constraint),
+							"testsesevaluation", __LINE__, primarylocation);
+					}else {
+						std::cout << std::string(bindingconstraint)<< "Penalty of "<< penalty << "\n";
+					}
+					simmodel.setConstraints(BASE_CONSTRAINTS);
+				}
+				
+				}
+				++i;
+				}
+			}
+		
+
+			}
+		#endif
+		return 0;
+}
+        

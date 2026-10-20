@@ -1,4 +1,4 @@
-; Invalid on purpose for testReadingErrors: aggregate productif is not defined, FMTundefined_attribute (19).
+; Invalid on purpose for ReadInvalidScenario: aggregate productif is not defined, FMTundefined_attribute (19).
 *ACTION aFire N
 *OPERABLE AFire
 ? prod ? _AGE >= 1

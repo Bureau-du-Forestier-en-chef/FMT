@@ -6,8 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 ]]
 
 # Performance and allocation benchmarks (issue #349), described in Documentation/PerformanceTesting.md.
-# Included by the root CMakeLists.txt with the tests, after Examples/C++/CMakeLists.txt, whose
-# createexecutable function and ExamplesModels fixture it uses.
+# Included by Tests/CMakeLists.txt, with the other tests, unless WITHOUT_TESTS is on. It uses the
+# ExamplesModels fixture declared there and createexecutable of cmake/ConfigFunctions.cmake.
 
 set(FMTPERFORMANCEdir "${CMAKE_CURRENT_LIST_DIR}")
 get_filename_component(FMTPERFORMANCEroot "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
@@ -62,6 +62,11 @@ target_include_directories(FMTBenchmarkHarness
 	PRIVATE "${FMTPERFORMANCEgenerated}" ${FMTINCLUDEDIR} ${Boost_INCLUDE_DIRS}
 	)
 target_compile_definitions(FMTBenchmarkHarness PRIVATE "-DFMTLIBIMPORT" "FMT_BENCHMARK_CONFIGURATION=\"$<CONFIG>\"")
+if (MINGW)
+	# ProcessorPolicy.cpp calls SetProcessInformation, which MinGW declares only for a target of Windows 8
+	# and later; the Windows SDK of MSVC targets the latest by default.
+	target_compile_definitions(FMTBenchmarkHarness PRIVATE "_WIN32_WINNT=0x0A00")
+endif()
 target_link_libraries(FMTBenchmarkHarness PUBLIC FMTlib)
 set_property(TARGET FMTBenchmarkHarness PROPERTY CXX_STANDARD 17)
 set_property(TARGET FMTBenchmarkHarness PROPERTY CXX_STANDARD_REQUIRED ON)
@@ -86,7 +91,7 @@ target_sources(FMTPerformanceTests PRIVATE
 	"${FMTPERFORMANCEdir}/YieldBenchmarks.h"
 	"${FMTPERFORMANCEdir}/YieldBenchmarks.cpp"
 	)
-target_include_directories(FMTPerformanceTests PRIVATE "${FMTPERFORMANCEdir}" "${FMTPERFORMANCEroot}/Examples/C++/tests")
+target_include_directories(FMTPerformanceTests PRIVATE "${FMTPERFORMANCEdir}" "${FMTPERFORMANCEroot}/Tests/Support")
 target_link_libraries(FMTPerformanceTests PRIVATE FMTBenchmarkHarness)
 
 # One ctest test per row of performance.csv:
@@ -96,132 +101,159 @@ target_link_libraries(FMTPerformanceTests PRIVATE FMTBenchmarkHarness)
 # when its row bounds the allocations, and memory when it bounds the memory a call keeps or the
 # peak memory of the process. ctest runs them in their short mode; with FMT_BENCHMARK_MODE=full in
 # the environment, they measure (run them without -j).
-if (NOT WITHOUT_TESTING)
-	enable_testing()
-	set(FMTPERFORMANCEcsv "${FMTPERFORMANCEdir}/performance.csv")
-	set(FMTPERFORMANCEresults "${CMAKE_BINARY_DIR}/tests/performance")
-	file(MAKE_DIRECTORY "${FMTPERFORMANCEresults}")
-	file(READ "${FMTPERFORMANCEcsv}" FMTPERFORMANCErows)
-	string(REPLACE "\r" "" FMTPERFORMANCErows "${FMTPERFORMANCErows}")
-	string(REPLACE ";" "," FMTPERFORMANCErows "${FMTPERFORMANCErows}")
-	string(REPLACE "\n" ";" FMTPERFORMANCErows "${FMTPERFORMANCErows}")
-	foreach(row ${FMTPERFORMANCErows})
+# With MinGW, the benchmarks read performance-mingw.csv: the same rows and expected results, with the
+# bounds measured in that build. FMTlib links there an OpenBLAS built with OpenMP, which commits about
+# 65 MB per OpenMP thread when it loads (#373): the benchmarks run with 32 OpenMP threads, so that their
+# peak bounds hold on any machine and keep that cost in view until #373 is fixed.
+set(FMTPERFORMANCEcsv "${FMTPERFORMANCEdir}/performance.csv")
+set(FMTPERFORMANCEenvironment "")
+if (MINGW)
+	set(FMTPERFORMANCEcsv "${FMTPERFORMANCEdir}/performance-mingw.csv")
+	set(FMTPERFORMANCEenvironment "OMP_NUM_THREADS=32")
+endif()
+#The two files must list the same benchmarks with the same expected results: only their bounds differ.
+foreach(FMTPERFORMANCEfile IN ITEMS performance.csv performance-mingw.csv)
+	file(STRINGS "${FMTPERFORMANCEdir}/${FMTPERFORMANCEfile}" FMTPERFORMANCElines)
+	set(FMTPERFORMANCEkeys "")
+	foreach(FMTPERFORMANCEline IN LISTS FMTPERFORMANCElines)
+		string(REGEX MATCH "^[^;]*;[^;]*;[^;]*" FMTPERFORMANCEkey "${FMTPERFORMANCEline}")
+		string(REPLACE ";" "|" FMTPERFORMANCEkey "${FMTPERFORMANCEkey}")
+		list(APPEND FMTPERFORMANCEkeys "${FMTPERFORMANCEkey}")
+	endforeach()
+	set("FMTPERFORMANCEkeys.${FMTPERFORMANCEfile}" "${FMTPERFORMANCEkeys}")
+endforeach()
+if (NOT "${FMTPERFORMANCEkeys.performance.csv}" STREQUAL "${FMTPERFORMANCEkeys.performance-mingw.csv}")
+	message(WARNING "performance.csv and performance-mingw.csv no longer list the same benchmarks and expected results: a row added or changed in one belongs in the other, with its MinGW bounds")
+endif()
+unset(FMTPERFORMANCElines)
+unset(FMTPERFORMANCEkeys)
+unset(FMTPERFORMANCEkeys.performance.csv)
+unset(FMTPERFORMANCEkeys.performance-mingw.csv)
+set(FMTPERFORMANCEresults "${CMAKE_BINARY_DIR}/tests/performance")
+file(MAKE_DIRECTORY "${FMTPERFORMANCEresults}")
+file(READ "${FMTPERFORMANCEcsv}" FMTPERFORMANCErows)
+string(REPLACE "\r" "" FMTPERFORMANCErows "${FMTPERFORMANCErows}")
+string(REPLACE ";" "," FMTPERFORMANCErows "${FMTPERFORMANCErows}")
+string(REPLACE "\n" ";" FMTPERFORMANCErows "${FMTPERFORMANCErows}")
+foreach(row ${FMTPERFORMANCErows})
+	string(REPLACE "," ";" fields "${row}")
+	list(GET fields 0 executable)
+	if (executable STREQUAL "TEST")#the header of the file
+		continue()
+	endif()
+	if (NOT TARGET "${executable}")
+		message(WARNING "performance.csv: no target named \"${executable}\", this row is not registered in ctest")
+		continue()
+	endif()
+	list(GET fields 1 benchmark)
+	list(LENGTH fields fieldCount)
+	set(bound "")
+	if (fieldCount GREATER 3)
+		list(GET fields 3 bound)
+	endif()
+	set(retainedBound "")
+	if (fieldCount GREATER 4)
+		list(GET fields 4 retainedBound)
+	endif()
+	set(peakBound "")
+	if (fieldCount GREATER 5)
+		list(GET fields 5 peakBound)
+	endif()
+	set(testname "${executable}.${benchmark}")
+	add_test(
+			NAME "${testname}"
+			COMMAND ${executable} --benchmark ${benchmark}
+				--model "${FMTPERFORMANCEroot}/Examples/Models/TWD_land/TWD_land.pri"
+				--expectations "${FMTPERFORMANCEcsv}"
+				--output "${FMTPERFORMANCEresults}/${benchmark}.json"
+			WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+			)
+	set(labels "performance")
+	if (NOT bound STREQUAL "")
+		list(APPEND labels "allocation")
+	endif()
+	if (NOT retainedBound STREQUAL "" OR NOT peakBound STREQUAL "")
+		list(APPEND labels "memory")
+	endif()
+	#77: a check needs what the platform lacks, such as the allocation monitor outside Windows
+	set_tests_properties("${testname}" PROPERTIES
+			SKIP_RETURN_CODE 77
+			FIXTURES_REQUIRED ExamplesModels
+			LABELS "${labels}"
+			)
+	if (NOT FMTPERFORMANCEenvironment STREQUAL "")
+		set_tests_properties("${testname}" PROPERTIES ENVIRONMENT "${FMTPERFORMANCEenvironment}")
+	endif()
+endforeach()
+# Regression test of #361, in a build configured with -DWITH_MIMALLOC=ON: the benchmarks must then run
+# on mimalloc, which needs mimalloc.dll to stay the first import of the executable. The test runs one
+# quick benchmark and reads the allocator in the header it prints. It has no label, so that a
+# measurement leaves it out, and it fails, as it should, under MIMALLOC_DISABLE_REDIRECT=1.
+get_target_property(FMTPERFORMANCElinks FMTPerformanceTests LINK_LIBRARIES)
+if ("mimalloc" IN_LIST FMTPERFORMANCElinks)
+	add_test(
+			NAME "FMTPerformanceTests.Mimalloc"
+			COMMAND FMTPerformanceTests --benchmark Mask.IsSubsetOf
+				--model "${FMTPERFORMANCEroot}/Examples/Models/TWD_land/TWD_land.pri"
+				--expectations "${FMTPERFORMANCEcsv}"
+				--output "${CMAKE_BINARY_DIR}/tests/allocator/Mask.IsSubsetOf.json"
+			WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+			)
+	set_tests_properties("FMTPerformanceTests.Mimalloc" PROPERTIES
+			PASS_REGULAR_EXPRESSION "MSVC [0-9]+, mimalloc [0-9]"
+			FIXTURES_REQUIRED ExamplesModels
+			)
+endif()
+# The private benchmarks: rows of performance-private.csv, a local file that git ignores, on
+# models outside the source tree. Each row gives the arguments of its benchmark after its
+# bounds; the first argument is the primary file of the model. That model must be on T:\, like
+# those of the private tests: the name of the test holds its path, which keeps the test out of
+# the base suite (-E "T:/"). The tests are labelled bfec-perf, and only that.
+set(FMTPERFORMANCEprivate "${FMTPERFORMANCEdir}/performance-private.csv")
+if (EXISTS "${FMTPERFORMANCEprivate}")
+	file(READ "${FMTPERFORMANCEprivate}" FMTPERFORMANCEprivaterows)
+	string(REPLACE "\r" "" FMTPERFORMANCEprivaterows "${FMTPERFORMANCEprivaterows}")
+	string(REPLACE ";" "," FMTPERFORMANCEprivaterows "${FMTPERFORMANCEprivaterows}")
+	string(REPLACE "\n" ";" FMTPERFORMANCEprivaterows "${FMTPERFORMANCEprivaterows}")
+	foreach(row ${FMTPERFORMANCEprivaterows})
 		string(REPLACE "," ";" fields "${row}")
 		list(GET fields 0 executable)
 		if (executable STREQUAL "TEST")#the header of the file
 			continue()
 		endif()
 		if (NOT TARGET "${executable}")
-			message(WARNING "performance.csv: no target named \"${executable}\", this row is not registered in ctest")
+			message(WARNING "performance-private.csv: no target named \"${executable}\", this row is not registered in ctest")
 			continue()
 		endif()
 		list(GET fields 1 benchmark)
 		list(LENGTH fields fieldCount)
-		set(bound "")
-		if (fieldCount GREATER 3)
-			list(GET fields 3 bound)
+		set(arguments "")
+		if (fieldCount GREATER 6)
+			list(GET fields 6 arguments)
 		endif()
-		set(retainedBound "")
-		if (fieldCount GREATER 4)
-			list(GET fields 4 retainedBound)
+		string(REPLACE "|" ";" arguments "${arguments}")
+		list(LENGTH arguments argumentCount)
+		set(model "")
+		if (argumentCount GREATER 0)
+			list(GET arguments 0 model)
 		endif()
-		set(peakBound "")
-		if (fieldCount GREATER 5)
-			list(GET fields 5 peakBound)
+		string(REPLACE "\\" "/" model "${model}")
+		if (NOT model MATCHES "^[Tt]:/")
+			message(WARNING "performance-private.csv: ${benchmark} does not read a model on T:/, this row is not registered in ctest")
+			continue()
 		endif()
-		set(testname "${executable}.${benchmark}")
+		set(testname "${executable}.${benchmark}|${model}")
+		string(REPLACE " " "_" testname "${testname}")
 		add_test(
 				NAME "${testname}"
 				COMMAND ${executable} --benchmark ${benchmark}
-					--model "${FMTPERFORMANCEroot}/Examples/Models/TWD_land/TWD_land.pri"
-					--expectations "${FMTPERFORMANCEcsv}"
+					--expectations "${FMTPERFORMANCEprivate}"
 					--output "${FMTPERFORMANCEresults}/${benchmark}.json"
 				WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
 				)
-		set(labels "performance")
-		if (NOT bound STREQUAL "")
-			list(APPEND labels "allocation")
-		endif()
-		if (NOT retainedBound STREQUAL "" OR NOT peakBound STREQUAL "")
-			list(APPEND labels "memory")
-		endif()
-		#77: a check needs what the platform lacks, such as the allocation monitor outside Windows
 		set_tests_properties("${testname}" PROPERTIES
 				SKIP_RETURN_CODE 77
-				FIXTURES_REQUIRED ExamplesModels
-				LABELS "${labels}"
+				LABELS "bfec-perf"
 				)
 	endforeach()
-	# Regression test of #361, in a build configured with -DWITH_MIMALLOC=ON: the benchmarks must then run
-	# on mimalloc, which needs mimalloc.dll to stay the first import of the executable. The test runs one
-	# quick benchmark and reads the allocator in the header it prints. It has no label, so that a
-	# measurement leaves it out, and it fails, as it should, under MIMALLOC_DISABLE_REDIRECT=1.
-	get_target_property(FMTPERFORMANCElinks FMTPerformanceTests LINK_LIBRARIES)
-	if ("mimalloc" IN_LIST FMTPERFORMANCElinks)
-		add_test(
-				NAME "FMTPerformanceTests.Mimalloc"
-				COMMAND FMTPerformanceTests --benchmark Mask.IsSubsetOf
-					--model "${FMTPERFORMANCEroot}/Examples/Models/TWD_land/TWD_land.pri"
-					--expectations "${FMTPERFORMANCEcsv}"
-					--output "${CMAKE_BINARY_DIR}/tests/allocator/Mask.IsSubsetOf.json"
-				WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-				)
-		set_tests_properties("FMTPerformanceTests.Mimalloc" PROPERTIES
-				PASS_REGULAR_EXPRESSION "MSVC [0-9]+, mimalloc [0-9]"
-				FIXTURES_REQUIRED ExamplesModels
-				)
-	endif()
-	# The private benchmarks: rows of performance-private.csv, a local file that git ignores, on
-	# models outside the source tree. Each row gives the arguments of its benchmark after its
-	# bounds; the first argument is the primary file of the model. That model must be on T:\, like
-	# those of the private tests: the name of the test holds its path, which keeps the test out of
-	# the base suite (-E "T:/"). The tests are labelled bfec-perf, and only that.
-	set(FMTPERFORMANCEprivate "${FMTPERFORMANCEdir}/performance-private.csv")
-	if (EXISTS "${FMTPERFORMANCEprivate}")
-		file(READ "${FMTPERFORMANCEprivate}" FMTPERFORMANCEprivaterows)
-		string(REPLACE "\r" "" FMTPERFORMANCEprivaterows "${FMTPERFORMANCEprivaterows}")
-		string(REPLACE ";" "," FMTPERFORMANCEprivaterows "${FMTPERFORMANCEprivaterows}")
-		string(REPLACE "\n" ";" FMTPERFORMANCEprivaterows "${FMTPERFORMANCEprivaterows}")
-		foreach(row ${FMTPERFORMANCEprivaterows})
-			string(REPLACE "," ";" fields "${row}")
-			list(GET fields 0 executable)
-			if (executable STREQUAL "TEST")#the header of the file
-				continue()
-			endif()
-			if (NOT TARGET "${executable}")
-				message(WARNING "performance-private.csv: no target named \"${executable}\", this row is not registered in ctest")
-				continue()
-			endif()
-			list(GET fields 1 benchmark)
-			list(LENGTH fields fieldCount)
-			set(arguments "")
-			if (fieldCount GREATER 6)
-				list(GET fields 6 arguments)
-			endif()
-			string(REPLACE "|" ";" arguments "${arguments}")
-			list(LENGTH arguments argumentCount)
-			set(model "")
-			if (argumentCount GREATER 0)
-				list(GET arguments 0 model)
-			endif()
-			string(REPLACE "\\" "/" model "${model}")
-			if (NOT model MATCHES "^[Tt]:/")
-				message(WARNING "performance-private.csv: ${benchmark} does not read a model on T:/, this row is not registered in ctest")
-				continue()
-			endif()
-			set(testname "${executable}.${benchmark}|${model}")
-			string(REPLACE " " "_" testname "${testname}")
-			add_test(
-					NAME "${testname}"
-					COMMAND ${executable} --benchmark ${benchmark}
-						--expectations "${FMTPERFORMANCEprivate}"
-						--output "${FMTPERFORMANCEresults}/${benchmark}.json"
-					WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-					)
-			set_tests_properties("${testname}" PROPERTIES
-					SKIP_RETURN_CODE 77
-					LABELS "bfec-perf"
-					)
-		endforeach()
-	endif()
-endif (NOT WITHOUT_TESTING)
+endif()

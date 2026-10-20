@@ -1,0 +1,96 @@
+/*
+Copyright (c) 2019 Gouvernement du Québec
+
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+*/
+
+#include <vector>
+#include <cmath>
+#include "FMTNssModel.h"
+#include "FMTModelParser.h"
+#include "FMTVersion.h"
+#include "FMTDefaultLogger.h"
+#include "FMTFreeExceptionHandler.h"
+#include "FMTOutput.h"
+	
+
+int main(int argc, char* argv[])
+{
+	Logging::FMTDefaultLogger().logStamp();
+	std::string PRIMARY;
+	std::string SCENARIO;
+	std::string  OUTPUT;
+	int LENGTH;
+	double OUTPUT_VALUE;
+	int PERIOD;
+	if (argc > 1)
+	{
+		const std::string vals = argv[1];
+		std::vector<std::string>results;
+		boost::split(results, vals, boost::is_any_of("|"));
+		PRIMARY = results.at(0);
+		SCENARIO = results.at(1);
+		OUTPUT = results.at(2);
+		PERIOD = std::stoi(results.at(3));
+		LENGTH = std::stoi(argv[2]);
+		if (argc == 4)
+		{
+			OUTPUT_VALUE = std::stod(argv[3]);
+		}
+	}
+	else {
+		argc = 4;
+		PRIMARY = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";
+		SCENARIO = "DECISION";
+		OUTPUT = "UNIT_REC";
+		LENGTH = 1;
+		OUTPUT_VALUE = 60;
+		PERIOD = 5;
+	}
+	Parser::FMTModelParser mparser;
+	std::vector<Exception::FMTexc>errors;
+	errors.push_back(Exception::FMTexc::FMTmissingyield);
+	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
+	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
+	errors.push_back(Exception::FMTexc::FMToveridedyield);
+	errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
+	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
+	errors.push_back(Exception::FMTexc::FMTunclosedforloop);
+	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
+	mparser.setErrorsToWarnings(errors);
+	const std::vector<std::string>SCENARIOS(1, SCENARIO);
+	const std::vector<Models::FMTModel> MODELS = mparser.readproject(PRIMARY, SCENARIOS);
+	Models::FMTNssModel NssModel(MODELS.at(0),0);
+	NssModel.setParameter(Models::FMTintmodelparameters::UPDATE, 1);
+	std::vector<Core::FMTActualDevelopment>newDevs;
+	for (Core::FMTActualDevelopment dev : NssModel.getArea())
+		{
+		dev.setPeriod(PERIOD-1);
+		newDevs.push_back(dev);
+		}
+	NssModel.setArea(newDevs);
+	NssModel.setParameter(Models::FMTintmodelparameters::LENGTH, LENGTH);
+	NssModel.doPlanning(true);
+	Core::FMTOutput sumOutput;
+	for (const Core::FMTOutput& output : NssModel.getOutputs())
+	{
+		if (output.getName() == OUTPUT)
+		{
+			sumOutput = output;
+		}
+	}
+	
+	const double RESULT = NssModel.getOutput(sumOutput,PERIOD, Core::FMToutputlevel::totalonly).at("Total");
+	Logging::FMTDefaultLogger() << "VALUE OF "<< RESULT<<" "<< OUTPUT_VALUE << "\n";
+	if (argc == 4 && std::abs(RESULT - OUTPUT_VALUE)>1)
+	{
+		Logging::FMTDefaultLogger() << "bad" << "\n";
+		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+			"FMTNsstest", __LINE__, PRIMARY);
+	}
+	return 0;
+}
+        

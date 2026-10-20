@@ -1,0 +1,76 @@
+/*
+Copyright (c) 2019 Gouvernement du Québec
+
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+*/
+
+#include <string>
+#include <vector>
+#include "FMTException.h"
+#include "FMTModel.h"
+#include "FMTModelParser.h"
+#include "TransformationCore.h"
+#include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
+
+int main(int argc, char* argv[])
+{
+
+	std::string primary_path;
+	std::vector<std::string> splitted;
+	std::vector<std::string> splittedMask;
+	std::string scenarioName;
+	if (argc < 2)
+	{
+		primary_path = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023/PC_7002071_UA08152_FINAL.pri";
+		splitted = { "AEC", "ACT" };
+		splittedMask = { "? ? ? ? ? ? ? ? ? ? ? ? ? UTA11 ? ? ? ? ? ?", "? ? ? ? ? ? ? ? ? ? ? ? ? !UTA11 ? ? ? ? ? ?" };
+		scenarioName = "01_Regl_prov_apsp_1_6";
+	}
+	else 
+	{
+		std::vector<std::string> result;
+		boost::split(result, argv[1], boost::is_any_of("|"));
+		primary_path = result.at(0);
+		scenarioName = result.at(1);
+		boost::split(splitted, argv[2], boost::is_any_of("|"));
+		boost::split(splittedMask, argv[3], boost::is_any_of("|"));
+	}
+	std::string output_scenario_name = scenarioName + "_test";
+	Parser::FMTModelParser ModelParser;
+
+
+	std::vector<Exception::FMTexc>errors;
+	errors.push_back(Exception::FMTexc::FMTmissingyield);
+	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
+	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
+	errors.push_back(Exception::FMTexc::FMToveridedyield);
+	errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
+	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
+	errors.push_back(Exception::FMTexc::FMTunclosedforloop);
+	errors.push_back(Exception::FMTexc::FMToutofrangeyield);
+	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
+	errors.push_back(Exception::FMTexc::FMTempty_schedules);
+	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
+	ModelParser.setErrorsToWarnings(errors);
+
+
+	const std::vector<Models::FMTModel> MODELS = ModelParser.readproject(primary_path, { scenarioName });
+	const Models::FMTModel SPLITTED_MODEL = FMTWrapper::Backend::Transformation::splitActions(MODELS.at(0), primary_path, splitted, splittedMask, output_scenario_name);
+	
+	// Check whether the new model has more actions
+	if (SPLITTED_MODEL.getActions().size() <= MODELS.at(0).getActions().size())
+	{
+		throw Exception::FMTexc::FMTinvalid_action;
+	}
+	// Check that the model was actually written
+	const boost::filesystem::path SCENARIO_PATH = boost::filesystem::path(primary_path).parent_path() / boost::filesystem::path("Scenarios") / boost::filesystem::path(output_scenario_name);
+	if (!boost::filesystem::is_directory(SCENARIO_PATH))
+	{
+		throw Exception::FMTexc::FMTfunctionfailed;
+	}
+	return 0;
+}

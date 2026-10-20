@@ -40,21 +40,6 @@ if (MSVC AND WrapperSOURCES)
 	message("Generating build for FMTWrapper")
 	set(udflocation "${CMAKE_CURRENT_SOURCE_DIR}/UI/userDefineLang.xml")
 	list (APPEND FMTDEPENDENCIES ${udflocation})
-	if (NOT WITHOUT_TESTS)
-		FILE(GLOB FMTexecutables ${CMAKE_CURRENT_SOURCE_DIR}/UI/tests/*.cpp)
-		foreach(pathtosource ${FMTexecutables})
-			createexecutable("${pathtosource}" executablename)
-			target_link_libraries(${executablename} PRIVATE FMTWrapper)
-			target_include_directories(${executablename} PRIVATE ${WrapperINCLUDEDIR})
-            target_link_libraries(${executablename} PRIVATE FMTWrapperCore)
-            target_include_directories(${executablename} PRIVATE ${WrapperCoreINCLUDEDIR})
-			add_test(
-								NAME "${executablename}"
-								COMMAND ${executablename}
-								WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-								)
-		endforeach()    
-	endif(NOT WITHOUT_TESTS)    
 else()    
 	message("No files found in ${CMAKE_CURRENT_SOURCE_DIR}/UI/Source/ the wrapper wont be compiled headers need to be in UI/Include and sources in UI/Source")
 endif(MSVC AND WrapperSOURCES)    

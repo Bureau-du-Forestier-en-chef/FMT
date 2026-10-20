@@ -58,13 +58,13 @@ même allocateur, le même jour qu'une nouvelle mesure de ce commit (section 6.2
 ### 0.3 Lien avec #350 et le chantier des tests
 
 - Le moniteur d'allocations du lot 1 est ce que demande le lot 9 de #350 (« absence
-  d'allocation », section 6.3.6 de `Examples/C++/tests/ETAT.md`). Il vit dans une bibliothèque
+  d'allocation », section 6.3.6 de `Tests/ETAT.md`). Il vit dans une bibliothèque
   statique, `FMTBenchmarkHarness`, que la future cible `FMTCoreTests` pourra lier.
 - Les tests (tests de chaîne dans `Examples/C++/`, tests unitaires dans `Tests/Core/` pour
   #350) protègent le comportement ; ce banc mesure. L'un ne remplace pas l'autre
   (`Documentation/Architecture.md`, « Measure before and after »).
 - Les lignes de performance, en mode court, entrent dans la suite base : elles changent les
-  nombres de la section 8 de `Examples/C++/tests/ETAT.md`, où une note le dit depuis le lot 1.
+  nombres de la section 8 de `Tests/ETAT.md`, où une note le dit depuis le lot 1.
 
 ### 0.4 Où vivent les choses
 
@@ -76,7 +76,7 @@ même allocateur, le même jour qu'une nouvelle mesure de ce commit (section 6.2
 | Benchmarks | `Tests/Performance/FMTPerformanceTests.cpp` et `Tests/Performance/*Benchmarks.cpp` |
 | Lignes qui inscrivent les benchmarks, valeurs attendues et bornes | `Tests/Performance/performance.csv` |
 | Données | `Examples/Models/TWD_land/Scenarios/perfyields` ; `Examples/Performance/` s'il faut un modèle plus gros (lot 5) |
-| Benchmarks sur des modèles privés (lots 3 et 4) | un CSV local, ignoré par git comme `Examples/C++/tests/BFECtests.csv` ; aucun nom de modèle privé dans le dépôt |
+| Benchmarks sur des modèles privés (lots 3 et 4) | un CSV local, ignoré par git comme `Tests/System/Cpp/BFECtests.csv` ; aucun nom de modèle privé dans le dépôt |
 | Résultats JSON | `build/release/tests/performance/` |
 | Comparaison de deux passages | `Tests/Performance/CompareResults.cmake` |
 
@@ -484,7 +484,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
 
 - `m_lookat` appartient au gestionnaire de yields, partagé par tous les threads, et il est écrit
   sans verrou. Le lien avec la course connue des caches de yields
-  (section 7 de `Examples/C++/tests/ETAT.md`) n'est pas établi.
+  (section 7 de `Tests/ETAT.md`) n'est pas établi.
 - **Aucune course visible sur la replanification** (lot 4) : sur 1, 2, 5 et 10 fils, chaque appel
   écrit exactement les lignes de la même replanification sur un fil, vérifiées par une empreinte des
   lignes triées. 24 passages de stress à 5 et 10 fils (72 replanifications) n'ont montré aucune
@@ -512,7 +512,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
   chaque passage compté.
 - **Point d'entrée depuis un exécutable** : `FMTYieldRequest` n'est pas exportée, mais
   `FMTYields::get(développement.getYieldRequest(), nom)` fonctionne, comme dans
-  `Examples/C++/testScenarioReading.cpp:285-286`.
+  `Tests/System/Cpp/ReadScenario.cpp:292-293`.
 - **Les octets vivants comptent la taille que rend `_msize`**, à l'allocation comme à la
   libération (corrigé le 2026-10-05). Le moniteur ajoutait la taille demandée et déduisait celle de
   `_msize`, qui en diffère dans deux cas. La bibliothèque C donne un octet à `malloc(0)`,
@@ -529,7 +529,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
   modèle synthétique seulement si ça ne suffit pas (lot 5).
 - **Les défauts #346 et #347 contraignent le choix des yields** : pas de `^` dans une
   équation, et pas d'équation numérique dans le bloc `*YC` des opérateurs mesurés
-  (section 2.7 de `Examples/C++/tests/ETAT.md`). `perfyields` respecte ces deux conditions.
+  (section 2.7 de `Tests/ETAT.md`). `perfyields` respecte ces deux conditions.
 - **Ne jamais modifier les sections racine de TWD_land** : tous les tests de chaîne en
   dépendent. Un scénario par besoin, et `perfyields` ne se modifie plus : ce serait changer ce
   que mesurent ses benchmarks.
@@ -579,9 +579,10 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
   sans quoi il rend 127 (DLL introuvable).
 - **Le vrai build compile en `/W1`** : les contrôles du scratchpad, en `/W4`, sont plus
   sévères ; un avertissement de niveau 2 à 4 n'apparaît pas dans la sortie du build de Gabriel.
-- **Les messages du build ne sont écrits nulle part.** `CMakeFMTVS2022vcpkg_GL.bat` écrit dans
-  la console seulement, et MSBuild ne laisse pas de journal par projet. Pour les garder, dans
-  PowerShell : `.\CMakeFMTVS2022vcpkg_GL.bat 2>&1 | Tee-Object -FilePath build\release\build-bat.log`.
+- **Les messages du build ne sont écrits nulle part.** `tools\build\CMakeFMTVS2022vcpkg_GL.bat`
+  écrit dans la console seulement, et MSBuild ne laisse pas de journal par projet. Pour les
+  garder, dans PowerShell, à la racine :
+  `.\tools\build\CMakeFMTVS2022vcpkg_GL.bat 2>&1 | Tee-Object -FilePath build\release\build-bat.log`.
   Le journal va sous `build/` : un fichier non suivi à la racine rendrait `dirty` les
   résultats. Après coup, ils se reconstituent sans toucher au build :
   - chaque commande `cl` est dans `build/release/<cible>.dir/Release/*.tlog/CL.command.1.tlog`
@@ -602,7 +603,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
     performants.
 - Les pièges communs avec les tests (encodage cp1252 des sources, macros de `windows.h`,
   chemins de plus de 260 caractères, `onnxruntime.dll` à côté des sondes, `LastTest.log` que
-  tout appel de ctest réécrit) sont en section 7 de `Examples/C++/tests/ETAT.md`. Ils ne sont pas
+  tout appel de ctest réécrit) sont en section 7 de `Tests/ETAT.md`. Ils ne sont pas
   recopiés ici.
 
 ### 2.11 Lecture d'un projet (mesurée au lot 2)
@@ -658,7 +659,8 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
 - Le moniteur ne comptait que le fil courant, et le travail se fait dans un fil du gestionnaire de
   tâches : il ne le voyait pas. La replanification compte maintenant tous les fils.
 - **Cause** (lot 4, section 2.17) : un bloc de 4 737 568 octets que MOSEK alloue à la première
-  optimisation de chaque fil, et ne rend jamais. Un seul fil en garde un : la taille est fixe. Lancée
+  optimisation de chaque fil, et ne rend jamais. C'est le tampon du gestionnaire de mémoire de MKL,
+  intégré à MOSEK (démontré le 2026-10-09). Un seul fil en garde un : la taille est fixe. Lancée
   comme dans l'interface, avec un fil par réplicat, la replanification en garde un par réplicat.
 - La borne de mémoire retenue de `Flow.Replanning` est de 5 Mo : elle échouerait si la rétention se
   mettait à grandir avec les réplicats. La replanification privée calcule des yields complexes : sa
@@ -688,7 +690,7 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
 - **Sur le modèle privé, un output au moins ne rend pas de total** : `.at("Total")` y lève
   « invalid map<K, T> key ». La somme de `Flow.Outputs` saute ces outputs.
 - **Un yield manquant d'un modèle de production** (FMTexc 42) est une erreur par défaut ;
-  `doplanning` en fait un avertissement, et les flux font de même (`quietFmt`).
+  `DoPlanning` en fait un avertissement, et les flux font de même (`quietFmt`).
 
 ### 2.16 La mémoire retenue d'un calcul de yields complexes dépend du temps (démontré à la validation du lot 3)
 
@@ -783,10 +785,42 @@ rien n'est démontré. Le benchmark en tient compte : ses 255 clés sont les pé
   programme de reproduction autonome qui mesure la mémoire privée du processus, a été remis à Gabriel
   le 2026-10-07 : MOSEK n'a pas de dépôt public pour son optimiseur, ses rapports de bogue passent par
   `support@mosek.com`.
+- **La cause est MKL** (réponse du support de MOSEK le 2026-10-09, démontrée le même jour). MOSEK
+  n'a pas reproduit la croissance sur sa machine (10.1.16, Windows, processeur Intel). Il a soupçonné
+  une bibliothèque à tampons par fil, Intel MKL d'abord, ou mimalloc, et proposé deux essais :
+  `MKL_DISABLE_FAST_MM=1` et `MIMALLOC_PURGE_DELAY=0`.
+  - Sur le programme de reproduction (20 fils, mémoire privée), `MKL_DISABLE_FAST_MM=1` supprime la
+    croissance : 28,1 Mo après chaque fil en 10.1.16, de 3,6 à 3,7 Mo en 9.2.36, au lieu de 4,7 Mo
+    de plus par fil. `MIMALLOC_PURGE_DELAY=0` n'y change rien.
+  - MKL est lié statiquement dans les deux DLL : oneMKL 2023.0 dans `mosek64_10_1.dll`, MKL 2019.0
+    Update 3 dans `mosek64_9_2.dll`. Avec `MKL_VERBOSE=1`, chaque appel affiche `FastMM:1`, et
+    `FastMM:0` avec la variable. Le gestionnaire de mémoire rapide de MKL garde les tampons d'un fil
+    jusqu'à la fin du processus, sauf appel de `mkl_free_buffers` ou de `mkl_thread_free_buffers`.
+    MOSEK n'exporte ni l'une ni l'autre : FMT ne peut pas les rendre.
+  - La taille dépend du jeu d'instructions que MKL choisit. Forcé par `MKL_ENABLE_INSTRUCTIONS`,
+    10.1.16 garde 4,7 Mo par fil en AVX2 (le défaut sur l'i9-13900, qui n'a pas d'AVX-512), 3,1 Mo
+    en SSE4.2 et 0,6 Mo en AVX. C'est sans doute pourquoi la machine de MOSEK ne montre rien.
+  - mimalloc n'y est pour rien. `mosek64_9_2.dll` n'en contient pas, et grandit de même. Celui de
+    `mosek64_10_1.dll` est ancien : `MIMALLOC_VERBOSE=1` liste `reset_delay` (100), pas
+    `purge_delay`, donc `MIMALLOC_PURGE_DELAY` est ignorée. `MIMALLOC_RESET_DELAY=0` abaisse la
+    mémoire de départ de 8,7 Mo, sans toucher aux 4,7 Mo par fil.
+  - **Dans FMT** (build `ebb1a5d1`, flux `Flow.*` en mode complet, trois passages de chaque côté, en
+    alternance) : avec la variable, `Flow.Replanning.Threads<N>` retient 2 560 octets par appel au
+    lieu de 51 599 712, soit 256 octets par fil ; `Flow.Replanning`, 256 au lieu de 4 737 824. Mais
+    MKL réalloue alors ses tampons sans cesse : 2 108 allocations de plus par appel, et 9,9 Go alloués
+    au lieu de 0,48 Go. La phase de replanification prend 8 % de plus sur 1 fil, 12 % sur 2, 27 % sur
+    5 et 24 % sur 10 ; la résolution, 1 % de plus (`Flow.Optimize`) et 7 % (`Flow.Optimize.Long`).
+    Les autres flux ne bougent pas. Résultats dans
+    `perf-references\2026-10-09_ebb1a5d1_mkl-fast-mm-ab`.
+  - **Conséquence** : la variable, définie avant le lancement du processus, contourne la croissance
+    sans recompiler, au prix de ce temps ; elle n'est pas essayée dans l'interface. Le correctif de
+    #366 reste un ensemble fixe de fils : la mémoire est bornée à 4,7 Mo par fil, sans ce coût. La
+    réponse à MOSEK et un commentaire pour #366 ont été remis à Gabriel le 2026-10-09 (dossier
+    `reponse-2026-10-09`, à côté du rapport).
 - **Origine** : `onDemandRun` lance un fil par tâche depuis son introduction, `bfdc9936`
   (2021-12-02) ; `cf54b8ff` (2025-10-08) l'a réécrit avec `FMTWorkerTask`, sans changer ce principe.
   L'interface replanifie par `onDemandRun` (`FMTWrapperCore/Source/Planning.cpp`, qui reprend son
-  comportement), comme l'exemple `replanner`.
+  comportement), comme l'exemple `ReplanOnDemand`.
 - **En production** : une replanification de R réplicats garde environ R × 4,7 Mo jusqu'à la fermeture
   de l'interface, et ces blocs s'additionnent d'une replanification à l'autre dans la même session :
   4,7 Go pour 1 000 réplicats. `conccurentRun`, lui, ne crée qu'un fil par worker.
@@ -1064,8 +1098,8 @@ Trois demandes de #349 sur les yields complexes dépendent de #348 :
     groupe privé : la replanification lancée comme l'interface (section 3.4).
   - Accélération, efficacité et mémoire par worker par `ScalingReport.cmake` ; résultats vérifiés
     contre un fil.
-  - Constats : un fil par réplicat et 4,7 Mo par fil dans MOSEK (section 2.17), attente active
-    (section 2.18) : issue #366.
+  - Constats : un fil par réplicat et 4,7 Mo par fil dans MKL, intégré à MOSEK (section 2.17),
+    attente active (section 2.18) : issue #366.
 - **Lot 5 : clôture** : livré le 2026-10-08, à relire et commiter (section 5.6).
   - `tools/performance/Measure_Performance.bat`, et `CompareResults.cmake` à plusieurs passages
     (section 3.5).
@@ -1143,7 +1177,7 @@ même jour. Le `CMakeLists.txt` racine inclut maintenant `Tests/Performance/CMak
 - **Comparaison** : `Tests/Performance/CompareResults.cmake`, en CMake seul (`string(JSON)`).
 - **Documentation** : `Documentation/PerformanceTesting.md` (nouveau) ; `AGENTS.md` (table des
   documents, carte du dépôt, section « Benchmarks ») ; une note en section 8 de
-  `Examples/C++/tests/ETAT.md`.
+  `Tests/ETAT.md`.
 - **Écarts au plan** : les choix de la section 3.1, en particulier le retrait de la variante à clé unique
   et la borne sur la médiane ; les compteurs par thread du moniteur, reportés au lot 4 qui s'en
   servira ; le défaut de `hasFeature("ONNXRUNTIME")`, trouvé en écrivant l'environnement.
@@ -1244,7 +1278,7 @@ pour `AGENTS.md`, `9a5001df` pour le reste). Référence de #348 reprise (sectio
   sur quatre mesures complètes.
 - **Documentation** : `Documentation/PerformanceTesting.md` (réglages, cœurs, mémoire retenue,
   schéma 2, nouveaux benchmarks), `AGENTS.md` (étiquette `memory`), note de la section 8 de
-  `Examples/C++/tests/ETAT.md`.
+  `Tests/ETAT.md`.
 
 Vérifications (hors build, 2026-09-29) :
 
@@ -1327,7 +1361,7 @@ correction `88daf175`) et validé le même jour ; choix validés (section 3.3).
   lignes privées ont leurs bornes, posées de la même façon, dans le fichier local.
 - **Documentation** : `Documentation/PerformanceTesting.md` (flux, phases, borne de pic, groupe
   privé, schéma 3, comparaison), `AGENTS.md` (étiquette `bfec-perf`), note de la section 8 de
-  `Examples/C++/tests/ETAT.md`.
+  `Tests/ETAT.md`.
 - **Écarts au plan** : le calcul des outputs devient son propre benchmark (section 3.3) ; graphe
   et matrice restent une seule phase ; la replanification à 5 fils passe au lot 4.
 
@@ -1471,7 +1505,7 @@ scripts CMake, la documentation et deux ETAT.
   `_fromThousandths`.
 - **Documentation** : l'outil, la comparaison à plusieurs passages et la section « Measuring a change »
   de `Documentation/PerformanceTesting.md`.
-- **Chantier des tests** : la note de la section 8 de `Examples/C++/tests/ETAT.md` compte les 23 lignes
+- **Chantier des tests** : la note de la section 8 de `Tests/ETAT.md` compte les 23 lignes
   de performance du lot 4.
 - **#349** : commentaire de clôture remis à Gabriel (décisions 20 et 21).
 
@@ -1792,3 +1826,26 @@ références concordent.
 
 Les JSON des trois mesures restent locaux, hors du dépôt (décision 5). Cette référence est remplacée
 par celle de la section 7.1 (décision 18).
+
+### 7.8 Bornes du build MinGW (2026-10-15)
+
+Après le chantier, la validation R de la phase 5 de #350 a fait tourner les benchmarks pour la première
+fois dans le build MSYS2 du paquet R (Rtools 4.5, GCC 14.3.0, `9111b584`).
+
+- Les résultats et les temps sont bons ; 11 bornes, calibrées sous MSVC, échouaient :
+  - les 10 bornes de pointe des `Flow.*`. Le processus engage environ 2,2 Go dès le chargement, parce
+    que FMTlib y lie un OpenBLAS compilé avec OpenMP, qui engage environ 65 Mo par fil OpenMP (#373 ;
+    `OMP_NUM_THREADS=1` fait tomber `Flow.Optimize` de 2 190,9 à 173,6 Mo, `OPENBLAS_NUM_THREADS=1` ne
+    change rien) ;
+  - la borne d'allocations de `Mask.FromString`, 11 par appel avec libstdc++ pour 7 avec MSVC.
+- Décision de Gabriel : des bornes propres à MinGW, qui gardent le coût de #373 en vue, dans
+  `performance-mingw.csv` (mêmes lignes et résultats attendus que `performance.csv`), avec
+  `OMP_NUM_THREADS=32` fixé par ctest pour que les bornes de pointe valent sur toute machine.
+- Mesure : deux passages en mode court et deux en mode complet, `OMP_NUM_THREADS=32`, JSON gardés hors
+  du dépôt (`Documents/FMT/mingw-bench`). Allocations et mémoire retenue identiques d'un passage à
+  l'autre, hormis `Flow.Outputs` (0 ou 2 418 octets retenus, sous sa borne de 22 000).
+- Bornes écrites : allocations aux médianes (`ComplexYield.Shift` 12, `ComplexYield.Equation` 29,
+  `Mask.FromString` 11, les autres comme sous MSVC) ; bornes de mémoire retenue de MSVC gardées, toutes
+  tenues ; pointes à la plus haute des quatre mesures plus 10 %, de 2 404 Mo (`Flow.Outputs`) à 2 834 Mo
+  (`Flow.Replanning.Threads10`).
+- Quand #373 sera corrigé, abaisser les bornes de pointe de `performance-mingw.csv`.

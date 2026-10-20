@@ -1,0 +1,109 @@
+/*
+Copyright (c) 2019 Gouvernement du Québec
+
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+*/
+
+#ifdef FMTWITHOSI
+	#include <vector>
+	#include <cmath>
+	#include "FMTLpModel.h"
+	#include "FMTModelParser.h"
+	#include "FMTAreaParser.h"
+	#include "FMTVersion.h"
+	#include "FMTDefaultLogger.h"
+	#include "FMTScheduleParser.h"
+	#include "FMTSchedule.h"
+	#include "FMTOutputNode.h"
+	#include "FMTFreeExceptionHandler.h"
+	#include "FMTActualDevelopment.h"
+#endif
+
+int main()
+	{
+	#ifdef FMTWITHOSI
+	Logging::FMTDefaultLogger().logStamp();
+	if (Version::FMTVersion().hasFeature("OSI"))
+		{
+		const std::string modellocation = "../../../../Examples/Models/TWD_land/";
+        const std::string	primarylocation = modellocation + "TWD_land.pri";
+		const std::string testfolderout = "../../tests/ForceSolution/";
+		Parser::FMTModelParser modelparser;
+		Parser::FMTAreaParser areaparser;
+		Parser::FMTScheduleParser scheparser;
+		const std::vector<std::string>scenarios(1,"Forcesolutiontest");
+		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
+		Models::FMTModel initialmodel = models.at(0);
+		const int lenght = 6;
+		initialmodel.setParameter(Models::FMTintmodelparameters::LENGTH, lenght);
+		initialmodel.setParameter(Models::FMTboolmodelparameters::POSTSOLVE, false);
+		initialmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
+		initialmodel.setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
+		Models::FMTLpModel optimizationmodel(initialmodel, Models::FMTSolverInterface::CLP);
+		const std::vector<Core::FMTSchedule>schedules = modelparser.readSchedules(primarylocation,models).at(0);
+		optimizationmodel.doPlanning(false,schedules);
+        std::vector<Core::FMTSchedule> lockedproportionscheduled;
+		for (size_t period = 1; period <= static_cast<size_t>(lenght); ++period)
+		{
+			lockedproportionscheduled.push_back(optimizationmodel.getScheduleProportions(period,true));
+		}
+		optimizationmodel = Models::FMTLpModel(initialmodel, Models::FMTSolverInterface::CLP);
+		// ici on vient changer la section area 
+		#ifdef FMTWITHGDAL
+		const std::vector<Core::FMTActualDevelopment> newarea = areaparser.readVectors(	optimizationmodel.getThemes(),
+																						modellocation+"Carte/TWD_LAND_forcesolution_modif.shp",
+                                   														"AGE","SUPERFICIE", 1.0, 1);
+		#else
+		const std::vector<Core::FMTActualDevelopment> newarea = areaparser.read(optimizationmodel.getThemes(), Core::FMTConstants(), modellocation + "Carte/TWD_LAND_forcesolution_modif.are")
+		#endif
+		areaparser.write(newarea,testfolderout+"forcemodifshp._area");
+		scheparser.write(lockedproportionscheduled,testfolderout+"lockedandpropos._seq");
+        optimizationmodel.setArea(newarea);
+		std::vector<Core::FMTSchedule> mschedules;
+        for (size_t period = 1; period <=  static_cast<size_t>(lenght); ++period)
+		{
+			const Core::FMTSchedule periodpropschedule = lockedproportionscheduled.at(period-1);
+			optimizationmodel.buildPeriod(periodpropschedule,true);
+			optimizationmodel.forceSolution(period,periodpropschedule);
+			mschedules.push_back(optimizationmodel.getSolution(period,true));
+		}
+		scheparser.write(mschedules,testfolderout+"forcemodif._seq");
+		const std::vector<Core::FMTActualDevelopment> aream = optimizationmodel.getArea();
+		double totarea=0;
+		for(const auto& actdev : aream)
+		{
+			totarea+=actdev.getArea();
+		}
+		areaparser.write(aream,testfolderout+"forcemodif._area");
+		const std::vector<Core::FMTOutput> outputs = optimizationmodel.getOutputs();
+		const std::vector<Core::FMTOutput>::const_iterator out_it = find_if(outputs.begin(),outputs.end(),Core::FMTOutputComparator("AREAACTIONS"));
+		const std::vector<double> values = {1533.167187, 1710.335763, 1520.664235,1807.036679, 1319.965304, 667.893761};
+		for (size_t period = 1; period <= static_cast<size_t>(lenght); ++period)
+		{
+			const double sum_actions = optimizationmodel.getOutput(*out_it,period,Core::FMToutputlevel::totalonly).at("Total");
+			//std::cout<<std::to_string(period)+" "+std::to_string(sum_actions)<<std::endl;
+			if(std::abs(sum_actions-values.at(period-1))>0.001)
+			{
+				Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+					"forcesolution", __LINE__, primarylocation);
+			}
+			double parea=0;
+			for(const auto& actdev : optimizationmodel.getArea(period))
+			{
+				parea+=actdev.getArea();
+			}
+			if(std::abs(parea-totarea)>0.01)
+			{
+				std::cout<<"period start : "+std::to_string(parea)+" initial : "+std::to_string(totarea)<<std::endl;
+				Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed, "Difference in area at the period begining",
+					"forcesolution", __LINE__, primarylocation);
+			}
+		}
+	}else {
+		Logging::FMTDefaultLogger() << "FMT needs to be compiled with OSI" << "\n";
+		}
+	#endif
+	return 0;
+	}
+

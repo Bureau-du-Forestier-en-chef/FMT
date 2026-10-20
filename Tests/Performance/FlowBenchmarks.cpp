@@ -49,7 +49,7 @@ namespace
 {
 	// Seed of the non-spatial simulations, as in the replanning examples.
 	constexpr unsigned int SEED = 0;
-	// Tolerance of a replayed schedule, as in FMTsetsolution.
+	// Tolerance of a replayed schedule, as in SetSolution.
 	constexpr double REPLAY_TOLERANCE = 0.01;
 	// Minimal drift of a replanned output, as in the replanning examples.
 	constexpr double MINIMAL_DRIFT = 0.5;
@@ -197,7 +197,7 @@ namespace
 	}
 
 	// Builds a model with the schedule of its scenario over p_length periods, without solving it, as
-	// FMTsetsolution does.
+	// SetSolution does.
 	void buildWithSchedule(Models::FMTLpModel& p_model, const std::vector<Core::FMTSchedule>& p_schedules, int p_length)
 	{
 		p_model.setParameter(Models::FMTintmodelparameters::LENGTH, p_length);
@@ -350,7 +350,7 @@ namespace
 	}
 
 	// Reads a scenario and its schedule, then builds the model with the schedule over p_length
-	// periods without solving it, as FMTsetsolution does. Returns the value of p_output at p_period:
+	// periods without solving it, as SetSolution does. Returns the value of p_output at p_period:
 	// no solver takes part.
 	class ReplayFlow final : public FlowBenchmark
 	{
@@ -444,7 +444,7 @@ namespace
 	}
 
 	// Reads a scenario and simulates p_length periods with the non-spatial simulator, without a
-	// solver, its developments moved to the period before p_period, as FMTNsstest does. Returns the
+	// solver, its developments moved to the period before p_period, as SimulateNonSpatially does. Returns the
 	// value of p_output at p_period.
 	class SimulateFlow final : public FlowBenchmark
 	{
@@ -500,7 +500,7 @@ namespace
 
 	// Reads the global, stochastic and local scenarios of a replanning, then replans p_replicates
 	// replicates of p_periods periods, writing the selected outputs to CSV files: on one thread by
-	// conccurentRun, as replanningtest does, or on p_threads threads by onDemandRun, as the interface
+	// conccurentRun, as ReplanConcurrently does, or on p_threads threads by onDemandRun, as the interface
 	// does, which starts a new thread for each replicate. Returns the number of rows written for the
 	// local model, replicates x periods x outputs: the replanned values depend on which optimal
 	// solution the solver returns. A run by onDemandRun also checks what it wrote, which must not
@@ -684,7 +684,7 @@ namespace Performance
 {
 	void addFlowBenchmarks(BenchmarkSuite& p_suite, const std::string& p_primaryFile, const std::filesystem::path& p_workFolder)
 	{
-		// NOT_MASK, whose objective doplanning and presolvetest check over 5 periods.
+		// NOT_MASK, whose objective DoPlanning and Presolve check over 5 periods.
 		p_suite.add(std::make_unique<OptimizeFlow>("Flow.Optimize", p_primaryFile, "NOT_MASK", 5));
 		// The same scenario over 20 periods: a graph twelve times larger.
 		p_suite.add(std::make_unique<OptimizeFlow>("Flow.Optimize.Long", p_primaryFile, "NOT_MASK", 20));
@@ -692,9 +692,9 @@ namespace Performance
 		p_suite.add(std::make_unique<ReplayFlow>("Flow.Replay", p_primaryFile, "LP", 10, "OVOLREC", 2));
 		// Every output of the root of TWD_land over the same 10 periods.
 		p_suite.add(std::make_unique<OutputsFlow>("Flow.Outputs", p_primaryFile, "LP", 10, 0));
-		// The DECISION scenario, simulated as FMTNsstest checks it.
+		// The DECISION scenario, simulated as SimulateNonSpatially checks it.
 		p_suite.add(std::make_unique<SimulateFlow>("Flow.Simulate", p_primaryFile, "DECISION", 1, "UNIT_REC", 5));
-		// The scenarios of replanningtest, with 2 replicates of 5 periods.
+		// The scenarios of ReplanConcurrently, with 2 replicates of 5 periods.
 		const std::vector<std::string> REPLANNING_SCENARIOS{ "Globalreplanning", "Globalfire", "Localreplanning" };
 		const std::vector<std::string> REPLANNING_OUTPUTS{ "OVOLREC", "BURNEDAREA" };
 		p_suite.add(std::make_unique<ReplanningFlow>("Flow.Replanning", p_primaryFile, REPLANNING_SCENARIOS, 10, 5, 2,

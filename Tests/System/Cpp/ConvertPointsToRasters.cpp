@@ -1,0 +1,66 @@
+/*
+Copyright (c) 2019 Gouvernement du Québec
+
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+*/
+
+#include <vector>
+#ifdef FMTWITHGDAL
+#include "FMTActualDevelopment.h"
+#include "FMTVersion.h"
+#include "FMTDefaultLogger.h"
+#include "FMTAreaParser.h"
+#include "FMTLandscapeParser.h"
+#include "FMTForest.h"
+#include "FMTTheme.h"
+#include "FMTConstants.h"
+#endif
+
+int main(int argc, char* argv[])
+{
+#ifdef FMTWITHGDAL
+    Logging::FMTDefaultLogger().logStamp();
+    int side;//196
+    std::string	themesLocation;
+    std::string	pointsLocation;
+    std::string	writeLocation;
+    if (argc > 1)
+    {
+        std::string vals = argv[1];
+        std::vector<std::string>results;
+        boost::split(results, vals, boost::is_any_of("|"));
+        pointsLocation = results.at(0);
+        themesLocation = results.at(1);
+        side = std::stoi(results.at(2));//196
+        writeLocation = argv[2];// "../../tests/MapToForest/";
+    }else {
+        side = 1420;
+        themesLocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/PointToRasters/Sqlite.lan";
+        pointsLocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/PointToRasters/V2Forest.xml";
+        writeLocation= "../../tests/ConvertPointsToRasters/";
+    }
+    const std::string LOCK_FIELD = "STANLOCK";
+
+    Parser::FMTAreaParser areaparser;
+    std::vector<Exception::FMTexc>errors;
+    errors.push_back(Exception::FMTexc::FMTmissingyield);
+    errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
+    errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+    errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+    errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
+    errors.push_back(Exception::FMTexc::FMToveridedyield);
+    errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
+    errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
+    errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
+    areaparser.setErrorsToWarnings(errors);
+
+    Parser::FMTLandscapeParser landScapeParse;
+    const std::vector<Core::FMTTheme> THEMES = landScapeParse.read(Core::FMTConstants(), themesLocation);
+   
+    const Spatial::FMTForest FOREST = areaparser.vectormaptoFMTforest(pointsLocation,side, THEMES,"AGE","SUPERFICIE",
+                                                                    1,0.0001, LOCK_FIELD,0.0,writeLocation,false);
+    areaparser.write(FOREST.getArea(), writeLocation + "area.are");
+#endif
+	return 0;
+}

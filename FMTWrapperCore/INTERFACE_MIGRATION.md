@@ -109,7 +109,7 @@ calculs :
   fils. Il ne garde qu'un calcul de plus de 0,05 ms, et il se vide quand il reste moins de 10 Go de
   mémoire disponible (sections 2.1 et 2.16 de l'ETAT du banc).
 - **Une course est connue** sur les caches de yields partagés entre fils (section 7 de
-  `Examples/C++/tests/ETAT.md`).
+  `Tests/ETAT.md`).
 - **Chaque replanification garde environ 4,7 Mo**, une taille fixe, quel que soit le nombre de
   réplicats. La cause n'est pas trouvée (section 2.13 de l'ETAT du banc). Un processus qui en enchaîne
   beaucoup les cumule.
@@ -208,7 +208,7 @@ La technologie de l'interface compte moins que la question de savoir qui fournit
 
 | Piste | Verdict |
 |---|---|
-| Un processus natif à part pour les calculs longs (`replanner.exe` lancé par l'interface) | Écartée par l'équipe (2026-10-06). |
+| Un processus natif à part pour les calculs longs (`ReplanOnDemand.exe` lancé par l'interface) | Écartée par l'équipe (2026-10-06). |
 | Le Segment Heap, par le manifeste de l'interface (`<heapType>SegmentHeap</heapType>`) | Déjà essayée par l'équipe. Résultat : à consigner. |
 | Des allocateurs explicites dans FMTlib (`mi_stl_allocator`, `std::pmr`) | Reportée après #348, à guider par le banc (voir plus bas). |
 | Modifier `FMT.exe` après coup (`minject`), ou `AppInit_DLLs` | Écartées. `minject` n'est pas dans le paquet vcpkg, et il faudrait le repasser sur chaque `FMT.exe`, que le SDK régénère à chaque publication. Le lanceur de la section 4.4 donne le même ordre de démarrage sans modifier de binaire, mais il garde les mêmes risques, dont celui de l'issue 1221. `AppInit_DLLs` est obsolète. |
@@ -289,7 +289,7 @@ Pour mesurer un allocateur explicite avec le banc :
 - **Les messages vus par l'utilisateur sont en français** (`AGENTS.md`, section Language).
 - **Les chemins de plus de 260 caractères ne sont pas lus.** Un fichier de scénario au-delà de cette
   limite (dossier courant et chemin relatif mis bout à bout) est ignoré sans message, et FMT lit la
-  section de la racine à la place (section 7 de `Examples/C++/tests/ETAT.md`). Une interface qui
+  section de la racine à la place (section 7 de `Tests/ETAT.md`). Une interface qui
   laisse choisir des dossiers profonds doit le tester ou l'empêcher.
 
 ## 7. Valider une nouvelle interface
@@ -315,7 +315,7 @@ Pour mesurer un allocateur explicite avec le banc :
 - Dans le dépôt :
   - `FMTWrapperCore/ETAT.md` : le contrat, les pièges, les validations ;
   - `Tests/Performance/ETAT.md` : l'ETAT du banc, sections 1.1, 2.1, 2.6, 2.12, 2.13 et 2.16 ;
-  - `Examples/C++/tests/ETAT.md`, section 7 ;
+  - `Tests/ETAT.md`, section 7 ;
   - `Examples/Models/TWD_land/BANC_INTERFACE.md` ;
   - `Documentation/PerformanceTesting.md`, section « The allocator » ;
   - `AGENTS.md`, section Building.

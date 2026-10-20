@@ -48,7 +48,7 @@ _AGE volumezero
 0    0
 ; Complex yields alone in their block: no equation holds a number or a constant here,
 ; so the operators are kept as they are read. Values computed by hand for
-; testScenarioReading, with volumetotal = 120 at age 7 of UNITE1 PEUPLEMENT1 UTR1.
+; ReadScenario, with volumetotal = 120 at age 7 of UNITE1 PEUPLEMENT1 UTR1.
 *YC ? ? ?
 TWICE _SUM(VOLUMETOTAL,VOLUMETOTAL)
 SUMWITHNUMBER _SUM(VOLUMETOTAL,30)
