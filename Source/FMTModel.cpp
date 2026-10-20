@@ -2392,6 +2392,12 @@ std::unique_ptr<FMTModel> FMTModel::preSolve(std::vector<Core::FMTActualDevelopm
 		const bool QUIET_LOG = parameters.getBoolParameter(QUIET_LOGGING);
 		if (!QUIET_LOG)
 			_logger->logWithLevel("Presolving " + getName() + "\n", 1);
+		if (area.empty())
+			{
+			_exhandler->raise(Exception::FMTexc::FMTmissingdevelopment,
+				"Cannot presolve model with empty area: " + name,
+				"FMTModel::preSolve", __LINE__, __FILE__);
+			}
 		presolvedModel->setName(getName());
 		presolvedModel->parameters = parameters;
 		Core::FMTMaskFilter oldpresolvefilter(getBaseMask(optionaldevelopments));
