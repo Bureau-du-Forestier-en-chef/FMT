@@ -74,6 +74,7 @@ Un test base ne fait jamais rien d'autre que ceci : partir de TWD_land, s'arrêt
 | Sources des exécutables de test | `Tests/System/Cpp/*.cpp`, `Tests/System/Cpp/FMTWrapperCore/*.cpp` pour le Core et `Tests/System/Cpp/Excel/*.cpp` pour Excel (depuis la phase 6) |
 | Tests unitaires (GoogleTest) | `Tests/Unit/Core/<Classe>.cpp`, une suite par classe, dans l'exécutable `UnitCore` (depuis la phase 8) ; comment en ajouter : `AGENTS.md`, « Adding a unit or integration test » |
 | Tests d'intégration (GoogleTest) | `Tests/Integration/Parser/<Parseur>.cpp`, une suite par parseur, dans l'exécutable `IntegrationParser`, étiquettes `integration;parser`, avec la fixture `ExamplesModels` (depuis le lot 5) ; outils communs dans `ParserRoundTrip.h` du même dossier |
+| Inventaire par classe de `Core` (#350) | `Documentation/Testing/CoreTestCoverage.md`, en anglais, régénéré par `cmake -P Documentation/Testing/CoreTestCoverage.cmake` depuis les en-têtes, les cas GoogleTest et les colonnes écrites à la main de `CoreTestCoverage.csv` (depuis le 2026-10-20) |
 | Lignes qui inscrivent les tests | `Tests/System/Cpp/basetests.csv` (public), `knownbugs.csv` (désactivées), `BFECtests.csv` (local, privé, ignoré par git) |
 | En-tête commun des tests | `Tests/Support/TestTools.h` |
 | Modèle public et ses scénarios | `Examples/Models/TWD_land`, `Examples/Models/TWD_land/Scenarios/<nom>/` |
@@ -136,7 +137,7 @@ est, et quel lot s'en charge :
 
 | Demande de #350 | État | Lot |
 |---|---|---|
-| Inventaire des composants et de leur couverture | partiel : fait par étape de la chaîne (section 2.2), reste à faire par classe ; reporté au lot qui suit la réorganisation (section 6.3) | après la phase 9 |
+| Inventaire des composants et de leur couverture | fait : par étape de la chaîne (section 2.2), et par classe dans `Documentation/Testing/CoreTestCoverage.md` (2026-10-20, section 6.3), qui se régénère depuis les en-têtes | inventaire du 2026-10-20 |
 | Cible et infrastructure de test dans CMake et ctest | fait : tests de chaîne (section 2.1), puis cible `UnitCore` et étiquettes `unit;core` (phase 8, section 9.5) | 6, phase 8 |
 | Cadre de test unitaire choisi et documenté | fait : GoogleTest (décision du 2026-09-25), dans `vcpkg.json` et décrit dans `AGENTS.md` depuis la phase 8 | 6, phase 8 |
 | Tests unitaires des classes déjà suspectes (défauts de la section 2.7) | non fait ; leur comportement n'est touché qu'indirectement | 7 |
@@ -1426,6 +1427,38 @@ qu'un gros lot unique.
 lot 6 (section 6.3.3, point 3), n'est pas fait par la phase 8, qui reprend ce lot : il passe au lot
 qui suit la réorganisation, après la phase 9.
 
+**Inventaire par classe fait (2026-10-20).** `Documentation/Testing/CoreTestCoverage.md` liste les
+61 classes et structures de `Core` (templates et classes imbriquées publiques comprises), avec leur
+priorité, leurs tests unitaires, d'intégration et système, leurs défauts et les colonnes de #350. Il
+est en anglais, comme le reste de `Documentation/`, et se régénère sans build :
+
+```bash
+cmake -P Documentation/Testing/CoreTestCoverage.cmake
+```
+
+- Le script lit les en-têtes d'`Include/` en octets (certains sont en cp1252), compte les
+  `TEST(<Classe>, …)` de `Tests/Unit` et `Tests/Integration`, et garde les colonnes écrites à la main
+  dans `CoreTestCoverage.csv`, à côté du document ; le texte du document est dans
+  `CoreTestCoverage.md.in`. Une classe apparue reçoit une ligne vide dans le CSV, une classe disparue
+  y reste marquée `REMOVED` : le script les affiche et le document les liste.
+- Priorité : celle de la section 3 (1 : la chaîne de la section 3.1 ou un défaut de la section 2.7 ;
+  2 : le niveau 2 ; 3 : le niveau 3), la règle est écrite en tête du document. Résultat : 50 classes de
+  priorité 1, 1 de priorité 2 (`FMTGCBMTransition`), 10 de priorité 3 (les modèles de rendement et
+  `FMTSerie`).
+- Tests système : seulement une ligne ou un exécutable de la suite publique qui vérifie une valeur de la
+  classe (sections 2.2 et 3.1) ; sinon, la colonne dit *None with a check*.
+- État au 2026-10-20 : 3 classes ont des tests unitaires (`FMTBounds`, `FMTOperator`, `FMTSpec`), aucune
+  n'a de suite d'intégration à son nom, et 47 classes de priorité 1 n'ont aucun test propre. Les
+  classes imbriquées publiques de `Core` : aucune aujourd'hui.
+- Vérification : le script a été comparé à un prototype jetable en Python (mêmes 61 classes), à une
+  dizaine d'en-têtes relus à la main (`FMTBounds.hpp`, `FMTList.hpp`, `FMTOutputNode.h`,
+  `FMTYieldHandler.h`, `FMTutility.h`, `FMTMask.h`, `FMTTheme.h`, `FMTLookup.h`, `FMTObject.h`,
+  `FMTDevelopment.h`, `FMTAction.h`) et à un en-tête factice (classes imbriquées publiques, privées et
+  protégées, `struct` dans une fonction, spécialisation, `"/*"` dans une chaîne, macro sur plusieurs
+  lignes, classe retirée). Deux générations de suite donnent le même document.
+- Piège : `"+-/*"` dans `FMTGraph.hpp` ouvre un faux commentaire si l'on retire les commentaires avant
+  les chaînes ; le script les retire en une passe.
+
 
 #### 6.3.1 D'abord : corriger les quatre défauts de la section 2.7 — session séparée
 
@@ -1502,7 +1535,7 @@ le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à
   2. **`Tests/Core/CMakeLists.txt` et la cible `FMTCoreTests`**, inscrite avec
      `LABELS "unit;core"` pour que `ctest -L core` fonctionne, et respectant
      `-DWITHOUT_TESTS=ON`.
-  3. **`Documentation/Testing/CoreTestCoverage.md`** : l'inventaire par classe que demande #350,
+  3. **`Documentation/Testing/CoreTestCoverage.md`** (fait le 2026-10-20, section 6.3) : l'inventaire par classe que demande #350,
      avec ses colonnes. La colonne « Priority » se remplit depuis la section 3 de ce fichier plutôt
      que d'être réinventée. L'inventaire se génère depuis les en-têtes, pour qu'aucune classe ne
      manque.
@@ -1523,8 +1556,27 @@ le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à
      équation de rendement ;
   2. `FMTData` et les gestionnaires de rendements (`FMTAgeYieldHandler`,
      `FMTComplexYieldHandler`, `FMTTimeYieldHandler`) — défauts #347 et #357 ;
-  3. `FMTSpec` et `FMTBounds` — défaut #358, et c'est ce qui décide de toute opérabilité ;
-  4. `FMTMask`, puis `FMTTheme`, puis `FMTDevelopment` — traversés par tout modèle.
+  3. `FMTSpec` et `FMTBounds` — défaut #358, et c'est ce qui décide de toute opérabilité ; avec
+     `FMTBounds`, ses classes dérivées `FMTAgeBounds`, `FMTYldBounds`, `FMTLockBounds` et
+     `FMTPerBounds` ;
+  4. `FMTConstraint`, `FMTOutput` et `FMTYields` — défauts #379 et #382, #381, #383 ;
+  5. `FMTMask`, puis `FMTTheme`, puis `FMTDevelopment` — traversés par tout modèle.
+- **Ce que l'inventaire a changé (2026-10-20).** Deux ajouts, sans toucher à l'ordre par risque :
+  - l'étape 4 est nouvelle. Le critère de ce lot est la section 2.7 : une classe où un défaut a déjà
+    été trouvé. Les défauts 6 à 10 (#379 à #383) y sont entrés au lot 5, après l'écriture de cette
+    liste, et désignent ces trois classes ; `FMTConstraint` et `FMTOutput` étaient au lot 8, `FMTYields`
+    dans aucun lot. Elles passent devant l'étape 5, comme la section 6.3 met les classes à défaut
+    devant celles que tout modèle traverse ;
+  - à l'étape 3, les quatre classes dérivées de `FMTBounds` sont nommées : `FMTBounds<int>` n'est
+    atteignable que par elles (ligne de dette d'`Architecture.md`), et leurs constructeurs sont ce que
+    lit le parseur.
+  Les statuts `Lot 7, step <n>` de `CoreTestCoverage.md` suivent ces étapes.
+- **À vérifier avant l'étape 1.** L'inventaire montre que `FMTExpression` et `FMTFunctionCall` sont
+  déclarées sans `FMTEXPORT`, leurs membres définis dans `Source/`, comme les comparateurs des lignes
+  de dette d'`Architecture.md` : `UnitCore`, lié à la DLL de FMTlib, ne pourrait probablement pas les
+  appeler. Ce n'est pas démontré (aucun build dans la session de l'inventaire) : le confirmer par un cas
+  qui en construit une, au début du lot. Si c'est le cas, l'étape 1 passe par ce qui est exporté
+  (`FMTOperator`, et les équations à travers `FMTYields::get`), et une ligne de dette s'ajoute.
 - **Quoi pour chacune.** Construction, copie, comparaison, hachage quand il existe, bornes,
   entrées invalides et exceptions attendues, comme le détaille #350.
 
@@ -1534,6 +1586,29 @@ le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à
 `FMTConstraint`, `FMTGraphStats` et les types spatiaux. Ces classes sont déjà exercées par les
 tests de chaîne des lots 3 et 4 : le travail consiste à descendre au niveau de l'objet construit
 dans le test, là où les copies, les comparaisons et les cas limites deviennent atteignables.
+
+**Liste revue avec l'inventaire (2026-10-20).** Le lot 8 prend les classes de `CoreTestCoverage.md`
+dont le statut est `Lot 8`, dans l'ordre de leur priorité : les classes de priorité 1 que le lot 7 ne
+prend pas, puis la priorité 2, puis la 3. Ce que cela change :
+
+- `FMTConstraint` et `FMTOutput` passent au lot 7 (section 6.3.4, étape 4) ;
+- s'ajoutent les classes de priorité 1 qu'aucun lot ne nommait : `FMTActualDevelopment`,
+  `FMTFuturDevelopment`, `FMTDevelopmentPath`, `FMTFork`, `FMTTransitionMask`, `FMTLifespans`,
+  `FMTList`, `FMTConstants`, `FMTObject`, `FMTYieldHandler`, `FMTYieldsCache`, `FMTYieldDevelopment`,
+  `FMTMaskFilter`, `FMTLookup`, `FMTOutputSource`, `FMTOutputNode`, et les aides `cmpYieldString`,
+  `FMTOutputComparator` et `FMTOutputNodeHasher` ;
+- puis `FMTGCBMTransition` (priorité 2), puis les modèles de rendement, `FMTModelYieldHandler` et
+  `FMTSerie` (priorité 3) ;
+- `FMTYieldRequest` et huit comparateurs ne sont pas exportés : un test lié à la DLL ne peut pas les
+  appeler (lignes de dette d'`Architecture.md`). Ils attendent leur export, qui est une modification
+  de FMTlib, donc hors de ce chantier ; leur statut le dit (`Lot 8, after the debt row`). 23 classes
+  en tout sont sans `FMTEXPORT` (remarque *Not exported* de l'inventaire) : outre celles-ci et les deux
+  de la section 6.3.4, `cmpYieldString`, `FMTOutputNodeHasher`, `FMTYieldsCache`,
+  `FMTYieldDevelopment` et les huit modèles de rendement. Pour chacune, vérifier au début du lot ce
+  qu'un test peut en appeler, comme pour `FMTExpression` ;
+- `FMTEvent`, `FMTGraphStats` et les types spatiaux ne sont pas dans l'espace de noms `Core`
+  (`Spatial`, `Graph`) : l'inventaire ne les liste pas. Ils restent au lot 8 parce que le jalon 7 de
+  #350 les nomme.
 
 #### 6.3.6 Lot 9 : exigences transverses de #350 — effort `xhigh`
 
@@ -1584,7 +1659,8 @@ des rendements faux.
 
 L'issue peut être fermée quand, ensemble :
 
-- `CoreTestCoverage.md` ne montre plus de composant prioritaire sans test ;
+- `CoreTestCoverage.md` ne montre plus de composant prioritaire sans test : sa section *Priority 1
+  classes without a test of their own* est vide (47 classes le 2026-10-20) ;
 - `ctest -L core` tourne, et la suite de chaîne reste verte ;
 - les exigences transverses du lot 9 sont satisfaites ou explicitement écartées dans l'issue, en
   disant pourquoi ;
@@ -1592,7 +1668,7 @@ L'issue peut être fermée quand, ensemble :
   des tests BFEC a décidé du sort de leurs lignes de `knownbugs.csv` et de leurs tests (section
   9.7) ;
 - ce fichier et `CoreTestCoverage.md` disent chacun ce qu'ils couvrent et pointent l'un vers
-  l'autre.
+  l'autre (fait le 2026-10-20 : sections 0.2 et 6.3 d'ici, introduction de `CoreTestCoverage.md`).
 
 Le jour de la fermeture, écrire en section 0.4 ce qui l'a fermée, et ce que ce chantier reprend ou
 abandonne.
