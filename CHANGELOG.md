@@ -1,4 +1,4 @@
-## [Unreleased] - 2026-10-19 (91121e5e)
+## [Unreleased] - 2026-10-20 (013913b2)
 
 ### Added
 
@@ -13,7 +13,14 @@
 - Added three test levels in `Tests/`, `Unit`, `Integration` and `System`, next to the `Performance` benchmarks. Each test carries a level label, and test presets run one level at a time: `ctest --preset unit`, `integration`, `system`, `system-private`, `performance` or `all-public` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace).
 - Added a summary at the end of every test pass, in the installation as in `tools/tests/RunTests.bat <preset>`: passed, failed, skipped and disabled tests by level, then the failed and skipped tests with their reason.
 - Added GoogleTest to the dependencies (`vcpkg.json`) and the first unit tests of the Core, on `FMTOperator`, `FMTBounds` and `FMTSpec`. Without GoogleTest, the unit and integration levels are not registered, and everything else builds and runs as before.
+- Added the first integration tests, in `Tests/Integration/Parser`: round trips of `FMTModelParser::write`, `writeToProject` and `FMTScheduleParser`, which compare the model read back with the model written, then both writes file by file. They revealed five write defects, each kept as a disabled case until it is fixed:
+  - #379 [BUG] Un objectif `_PENALTY` sans signe est réécrit `y_PENALTY`
+  - #380 [BUG] `_DISCOUNTFACTOR` est réécrit en série temporelle de ses paramètres, et son écriture plante quand son bloc `*YT` n'a pas d'autre yield
+  - #381 [BUG] Un output qui mêle sources d'inventaire et d'action écrit ses sorties cachées, que chaque réécriture répète
+  - #382 [BUG] Une contrainte `_RANDOM(<output>)` est réécrite sans `_RANDOM`
+  - #383 [BUG] `FMTYields::operator==` compare les adresses des gestionnaires : deux copies d'un modèle sont inégales, et `writeToProject` écrit toujours le `._yld` d'un scénario
 - Added system tests on the public `TWD_land` model: scenario reading (yields, outputs, operability, transitions, growth), reading errors and their exception codes, scenarios read together, planning statistics and replay of the optimal schedule. A fixture checks that no test modifies `Examples/Models`, and known defects are kept as disabled tests.
+- Added checks to `WriteAndReadProject`, `SolveAndWriteSchedules`, `CreateModel` and `UpdateNonSpatialModel`, which now verify what they write, and repaired the dead check of `AddYieldHandlers`.
 - Added performance and allocation benchmarks with expected bounds, and `tools/performance/Measure_Performance.bat`, which measures a change by comparing runs before and after it (#349 [FEATURE] Add performance and allocation benchmarks).
 - Added `tools/tests/RunPrivateTests.bat`, which checks that the private models are reachable, then runs the private test campaign and its summary.
 - Added `tools/testMigration/Update_PrivateTests.bat`, which moves and renames a local private test list (`BFECtests.csv`), and the tables of former and new test names (`Tests/Support/RenamedTests.csv`, `Tests/Support/RenamedTestCases.csv`).

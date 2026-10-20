@@ -1,4 +1,4 @@
-## [Non publié] - 2026-10-19 (91121e5e)
+## [Non publié] - 2026-10-20 (013913b2)
 
 ### Ajouté
 
@@ -13,7 +13,14 @@
 - Ajout de trois niveaux de tests dans `Tests/`, `Unit`, `Integration` et `System`, à côté des bancs de performance de `Performance`. Chaque test porte une étiquette de niveau, et des presets de test lancent un niveau à la fois : `ctest --preset unit`, `integration`, `system`, `system-private`, `performance` ou `all-public` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace).
 - Ajout d’un résumé à la fin de chaque passage de tests, à l’installation comme par `tools/tests/RunTests.bat <preset>` : tests réussis, en échec, ignorés et désactivés par niveau, puis la liste des échecs et des tests ignorés avec leur raison.
 - Ajout de GoogleTest aux dépendances (`vcpkg.json`) et des premiers tests unitaires du Core, sur `FMTOperator`, `FMTBounds` et `FMTSpec`. Sans GoogleTest, les niveaux unitaire et d’intégration ne sont pas inscrits, et tout le reste se compile et s’exécute comme avant.
+- Ajout des premiers tests d’intégration, dans `Tests/Integration/Parser` : allers-retours de `FMTModelParser::write`, de `writeToProject` et de `FMTScheduleParser`, qui comparent le modèle relu au modèle écrit, puis les deux écritures fichier par fichier. Ils ont révélé cinq défauts d’écriture, chacun gardé comme cas désactivé jusqu’à sa correction :
+  - #379 [BUG] Un objectif `_PENALTY` sans signe est réécrit `y_PENALTY`
+  - #380 [BUG] `_DISCOUNTFACTOR` est réécrit en série temporelle de ses paramètres, et son écriture plante quand son bloc `*YT` n’a pas d’autre yield
+  - #381 [BUG] Un output qui mêle sources d’inventaire et d’action écrit ses sorties cachées, que chaque réécriture répète
+  - #382 [BUG] Une contrainte `_RANDOM(<output>)` est réécrite sans `_RANDOM`
+  - #383 [BUG] `FMTYields::operator==` compare les adresses des gestionnaires : deux copies d’un modèle sont inégales, et `writeToProject` écrit toujours le `._yld` d’un scénario
 - Ajout de tests système sur le modèle public `TWD_land` : lecture des scénarios (rendements, sorties, opérabilité, transitions, croissance), erreurs de lecture et leurs codes d’exception, scénarios lus ensemble, statistiques de planification et rejeu du calendrier optimal. Une fixture vérifie qu’aucun test ne modifie `Examples/Models`, et les défauts connus restent inscrits comme tests désactivés.
+- Ajout de vérifications à `WriteAndReadProject`, `SolveAndWriteSchedules`, `CreateModel` et `UpdateNonSpatialModel`, qui vérifient maintenant ce qu’ils écrivent, et réparation de la vérification morte d’`AddYieldHandlers`.
 - Ajout de bancs de performance et d’allocation avec leurs bornes attendues, et de `tools/performance/Measure_Performance.bat`, qui mesure un changement en comparant des passages d’avant et d’après (#349 [FEATURE] Add performance and allocation benchmarks).
 - Ajout de `tools/tests/RunPrivateTests.bat`, qui vérifie que les modèles privés sont accessibles, puis lance la campagne de tests privée et son résumé.
 - Ajout de `tools/testMigration/Update_PrivateTests.bat`, qui déplace et renomme une liste locale de tests privés (`BFECtests.csv`), et des tables des anciens et des nouveaux noms de tests (`Tests/Support/RenamedTests.csv`, `Tests/Support/RenamedTestCases.csv`).
