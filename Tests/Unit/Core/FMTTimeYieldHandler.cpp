@@ -124,10 +124,10 @@ TEST(FMTTimeYieldHandler, GivenTwoTimeYieldsStartingAtTheSamePeriodWhenGetThenEa
     EXPECT_DOUBLE_EQ(lateAtPeriod2, 6.0);
 }
 
-// Reveals defect 12 of section 2.7 of Tests/ETAT.md, issue to open: get reads the first starting period of the
-// handler for every yield. FMTYieldParser pushes one starting period per yield of a *YT section, kept in the order of
-// the yield names (cmpYieldString, the shortest name first), so that LATE, shorter, comes first: PERIODVALUE then
-// starts at period 3, and gives 0 at period 1 and 10 at period 3.
+// Reveals the defect of issue #388 (defect 12 of section 2.7 of Tests/ETAT.md): get reads the first starting period
+// of the handler for every yield. FMTYieldParser pushes one starting period per yield of a *YT section, kept in the
+// order of the yield names (cmpYieldString, the shortest name first), so that LATE, shorter, comes first: PERIODVALUE
+// then starts at period 3, and gives 0 at period 1 and 10 at period 3.
 TEST(FMTTimeYieldHandler, DISABLED_GivenTwoTimeYieldsStartingAtDifferentPeriodsWhenGetThenEachStartsAtItsOwnPeriod)
 {
     // Arrange: the lines "PERIODVALUE 1 10 20 30" and "LATE 3 5 6" of a *YT section, as FMTYieldParser reads them.

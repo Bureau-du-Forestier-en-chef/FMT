@@ -713,11 +713,12 @@ repérer les valeurs attendues qui changent, et justifier au journal toute valeu
 `ReadScenario` du build de `new_test` (FMTlib de `f4252745`), sur une copie de TWD_land hors du dépôt
 (scratchpad), en ajoutant une ligne ou un bloc au `._yld` du scénario `timeyields` (A/B, une seule chose
 change). Les deux premiers ont un cas `DISABLED_` dans `UnitCore`. Le troisième est dans `FMTYieldParser`,
-hors des classes du lot, et n'a pas encore de cas. Leurs issues sont à ouvrir par Gabriel (règle 3) :
-textes dans le rapport du lot 7a. Leurs numéros iront ici, dans les commentaires des cas et dans le
-changelog. Aucun n'est corrigé dans ce chantier.
+hors des classes du lot, et n'a pas encore de cas. Leurs issues, #386 (défaut 11), #388 (défaut 12) et
+#387 (défaut 13), ont été ouvertes par Gabriel le 2026-10-21 (règle 3) ; leurs numéros sont aussi dans
+les commentaires des cas désactivés, dans `CoreTestCoverage.csv` et dans le changelog. Aucun n'est
+corrigé dans ce chantier.
 
-11. **Un moins qui suit un opérateur est lu comme une soustraction** (`FMTExpression`, issue à ouvrir).
+11. **Un moins qui suit un opérateur est lu comme une soustraction** (`FMTExpression`, issue #386).
     - `_getPostFix` (`Source/FMTExpression.cpp:65`) traite tout `-` comme l'opérateur binaire : dans
       `2*-3`, le `-`, moins prioritaire que `*`, donne le postfixe `2 * 3 -`. `_evaluatePostFix`
       (ligne 230) donne alors au `*` un opérande gauche absent, 0 : `0*2`, puis `0-3`, soit -3 au lieu
@@ -734,7 +735,7 @@ changelog. Aucun n'est corrigé dans ce chantier.
       outputs, qui passent aussi par `FMTExpression::shuntingYard` (`FMTOutput::shuntingYard`).
     - Cas : `Unit.FMTExpression.GivenAMinusAfterAMultiplicationWhenShuntingYardThenNegatesTheValueThatFollows`.
 12. **Les yields d'un bloc `*YT` lisent tous la période de départ du premier** (`FMTTimeYieldHandler`,
-    issue à ouvrir).
+    issue #388).
     - `FMTYieldParser` pousse une période de départ par ligne d'un bloc `*YT`, et
       `FMTTimeYieldHandler::pushData` les range dans l'ordre des noms (`cmpYieldString` : le plus court
       d'abord). `get` (`Source/FMTTimeYieldHandler.cpp:116`) lit `getBases().at(0)` pour tout yield du
@@ -750,7 +751,7 @@ changelog. Aucun n'est corrigé dans ce chantier.
       construit comme le parseur, à côté du cas vert `GivenTwoTimeYieldsStartingAtTheSamePeriod…`, qui ne
       diffère que par la période de départ de `LATE`.
 13. **En colonnes (`_CP`), chaque ligne d'un bloc `*YT` retarde d'une période les valeurs des lignes
-    suivantes** (`FMTYieldParser`, issue à ouvrir, relevé en lisant le parseur pour le défaut 12).
+    suivantes** (`FMTYieldParser`, issue #387, relevé en lisant le parseur pour le défaut 12).
     - Pour chaque ligne après la première, `FMTYieldParser::read` (`Source/FMTYieldParser.cpp:637`)
       remplit les périodes de `getLastBase()` à celle de la ligne : la première de la boucle est la
       dernière déjà poussée, dont la valeur est donc poussée deux fois.
@@ -1568,10 +1569,10 @@ nom de la classe, cas Given…When…Then en Arrange / Act / Assert ; 141 cas no
 |---|---|---|---|
 | `FMTOperator.cpp` | 18 nouveaux (20) | 0 | construction par symbole et retour au symbole, symbole inconnu, opérateur par défaut, `call` (arithmétique, virgule, division par zéro : infini), `reverse`, `isFactor`, `isDivide`, `associativity`, copie, égalité, hachage, priorités de `-` et de `,` |
 | `FMTFunctionCall.cpp` | 10 | 0 | `EXP` et `LN` arrondis à 8 décimales, `EXP(-20)` arrondi à 0, `LN` de 0 et d'un négatif, noms en minuscules et inconnus, appel par défaut, copie |
-| `FMTExpression.cpp` | 22 | 1 | évaluation (priorités, parenthèses, gauche à droite, #346, moins en tête, variables, fonctions), variable sans valeur (`std::invalid_argument`), `getInFix`, chaîne, copie, `getVariables`, `simplify` (facteurs et membre de droite d'une équation linéaire, expression rendue) ; désactivé : défaut 11 |
+| `FMTExpression.cpp` | 22 | 1 | évaluation (priorités, parenthèses, gauche à droite, #346, moins en tête, variables, fonctions), variable sans valeur (`std::invalid_argument`), `getInFix`, chaîne, copie, `getVariables`, `simplify` (facteurs et membre de droite d'une équation linéaire, expression rendue) ; désactivé : défaut 11 (#386) |
 | `FMTData.cpp` | 22 | 0 | constructeurs, `constant`, `nullData`, `getSources` (somme, équation), `getValues`, chaînes (`_SUM`, `_DISCOUNTFACTOR`, `_EQUATION`), `toExpression` (dont #347), égalité, copie, produit par un facteur, cache (`set`, `get`, `clearCache`, copie sans cache) |
 | `FMTAgeYieldHandler.cpp` | 20 | 0 | `get` aux âges de base, entre eux, avant le premier et après le dernier, yield absent, `getYieldLinearValue` sans hors-bornes (`FMToutofrangeyield`), `setYieldValues` (tailles ou âges différents : `FMTrangeerror`), noms, copie, clone, `getFromFactor`, pic (`getPeakfrom`, `getPeak`), type, chaîne `*Y` |
-| `FMTTimeYieldHandler.cpp` | 16 | 3 | valeurs avant, pendant et après les périodes, yield absent, deux yields de même départ, `FULL`, `NONE` et `HALF` sur trois périodes, `setYieldValues` (`FMTrangeerror`), copie, clone, `getFromFactor`, chaîne `*YT` ; désactivés : défaut 12, #380 (deux cas) |
+| `FMTTimeYieldHandler.cpp` | 16 | 3 | valeurs avant, pendant et après les périodes, yield absent, deux yields de même départ, `FULL`, `NONE` et `HALF` sur trois périodes, `setYieldValues` (`FMTrangeerror`), copie, clone, `getFromFactor`, chaîne `*YT` ; désactivés : défaut 12 (#388), #380 (deux cas) |
 | `FMTComplexYieldHandler.cpp` | 33 | 0 | `_SUM`, `_MULTIPLY`, `_SUBTRACT`, `_DIVIDE` (par zéro, arrondi à 8 décimales), `_RANGE`, `_MAI` (avec années, après le dernier âge : `FMToutofrangeyield`), `_CAI`, `_YTP`, `_EQUATION` (yields, nombre, fonction), `_MAX`, `_MIN`, `_SHIFT`, `_DELTA`, `_DISTANCE`, source inconnue, yield complexe d'un autre, récursion entre deux gestionnaires (`FMTinvalid_yield`), `indexes` (index de thème, #347), type, copie, clone, chaîne `*YC` |
 
 - `Tests/Unit/Core/ExceptionChain.h` : `Testing::getRaisedTypes` rend les codes des exceptions FMT d'un
@@ -1680,17 +1681,19 @@ reconfiguré ; FMTlib inchangé depuis `f4252745`) :
   tests Python passent ;
 - non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par
   la passe `/W4` hors dépôt d'avant le build (aucun dans les sources de tests) ;
-- restent : les issues des défauts 11 à 13, à ouvrir par Gabriel, dont les numéros iront en section 2.7,
-  dans les commentaires des deux cas désactivés, dans `CoreTestCoverage.csv` et dans le changelog. Le
-  lot n'ajoute que des tests unitaires : la suite BFEC n'est pas relancée.
+- issues des défauts 11 à 13 ouvertes par Gabriel le 2026-10-21 : #386, #388 et #387. Leurs numéros
+  sont reportés en section 2.7, dans les commentaires des deux cas désactivés, dans
+  `CoreTestCoverage.csv` et dans le changelog (commentaires seuls : les deux sources, recompilées hors
+  dépôt, ne donnent ni erreur ni avertissement). Le lot n'ajoute que des tests unitaires : la suite BFEC
+  n'est pas relancée.
 
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
 
 - **Lot 7a livré, commité (`0c35c546`, `51d03e83`) et validé le 2026-10-21** (section 5.9) : 141 cas unitaires des
-  expressions et des gestionnaires de rendements, dont 4 désactivés (#380, défauts 11 et 12), et le
-  défaut 13 sans cas ; issues 11 à 13 à ouvrir. Les lots 7b et 7c suivent (section 6.3.4).
+  expressions et des gestionnaires de rendements, dont 4 désactivés (#380, défauts 11 et 12, #386 et #388), et le
+  défaut 13 (#387) sans cas. Les lots 7b et 7c suivent (section 6.3.4).
 - **La réorganisation en trois niveaux est terminée** (section 9, ce qui reste ouvert en 9.7) ;
   elle part vers `master` par une demande de tirage. Le lot 6 y est devenu la phase 8. La feuille
   de route reprend au lot 5.
@@ -1903,7 +1906,7 @@ le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à
     `_ENDPOINT`, `getAge`, `complexYldToAgeYld` et les surcharges, qui demandent `FMTSpec` et `FMTYields`.
   - **7b** : étapes 3 et 4, les bornes (`FMTSpec`, `FMTBounds` et ses quatre classes dérivées),
     `FMTConstraint`, `FMTOutput` et `FMTYields`. À faire ; y reprendre ce que 7a a laissé à `FMTYields`
-    et à `FMTSpec`, et décider du test du défaut 13 (lecture de `_CP`).
+    et à `FMTSpec`, et décider du test du défaut 13 (#387, lecture de `_CP`).
   - **7c** : étape 5, `FMTMask`, `FMTTheme` et `FMTDevelopment`. À faire.
 
 #### 6.3.5 Lot 8 : unitaires du reste de Core (jalons 5 à 7 de #350) — effort `high`
