@@ -1,4 +1,4 @@
-## [Non publié] - 2026-10-20 (013913b2)
+## [v1.4.0] - 2026-10-21 (1cf2b516)
 
 ### Ajouté
 
@@ -23,6 +23,7 @@
 - Ajout de vérifications à `WriteAndReadProject`, `SolveAndWriteSchedules`, `CreateModel` et `UpdateNonSpatialModel`, qui vérifient maintenant ce qu’ils écrivent, et réparation de la vérification morte d’`AddYieldHandlers`.
 - Ajout de bancs de performance et d’allocation avec leurs bornes attendues, et de `tools/performance/Measure_Performance.bat`, qui mesure un changement en comparant des passages d’avant et d’après (#349 [FEATURE] Add performance and allocation benchmarks).
 - Ajout de `tools/tests/RunPrivateTests.bat`, qui vérifie que les modèles privés sont accessibles, puis lance la campagne de tests privée et son résumé.
+- Ajout du test système `System.Cpp.GetGCBMTransitions`, qui vérifie les attributs finaux des transitions GCBM sur un scénario `TWD_land` dédié.
 - Ajout de `tools/testMigration/Update_PrivateTests.bat`, qui déplace et renomme une liste locale de tests privés (`BFECtests.csv`), et des tables des anciens et des nouveaux noms de tests (`Tests/Support/RenamedTests.csv`, `Tests/Support/RenamedTestCases.csv`).
 
 ### Modifié
@@ -60,6 +61,7 @@
 - Correction de calculs de modèles et de l’exécution des tests de l’interface R.
 - Amélioration de la récupération et de l’affichage des descriptions d’erreurs dans l’interface (#336 Description des erreurs dans l’interface).
 - Correction de la génération et de l’intégration du changelog dans l’application (#328 Change Log).
+- `FMTSpatialSchedule::getGCBMtransitions` sélectionne maintenant l’attribut final majoritaire, au lieu du premier en ordre alphabétique (#369 [Bug] `FMTSpatialSchedule::getGCBMtransitions` : l’attribut final « majoritaire » est en fait le premier en ordre alphabétique).
 - Correction d’un problème empêchant la réinterprétation du scénario `ROOT` (#244 On ne peut pas réinterpréter le scénario ROOT!).
 - Correction de l’export des symboles de `FMTWrapperCore` pour les bibliothèques partagées.
 - Stabilisation de la journalisation, du traitement des avertissements et du cache de modèles pendant la migration vers la nouvelle architecture.

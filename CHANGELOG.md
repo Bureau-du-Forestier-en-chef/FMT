@@ -1,4 +1,4 @@
-## [Unreleased] - 2026-10-20 (013913b2)
+## [v1.4.0] - 2026-10-21 (1cf2b516)
 
 ### Added
 
@@ -23,6 +23,7 @@
 - Added checks to `WriteAndReadProject`, `SolveAndWriteSchedules`, `CreateModel` and `UpdateNonSpatialModel`, which now verify what they write, and repaired the dead check of `AddYieldHandlers`.
 - Added performance and allocation benchmarks with expected bounds, and `tools/performance/Measure_Performance.bat`, which measures a change by comparing runs before and after it (#349 [FEATURE] Add performance and allocation benchmarks).
 - Added `tools/tests/RunPrivateTests.bat`, which checks that the private models are reachable, then runs the private test campaign and its summary.
+- Added the `System.Cpp.GetGCBMTransitions` system test, which checks the final attributes of the GCBM transitions on a dedicated `TWD_land` scenario.
 - Added `tools/testMigration/Update_PrivateTests.bat`, which moves and renames a local private test list (`BFECtests.csv`), and the tables of former and new test names (`Tests/Support/RenamedTests.csv`, `Tests/Support/RenamedTestCases.csv`).
 
 ### Changed
@@ -60,6 +61,7 @@
 - Fixed model calculations and R interface test execution.
 - Improved retrieval and display of error descriptions in the user interface (#336 Description des erreurs dans l'interface).
 - Fixed changelog generation and its integration into the application (#328 Change Log).
+- `FMTSpatialSchedule::getGCBMtransitions` now selects the majority final attribute, instead of the first one in alphabetical order (#369 [Bug] `FMTSpatialSchedule::getGCBMtransitions` : l'attribut final « majoritaire » est en fait le premier en ordre alphabétique).
 - Fixed an issue preventing reinterpretation of the `ROOT` scenario (#244 On ne peut pas réinterpréter le scénario ROOT!).
 - Fixed `FMTWrapperCore` symbol exports for shared-library builds.
 - Stabilized logging, warning handling, and model caching during the migration to the new architecture.

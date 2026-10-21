@@ -346,6 +346,8 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 		// DocString: FMTSpatialSchedule::getGCBMtransitions
 		/**
 		@brief Return the GCBM transitions of the solution and fill a layer with the stacked actions.
+		@details For each stacked actions key and each classifier, the final attribute is the one found on most cells of the key.
+		On a tie, the first attribute in alphabetical order is kept.
 		@param[in,out] stackedactions the stacked actions layer.
 		@param[in] modelactions the model actions.
 		@param[in] classifiers the classifiers.
