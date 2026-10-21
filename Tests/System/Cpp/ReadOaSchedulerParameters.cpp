@@ -17,9 +17,20 @@ int main(int argc, char *argv[])
     {   
 #ifdef FMTWITHOSI
     Logging::FMTDefaultLogger().logStamp();
-    const std::string primarylocation = std::string(argv[2]);
-    const std::string scenario = std::string(argv[3]);
-    const std::string fichierParam = std::string(argv[1]);
+    std::string primarylocation;
+    std::string scenario;
+    std::string fichierParam;
+    if (argc>1)
+    {
+        primarylocation = std::string(argv[2]);
+        scenario = std::string(argv[3]);
+        fichierParam = std::string(argv[1]);
+    }else{
+        primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/02751/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
+        scenario = "14_Sc5_Determin_apsp";
+        fichierParam = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/parameters/parameters_2751_old.csv";
+
+    }
     Parser::FMTModelParser modelparser;
     modelparser.setDefaultExceptionHandler();
     std::vector<Exception::FMTexc>errors;

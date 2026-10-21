@@ -2044,9 +2044,10 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 									{
 										maxret = ret;
 									}
-									else {
+									else if(_isNum(splittedline[columns["MAXRET"]]))
+										{
 										maxret = std::stoi(splittedline[columns["MAXRET"]]);
-									}
+										}
 									if (maxret < ret)
 									{
 										maxret = ret;

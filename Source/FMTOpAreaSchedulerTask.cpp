@@ -88,7 +88,7 @@ namespace Parallel
 				if (non_zero>0)
 				{
 					const size_t return_time = static_cast<size_t>(std::round(total_value/non_zero));
-					const size_t diff = (new_scheme.getMinimalReturnTime() - new_scheme.getMaximalReturnTime()) / 2;
+					const size_t diff = (new_scheme.getMaximalReturnTime() - new_scheme.getMinimalReturnTime()) / 2;
 					const size_t LowerReturn = return_time - diff;
 					const size_t UpperReturn = return_time + diff;
 					if (LowerReturn == 0 ||
