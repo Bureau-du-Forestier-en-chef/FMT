@@ -1557,8 +1557,9 @@ sorties de `cmake_pch.cxx` (`CL.write.1.tlog`) et les recrée au build suivant.
 
 ### 5.9 Lot 7a : expressions et gestionnaires de rendements (2026-10-21)
 
-**Statut** : livré le 2026-10-21, avant le build de Gabriel ; rien de commité. Étapes 1 et 2 de la
-section 6.3.4, découpage de Gabriel du même jour (section 6.3.4).
+**Statut** : livré le 2026-10-21, commité par Gabriel le même jour (`0c35c546`, changelog `51d03e83`),
+**validé** le 2026-10-21 (fin de cette section). Étapes 1 et 2 de la section 6.3.4, découpage de Gabriel
+du même jour (section 6.3.4).
 
 **Ajouts** (`Tests/Unit/Core`, cp1252, CRLF, en-tête de licence) : une source par classe, une suite au
 nom de la classe, cas Given…When…Then en Arrange / Act / Assert ; 141 cas nouveaux, dont 4 désactivés.
@@ -1661,14 +1662,33 @@ dans `build/release` ni sous `Examples/Models`.
 unitaires, 41 de priorité 1 sans test propre au lieu de 47 ; deux générations identiques), ligne de
 dette d'`Architecture.md`, changelog (section non publiée, anglais et français).
 
-**Après le build de Gabriel** : à faire, `RunTests.bat unit` puis `all-public` et l'installation
-(section 8).
+**Validation après le build de Gabriel** (2026-10-21, commits `0c35c546` et `51d03e83`, build
+reconfiguré ; FMTlib inchangé depuis `f4252745`) :
+- l'arbre de travail est identique à `HEAD`, et les deux commits contiennent les 14 fichiers du lot
+  (`git show --stat`) ; `UnitCore.exe` du build date de 10 h 47 ;
+- installation (`INSTALL_TEST_SUITE=public`, 10 h 48) : 441 tests, 0 échec, 418 exécutés et 23
+  désactivés, 17 s ; unit 144 verts et 4 désactivés ; aucun test en `T:/`. `InstallTests.xml`,
+  `InstallTests.json`, `LastTest.log` et `LastTestsDisabled.log` copiés dans le scratchpad de la session
+  avant tout appel de ctest ;
+- `RunTests.bat unit` : « 0 tests failed out of 144 », 1,9 s réelles ; unit 144 verts et 4 désactivés
+  sur 148, les quatre cas désactivés ci-dessus ;
+- `RunTests.bat all-public` : « 0 tests failed out of 418 », 15,5 s réelles ; unit 144 verts et 4
+  désactivés sur 148, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés
+  sur 248, performance 23, other 2 ; Total 418 verts et 23 désactivés sur 441. Par rapport au lot 5
+  (section 5.7), seul le niveau unit change, des 141 cas ajoutés : 137 verts et 4 désactivés, justifiés
+  en section 2.7 (#380, défauts 11 et 12). La fixture `ExamplesModelsUnchanged` est verte, et les 7
+  tests Python passent ;
+- non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par
+  la passe `/W4` hors dépôt d'avant le build (aucun dans les sources de tests) ;
+- restent : les issues des défauts 11 à 13, à ouvrir par Gabriel, dont les numéros iront en section 2.7,
+  dans les commentaires des deux cas désactivés, dans `CoreTestCoverage.csv` et dans le changelog. Le
+  lot n'ajoute que des tests unitaires : la suite BFEC n'est pas relancée.
 
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
 
-- **Lot 7a livré le 2026-10-21, avant le build de Gabriel** (section 5.9) : 141 cas unitaires des
+- **Lot 7a livré, commité (`0c35c546`, `51d03e83`) et validé le 2026-10-21** (section 5.9) : 141 cas unitaires des
   expressions et des gestionnaires de rendements, dont 4 désactivés (#380, défauts 11 et 12), et le
   défaut 13 sans cas ; issues 11 à 13 à ouvrir. Les lots 7b et 7c suivent (section 6.3.4).
 - **La réorganisation en trois niveaux est terminée** (section 9, ce qui reste ouvert en 9.7) ;
@@ -1878,7 +1898,7 @@ le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à
 - **Quoi pour chacune.** Construction, copie, comparaison, hachage quand il existe, bornes,
   entrées invalides et exceptions attendues, comme le détaille #350.
 - **Découpage en trois sessions (Gabriel, 2026-10-21).**
-  - **7a** : étapes 1 et 2. **Fait le 2026-10-21** (section 5.9), en attente du build de Gabriel :
+  - **7a** : étapes 1 et 2. **Fait et validé le 2026-10-21** (section 5.9, `0c35c546`) :
     141 cas, dont 4 désactivés ; défauts 11 à 13 (section 2.7) ; non couverts : `getEndPoint`,
     `_ENDPOINT`, `getAge`, `complexYldToAgeYld` et les surcharges, qui demandent `FMTSpec` et `FMTYields`.
   - **7b** : étapes 3 et 4, les bornes (`FMTSpec`, `FMTBounds` et ses quatre classes dérivées),
@@ -2200,7 +2220,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-15 (#357, `15427a6d`) | 270 `all-public` (266 + 4 lignes `DISCOUNT*`) ; résumé : system 233 verts et 12 désactivés sur 245, performance 23, other 2 | 27,1 s réelles | — | — | — | — | 12 | — |
 | 2026-10-15 (taux décimal, `62f9e288`) | 273 `all-public` (270 + 3 lignes `DISCOUNT*`) ; résumé : system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 13,2 s réelles | — | — | — | — | 12 | — |
 | 2026-10-20 (lot 5, `90ef4ad2`) | 300 `all-public` (280 + 20 cas `Integration.`) ; résumé : unit 7, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 13,8 s réelles | — | 13 | 2 | 0 | 19 | —
-| 2026-10-21 (lot 7a, avant le build) | attendus : 441 `all-public` (300 + 141 cas `Unit.`) ; unit 144 verts et 4 désactivés sur 148, vus hors ctest (`UnitCore` compilé hors dépôt) | à mesurer | — | 13 | 2 | 0 | 23 attendus | —
+| 2026-10-21 (lot 7a, `0c35c546`) | 441 `all-public` (300 + 141 cas `Unit.`) ; résumé : unit 144 verts et 4 désactivés sur 148, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 15,5 s réelles | — | 13 | 2 | 0 | 23 | —
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
