@@ -1427,8 +1427,9 @@ CRLF seulement, l'octet 0xE9 de « Québec » intact, sans U+FFFD.
   dans `FMTYieldParser.cpp`. `FMTYieldModelNep` ou `FMTYieldModelPools` exportée seule échoue de même
   (C2027 et C2338, dans sa source et dans `FMTYieldParser.cpp`) : son constructeur `= default` appelle
   celui de `FMTYieldModelNn`. Les exporter demande les types complets dans ces trois sources (des
-  `#include`), ou ces constructeurs et destructeurs définis dans `Source/` : plus que `FMTEXPORT`, à
-  décider par Gabriel. Nouvelle ligne de dette dans `Architecture.md`.
+  `#include`), ou ces constructeurs et destructeurs définis dans `Source/` : plus que `FMTEXPORT`.
+  **Décision de Gabriel (2026-10-20)** : on les laisse ainsi pour l'instant. Nouvelle ligne de dette
+  dans `Architecture.md`.
 - Hors du Core, `Models::FMTModelComparator` et `Heuristics::FMTOperatingAreaSchemeComparator` restent
   sans export : la ligne de dette des comparateurs se réduit à eux.
 
@@ -1461,14 +1462,38 @@ de ce build demande le `FMTlib.dll` du même build, ce que la roue livre déjà 
 
 **Incident.** Le premier rejeu n'envoyait pas `/Fp` dans le scratchpad : l'unité `/Yc` des deux cibles
 C++/CLI a réécrit `build/release/FMTWrapper.dir/Release/cmake_pch.pch` et
-`build/release/FMTExcelWrapper.dir/Release/cmake_pch.pch` (mêmes entrées, même taille). Effet :
-MSBuild recompilera ces deux cibles, ce que le changement des en-têtes de FMTlib impose de toute
-façon. Rien d'autre n'a été écrit dans `build/release` (`find -newer`).
+`build/release/FMTExcelWrapper.dir/Release/cmake_pch.pch` (mêmes entrées, même taille). Rien d'autre
+n'a été écrit dans `build/release` (`find -newer`). L'effet annoncé ici, une simple recompilation,
+était faux : un PCH managé (`/clr`) garde le chemin de l'objet de son unité `/Yc`, ici celui du rejeu,
+supprimé depuis, et MSBuild, qui voyait ces `.pch` plus récents que leurs entrées, ne les a pas
+régénérés. Le build de Gabriel a donc échoué sur les 11 unités `/Yu` de `FMTWrapper`, en C1093
+(`ImportFile`, fichier introuvable), comme le rejeu quand il supprimait cet objet. Les deux `.pch`
+contenaient bien le chemin du scratchpad. Ils ont été supprimés le 2026-10-20 : MSBuild les suit comme
+sorties de `cmake_pch.cxx` (`CL.write.1.tlog`) et les recrée au build suivant.
 
-**À faire après le build de Gabriel** : la même sonde (B) liée au `FMTlib.lib` du build ;
-`RunTests.bat all-public`, 281 verts et 19 désactivés sur 300 comme avant ; l'installation, tests
-Python compris ; la suite BFEC (`RunPrivateTests.bat`, lancée par Gabriel), sans écart ; aucun
-avertissement nouveau dans son build. Le build R reste à Gabriel.
+**Validation après le build de Gabriel** (2026-10-20, commit `f4252745` de Gabriel, 22 fichiers) :
+- premier build en échec sur `FMTWrapper` (C1093, incident ci-dessus) ; après la suppression des deux
+  `.pch`, le second passe. MSBuild a recréé les deux `.pch` (15 h 19 et 15 h 20), sans chemin du
+  scratchpad, et recompilé `FMTWrapper` et `FMTExcelWrapper` ;
+- `FMTlib.dll` du build : 4739 exports, la même liste que la DLL d'essai (149 de plus qu'avant,
+  aucun de moins) ;
+- sonde B liée au `FMTlib.lib` du build, lancée depuis `bin/Release` : 32 vérifications vertes, code
+  0 ;
+- installation (`INSTALL_TEST_SUITE=public`, 15 h 23) : 300 tests, 0 échec, 281 exécutés et 19
+  désactivés, 19 s, dont les 7 tests Python exécutés. La roue `FMT-1.3.0-cp310-cp310-win_amd64.whl`,
+  construite à 15 h 23 et installée dans le Python de vcpkg, s'importe en mode isolé depuis
+  `site-packages`, et sa `FMTlib.dll` est celle de `bin/Release` (même SHA-256). `InstallTests.xml`,
+  `InstallTests.json`, `LastTest.log` et `LastTestsDisabled.log` copiés dans le scratchpad avant tout
+  appel de ctest ;
+- `RunTests.bat all-public` : « 0 tests failed out of 281 », 16,3 s réelles ; unit 7 verts,
+  integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248,
+  performance 23, other 2 ; Total 281 verts et 19 désactivés sur 300, comme au lot 5 ;
+- avertissements : la console du build n'a pas été relue. Le rejeu de toutes les unités avec les
+  commandes de ce build (ses `CL.command.1.tlog`, `/Fo` `/Fd` `/Fp` dans le scratchpad, `.pch` de
+  `build/release` inchangés après coup) ne diffère du rejeu d'avant le changement dans aucune des 367
+  unités : toujours un C4244 et onze C4273, rien de nouveau. Les avertissements de l'édition de liens
+  ne sont pas couverts ;
+- restent à Gabriel : la suite BFEC (`RunPrivateTests.bat`) et le build R.
 
 ## 6. Prochain lot
 
@@ -1483,9 +1508,10 @@ avertissement nouveau dans son build. Le build R reste à Gabriel.
   d'écriture, issues #379 à #383 (section 2.7, défauts 6 à 10). Suite publique : 300 tests, 281 verts
   et 19 désactivés.
 - **Export des classes de Core (session à part, 2026-10-20, section 5.8)** : 18 des 23 classes sans
-  `FMTEXPORT` de l'inventaire sont exportées, à valider après le build de Gabriel ; quatre modèles de
-  rendement ne peuvent pas l'être tels quels (ligne de dette d'`Architecture.md`). Le lot 7 commence
-  après cette validation.
+  `FMTEXPORT` de l'inventaire sont exportées (commit `f4252745`), validé après le build de Gabriel
+  (sonde B, suite publique et installation inchangées ; BFEC et build R à Gabriel) ; quatre modèles
+  de rendement ne peuvent pas l'être tels quels (ligne de dette d'`Architecture.md`). Le lot 7 peut
+  commencer.
 - **Commits de tests sur `new_test` (Gabriel, 2026-10-20)** : ajouter des commits qui ajoutent des
   tests et renforcent la protection de FMT n'est pas un problème, même avant la fusion de la demande
   de tirage de la réorganisation.
@@ -1709,8 +1735,8 @@ prend pas, puis la priorité 2, puis la 3. Ce que cela change :
   - `FMTYieldModelNn`, `FMTYieldModelNep`, `FMTYieldModelPools` et `FMTYieldModelDecisionTree`, qu'on
     ne peut pas exporter telles quelles (ligne de dette d'`Architecture.md`, section 5.8). Un test ne
     peut ni les construire ni appeler leurs membres : statut `Lot 8, after priority 2 and the debt
-    row`. Leur export demande plus que `FMTEXPORT`, une modification de FMTlib à faire dans une autre
-    session avant leur tour ;
+    row`. Leur export demande plus que `FMTEXPORT` ; Gabriel les a laissées ainsi le 2026-10-20 (section
+    5.8) : une modification de FMTlib à faire dans une autre session avant leur tour ;
 - `FMTEvent`, `FMTGraphStats` et les types spatiaux ne sont pas dans l'espace de noms `Core`
   (`Spatial`, `Graph`) : l'inventaire ne les liste pas. Ils restent au lot 8 parce que le jalon 7 de
   #350 les nomme.
