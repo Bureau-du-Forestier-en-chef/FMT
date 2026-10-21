@@ -61,7 +61,7 @@ count. *None with a check* says that no such test was found.
 ## Summary
 
 61 classes: 50 of priority 1, 1 of priority 2, 10 of priority 3,
-0 without a priority. 3 have unit tests.
+0 without a priority. 9 have unit tests.
 
 Suites that name no class of `Core`: `FMTModelParser` (Integration, cases: 18), `FMTScheduleParser` (Integration, cases: 2). They exercise `Core` only through other classes.
 
@@ -71,7 +71,7 @@ None: the classes are those of the previous generation.
 
 ## Priority 1 classes without a test of their own
 
-47 classes of priority 1 have neither a unit nor an integration suite.
+41 classes of priority 1 have neither a unit nor an integration suite.
 
 | Header | Class | Known issues | Status |
 | --- | --- | --- | --- |
@@ -80,16 +80,11 @@ None: the classes are those of the previous generation.
 | `FMTActualDevelopment.h` | `FMTActualDevelopment` | None known | Lot 8 |
 | `FMTActualDevelopment.h` | `FMTActualDevelopmentComparator` | None known | Lot 8 |
 | `FMTAgeBounds.h` | `FMTAgeBounds` | None known | Lot 7, step 3 |
-| `FMTAgeYieldHandler.h` | `FMTAgeYieldHandler` | None known | Lot 7, step 2 |
-| `FMTComplexYieldHandler.h` | `FMTComplexYieldHandler` | #347 (known behaviour, `indexes`) | Lot 7, step 2 |
 | `FMTConstants.h` | `FMTConstants` | None known | Lot 8 |
 | `FMTConstraint.h` | `FMTConstraint` | #379 (`_PENALTY` without sign), #382 (`_RANDOM`) | Lot 7, step 4 |
-| `FMTData.h` | `FMTData` | #347 (known behaviour, `toExpression`) | Lot 7, step 2 |
 | `FMTDevelopment.h` | `FMTDevelopment` | None known | Lot 7, step 5 |
 | `FMTDevelopmentPath.h` | `FMTDevelopmentPath` | None known | Lot 8 |
-| `FMTExpression.h` | `FMTExpression` | #346 and #347 (known behaviours, `_getPostFix`, `_evaluatePostFix`) | Lot 7, step 1 |
 | `FMTFork.h` | `FMTFork` | None known | Lot 8 |
-| `FMTFunctionCall.h` | `FMTFunctionCall` | None known | Lot 7, step 1 |
 | `FMTFuturDevelopment.h` | `FMTFuturDevelopment` | None known | Lot 8 |
 | `FMTLifespans.h` | `FMTLifespans` | None known | Lot 8 |
 | `FMTList.hpp` | `FMTList` | None known | Lot 8 |
@@ -111,7 +106,6 @@ None: the classes are those of the previous generation.
 | `FMTSchedule.h` | `FMTSchedule` | None known | Lot 8 |
 | `FMTTheme.h` | `FMTTheme` | None known | Lot 7, step 5 |
 | `FMTTheme.h` | `FMTThemeComparator` | None known | Lot 8 |
-| `FMTTimeYieldHandler.h` | `FMTTimeYieldHandler` | #357 (fixed, `15427a6d`), #380 (`_DISCOUNTFACTOR` written as a time series) | Lot 7, step 2 |
 | `FMTTransition.h` | `FMTTransition` | None known | Lot 8 |
 | `FMTTransition.h` | `FMTTransitionComparator` | None known | Lot 8 |
 | `FMTTransitionMask.h` | `FMTTransitionMask` | None known | Lot 8 |
@@ -138,17 +132,17 @@ is the lot that plans its unit tests (section 6.3 of the ETAT).
 | 1 | `FMTActualDevelopment.h` | `FMTActualDevelopment` | 0 | 0; indirectly: `IntegrationParser` (`operator==` on the area after a reread) | `ReadScenario` (`AREA`, `DEVELOPMENTS`) | None known |  | Lot 8 |
 | 1 | `FMTActualDevelopment.h` | `FMTActualDevelopmentComparator` | 0 | 0 | None with a check | None known |  | Lot 8 |
 | 1 | `FMTAgeBounds.h` | `FMTAgeBounds` | 0 | 0 | `ReadScenario` (`OPERABLE` at the age bounds of an action), `CreateModel` | None known | The unit tests reach `FMTBounds<int>` through it. | Lot 7, step 3 |
-| 1 | `FMTAgeYieldHandler.h` | `FMTAgeYieldHandler` | 0 | 0; indirectly: `IntegrationParser` (yield values after a reread) | `ReadScenario` (`YIELD` of age yields, interpolated between ages), `AddYieldHandlers`, `CreateModel` | None known |  | Lot 7, step 2 |
+| 1 | `FMTAgeYieldHandler.h` | `FMTAgeYieldHandler` | 20 | 0; indirectly: `IntegrationParser` (yield values after a reread) | `ReadScenario` (`YIELD` of age yields, interpolated between ages), `AddYieldHandlers`, `CreateModel` | None known |  | Lot 7a (step 2), done |
 | 1 | `FMTBounds.hpp` | `FMTBounds` | 3 | 0 | Through its derived classes | #358 (known behaviour, with `FMTSpec`) | Template, defined in its header. Debt row of Architecture.md: exported only through its derived classes. | Lot 7, step 3 |
-| 1 | `FMTComplexYieldHandler.h` | `FMTComplexYieldHandler` | 0 | 0; indirectly: `IntegrationParser` (yield values after a reread) | `ReadScenario` (`YIELD` of complex yields, scenarios `yieldoperators` and `yieldoperatorsalone`), `WrapperCoreGetYield` | #347 (known behaviour, `indexes`) |  | Lot 7, step 2 |
+| 1 | `FMTComplexYieldHandler.h` | `FMTComplexYieldHandler` | 33 | 0; indirectly: `IntegrationParser` (yield values after a reread) | `ReadScenario` (`YIELD` of complex yields, scenarios `yieldoperators` and `yieldoperatorsalone`), `WrapperCoreGetYield` | #347 (known behaviour, `indexes`) | Debt row of Architecture.md: evaluated through `FMTYields::get`. | Lot 7a (step 2), done |
 | 1 | `FMTConstants.h` | `FMTConstants` | 0 | 0 | `ConvertStringsToConstants` (3 cases), `ReadScenario` (`YIELD` of a rate given by a constant) | None known |  | Lot 8 |
 | 1 | `FMTConstraint.h` | `FMTConstraint` | 0 | 0; indirectly: `IntegrationParser` (`operator==` after a write and a reread) | `ReadScenario` (`CONSTRAINT`, `CONSTRAINTS`: type, bounds, periods), `UpdateNonSpatialModel` (shifted constraints read back) | #379 (`_PENALTY` without sign), #382 (`_RANDOM`) |  | Lot 7, step 4 |
-| 1 | `FMTData.h` | `FMTData` | 0 | 0 | Through `FMTComplexYieldHandler` and `FMTTimeYieldHandler` (`ReadScenario`, `YIELD`) | #347 (known behaviour, `toExpression`) |  | Lot 7, step 2 |
+| 1 | `FMTData.h` | `FMTData` | 22 | 0 | Through `FMTComplexYieldHandler` and `FMTTimeYieldHandler` (`ReadScenario`, `YIELD`) | #347 (known behaviour, `toExpression`) |  | Lot 7a (step 2), done |
 | 1 | `FMTDevelopment.h` | `FMTDevelopment` | 0 | 0 | `ReadScenario` (`OPERABLE`, `OPERATE`, `GROW`, `YIELD`) | None known |  | Lot 7, step 5 |
 | 1 | `FMTDevelopmentPath.h` | `FMTDevelopmentPath` | 0 | 0 | `ReadScenario` (`OPERATE`: target and proportion of each path) | None known |  | Lot 8 |
-| 1 | `FMTExpression.h` | `FMTExpression` | 0 | 0 | `ReadScenario` (`YIELD` of equations, scenario `yieldoperators`), `WrapperCoreGetYield` | #346 and #347 (known behaviours, `_getPostFix`, `_evaluatePostFix`) |  | Lot 7, step 1 |
+| 1 | `FMTExpression.h` | `FMTExpression` | 22 (1 disabled) | 0 | `ReadScenario` (`YIELD` of equations, scenario `yieldoperators`), `WrapperCoreGetYield` | #346 and #347 (known behaviours, `_getPostFix`, `_evaluatePostFix`), and a minus after an operator read as a subtraction (defect 11, issue to open, `_getPostFix`) |  | Lot 7a (step 1), done |
 | 1 | `FMTFork.h` | `FMTFork` | 0 | 0; indirectly: Through `FMTTransition` | `ReadScenario` (`OPERATE` on a transition with two targets), `CreateModel` | None known |  | Lot 8 |
-| 1 | `FMTFunctionCall.h` | `FMTFunctionCall` | 0 | 0 | `WrapperCoreGetYield` (an equation with `exp` and `ln`) | None known |  | Lot 7, step 1 |
+| 1 | `FMTFunctionCall.h` | `FMTFunctionCall` | 10 | 0 | `WrapperCoreGetYield` (an equation with `exp` and `ln`) | None known |  | Lot 7a (step 1), done |
 | 1 | `FMTFuturDevelopment.h` | `FMTFuturDevelopment` | 0 | 0 | `ReadScenario` (`GROW`) | None known |  | Lot 8 |
 | 1 | `FMTLifespans.h` | `FMTLifespans` | 0 | 0; indirectly: `IntegrationParser` (`operator==` after a write and a reread) | `ReadScenario` (`OPERABLE` of `_DEATH` at the lifespan), `CreateModel` | None known | Base `FMTList<int>`. | Lot 8 |
 | 1 | `FMTList.hpp` | `FMTList` | 0 | 0; indirectly: Through the same classes | Through `FMTAction`, `FMTTransition`, `FMTLifespans` and `FMTYields` | None known | Template, defined in its header. Base of `FMTAction`, `FMTTransition`, `FMTLifespans` and `FMTYields`. | Lot 8 |
@@ -158,7 +152,7 @@ is the lot that plans its unit tests (section 6.3 of the ETAT).
 | 1 | `FMTMask.h` | `FMTMaskComparator` | 0 | 0 | None with a check | None known |  | Lot 8 |
 | 1 | `FMTMaskFilter.h` | `FMTMaskFilter` | 0 | 0 | Through the presolve (`Presolve`: same optimum with and without presolve) | None known | Used by the presolve. | Lot 8 |
 | 1 | `FMTObject.h` | `FMTObject` | 0 | 0 | `ReadInvalidScenario` (6 `FMTexc` codes) | None known | Base of most classes: exception handler, logger, `setErrorsToWarnings`. | Lot 8 |
-| 1 | `FMTOperator.h` | `FMTOperator` | 2 | 0 | `ReadScenario` (`YIELD` of numeric equations, scenario `yieldoperators`) | #346 (known behaviour, `precedence`) |  | Lot 7, step 1 |
+| 1 | `FMTOperator.h` | `FMTOperator` | 20 | 0 | `ReadScenario` (`YIELD` of numeric equations, scenario `yieldoperators`) | #346 (known behaviour, `precedence`) |  | Lot 7a (step 1), done |
 | 1 | `FMTOutput.h` | `FMTOutput` | 0 | 0; indirectly: `IntegrationParser` (`operator==` after a write and a reread) | `ComputeLevelOutputs` (26 outputs), `ReplayScheduleOutputs`, `ForceSolution`, `SumAndAverageOutputs`, `PlanScenario` (`REPLAY`), `ComputeTimeYieldOutputs`, `GetYieldsFromFactor` | #381 (hidden outputs written as outputs) |  | Lot 7, step 4 |
 | 1 | `FMTOutput.h` | `FMTOutputComparator` | 0 | 0 | `ForceSolution` (finds the output it checks) | None known |  | Lot 8 |
 | 1 | `FMTOutputNode.h` | `FMTOutputNode` | 0 | 0 | Through `FMTOutput` (`ComputeLevelOutputs` and the other output tests) | None known |  | Lot 8 |
@@ -172,7 +166,7 @@ is the lot that plans its unit tests (section 6.3 of the ETAT).
 | 1 | `FMTSpec.h` | `FMTSpec` | 2 | 0 | `ReadScenario` (`OPERABLE`), `CreateModel` | #358 (known behaviour) |  | Lot 7, step 3 |
 | 1 | `FMTTheme.h` | `FMTTheme` | 0 | 0; indirectly: `IntegrationParser` (`operator==` after a write and a reread) | `ReadScenario` (`THEMES`, `THEMENAME`, `ATTRIBUTES`, `AGGREGATE`), `CreateModel` | None known |  | Lot 7, step 5 |
 | 1 | `FMTTheme.h` | `FMTThemeComparator` | 0 | 0 | None with a check | None known |  | Lot 8 |
-| 1 | `FMTTimeYieldHandler.h` | `FMTTimeYieldHandler` | 0 | 0; indirectly: `IntegrationParser` (yield values after a reread) | `ReadScenario` (`YIELD` of time yields and `_DISCOUNTFACTOR`, scenario `timeyields`), `ComputeTimeYieldOutputs` | #357 (fixed, `15427a6d`), #380 (`_DISCOUNTFACTOR` written as a time series) |  | Lot 7, step 2 |
+| 1 | `FMTTimeYieldHandler.h` | `FMTTimeYieldHandler` | 16 (3 disabled) | 0; indirectly: `IntegrationParser` (yield values after a reread) | `ReadScenario` (`YIELD` of time yields and `_DISCOUNTFACTOR`, scenario `timeyields`), `ComputeTimeYieldOutputs` | #357 (fixed, `15427a6d`), #380 (`_DISCOUNTFACTOR` written as a time series), and one starting period for every yield of a `*YT` section (defect 12, issue to open, `get`) |  | Lot 7a (step 2), done |
 | 1 | `FMTTransition.h` | `FMTTransition` | 0 | 0; indirectly: `IntegrationParser` (`operator==` after a write and a reread) | `ReadScenario` (`OPERATE`: targets, proportions, `_AGE` and `_LOCK` of the targets), `CreateModel` | None known | Base `FMTList<FMTFork>`. | Lot 8 |
 | 1 | `FMTTransition.h` | `FMTTransitionComparator` | 0 | 0 | None with a check | None known |  | Lot 8 |
 | 1 | `FMTTransitionMask.h` | `FMTTransitionMask` | 0 | 0; indirectly: Through `FMTTransition` | `ReadScenario` (`OPERATE`: the targets), `CreateModel` | None known |  | Lot 8 |
@@ -209,17 +203,17 @@ there, not guessed here.
 | `FMTActualDevelopment` | `Source/FMTActualDevelopment.cpp` | `getArea`, `getMask` | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
 | `FMTActualDevelopmentComparator` | `Source/FMTActualDevelopment.cpp` | See the header | Boost only | None found | None | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
 | `FMTAgeBounds` | `Source/FMTAgeBounds.cpp` | See the header | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | Its own constructors and comparison |
-| `FMTAgeYieldHandler` | `Source/FMTAgeYieldHandler.cpp` | `get`, interpolation between ages | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
+| `FMTAgeYieldHandler` | `Source/FMTAgeYieldHandler.cpp` | `get`, interpolation between ages | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | `getEndPoint`, `getAge`, `getAllYieldsData` (no caller in FMT) |
 | `FMTBounds` | None | `in` | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | Copy, comparison, `FMTBounds<double>`, invalid bounds |
-| `FMTComplexYieldHandler` | `Source/FMTComplexYieldHandler.cpp` | `get`, `indexes` | Boost only | None found | Boost serialization | To assess (lot 9) | Hot path named by #350: complex yield evaluation | All unit behaviours |
+| `FMTComplexYieldHandler` | `Source/FMTComplexYieldHandler.cpp` | `get`, `indexes` | Boost only | None found | Boost serialization | To assess (lot 9) | Hot path named by #350: complex yield evaluation | `_ENDPOINT`, overrides (`setTabou`, `compareSources`), `complexYldToAgeYld`, `getAge` |
 | `FMTConstants` | `Source/FMTConstants.cpp` | See the header | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
 | `FMTConstraint` | `Source/FMTConstraint.cpp` | `getBounds`, `getConstraintType`, `operator std::string` | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
-| `FMTData` | `Source/FMTData.cpp` | `toExpression`, `toString` | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
+| `FMTData` | `Source/FMTData.cpp` | `toExpression`, `toString` | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | None |
 | `FMTDevelopment` | `Source/FMTDevelopment.cpp` | `grow`, `operable`, `operate`, `getYieldRequest` | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
 | `FMTDevelopmentPath` | `Source/FMTDevelopmentPath.cpp` | `getDevelopment`, `getProportion` | Boost only | None found | None | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
-| `FMTExpression` | `Source/FMTExpression.cpp` | See the header | Boost only | None found | None | To assess (lot 9) | Hot path named by #350: expression evaluation | All unit behaviours |
+| `FMTExpression` | `Source/FMTExpression.cpp` | `shuntingYard`, `simplify`, `getVariables` | Boost only | None found | None | To assess (lot 9) | Hot path named by #350: expression evaluation | None |
 | `FMTFork` | `Source/FMTFork.cpp` | See the header | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
-| `FMTFunctionCall` | `Source/FMTFunctionCall.cpp` | See the header | Boost only | None found | None | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
+| `FMTFunctionCall` | `Source/FMTFunctionCall.cpp` | `call`, `valid` | Boost only | None found | None | To assess (lot 9) | To assess (lot 9) | None |
 | `FMTFuturDevelopment` | `Source/FMTFuturDevelopment.cpp` | See the header | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
 | `FMTLifespans` | `Source/FMTLifespans.cpp` | See the header | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
 | `FMTList` | `Source/FMTList.cpp` | See the header | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
@@ -229,7 +223,7 @@ there, not guessed here.
 | `FMTMaskComparator` | `Source/FMTMask.cpp` | See the header | Boost only | None found | None | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
 | `FMTMaskFilter` | `Source/FMTMaskFilter.cpp` | See the header | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
 | `FMTObject` | `Source/FMTObject.cpp` | `setErrorsToWarnings` | GDAL, R (Rcpp), Python | Code under `FMTWITHR`, `FMTWITHPYTHON`, `FMTWITHGDAL` | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
-| `FMTOperator` | `Source/FMTOperator.cpp` | `precedence` | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All but `precedence` |
+| `FMTOperator` | `Source/FMTOperator.cpp` | `precedence`, `call`, `reverse`, `associativity` | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | None |
 | `FMTOutput` | `Source/FMTOutput.cpp` | `operator std::string`, `_toWsFormat` | Boost only | None found | Boost serialization | To assess (lot 9) | Hot path named by #350: output calculation | All unit behaviours |
 | `FMTOutputComparator` | `Source/FMTOutput.cpp` | See the header | Boost only | None found | None | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
 | `FMTOutputNode` | `Source/FMTOutputNode.cpp` | See the header | Boost only | None found | None | To assess (lot 9) | Hot path named by #350: output calculation | All unit behaviours |
@@ -243,7 +237,7 @@ there, not guessed here.
 | `FMTSpec` | `Source/FMTSpec.cpp` | `allowWithoutYield` | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All but `allowWithoutYield` on ages |
 | `FMTTheme` | `Source/FMTTheme.cpp` | `validate`, `getAttributes`, `getBaseAttributes` | R (Rcpp) | Code under `FMTWITHR` | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
 | `FMTThemeComparator` | `Source/FMTTheme.cpp` | See the header | R (Rcpp) | Code under `FMTWITHR` | None | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
-| `FMTTimeYieldHandler` | `Source/FMTTimeYieldHandler.cpp` | `get`, `operator std::string` | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
+| `FMTTimeYieldHandler` | `Source/FMTTimeYieldHandler.cpp` | `get`, `operator std::string` | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | `getAllYieldsData` (no caller in FMT) |
 | `FMTTransition` | `Source/FMTTransition.cpp` | See the header | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
 | `FMTTransitionComparator` | `Source/FMTTransition.cpp` | See the header | Boost only | None found | None | To assess (lot 9) | To assess (lot 9) | All unit behaviours |
 | `FMTTransitionMask` | `Source/FMTTransitionMask.cpp` | See the header | Boost only | None found | Boost serialization | To assess (lot 9) | To assess (lot 9) | All unit behaviours |

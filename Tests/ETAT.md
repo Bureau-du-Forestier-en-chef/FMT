@@ -529,6 +529,11 @@ Depuis les phases 8 et 9a, #346 a deux tests qui se contredisent : le cas unitai
 `Unit.FMTOperator.GivenPowerAndMultiplyWhenPrecedenceThenTheyAreEqual` fixe le comportement
 actuel, et les deux lignes désactivées de `knownbugs.csv` (`…ThenAppliesThePowerFirst`) attendent
 la priorité mathématique. La revue commune gardera l'un des deux.
+Le lot 7a (section 5.9) ajoute quatre cas unitaires de `FMTExpression` sur #346 : trois fixent le
+comportement actuel (`2*3^2` = 36, `12/2^2` = 36, et `2^3^2` = 64, le même mécanisme), le quatrième le
+contournement (`2*(3^2)` = 18). Pour #347, deux cas, présentés à Gabriel et retenus le 2026-10-21, fixent
+deux étapes du mécanisme décrit ci-dessous : `Unit.FMTComplexYieldHandler.GivenAnEquationWhoseNumberIsKeptAsTextWhenIndexesThenTakesTheNumberForAThemeIndex`
+(étape 2) et `Unit.FMTData.GivenASumWhenToExpressionThenJoinsItsSourcesWithoutAnOperator` (étapes 3 et 4).
 Démonstrations refaites le
 2026-09-17 avec les exécutables du build de `new_test`, sur des copies de TWD_land hors dépôt.
 
@@ -703,6 +708,61 @@ Dans TWD_land, `YBM_RTM_BOG`, `YBM_RTM_MEH` et `YBM_RTM_F` ne servent qu'à l'ou
 qu'aucun objectif ni aucune contrainte n'utilise. À la correction, relancer la suite base pour
 repérer les valeurs attendues qui changent, et justifier au journal toute valeur modifiée
 (règle 9).
+
+**Défauts révélés par le lot 7a (2026-10-21).** Trois défauts, démontrés avec l'exécutable officiel
+`ReadScenario` du build de `new_test` (FMTlib de `f4252745`), sur une copie de TWD_land hors du dépôt
+(scratchpad), en ajoutant une ligne ou un bloc au `._yld` du scénario `timeyields` (A/B, une seule chose
+change). Les deux premiers ont un cas `DISABLED_` dans `UnitCore`. Le troisième est dans `FMTYieldParser`,
+hors des classes du lot, et n'a pas encore de cas. Leurs issues sont à ouvrir par Gabriel (règle 3) :
+textes dans le rapport du lot 7a. Leurs numéros iront ici, dans les commentaires des cas et dans le
+changelog. Aucun n'est corrigé dans ce chantier.
+
+11. **Un moins qui suit un opérateur est lu comme une soustraction** (`FMTExpression`, issue à ouvrir).
+    - `_getPostFix` (`Source/FMTExpression.cpp:65`) traite tout `-` comme l'opérateur binaire : dans
+      `2*-3`, le `-`, moins prioritaire que `*`, donne le postfixe `2 * 3 -`. `_evaluatePostFix`
+      (ligne 230) donne alors au `*` un opérande gauche absent, 0 : `0*2`, puis `0-3`, soit -3 au lieu
+      de -6. Le moins en tête marche par la même règle (`-5+2` vaut -3).
+    - Sur la racine (`UNITE1 PEUPLEMENT1 UTR1`, 7 ans, `VOLUMETOTAL` = 120), dans un bloc `*YC` ajouté :
+      `_EQUATION(-1*VOLUMETOTAL)` vaut -120, `_EQUATION(VOLUMETOTAL*-1)` vaut -1, et
+      `_EQUATION(VOLUMETOTAL*(-1))` vaut 0 : les parenthèses n'y font rien. Dans un autre bloc, sans
+      aucun nombre, donc hors du mécanisme de #347 : `_EQUATION(VOLUMETOTAL*VOLUMETOTAL)` vaut 14400,
+      `_EQUATION(VOLUMETOTAL*-VOLUMETOTAL)` vaut -120 au lieu de -14400.
+    - Contournement : `(0-1)` (`_EQUATION(VOLUMETOTAL*(0-1))` vaut -120), ou le moins en tête.
+    - Origine : la conversion en postfixe est la même depuis `2e3dc129` (2019-06-07) ; le 0 de
+      l'opérande absent vient de `bb73b9f2` (2019-08-23), qui a rendu possible le moins en tête.
+    - Aucun modèle de `Examples/Models` n'écrit de moins après un opérateur. Non vérifié dans les
+      outputs, qui passent aussi par `FMTExpression::shuntingYard` (`FMTOutput::shuntingYard`).
+    - Cas : `Unit.FMTExpression.GivenAMinusAfterAMultiplicationWhenShuntingYardThenNegatesTheValueThatFollows`.
+12. **Les yields d'un bloc `*YT` lisent tous la période de départ du premier** (`FMTTimeYieldHandler`,
+    issue à ouvrir).
+    - `FMTYieldParser` pousse une période de départ par ligne d'un bloc `*YT`, et
+      `FMTTimeYieldHandler::pushData` les range dans l'ordre des noms (`cmpYieldString` : le plus court
+      d'abord). `get` (`Source/FMTTimeYieldHandler.cpp:116`) lit `getBases().at(0)` pour tout yield du
+      bloc, alors que `operator std::string` (ligne 29) écrit la période de chaque yield à sa place.
+    - A : `timeyields` plus la ligne `LATE 1 5 6` ; `PERIODVALUE` vaut 10 à la période 1 et 30 à la
+      période 3. B : `LATE 3 5 6` ; `PERIODVALUE` vaut 0 et 10. `LATE`, premier dans l'ordre des noms,
+      reste juste (0 à la période 1, 5 à la période 3).
+    - Origine : `9fd69f73` (2025-02-05), qui a fait lire une période de départ à `get` ; avant, `get`
+      n'en lisait aucune (valeur à l'indice de la période).
+    - Dans TWD_land, chaque bloc `*YT` n'a qu'une période de départ (0, ou 1 dans `timeyields`, dont les
+      `_DISCOUNTFACTOR` n'en poussent pas) : aucun test public n'est touché. Modèles BFEC : non vérifié.
+    - Cas : `Unit.FMTTimeYieldHandler.GivenTwoTimeYieldsStartingAtDifferentPeriodsWhenGetThenEachStartsAtItsOwnPeriod`,
+      construit comme le parseur, à côté du cas vert `GivenTwoTimeYieldsStartingAtTheSamePeriod…`, qui ne
+      diffère que par la période de départ de `LATE`.
+13. **En colonnes (`_CP`), chaque ligne d'un bloc `*YT` retarde d'une période les valeurs des lignes
+    suivantes** (`FMTYieldParser`, issue à ouvrir, relevé en lisant le parseur pour le défaut 12).
+    - Pour chaque ligne après la première, `FMTYieldParser::read` (`Source/FMTYieldParser.cpp:637`)
+      remplit les périodes de `getLastBase()` à celle de la ligne : la première de la boucle est la
+      dernière déjà poussée, dont la valeur est donc poussée deux fois.
+    - Bloc `_CP CPA CPB`, lignes `1 10 100`, `3 30 300`, `5 50 500` : `CPA` vaut 10, 10, 10, 30, 30, 30,
+      50 aux périodes 1 à 7, au lieu de 10, 10, 30, 30, 50, 50, 50 que la boucle cherche à donner (à la
+      période d'une ligne, sa valeur ; entre deux lignes, la précédente). `CPB` vaut 100 à la période 3.
+    - Origine : la boucle date de `2e3dc129` (2019-06-07). D'après le code, avant `9fd69f73`, `get`
+      lisait l'indice de la période, ce qui compensait le doublon de la deuxième ligne quand la première
+      est à la période 1, mais pas ceux des lignes suivantes.
+    - Aucun modèle de `Examples/Models` n'écrit de `_CP`. Pas de cas dans ce lot : le défaut est dans la
+      lecture, et son test serait un cas de `IntegrationParser`, ou une ligne de `knownbugs.csv` sur un
+      nouveau scénario de TWD_land (à décider).
 
 ## 3. Lacunes classées par criticité
 
@@ -1495,10 +1555,122 @@ sorties de `cmake_pch.cxx` (`CL.write.1.tlog`) et les recrée au build suivant.
   ne sont pas couverts ;
 - restent à Gabriel : la suite BFEC (`RunPrivateTests.bat`) et le build R.
 
+### 5.9 Lot 7a : expressions et gestionnaires de rendements (2026-10-21)
+
+**Statut** : livré le 2026-10-21, avant le build de Gabriel ; rien de commité. Étapes 1 et 2 de la
+section 6.3.4, découpage de Gabriel du même jour (section 6.3.4).
+
+**Ajouts** (`Tests/Unit/Core`, cp1252, CRLF, en-tête de licence) : une source par classe, une suite au
+nom de la classe, cas Given…When…Then en Arrange / Act / Assert ; 141 cas nouveaux, dont 4 désactivés.
+
+| Source | Cas | Désactivés | Ce qu'ils couvrent |
+|---|---|---|---|
+| `FMTOperator.cpp` | 18 nouveaux (20) | 0 | construction par symbole et retour au symbole, symbole inconnu, opérateur par défaut, `call` (arithmétique, virgule, division par zéro : infini), `reverse`, `isFactor`, `isDivide`, `associativity`, copie, égalité, hachage, priorités de `-` et de `,` |
+| `FMTFunctionCall.cpp` | 10 | 0 | `EXP` et `LN` arrondis à 8 décimales, `EXP(-20)` arrondi à 0, `LN` de 0 et d'un négatif, noms en minuscules et inconnus, appel par défaut, copie |
+| `FMTExpression.cpp` | 22 | 1 | évaluation (priorités, parenthèses, gauche à droite, #346, moins en tête, variables, fonctions), variable sans valeur (`std::invalid_argument`), `getInFix`, chaîne, copie, `getVariables`, `simplify` (facteurs et membre de droite d'une équation linéaire, expression rendue) ; désactivé : défaut 11 |
+| `FMTData.cpp` | 22 | 0 | constructeurs, `constant`, `nullData`, `getSources` (somme, équation), `getValues`, chaînes (`_SUM`, `_DISCOUNTFACTOR`, `_EQUATION`), `toExpression` (dont #347), égalité, copie, produit par un facteur, cache (`set`, `get`, `clearCache`, copie sans cache) |
+| `FMTAgeYieldHandler.cpp` | 20 | 0 | `get` aux âges de base, entre eux, avant le premier et après le dernier, yield absent, `getYieldLinearValue` sans hors-bornes (`FMToutofrangeyield`), `setYieldValues` (tailles ou âges différents : `FMTrangeerror`), noms, copie, clone, `getFromFactor`, pic (`getPeakfrom`, `getPeak`), type, chaîne `*Y` |
+| `FMTTimeYieldHandler.cpp` | 16 | 3 | valeurs avant, pendant et après les périodes, yield absent, deux yields de même départ, `FULL`, `NONE` et `HALF` sur trois périodes, `setYieldValues` (`FMTrangeerror`), copie, clone, `getFromFactor`, chaîne `*YT` ; désactivés : défaut 12, #380 (deux cas) |
+| `FMTComplexYieldHandler.cpp` | 33 | 0 | `_SUM`, `_MULTIPLY`, `_SUBTRACT`, `_DIVIDE` (par zéro, arrondi à 8 décimales), `_RANGE`, `_MAI` (avec années, après le dernier âge : `FMToutofrangeyield`), `_CAI`, `_YTP`, `_EQUATION` (yields, nombre, fonction), `_MAX`, `_MIN`, `_SHIFT`, `_DELTA`, `_DISTANCE`, source inconnue, yield complexe d'un autre, récursion entre deux gestionnaires (`FMTinvalid_yield`), `indexes` (index de thème, #347), type, copie, clone, chaîne `*YC` |
+
+- `Tests/Unit/Core/ExceptionChain.h` : `Testing::getRaisedTypes` rend les codes des exceptions FMT d'un
+  appel, de l'extérieure à la plus profonde (par `Testing::visitNested`), et `Testing::hasType` y
+  cherche un code. FMT enveloppe l'erreur dans un `FMTfunctionfailed` à chaque méthode traversée : le
+  code attendu est celui d'une exception imbriquée.
+- Niveau unitaire : aucun modèle sur disque, objets construits en code, données construites comme
+  `FMTYieldParser` les construit (commentaire en tête de `FMTData.cpp`). `FMTComplexYieldHandler` ne
+  s'évalue qu'à travers `FMTYields::get` : ses cas mettent dans un `FMTYields` construit en code un
+  gestionnaire d'âge (`VOLUME`, `STEMS`, `ZERO`), un de temps (`PERIODVALUE`), puis le gestionnaire
+  complexe. Nouvelle ligne de dette dans `Architecture.md` : une sonde hors dépôt montre que, sur une
+  requête faite d'un développement seul, `get` lit un `FMTYields` nul (violation d'accès 0xC0000005,
+  levée en `FMTexc(85)`). Aucune classe du lot ne demande un modèle ou un état global : aucun cas au
+  niveau intégration.
+- Valeurs calculées à la main (consigne de Gabriel pour `FMTTimeYieldHandler`),
+  `_DISCOUNTFACTOR(4%,5,<type>)` : facteur 1 / 1,04^(5 × exposant), exposant `FULL` = p, `NONE` = p - 1,
+  `HALF` = p - 0,5 (section 2.7, item 3), tolérance 1e-12 :
+
+  | Type | Période | Exposant | Calcul | Valeur attendue |
+  |---|---|---|---|---|
+  | `FULL` | 1 | 1 | 1/1,04^5 | 0,821927106759 |
+  | `FULL` | 2 | 2 | 1/1,04^10 | 0,675564168826 |
+  | `FULL` | 3 | 3 | 1/1,04^15 | 0,555264502713 |
+  | `NONE` | 1 | 0 | 1/1,04^0 | 1 |
+  | `NONE` | 2 | 1 | 1/1,04^5 | 0,821927106759 |
+  | `NONE` | 3 | 2 | 1/1,04^10 | 0,675564168826 |
+  | `HALF` | 1 | 0,5 | 1/1,04^2,5 | 0,906601956075 |
+  | `HALF` | 2 | 1,5 | 1/1,04^7,5 | 0,745160722739 |
+  | `HALF` | 3 | 2,5 | 1/1,04^12,5 | 0,612467796912 |
+
+  Les autres valeurs : celles de `FMTFunctionCall` et des yields complexes sont les valeurs exactes
+  arrondies à 8 décimales, comme `call` et `FMTComplexYieldHandler::get` les arrondissent (e = 2,71828183,
+  ln 10 = 2,30258509, ln 200 = 5,29831737, 200/3 = 66,66666667) ; le reste est de l'arithmétique sur des
+  valeurs choisies (`VOLUME` vaut 100, 200 et 240 aux âges 10, 20 et 30, donc 150 à 15 ans, 220 à 25 ans
+  et 50 à 5 ans, interpolé depuis 0 à l'âge 0).
+- **#380** : deux cas désactivés montrent qu'il passe par `FMTTimeYieldHandler::operator std::string` :
+  le gestionnaire écrit `DISCOUNTFULL 1 0.04 5`, et lève sans période de départ. `FMTData` écrit pourtant
+  `_DISCOUNTFACTOR(0.040000000000000001,5,FULL)` (cas vert), que le parseur relit au même taux depuis
+  #374 : la correction de #380 peut s'en servir.
+- **#346 et #347** : section 2.7. **Défauts révélés** : 11 et 12, avec leur cas désactivé, et 13, sans
+  cas (section 2.7).
+
+**Observations, sans défaut annoncé** (rien de ce que FMT exécute n'en dépend, ou ce n'est pas
+démontré) :
+- l'opérateur et l'appel de fonction par défaut portent la clé 0, d'aucune énumération : `valid()` les
+  accepte (cas verts qui le fixent) ;
+- `FMTOperator::associativity` rend `RIGHT` pour `-` et `/`, et `LEFT` pour `^` ;
+  `FMTExpression::getVariables` compte les parenthèses parmi les variables. Aucune méthode de FMT ne les
+  appelle (cas verts commentés) ;
+- `FMTExpression::simplify` traiterait une parenthèse comme une variable, mais le parseur de la section
+  optimisation ne lui en passe pas : il ne coupe que sur `+ - * /` ;
+- `FMTData::getSummaryDevelopment` calcule une période qu'il n'utilise pas : le cache des yields
+  complexes garde toujours la période, sans effet sur les valeurs. `FMTData::cacheValue` sur un data sans
+  opérateur lit un cache jamais alloué ; seuls les yields complexes l'appellent ;
+- d'après le code, `FMTData::operator*` multiplie aussi le taux et les années d'un `_DISCOUNTFACTOR`
+  (`getFromFactor` d'un tel yield, quand on le nomme), et `_MAX` part de 0 (le maximum de yields tous
+  négatifs vaudrait 0) : non démontré ;
+- `FMTData.h` ne se compile pas sans `FMTDevelopment.h` (section 7).
+
+**Non couvert, et pourquoi** : `getEndPoint` et `_ENDPOINT`, `getAge` (gestionnaires d'âge et complexe,
+qui lisent un `FMTSpec`), `complexYldToAgeYld`, les surcharges (`_OVERRIDE` : `setTabou`,
+`compareSources`) : leurs cas demandent `FMTSpec` et `FMTYields`, et vont avec le lot 7b ou le lot 8.
+`getAllYieldsData` : son seul appelant, `FMTYields::getAllYields`, n'est appelé nulle part.
+
+**Vu rouge** (règle 1), rien de commité :
+- une copie faussée des sept sources, hors du dépôt, où un en-tête inclus après `<gtest/gtest.h>`
+  retourne chaque assertion (`EXPECT_EQ` en `EXPECT_NE`, `EXPECT_TRUE` en `EXPECT_FALSE`,
+  `EXPECT_DOUBLE_EQ` et `EXPECT_NEAR` contre l'attendu plus 1, `EXPECT_THROW` en `EXPECT_NO_THROW`,
+  `EXPECT_GT` en `EXPECT_LE`, et de même pour les autres ; le script qui écrit la copie refuse toute
+  autre macro), compilée par `cl` contre le `FMTlib.lib` de `build/release` : les 139 cas actifs des
+  sept suites échouent (les 137 nouveaux et les 2 de `FMTOperator` d'avant), aucun ne passe, aucun par
+  une exception inattendue ;
+- les 4 cas désactivés, lancés avec `GTEST_ALSO_RUN_DISABLED_TESTS=1`, échouent chacun pour sa raison :
+  `2*-3` vaut -3 ; `PERIODVALUE` vaut 0 et 10 ; l'écriture ne contient pas `_DISCOUNTFACTOR(` ; sans
+  période de départ, l'écriture lève ;
+- les deux cas de #347, ajoutés après l'accord de Gabriel, sont dans ce passage.
+
+**Vu vert avant le build de Gabriel** : les sources du dépôt, telles quelles, compilées par `cl` avec
+les options de `UnitCore` (son `CL.command.1.tlog`), `/Fo` `/Fd` `/Fp` dans le scratchpad, liées au
+`FMTlib.lib` de `build/release` (FMTlib de `f4252745`, sources de FMTlib inchangées depuis), lancées
+depuis `bin/Release` : 144 cas verts (les 7 d'avant et 137 nouveaux), 4 désactivés, en 1 ms ; mêmes
+résultats dans un ordre mélangé (`GTEST_SHUFFLE`, graine 4242, 3 répétitions). En `/W4`, aucun
+avertissement ne vient des sources de tests : tous viennent des en-têtes de FMTlib. Rien n'a été écrit
+dans `build/release` ni sous `Examples/Models`.
+
+**Documents** : `CoreTestCoverage.csv` (statut `Lot 7a (step <n>), done` des sept classes, défauts 11 et
+12, ligne de dette, tests manquants), `CoreTestCoverage.md` régénéré (9 classes avec des tests
+unitaires, 41 de priorité 1 sans test propre au lieu de 47 ; deux générations identiques), ligne de
+dette d'`Architecture.md`, changelog (section non publiée, anglais et français).
+
+**Après le build de Gabriel** : à faire, `RunTests.bat unit` puis `all-public` et l'installation
+(section 8).
+
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
 
+- **Lot 7a livré le 2026-10-21, avant le build de Gabriel** (section 5.9) : 141 cas unitaires des
+  expressions et des gestionnaires de rendements, dont 4 désactivés (#380, défauts 11 et 12), et le
+  défaut 13 sans cas ; issues 11 à 13 à ouvrir. Les lots 7b et 7c suivent (section 6.3.4).
 - **La réorganisation en trois niveaux est terminée** (section 9, ce qui reste ouvert en 9.7) ;
   elle part vers `master` par une demande de tirage. Le lot 6 y est devenu la phase 8. La feuille
   de route reprend au lot 5.
@@ -1705,6 +1877,14 @@ le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à
   passer par `FMTYields::get`, et aucune ligne de dette ne s'ajoute.
 - **Quoi pour chacune.** Construction, copie, comparaison, hachage quand il existe, bornes,
   entrées invalides et exceptions attendues, comme le détaille #350.
+- **Découpage en trois sessions (Gabriel, 2026-10-21).**
+  - **7a** : étapes 1 et 2. **Fait le 2026-10-21** (section 5.9), en attente du build de Gabriel :
+    141 cas, dont 4 désactivés ; défauts 11 à 13 (section 2.7) ; non couverts : `getEndPoint`,
+    `_ENDPOINT`, `getAge`, `complexYldToAgeYld` et les surcharges, qui demandent `FMTSpec` et `FMTYields`.
+  - **7b** : étapes 3 et 4, les bornes (`FMTSpec`, `FMTBounds` et ses quatre classes dérivées),
+    `FMTConstraint`, `FMTOutput` et `FMTYields`. À faire ; y reprendre ce que 7a a laissé à `FMTYields`
+    et à `FMTSpec`, et décider du test du défaut 13 (lecture de `_CP`).
+  - **7c** : étape 5, `FMTMask`, `FMTTheme` et `FMTDevelopment`. À faire.
 
 #### 6.3.5 Lot 8 : unitaires du reste de Core (jalons 5 à 7 de #350) — effort `high`
 
@@ -1920,6 +2100,12 @@ abandonne.
   - les DLL de GoogleTest (`gtest`, `gtest_main`, `gmock`, `gmock_main`) partent dans
     `bin/Release` et dans la roue Python, comme toutes les DLL de vcpkg : laissé tel quel (décision
     de Gabriel, 2026-10-16), à reprendre avec la liste des DLL de l'installation.
+  - lancé par un `.bat`, un exécutable GoogleTest perd ses options `--gtest_x=y` : cmd coupe les
+    arguments sur `=`. Passer par les variables `GTEST_FILTER`, `GTEST_ALSO_RUN_DISABLED_TESTS`,
+    `GTEST_BRIEF`, `GTEST_SHUFFLE` (lot 7a) ;
+  - vu rouge d'une suite entière (lot 7a) : une copie faussée hors du dépôt, où un en-tête inclus après
+    `<gtest/gtest.h>` redéfinit chaque assertion en son contraire ; tous les cas actifs doivent échouer
+    (section 5.9).
 - **Argument vide** : CMake retire une colonne vide de la commande, donc un test ne peut pas
   attendre une valeur vide. Par exemple, les thèmes de la racine n'ont pas de nom.
 - **Longueur des chemins** : le dossier de sortie d'un test ne doit pas porter une liste de
@@ -1966,6 +2152,14 @@ abandonne.
   - écrire, relire et réécrire ne suffit pas : un défaut de la première écriture peut se relire et se
     réécrire à l'identique (`_DISCOUNTFACTOR`, #380). Comparer aussi le modèle relu au modèle
     écrit (`Tests/Integration/Parser/ParserRoundTrip.h`).
+- **Un yield complexe ne s'évalue qu'à travers `FMTYields::get`** (lot 7a) : sa requête doit avoir été
+  préparée par `FMTYields` ; faite d'un développement seul, `FMTComplexYieldHandler::get` lit un
+  `FMTYields` nul (ligne de dette d'`Architecture.md`). Les gestionnaires d'âge et de temps lisent
+  seulement l'âge ou la période de la requête, et se testent seuls.
+- **`FMTData.h` ne se compile pas seul** (lot 7a) : son `std::map<FMTDevelopment, double>` demande le
+  type complet (C2079 dans `<utility>`). Inclure `FMTDevelopment.h` avec lui.
+- **`FMTData` écrit ses nombres avec 17 chiffres** (`boost::lexical_cast`) : 0,04 devient
+  `0.040000000000000001`, que le parseur relit 0,04. Une chaîne attendue doit le prévoir.
 - **`FMTYields` ne se compare pas** : `operator==` compare les adresses des gestionnaires (section
   2.7, défaut 10, #383), si bien que deux copies sont inégales. Comparer des valeurs de yields.
 - **`FMTYieldRequest` garde le premier `FMTYields` qui l'a servie** (`_updateData`), avec des
@@ -2006,6 +2200,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-15 (#357, `15427a6d`) | 270 `all-public` (266 + 4 lignes `DISCOUNT*`) ; résumé : system 233 verts et 12 désactivés sur 245, performance 23, other 2 | 27,1 s réelles | — | — | — | — | 12 | — |
 | 2026-10-15 (taux décimal, `62f9e288`) | 273 `all-public` (270 + 3 lignes `DISCOUNT*`) ; résumé : system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 13,2 s réelles | — | — | — | — | 12 | — |
 | 2026-10-20 (lot 5, `90ef4ad2`) | 300 `all-public` (280 + 20 cas `Integration.`) ; résumé : unit 7, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 13,8 s réelles | — | 13 | 2 | 0 | 19 | —
+| 2026-10-21 (lot 7a, avant le build) | attendus : 441 `all-public` (300 + 141 cas `Unit.`) ; unit 144 verts et 4 désactivés sur 148, vus hors ctest (`UnitCore` compilé hors dépôt) | à mesurer | — | 13 | 2 | 0 | 23 attendus | —
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
