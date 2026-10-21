@@ -1346,26 +1346,11 @@ std::vector<FMTCoordinate> FMTSpatialSchedule::getGroupsConflict(const Core::FMT
 							stackedactions[graphit->first] += "-" + sclass;
 						}
 						std::string stackname = stackedactions.at(graphit->first);
-						if (ageaftercontainer.find(stackname) != ageaftercontainer.end())
+						ageaftercontainer[stackname].push_back(fage);
+						//Count the occurrences of each final attribute for this stackname (operator[] initializes the counter to 0)
+						for (std::map<std::string, std::string>::const_iterator attit = themeattributes.begin(); attit != themeattributes.end(); ++attit)
 						{
-							ageaftercontainer[stackname].push_back(fage);
-						}
-						else {
-							ageaftercontainer[stackname] = std::vector<int>(1, fage);
-						}
-						if (finalattributes.find(stackname) != finalattributes.end())
-						{
-							for (std::map<std::string, std::string>::const_iterator attit = themeattributes.begin(); attit != themeattributes.end(); ++attit)
-							{
-								finalattributes[stackname][attit->first][attit->second] = 1;
-							}
-						}
-						else
-						{
-							for (std::map<std::string, std::string>::const_iterator attit = themeattributes.begin(); attit != themeattributes.end(); ++attit)
-							{
-								finalattributes[stackname][attit->first][attit->second] += 1;
-							}
+							++finalattributes[stackname][attit->first][attit->second];
 						}
 					}
 				}
