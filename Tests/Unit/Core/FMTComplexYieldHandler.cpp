@@ -10,10 +10,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTData.h"
 #include "FMTDevelopment.h"
 #include "FMTMask.h"
+#include "FMTSpec.h"
 #include "FMTTheme.h"
 #include "FMTTimeYieldHandler.h"
 #include "FMTYieldRequest.h"
 #include "FMTYields.h"
+#include "FMTYldBounds.h"
 #include "FMTutility.h"
 
 #include "ExceptionChain.h"
@@ -541,4 +543,242 @@ TEST(FMTComplexYieldHandler, GivenComplexYieldsWhenConvertedToStringThenWritesAL
 
     // Assert
     EXPECT_EQ(written, "*YC ?\nDOUBLED _MULTIPLY(VOLUME,2)\nSUMWITHNUMBER _SUM(VOLUME,4)\n");
+}
+
+TEST(FMTComplexYieldHandler, GivenAMinimumOfNegativeYieldsWhenGetThenReturnsTheSmallest)
+{
+    // Arrange: NEGATIVE _MULTIPLY(VOLUME,-1), MORENEGATIVE _MULTIPLY(VOLUME,-2) and SMALLEST _MIN(NEGATIVE,MORENEGATIVE)
+    Core::FMTComplexYieldHandler handler = getHandler("NEGATIVE",
+        Core::FMTData({ -1.0 }, Core::FMTyieldparserop::FMTmultiply, { "VOLUME" }, { true, false }));
+    handler.pushData("MORENEGATIVE", Core::FMTData({ -2.0 }, Core::FMTyieldparserop::FMTmultiply, { "VOLUME" }, { true, false }));
+    handler.pushData("SMALLEST", Core::FMTData({}, Core::FMTyieldparserop::FMTmin, { "NEGATIVE", "MORENEGATIVE" }, { true, true }));
+    const Core::FMTYields yields = getYields(handler);
+
+    // Act
+    const double value = getYield(yields, "SMALLEST", 20);
+
+    // Assert
+    EXPECT_DOUBLE_EQ(value, -400.0);
+}
+
+// Disabled: _MAX starts from 0 (FMTComplexYieldHandler::_getMax), while _MIN starts from the highest double, so that
+// the maximum of yields that are all negative is 0 (Tests/ETAT.md, section 2.7, defect 14).
+TEST(FMTComplexYieldHandler, DISABLED_GivenAMaximumOfNegativeYieldsWhenGetThenReturnsTheLargest)
+{
+    // Arrange: NEGATIVE _MULTIPLY(VOLUME,-1), MORENEGATIVE _MULTIPLY(VOLUME,-2) and LARGEST _MAX(NEGATIVE,MORENEGATIVE)
+    Core::FMTComplexYieldHandler handler = getHandler("NEGATIVE",
+        Core::FMTData({ -1.0 }, Core::FMTyieldparserop::FMTmultiply, { "VOLUME" }, { true, false }));
+    handler.pushData("MORENEGATIVE", Core::FMTData({ -2.0 }, Core::FMTyieldparserop::FMTmultiply, { "VOLUME" }, { true, false }));
+    handler.pushData("LARGEST", Core::FMTData({}, Core::FMTyieldparserop::FMTmax, { "NEGATIVE", "MORENEGATIVE" }, { true, true }));
+    const Core::FMTYields yields = getYields(handler);
+
+    // Act
+    const double value = getYield(yields, "LARGEST", 20);
+
+    // Assert
+    EXPECT_DOUBLE_EQ(value, -200.0);
+}
+
+// _ENDPOINT(VOLUME,VOLUME,150,250): when VOLUME is within its bounds, neither of its branches runs.
+TEST(FMTComplexYieldHandler, GivenAnEndPointWhoseSourceIsWithinItsBoundsWhenGetThenReturnsZero)
+{
+    // Arrange: WITHIN _ENDPOINT(VOLUME,VOLUME,150,250), VOLUME being 200 at age 20
+    const Core::FMTYields yields = getYields(getHandler("WITHIN",
+        Core::FMTData({ 150.0, 250.0 }, Core::FMTyieldparserop::FMTendpoint, { "VOLUME", "VOLUME" },
+            { true, true, false, false })));
+
+    // Act
+    const double value = getYield(yields, "WITHIN", 20);
+
+    // Assert
+    EXPECT_EQ(value, 0.0);
+}
+
+// Disabled: when its source leaves its bounds, _ENDPOINT reads the base ages of the complex handler, which has none
+// (FMTYieldHandler::_getChangesFrom): an access violation, raised as FMTexc(85) on Windows (Tests/ETAT.md, section 2.7,
+// defect 17). Its value outside its bounds is not settled (Tests/ETAT.md, section 5.5): the case asks only that it
+// raises nothing.
+TEST(FMTComplexYieldHandler, DISABLED_GivenAnEndPointWhoseSourceIsBelowItsLowerBoundWhenGetThenRaisesNothing)
+{
+    // Arrange: BELOW _ENDPOINT(VOLUME,VOLUME,150,250), VOLUME being 100 at age 10
+    const Core::FMTYields yields = getYields(getHandler("BELOW",
+        Core::FMTData({ 150.0, 250.0 }, Core::FMTyieldparserop::FMTendpoint, { "VOLUME", "VOLUME" },
+            { true, true, false, false })));
+
+    // Act
+    const std::vector<Exception::FMTexc> raised = Testing::getRaisedTypes([&]()
+        {
+        getYield(yields, "BELOW", 10);
+        });
+
+    // Assert
+    EXPECT_TRUE(raised.empty());
+}
+
+// A complex yield is turned into an age yield over the ages 0 to the age of the development (complexYldToAgeYld), whose
+// getAge gives the age (see FMTAgeYieldHandler): DOUBLED is 380 at age 19, where VOLUME is 190.
+TEST(FMTComplexYieldHandler, GivenATargetOnAComplexYieldWhenGetAgeThenReturnsTheAgeWhereTheComplexYieldIsTheClosest)
+{
+    // Arrange: DOUBLED _MULTIPLY(VOLUME,2), and the target of a transition at DOUBLED 380
+    const Core::FMTYields yields = getYields(getHandler("DOUBLED",
+        Core::FMTData({ 2.0 }, Core::FMTyieldparserop::FMTmultiply, { "VOLUME" }, { true, false })));
+    const Core::FMTDevelopment development(Core::FMTMask("A1", getThemes()), 30, 0, 1);
+    const Core::FMTYieldRequest request(development);
+    Core::FMTSpec target;
+    target.addBounds(Core::FMTYldBounds(Core::FMTsection::Transition, Core::FMTkwor::Target, "DOUBLED", 380.0, 380.0));
+
+    // Act
+    const int age = yields.getAge(request, target);
+
+    // Assert
+    EXPECT_EQ(age, 19);
+}
+
+// complexYldToAgeYld reads the yields of the request, which FMTYields::get prepares (Documentation/Architecture.md,
+// Known Architectural Debt): the handler is the one held by the yields.
+TEST(FMTComplexYieldHandler, GivenAPreparedRequestWhenComplexYldToAgeYldThenReturnsAnAgeYieldOfEachAgeUpToTheDevelopment)
+{
+    // Arrange: DOUBLED _MULTIPLY(VOLUME,2), third handler of the yields
+    const Core::FMTYields yields = getYields(getHandler("DOUBLED",
+        Core::FMTData({ 2.0 }, Core::FMTyieldparserop::FMTmultiply, { "VOLUME" }, { true, false })));
+    const Core::FMTDevelopment development(Core::FMTMask("A1", getThemes()), 30, 0, 1);
+    const Core::FMTYieldRequest request(development);
+    yields.get(request, "DOUBLED");
+    const Core::FMTComplexYieldHandler& handler =
+        dynamic_cast<const Core::FMTComplexYieldHandler&>(*(yields.begin() + 2)->second);
+    Core::FMTSpec target;
+    target.addBounds(Core::FMTYldBounds(Core::FMTsection::Transition, Core::FMTkwor::Target, "DOUBLED", 380.0, 380.0));
+
+    // Act
+    const std::unique_ptr<Core::FMTYieldHandler> ageYield = handler.complexYldToAgeYld(request, target);
+
+    // Assert
+    ASSERT_TRUE(ageYield->getType() == Core::FMTyldtype::FMTageyld);
+    ASSERT_EQ(ageYield->getBases().size(), 31u);
+    EXPECT_EQ(ageYield->getBases().front(), 0);
+    EXPECT_EQ(ageYield->getBases().back(), 30);
+    const Core::FMTDevelopment atAge19(Core::FMTMask("A1", getThemes()), 19, 0, 1);
+    EXPECT_DOUBLE_EQ(ageYield->get("DOUBLED", Core::FMTYieldRequest(atAge19)), 380.0);
+}
+
+// compareSources tells whether none of the yields of the handler is computed from a yield: FMTYieldParser raises
+// FMToveridedyield for a complex section, after an _OVERRIDE section, that uses the yield overridden.
+TEST(FMTComplexYieldHandler, GivenAComplexYieldOfVolumeWhenCompareSourcesThenReturnsFalseForVolumeOnly)
+{
+    // Arrange: DOUBLED _MULTIPLY(VOLUME,2)
+    const Core::FMTComplexYieldHandler handler = getHandler("DOUBLED",
+        Core::FMTData({ 2.0 }, Core::FMTyieldparserop::FMTmultiply, { "VOLUME" }, { true, false }));
+    const Core::FMTComplexYieldHandler overriding;
+
+    // Act
+    const bool volumeUnused = handler.compareSources("VOLUME", overriding);
+    const bool stemsUnused = handler.compareSources("STEMS", overriding);
+
+    // Assert
+    EXPECT_FALSE(volumeUnused);
+    EXPECT_TRUE(stemsUnused);
+}
+
+TEST(FMTComplexYieldHandler, GivenATabouWhenGetTabousThenReturnsIt)
+{
+    // Arrange
+    Core::FMTComplexYieldHandler handler = getHandler("DOUBLED",
+        Core::FMTData({ 2.0 }, Core::FMTyieldparserop::FMTmultiply, { "VOLUME" }, { true, false }));
+    const std::vector<size_t> before = handler.getTabous();
+
+    // Act
+    handler.setTabou(2);
+
+    // Assert
+    EXPECT_TRUE(before.empty());
+    EXPECT_EQ(handler.getTabous(), std::vector<size_t>({ 2 }));
+}
+
+// FMTYieldParser gives the tabous of a handler to the handler that replaces it (setTabou of a handler).
+TEST(FMTComplexYieldHandler, GivenAHandlerWhenSetTabouFromItThenTakesItsOverrideIndexAndItsTabous)
+{
+    // Arrange
+    Core::FMTComplexYieldHandler original = getHandler("DOUBLED",
+        Core::FMTData({ 2.0 }, Core::FMTyieldparserop::FMTmultiply, { "VOLUME" }, { true, false }));
+    original.setOverrideIndex(1);
+    original.setTabou(3);
+    Core::FMTComplexYieldHandler replacing(Core::FMTMask("?", getThemes()));
+
+    // Act
+    replacing.setTabou(original);
+
+    // Assert
+    EXPECT_EQ(replacing.getOverrideIndex(), 1u);
+    EXPECT_EQ(replacing.getTabous(), std::vector<size_t>({ 3 }));
+}
+
+TEST(FMTComplexYieldHandler, GivenAnOverridingHandlerWhenConvertedToStringThenMarksItsSectionOverride)
+{
+    // Arrange: *YC ? _OVERRIDE with VOLUME _MULTIPLY(STEMS,10)
+    Core::FMTComplexYieldHandler handler = getHandler("VOLUME",
+        Core::FMTData({ 10.0 }, Core::FMTyieldparserop::FMTmultiply, { "STEMS" }, { true, false }));
+    handler.setOverrideIndex(1);
+
+    // Act
+    const std::string written = std::string(handler);
+
+    // Assert
+    EXPECT_EQ(written, "*YC ? _OVERRIDE\nVOLUME _MULTIPLY(STEMS,10)\n");
+}
+
+// A *YC section marked _OVERRIDE comes first and replaces a yield of the sections that follow. FMTYieldParser gives it
+// an override index, and to each complex section after it that overlaps its mask that index as a tabou, so that the
+// yields of that section keep reading the yield replaced (FMTYieldParser::_setOveridedYlds).
+TEST(FMTComplexYieldHandler, GivenAnOverridingSectionWhenGetThenTheComplexYieldsOfItsTabousReadTheYieldReplaced)
+{
+    // Arrange: *YC ? _OVERRIDE with VOLUME _MULTIPLY(STEMS,10), the age yields, then DOUBLED _MULTIPLY(VOLUME,2) with
+    // the tabou 1
+    const Core::FMTMask all("?", getThemes());
+    Core::FMTComplexYieldHandler overriding = getHandler("VOLUME",
+        Core::FMTData({ 10.0 }, Core::FMTyieldparserop::FMTmultiply, { "STEMS" }, { true, false }));
+    overriding.setOverrideIndex(1);
+    Core::FMTAgeYieldHandler ageYields(all);
+    ageYields.setYieldValues("VOLUME", { 10, 20, 30 }, { 100.0, 200.0, 240.0 });
+    ageYields.setYieldValues("STEMS", { 10, 20, 30 }, { 50.0, 60.0, 70.0 });
+    Core::FMTComplexYieldHandler withTabou = getHandler("DOUBLED",
+        Core::FMTData({ 2.0 }, Core::FMTyieldparserop::FMTmultiply, { "VOLUME" }, { true, false }));
+    withTabou.setTabou(1);
+    Core::FMTYields yields;
+    yields.push_back(all, overriding.clone());
+    yields.pushBackAgeHandler(all, ageYields);
+    yields.push_back(all, withTabou.clone());
+    yields.update();
+
+    // Act
+    const double volume = getYield(yields, "VOLUME", 20);
+    const double doubled = getYield(yields, "DOUBLED", 20);
+
+    // Assert
+    EXPECT_DOUBLE_EQ(volume, 600.0);
+    EXPECT_DOUBLE_EQ(doubled, 400.0);
+}
+
+TEST(FMTComplexYieldHandler, GivenAnOverridingSectionWhenGetAComplexYieldWithoutTabouThenItReadsTheOverridingValue)
+{
+    // Arrange: the same sections, DOUBLED without the tabou 1
+    const Core::FMTMask all("?", getThemes());
+    Core::FMTComplexYieldHandler overriding = getHandler("VOLUME",
+        Core::FMTData({ 10.0 }, Core::FMTyieldparserop::FMTmultiply, { "STEMS" }, { true, false }));
+    overriding.setOverrideIndex(1);
+    Core::FMTAgeYieldHandler ageYields(all);
+    ageYields.setYieldValues("VOLUME", { 10, 20, 30 }, { 100.0, 200.0, 240.0 });
+    ageYields.setYieldValues("STEMS", { 10, 20, 30 }, { 50.0, 60.0, 70.0 });
+    const Core::FMTComplexYieldHandler withoutTabou = getHandler("DOUBLED",
+        Core::FMTData({ 2.0 }, Core::FMTyieldparserop::FMTmultiply, { "VOLUME" }, { true, false }));
+    Core::FMTYields yields;
+    yields.push_back(all, overriding.clone());
+    yields.pushBackAgeHandler(all, ageYields);
+    yields.push_back(all, withoutTabou.clone());
+    yields.update();
+
+    // Act
+    const double doubled = getYield(yields, "DOUBLED", 20);
+
+    // Assert
+    EXPECT_DOUBLE_EQ(doubled, 1200.0);
 }

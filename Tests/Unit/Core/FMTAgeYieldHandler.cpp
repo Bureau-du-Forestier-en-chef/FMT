@@ -8,8 +8,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTAgeYieldHandler.h"
 #include "FMTDevelopment.h"
 #include "FMTMask.h"
+#include "FMTSpec.h"
 #include "FMTTheme.h"
 #include "FMTYieldRequest.h"
+#include "FMTYldBounds.h"
 #include "FMTutility.h"
 
 #include "ExceptionChain.h"
@@ -318,4 +320,80 @@ TEST(FMTAgeYieldHandler, GivenAHandlerWhenConvertedToStringThenWritesItsMaskThen
 
     // Assert
     EXPECT_EQ(written, "*Y ?\n_AGE \tVOLUME\t\n10\t100.000000\t\n20\t200.500000\t\n");
+}
+
+// The age of a development disturbed by a transition whose target is a yield value (FMTYields::getAge): the base age,
+// at or below the age of the development, where the yield is the closest to the value. VOLUME is 200 at age 20.
+TEST(FMTAgeYieldHandler, GivenATargetValueOfAYieldWhenGetAgeThenReturnsTheBaseAgeWhereTheYieldIsTheClosest)
+{
+    // Arrange
+    const Core::FMTAgeYieldHandler handler = getVolumeHandler();
+    const Core::FMTDevelopment development(Core::FMTMask(), 30, 0);
+    const Core::FMTYieldRequest request(development);
+    Core::FMTSpec target;
+    target.addBounds(Core::FMTYldBounds(Core::FMTsection::Transition, Core::FMTkwor::Target, "VOLUME", 190.0, 190.0));
+
+    // Act
+    const int age = handler.getAge(request, target);
+
+    // Assert
+    EXPECT_EQ(age, 20);
+}
+
+// The first base age is not compared: when no other base age is at or below the age of the development, getAge
+// returns the first one.
+TEST(FMTAgeYieldHandler, GivenNoBaseAgeAfterTheFirstUpToTheDevelopmentWhenGetAgeThenReturnsTheFirstBaseAge)
+{
+    // Arrange
+    const Core::FMTAgeYieldHandler handler = getVolumeHandler();
+    const Core::FMTDevelopment development(Core::FMTMask(), 15, 0);
+    const Core::FMTYieldRequest request(development);
+    Core::FMTSpec target;
+    target.addBounds(Core::FMTYldBounds(Core::FMTsection::Transition, Core::FMTkwor::Target, "VOLUME", 190.0, 190.0));
+
+    // Act
+    const int age = handler.getAge(request, target);
+
+    // Assert
+    EXPECT_EQ(age, 10);
+}
+
+// getEndPoint gives the index of a base age in the values of a yield (FMTComplexYieldHandler, _ENDPOINT): below the
+// bound, the first value that is not below it.
+TEST(FMTAgeYieldHandler, GivenAValueBelowTheBoundWhenGetEndPointThenReturnsTheIndexOfTheFirstValueNotBelowTheBound)
+{
+    // Arrange
+    const Core::FMTAgeYieldHandler handler = getVolumeHandler();
+
+    // Act
+    const int index = handler.getEndPoint("VOLUME", 0, 150.0, 120.0);
+
+    // Assert
+    EXPECT_EQ(index, 1);
+}
+
+TEST(FMTAgeYieldHandler, GivenAValueAboveTheBoundWhenGetEndPointThenReturnsTheIndexOfTheFirstValueAboveTheBoundFromTheLowerStep)
+{
+    // Arrange
+    const Core::FMTAgeYieldHandler handler = getVolumeHandler();
+
+    // Act
+    const int fromFirst = handler.getEndPoint("VOLUME", 0, 150.0, 220.0);
+    const int fromThird = handler.getEndPoint("VOLUME", 2, 150.0, 220.0);
+
+    // Assert
+    EXPECT_EQ(fromFirst, 1);
+    EXPECT_EQ(fromThird, 2);
+}
+
+TEST(FMTAgeYieldHandler, GivenABoundAboveEveryValueWhenGetEndPointThenReturnsTheLastIndex)
+{
+    // Arrange
+    const Core::FMTAgeYieldHandler handler = getVolumeHandler();
+
+    // Act
+    const int index = handler.getEndPoint("VOLUME", 0, 300.0, 100.0);
+
+    // Assert
+    EXPECT_EQ(index, 2);
 }

@@ -534,6 +534,11 @@ comportement actuel (`2*3^2` = 36, `12/2^2` = 36, et `2^3^2` = 64, le même méc
 contournement (`2*(3^2)` = 18). Pour #347, deux cas, présentés à Gabriel et retenus le 2026-10-21, fixent
 deux étapes du mécanisme décrit ci-dessous : `Unit.FMTComplexYieldHandler.GivenAnEquationWhoseNumberIsKeptAsTextWhenIndexesThenTakesTheNumberForAThemeIndex`
 (étape 2) et `Unit.FMTData.GivenASumWhenToExpressionThenJoinsItsSourcesWithoutAnOperator` (étapes 3 et 4).
+Pour #358, un cas d'intégration, présenté à Gabriel et retenu le 2026-10-21 (lot 7b, section 5.10), fixe le
+comportement actuel : `Integration.FMTTransitionParser.GivenASourceConditionInTheActionFormWhenReadThenAppliesTheSourceToEveryAge`
+lit le scénario `INVALID_sourcecondition` et donne la fourche de `arecup` (`_AGE >= 10`) à un développement de 5 ans.
+Il contredit la ligne désactivée `ReadInvalidScenario` de `knownbugs.csv`, qui attend le refus (`FMTexc(31)`) : la
+revue commune gardera l'un des deux, comme pour #346.
 Démonstrations refaites le
 2026-09-17 avec les exécutables du build de `new_test`, sur des copies de TWD_land hors dépôt.
 
@@ -764,6 +769,66 @@ corrigé dans ce chantier.
     - Aucun modèle de `Examples/Models` n'écrit de `_CP`. Pas de cas dans ce lot : le défaut est dans la
       lecture, et son test serait un cas de `IntegrationParser`, ou une ligne de `knownbugs.csv` sur un
       nouveau scénario de TWD_land (à décider).
+
+**Défauts révélés par le lot 7b (2026-10-21).** Quatre défauts de FMTlib, démontrés comme ceux du lot 7a : cause
+dans le code, A/B où une seule chose change, exécutable officiel du build de `new_test` (FMTlib de `f4252745`),
+origine git. Les deux premiers sont les observations du lot 7a (section 5.9). Chacun a un cas `DISABLED_` dans
+`UnitCore`. Leurs issues sont à ouvrir par Gabriel (règle 3) : textes dans le rapport du lot 7b. Leurs numéros
+iront ici, dans les commentaires des cas, dans `CoreTestCoverage.csv` et dans le changelog. Aucun n'est corrigé
+dans ce chantier.
+
+14. **`_MAX` part de 0** (`FMTComplexYieldHandler`, issue à ouvrir).
+    - `_getMax` (`Source/FMTComplexYieldHandler.cpp:677`) part de `maxValue = 0`, alors que `_getMin` part du plus
+      grand double et lève quand il ne trouve aucune source : le maximum de yields tous négatifs vaut 0.
+    - A/B avec `ReadScenario` sur une copie de TWD_land hors du dépôt (scratchpad), un bloc `*YC` sans nombre ajouté
+      au `._yld` de `yieldoperatorsalone`, `UNITE1 PEUPLEMENT1 UTR1` à 7 ans (`VOLUMETOTAL` = 120) :
+      `NEGATIVE _MULTIPLY(VOLUMETOTAL,-1)` vaut -120 et `MORENEGATIVE _MULTIPLY(VOLUMETOTAL,-2)` -240 ;
+      `_MAX(NEGATIVE,MORENEGATIVE)` vaut 0 au lieu de -120, alors que `_MIN(NEGATIVE,MORENEGATIVE)` vaut -240 et
+      `_MAX(NEGATIVE,VOLUMETOTAL)` 120.
+    - Origine : `20cbff3a` (2023-12-14, « fix #191 »), qui ajoute `_MAX` et `_MIN`.
+    - Aucun modèle de `Examples/Models` ne prend le `_MAX` de yields négatifs. Modèles BFEC : non vérifié.
+    - Cas : `Unit.FMTComplexYieldHandler.GivenAMaximumOfNegativeYieldsWhenGetThenReturnsTheLargest`, à côté du cas
+      vert `GivenAMinimumOfNegativeYieldsWhenGetThenReturnsTheSmallest`.
+15. **`FMTYields::getFromFactor` multiplie le taux et les années d'un `_DISCOUNTFACTOR`** (`FMTTimeYieldHandler`,
+    issue à ouvrir).
+    - `FMTTimeYieldHandler::getFromFactor` (`Source/FMTTimeYieldHandler.cpp:170`) multiplie tout le `FMTData` du yield
+      (`FMTData::operator*`, `Source/FMTData.cpp:394`), et les données d'un `_DISCOUNTFACTOR` sont son taux et ses
+      années par période (item 3 ci-dessus) : un facteur 2 donne 1/1,08^10 au lieu de 2/1,04^5.
+    - A/B avec `FMT.pyd` du build (`getfromfactor`, module importé de `build/release/bin/Release`), scénario
+      `timeyields` lu dans le dépôt, `UNITE1 PEUPLEMENT1 UTR1` à 7 ans, période 1 : un facteur 2 fait passer
+      `VOLUMETOTAL` de 120 à 240 et `PERIODVALUE` de 10 à 20, mais `DISCOUNTFULL` de 0,821927106759 à 0,463193488085
+      (1/1,08^10) au lieu de 1,643854213519.
+    - Origine : `2cbb45a6` (2021-10-29), qui donne `getfromfactor` aux yields de temps ; avant, seuls les yields
+      d'âge étaient multipliés.
+    - Exposé en Python et en R (`getfromfactor`). `GetYieldsFromFactor` ne multiplie que `VOLUMETOTAL` : aucun test
+      public n'est touché.
+    - Cas : `Unit.FMTYields.GivenAFactorOfADiscountFactorWhenGetFromFactorThenMultipliesItsValue`, à côté du cas
+      vert `GivenADiscountFactorWhenGetThenReturnsTheFactorOfThePeriod`.
+16. **`FMTYields::getFromFactor` ne multiplie aucun yield quand on n'en nomme aucun** (`FMTYields`, issue à ouvrir,
+    relevé en écrivant le cas du défaut 15).
+    - `FMTYields::getFromFactor` (`Source/FMTYields.cpp:343`) ne passe un gestionnaire à son `getFromFactor` que s'il
+      contient un des yields nommés : sans nom, aucun. Sa documentation (`Include/FMTYields.h:218`, « all if
+      empty ») et les gestionnaires d'âge et de temps, qui multiplient tout sur une liste vide, disent tous.
+    - Démonstration : même script `FMT.pyd`, `getfromfactor(2.0, [])` laisse `VOLUMETOTAL`, `PERIODVALUE` et
+      `DISCOUNTFULL` à 120, 10 et 0,821927106759, alors que `getfromfactor(2.0, ["VOLUMETOTAL"])` donne 240.
+    - Origine : `087e2278` (2021-12-09, « fix for getfromfactor »), qui ajoute ce filtre ; avant, chaque
+      gestionnaire recevait la liste, et une liste vide les multipliait tous.
+    - Cas : `Unit.FMTYields.GivenAFactorWithoutYieldNamesWhenGetFromFactorThenMultipliesEveryYield`.
+17. **`_ENDPOINT` provoque une violation d'accès dès que sa source sort de ses bornes** (`FMTComplexYieldHandler`,
+    issue à ouvrir, relevé en couvrant `_ENDPOINT`, que le lot 7a avait laissé).
+    - `_getEndPoint` (`Source/FMTComplexYieldHandler.cpp:573` et `583`) appelle `_getChangesFrom` sur le gestionnaire
+      complexe, qui lit `m_bases[peakstep]` (`Source/FMTYieldHandler.cpp:318`) : un gestionnaire `*YC` n'a aucun âge
+      de base, et `operator[]` lit hors d'un vecteur vide.
+    - A/B avec `ReadScenario` sur la même copie : `_ENDPOINT(VOLUMETOTAL,VOLUMETOTAL,100,200)` vaut 0 à 7 ans
+      (`VOLUMETOTAL` dans ses bornes) et lève `FMTexc(85)`, erreur Win32 3221225477 (0xC0000005, violation d'accès), à
+      20 ans ; `_ENDPOINT(VOLUMETOTAL,VOLUMETOTAL,150,250)` lève à 7 ans et vaut 0 à 20 ans. Une sonde unitaire hors
+      du dépôt donne la même chaîne : quatre `FMTexc(53)`, puis `FMTexc(85)`.
+    - Origine : `bb73b9f2` (2019-08-23), qui introduit ce calcul ; la séparation des gestionnaires (`2cbb45a6`,
+      2021-10-29) l'a gardé.
+    - Aucun modèle de `Examples/Models` n'a de `_ENDPOINT`. Sa valeur hors de ses bornes reste à trancher (section
+      5.5) : le cas demande seulement que l'appel ne lève rien.
+    - Cas : `Unit.FMTComplexYieldHandler.GivenAnEndPointWhoseSourceIsBelowItsLowerBoundWhenGetThenRaisesNothing`, à
+      côté du cas vert `GivenAnEndPointWhoseSourceIsWithinItsBoundsWhenGetThenReturnsZero`.
 
 ## 3. Lacunes classées par criticité
 
@@ -1687,10 +1752,123 @@ reconfiguré ; FMTlib inchangé depuis `f4252745`) :
   dépôt, ne donnent ni erreur ni avertissement). Le lot n'ajoute que des tests unitaires : la suite BFEC
   n'est pas relancée.
 
+### 5.10 Lot 7b : bornes, spécifications, contraintes, sorties et yields (2026-10-21)
+
+**Statut** : livré le 2026-10-21, à compiler et commiter par Gabriel. Étapes 3 et 4 de la section 6.3.4, et ce que le
+lot 7a a laissé faute de `FMTSpec` et de `FMTYields` (section 5.9, « Non couvert »).
+
+**Ajouts** (cp1252, CRLF, en-tête de licence) : une source par classe, une suite au nom de la classe, cas
+Given…When…Then en Arrange / Act / Assert ; 154 cas nouveaux, dont 7 désactivés.
+
+| Source | Cas | Désactivés | Ce qu'ils couvrent |
+|---|---|---|---|
+| `FMTBounds.cpp` | 11 nouveaux (14) | 0 | `out` (dont des bornes inutilisées, prises pour 0 à 0), `empty`, `add` (bornes ouvertes de l'action, remplacement), égalité, ordre, `setOrBound`, réels par `FMTYldBounds`, borne basse au-dessus de la haute |
+| `FMTAgeBounds.cpp` | 11 | 0 | copie, source et cible, chaînes de l'action (deux conditions, ouvertes, égalité), de la transition (`@AGE(10.._MAXAGE)`, `@AGE(10)`, `_AGE 5`) et des sorties |
+| `FMTYldBounds.cpp` | 7 | 0 | copie, deux yields, construction depuis des bornes réelles, chaînes de l'action et de la transition |
+| `FMTLockBounds.cpp` | 5 | 0 | copie, égalité, `_LOCK 2`, `_INVLOCK`, `in` sur le verrou |
+| `FMTPerBounds.cpp` | 6 | 0 | copie, égalité, `_CP`, périodes d'une contrainte (chaîne vide), `in` |
+| `FMTSpec.cpp` | 17 nouveaux (19) | 0 | sans borne, périodes, verrou (sa borne haute n'est pas lue), yields (`allow`, `allowYields`), fusion d'un yield, `empty*`, accesseurs, `add`, copie, égalité et ordre, hachage, chaîne, `isSubsetOf` |
+| `FMTConstraint.cpp` | 36 | 2 | bornes, types (`isObjective`, `sense`, `extraVariables`, `acrossPeriod`, `isSpatial`, `getGroup`, `isRandomAction`), `setLength`, variations, buts et pénalités, chaînes (`>=`, `=`, `<=`, `_MAX`, `_MIN` et pénalités, `_EVEN`, `_NDY`), égalité, copie, hachage, `evaluate` ; désactivés : #379, #382 |
+| `FMTOutput.cpp` | 21 | 0 | accesseurs, `empty`, copie, égalité, hachage, `+=`, `-=`, `*=`, `/=`, constantes, `shuntingYard`, `isLinear`, sources d'action et d'inventaire, niveau constant, chaînes |
+| `FMTYields.cpp` | 22 | 3 | `get` (âge, temps, complexe, yield inconnu, masque d'un autre attribut : `FMTmissingyield`, premier gestionnaire du développement), `isYld`, `isNullYld`, `getAllYieldNames`, `gotYieldType`, copie, égalité avec soi, `getFromFactor`, `getStacked`, `clear`, `swap`, `getAge` ; désactivés : #383, défauts 15 et 16 |
+| `FMTAgeYieldHandler.cpp` | 5 nouveaux (25) | 0 | `getAge` (âge de base le plus proche, premier âge de base), `getEndPoint` |
+| `FMTComplexYieldHandler.cpp` | 12 nouveaux (45) | 2 | `_MIN` de yields négatifs, `_ENDPOINT` dans ses bornes, `getAge`, `complexYldToAgeYld`, surcharges (`compareSources`, `setTabou`, `getTabous`, `_OVERRIDE` écrit, valeurs avec et sans tabou) ; désactivés : défauts 14 et 17 |
+| `Tests/Integration/Parser/FMTTransitionParser.cpp` | 1 | 0 | #358, comportement connu (section 2.7) |
+
+- Niveau unitaire : aucun modèle sur disque, objets construits en code comme les parseurs les construisent (bornes
+  ouvertes au plus petit ou au plus grand de leur type, `RHS`, `Variation`, `GOAL_`, `Penalty<opérateur>_<but>`,
+  surcharges données comme `FMTYieldParser::_setOveridedYlds`). Aucune classe du lot ne demande un modèle ou un
+  état global : aucune ligne de dette. Seul #358 a un cas d'intégration : son mécanisme est dans
+  `FMTParser::_setSpec` (namespace `Parser`), et un cas de `FMTSpec` resterait vert après la correction.
+- **#358** : cas présenté à Gabriel, qui a retenu le niveau intégration le 2026-10-21 (section 2.7). Il lit le
+  scénario `INVALID_sourcecondition` et vérifie que `arecup` donne à un développement de 5 ans une fourche sans
+  borne d'âge. Contrôle hors du dépôt : dans le scénario `transitions`, où la même action a `@AGE(10.._MAXAGE)`, la
+  fourche d'un développement de 15 ans garde ses bornes ; dans `INVALID_sourcecondition`, aucune n'en a, à 5 comme
+  à 15 ans.
+- **#379, #382 et #383** : un cas désactivé de plus chacun, plus près de la cause que le cas d'intégration du lot 5 :
+  la chaîne de `_MIN _PENALTY(CARIBOU,RECOLTE)` vaut `_MIN y_PENALTY(CARIBOU,RECOLTE) 1.._LENGTH` ; celle d'une
+  contrainte `_RANDOM(OVOL) >= 1` ne contient pas `_RANDOM(` ; une copie de `FMTYields` n'égale pas l'original.
+  **#381** : pas de cas unitaire. Le défaut tient à la relecture des sorties cachées que `_toWsFormat` et
+  `_operatorFormat` écrivent, et Woodstock demande peut-être ce découpage : un cas de `FMTOutput` seul supposerait
+  la correction du côté de l'écriture.
+- **Observations du lot 7a** (section 5.9) : toutes deux démontrées, défauts 14 (`_MAX`) et 15 (`getFromFactor` d'un
+  `_DISCOUNTFACTOR`), à travers `FMTYields`. Deux autres défauts sont apparus en écrivant les cas : 16 et 17
+  (section 2.7).
+- **Piège de ce lot** : une `FMTYieldRequest` garde l'adresse de son développement (section 7). Un premier brouillon
+  passait un temporaire : deux cas échouaient sans raison apparente, sur de la mémoire libérée.
+
+**Observations, sans défaut annoncé** (lues dans le code ; rien de ce que FMT exécute n'en dépend, ou ce n'est pas
+démontré) :
+- `FMTSpec::isSubsetOf` compare les bornes basses des yields à l'envers des périodes et des âges : `VOLUME 100..200`
+  n'est pas inclus dans `VOLUME 50..300`, et `VOLUME 10..200` l'est (cas vert commenté). Son seul appelant,
+  `FMTOutputSource::isSubsetOf`, sert le cache des nœuds d'outputs (`Include/FMTOutputNodeCache.h`), qui n'utilise
+  un nœud trouvé que si sa spécification égale celle qu'il cherche ; `_getParentNode` reçoit d'ailleurs
+  `m_foundSubset` par valeur, si bien que le sous-ensemble trouvé n'est jamais repris.
+- `FMTBounds::out` ne regarde pas si les bornes servent : des bornes inutilisées valent 0 à 0 (cas vert commenté).
+  FMT ne l'appelle que sur des bornes de yields, toujours utilisées.
+- `FMTSpec::allowWithoutYield` ne lit que la borne basse du verrou (cas vert commenté) ; `FMTSpec::add` ignore le
+  verrou de la spécification ajoutée, et rien dans FMT n'appelle `FMTSpec::add`.
+- `FMTConstraint::operator std::string` cherche `_ALL` après le découpage sur `_`, ce qui ne peut arriver :
+  `_PENALTY(_ALL)` est écrit `_PENALTY(ALL)`, que FMT relit à l'identique (`Penalty+_ALL`). Woodstock : non vérifié.
+- `FMTConstraint::evaluate` d'un `_EVEN` avec variation vaut toujours 0 (`_getVariability` compare chaque valeur au
+  maximum plus la variation, qu'aucune ne dépasse). Seules les heuristiques spatiales et `FMTYieldModelDecisionTree`
+  l'appellent : non démontré avec un exécutable.
+- `FMTConstraint::hash(false)` hache deux fois la période basse ; aucun appelant ne passe `false`.
+- `FMTOutput::operator=` ne copie pas le groupe (`m_group`), que le constructeur de copie copie, et
+  `FMTOutput::serialize` ne l'écrit pas. Il sert à écrire `*GROUP` : non démontré qu'un chemin de FMT y perde un
+  groupe.
+- `FMTOutputSource::operator==` ignore le yield et les valeurs : deux outputs de même nom et de même description qui
+  ne diffèrent que par le yield de leurs sources sont égaux (classe du lot 8).
+- `FMTAgeYieldHandler::getAge` ne compare jamais le premier âge de base, et le rend quand aucun autre n'est sous
+  l'âge du développement (cas vert commenté). `getEndPoint` lit un itérateur non initialisé quand la valeur égale la
+  borne ; `_ENDPOINT` ne l'appelle jamais ainsi.
+- `FMTParser::bounds` ne traite pas `<` ni `>`, pourtant dans `getBaseOperators` : `_AGE > 10` dans une action donnerait
+  des bornes sans limite (parseur, lu seulement).
+
+**Non couvert, et pourquoi** : `FMTConstraint` : les mots-clés rangés en bornes de yields (`_SETFROM`, `_REIGNORE`,
+`_REPLICATE`), `preSolve` et la conversion en yields, qui demandent actions, transitions et thèmes ; `FMTOutput` :
+`boundTo`, `getNodes`, `preSolve`, les décompositions et les formats de #381 ; `FMTYields` : `generateDefaultYields`
+et les yields de modèle, `preSolve`, `getAllYields` (aucun appelant). Le test du défaut 13 (#387, lecture de `_CP`)
+reste à décider (section 6.3.4).
+
+**Démonstrations** (règle de la section 2.7) : défauts 14 et 17 avec l'exécutable officiel `ReadScenario` du build,
+sur une copie de TWD_land dans le scratchpad (bloc `*YC` ajouté au `._yld` de `yieldoperatorsalone`) ; défauts 15
+et 16 avec `FMT.pyd` du build, par un script du scratchpad qui lit `timeyields` dans le dépôt. Rien n'a été écrit
+dans `build/release` ni sous `Examples/Models` (`find -newer`, `git status`).
+
+**Vu rouge** (règle 1), rien de commité :
+- une copie faussée des 11 sources unitaires touchées et de la source d'intégration, hors du dépôt, avec l'en-tête du
+  lot 7a qui retourne chaque assertion (`ASSERT_NE` ajouté), compilée par `cl` contre le `FMTlib.lib` de
+  `build/release` : les 204 cas actifs des 11 suites échouent (les 146 nouveaux et les 58 qu'elles avaient), aucun ne
+  passe, aucun par une exception inattendue ; le cas de #358 échoue aussi ;
+- les 11 cas désactivés de `UnitCore`, lancés avec `GTEST_ALSO_RUN_DISABLED_TESTS=1`, échouent chacun pour sa raison :
+  pour les 7 nouveaux, `y_PENALTY`, pas de `_RANDOM(`, une copie de `FMTYields` inégale, 0,463193488085 au lieu de
+  1,643854213518, `VOLUME` resté à 200, `_MAX` à 0 au lieu de -200, et la chaîne `FMTexc(53)` puis `FMTexc(85)` de
+  `_ENDPOINT`.
+
+**Vu vert avant le build de Gabriel** : les sources du dépôt, compilées par `cl` avec les options de `UnitCore`
+(`/Fo` `/Fd` `/Fp` dans le scratchpad), liées au `FMTlib.lib` de `build/release` (FMTlib de `f4252745`, inchangé
+depuis), lancées depuis `bin/Release` : `UnitCore`, 290 cas verts (144 d'avant et 146 nouveaux), 11 désactivés ;
+mêmes résultats dans un ordre mélangé (`GTEST_SHUFFLE`, graine 4242, 3 répétitions). `IntegrationParser`, compilé
+avec ses trois sources, se lie ; seul le nouveau cas a été lancé (`GTEST_FILTER`), vert, les autres écrivant dans
+`build/release/tests`. En `/W4`, aucun avertissement ne vient des sources de tests : les 380 viennent des en-têtes
+de FMTlib.
+
+**Documents** : `CoreTestCoverage.csv` (statut `Lot 7b (step <n>), done` de neuf classes, défauts 14 à 17, #358 sur
+`FMTSpec` et `FMTTransition`, tests manquants), `CoreTestCoverage.md` régénéré (16 classes avec des tests unitaires,
+34 de priorité 1 sans test propre au lieu de 41 ; deux générations identiques), changelog (section non publiée,
+anglais et français).
+
+**Attendu après le build de Gabriel** : `RunTests.bat unit`, 290 verts et 11 désactivés sur 301 ;
+`RunTests.bat all-public`, 565 verts et 30 désactivés sur 595 (418 et 23 sur 441, plus 147 et 7 nouveaux).
+
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
 
+- **Lot 7b livré le 2026-10-21, à compiler et commiter par Gabriel** (section 5.10) : 153 cas unitaires des bornes,
+  des spécifications, des contraintes, des sorties et des yields, dont 7 désactivés (#379, #382, #383, défauts 14 à
+  17), et un cas d'intégration pour #358 ; issues des défauts 14 à 17 à ouvrir.
 - **Lot 7a livré, commité (`0c35c546`, `51d03e83`) et validé le 2026-10-21** (section 5.9) : 141 cas unitaires des
   expressions et des gestionnaires de rendements, dont 4 désactivés (#380, défauts 11 et 12, #386 et #388), et le
   défaut 13 (#387) sans cas. Les lots 7b et 7c suivent (section 6.3.4).
@@ -1905,8 +2083,9 @@ le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à
     141 cas, dont 4 désactivés ; défauts 11 à 13 (section 2.7) ; non couverts : `getEndPoint`,
     `_ENDPOINT`, `getAge`, `complexYldToAgeYld` et les surcharges, qui demandent `FMTSpec` et `FMTYields`.
   - **7b** : étapes 3 et 4, les bornes (`FMTSpec`, `FMTBounds` et ses quatre classes dérivées),
-    `FMTConstraint`, `FMTOutput` et `FMTYields`. À faire ; y reprendre ce que 7a a laissé à `FMTYields`
-    et à `FMTSpec`, et décider du test du défaut 13 (#387, lecture de `_CP`).
+    `FMTConstraint`, `FMTOutput` et `FMTYields`. **Livré le 2026-10-21** (section 5.10) : 154 cas, dont 7
+    désactivés, avec ce que 7a avait laissé ; défauts 14 à 17 (section 2.7). Reste à décider : le test du
+    défaut 13 (#387, lecture de `_CP`).
   - **7c** : étape 5, `FMTMask`, `FMTTheme` et `FMTDevelopment`. À faire.
 
 #### 6.3.5 Lot 8 : unitaires du reste de Core (jalons 5 à 7 de #350) — effort `high`
@@ -2190,6 +2369,9 @@ abandonne.
   après la destruction de la copie que rend `FMTModel::getYields()`, elle lit de la mémoire libérée
   (noms de yields illisibles et exceptions en série dans une sonde du lot 5). Construire une requête
   par appel : `yields.get(development.getYieldRequest(), nom)`, `yields` gardé en vie.
+- **Une `FMTYieldRequest` garde l'adresse de son développement** (lot 7b) : construite sur un temporaire
+  (`FMTYieldRequest request(getDevelopment(...))`), elle lit de la mémoire libérée dès l'instruction suivante. Nommer
+  le développement et le garder en vie aussi longtemps que la requête.
 - **Un modèle construit en code ne se compare pas section par section à sa relecture** : la lecture
   remplit des noms d'attributs que le code laisse vides, et FMT ajoute un `_DEATH` par défaut, dont la
   transition n'est pas égale à sa forme écrite et relue (`CreateModel`, `level`). Comparer l'optimum.
