@@ -562,7 +562,7 @@ TEST(FMTComplexYieldHandler, GivenAMinimumOfNegativeYieldsWhenGetThenReturnsTheS
 }
 
 // Disabled: _MAX starts from 0 (FMTComplexYieldHandler::_getMax), while _MIN starts from the highest double, so that
-// the maximum of yields that are all negative is 0 (Tests/ETAT.md, section 2.7, defect 14).
+// the maximum of yields that are all negative is 0 (#389, defect 14 of section 2.7 of Tests/ETAT.md).
 TEST(FMTComplexYieldHandler, DISABLED_GivenAMaximumOfNegativeYieldsWhenGetThenReturnsTheLargest)
 {
     // Arrange: NEGATIVE _MULTIPLY(VOLUME,-1), MORENEGATIVE _MULTIPLY(VOLUME,-2) and LARGEST _MAX(NEGATIVE,MORENEGATIVE)
@@ -595,9 +595,9 @@ TEST(FMTComplexYieldHandler, GivenAnEndPointWhoseSourceIsWithinItsBoundsWhenGetT
 }
 
 // Disabled: when its source leaves its bounds, _ENDPOINT reads the base ages of the complex handler, which has none
-// (FMTYieldHandler::_getChangesFrom): an access violation, raised as FMTexc(85) on Windows (Tests/ETAT.md, section 2.7,
-// defect 17). Its value outside its bounds is not settled (Tests/ETAT.md, section 5.5): the case asks only that it
-// raises nothing.
+// (FMTYieldHandler::_getChangesFrom): an access violation, raised as FMTexc(85) on Windows (#392, defect 17 of
+// section 2.7 of Tests/ETAT.md). Its value outside its bounds is not settled (Tests/ETAT.md, section 5.5): the case
+// asks only that it raises nothing.
 TEST(FMTComplexYieldHandler, DISABLED_GivenAnEndPointWhoseSourceIsBelowItsLowerBoundWhenGetThenRaisesNothing)
 {
     // Arrange: BELOW _ENDPOINT(VOLUME,VOLUME,150,250), VOLUME being 100 at age 10

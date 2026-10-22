@@ -25,10 +25,10 @@
   - #388 [BUG] Les yields d'un bloc `*YT` lisent tous la période de départ du premier
   - #387 [BUG] En colonnes (`_CP`), chaque ligne d'un bloc `*YT` retarde d'une période les valeurs des lignes suivantes
 - Added unit tests of the bounds, specifications, constraints, outputs and yields of the Core, built in code without a model: `FMTBounds` through `FMTAgeBounds`, `FMTYldBounds`, `FMTLockBounds` and `FMTPerBounds`, `FMTSpec`, `FMTConstraint`, `FMTOutput` and `FMTYields`, with the overrides, `getAge` and `getEndPoint` of the yield handlers, and an integration test of `FMTTransitionParser` that characterizes the known behaviour of #358 (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). They show #379, #382 and #383 closer to their cause, and revealed four defects, each kept as a disabled case until it is fixed:
-  - [BUG] `_MAX` part de 0 : le maximum de yields tous négatifs vaut 0 (issue to open)
-  - [BUG] `FMTYields::getFromFactor` multiplie le taux et les années d'un `_DISCOUNTFACTOR` au lieu de sa valeur (issue to open)
-  - [BUG] `FMTYields::getFromFactor` ne multiplie aucun yield quand on n'en nomme aucun, alors que sa documentation dit tous (issue to open)
-  - [BUG] `_ENDPOINT` provoque une violation d'accès dès que sa source sort de ses bornes (issue to open)
+  - #389 [BUG] `_MAX` part de 0 : le maximum de yields tous négatifs vaut 0
+  - #390 [BUG] `FMTYields::getFromFactor` multiplie le taux et les années d'un `_DISCOUNTFACTOR` au lieu de sa valeur
+  - #391 [BUG] `FMTYields::getFromFactor` ne multiplie aucun yield quand on n'en nomme aucun, alors que sa documentation dit tous
+  - #392 [BUG] `_ENDPOINT` provoque une violation d'accès dès que sa source sort de ses bornes
 - Added system tests on the public `TWD_land` model: scenario reading (yields, outputs, operability, transitions, growth), reading errors and their exception codes, scenarios read together, planning statistics and replay of the optimal schedule. A fixture checks that no test modifies `Examples/Models`, and known defects are kept as disabled tests.
 - Added checks to `WriteAndReadProject`, `SolveAndWriteSchedules`, `CreateModel` and `UpdateNonSpatialModel`, which now verify what they write, and repaired the dead check of `AddYieldHandlers`.
 - Added performance and allocation benchmarks with expected bounds, and `tools/performance/Measure_Performance.bat`, which measures a change by comparing runs before and after it (#349 [FEATURE] Add performance and allocation benchmarks).

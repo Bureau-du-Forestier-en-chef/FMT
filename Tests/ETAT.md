@@ -773,11 +773,11 @@ corrigé dans ce chantier.
 **Défauts révélés par le lot 7b (2026-10-21).** Quatre défauts de FMTlib, démontrés comme ceux du lot 7a : cause
 dans le code, A/B où une seule chose change, exécutable officiel du build de `new_test` (FMTlib de `f4252745`),
 origine git. Les deux premiers sont les observations du lot 7a (section 5.9). Chacun a un cas `DISABLED_` dans
-`UnitCore`. Leurs issues sont à ouvrir par Gabriel (règle 3) : textes dans le rapport du lot 7b. Leurs numéros
-iront ici, dans les commentaires des cas, dans `CoreTestCoverage.csv` et dans le changelog. Aucun n'est corrigé
-dans ce chantier.
+`UnitCore`. Leurs issues, #389 (défaut 14), #390 (défaut 15), #391 (défaut 16) et #392 (défaut 17), ont été
+ouvertes par Gabriel le 2026-10-22 (règle 3) ; leurs numéros sont aussi dans les commentaires des cas désactivés,
+dans `CoreTestCoverage.csv` et dans le changelog. Aucun n'est corrigé dans ce chantier.
 
-14. **`_MAX` part de 0** (`FMTComplexYieldHandler`, issue à ouvrir).
+14. **`_MAX` part de 0** (`FMTComplexYieldHandler`, issue #389).
     - `_getMax` (`Source/FMTComplexYieldHandler.cpp:677`) part de `maxValue = 0`, alors que `_getMin` part du plus
       grand double et lève quand il ne trouve aucune source : le maximum de yields tous négatifs vaut 0.
     - A/B avec `ReadScenario` sur une copie de TWD_land hors du dépôt (scratchpad), un bloc `*YC` sans nombre ajouté
@@ -790,7 +790,7 @@ dans ce chantier.
     - Cas : `Unit.FMTComplexYieldHandler.GivenAMaximumOfNegativeYieldsWhenGetThenReturnsTheLargest`, à côté du cas
       vert `GivenAMinimumOfNegativeYieldsWhenGetThenReturnsTheSmallest`.
 15. **`FMTYields::getFromFactor` multiplie le taux et les années d'un `_DISCOUNTFACTOR`** (`FMTTimeYieldHandler`,
-    issue à ouvrir).
+    issue #390).
     - `FMTTimeYieldHandler::getFromFactor` (`Source/FMTTimeYieldHandler.cpp:170`) multiplie tout le `FMTData` du yield
       (`FMTData::operator*`, `Source/FMTData.cpp:394`), et les données d'un `_DISCOUNTFACTOR` sont son taux et ses
       années par période (item 3 ci-dessus) : un facteur 2 donne 1/1,08^10 au lieu de 2/1,04^5.
@@ -804,7 +804,7 @@ dans ce chantier.
       public n'est touché.
     - Cas : `Unit.FMTYields.GivenAFactorOfADiscountFactorWhenGetFromFactorThenMultipliesItsValue`, à côté du cas
       vert `GivenADiscountFactorWhenGetThenReturnsTheFactorOfThePeriod`.
-16. **`FMTYields::getFromFactor` ne multiplie aucun yield quand on n'en nomme aucun** (`FMTYields`, issue à ouvrir,
+16. **`FMTYields::getFromFactor` ne multiplie aucun yield quand on n'en nomme aucun** (`FMTYields`, issue #391,
     relevé en écrivant le cas du défaut 15).
     - `FMTYields::getFromFactor` (`Source/FMTYields.cpp:343`) ne passe un gestionnaire à son `getFromFactor` que s'il
       contient un des yields nommés : sans nom, aucun. Sa documentation (`Include/FMTYields.h:218`, « all if
@@ -815,7 +815,7 @@ dans ce chantier.
       gestionnaire recevait la liste, et une liste vide les multipliait tous.
     - Cas : `Unit.FMTYields.GivenAFactorWithoutYieldNamesWhenGetFromFactorThenMultipliesEveryYield`.
 17. **`_ENDPOINT` provoque une violation d'accès dès que sa source sort de ses bornes** (`FMTComplexYieldHandler`,
-    issue à ouvrir, relevé en couvrant `_ENDPOINT`, que le lot 7a avait laissé).
+    issue #392, relevé en couvrant `_ENDPOINT`, que le lot 7a avait laissé).
     - `_getEndPoint` (`Source/FMTComplexYieldHandler.cpp:573` et `583`) appelle `_getChangesFrom` sur le gestionnaire
       complexe, qui lit `m_bases[peakstep]` (`Source/FMTYieldHandler.cpp:318`) : un gestionnaire `*YC` n'a aucun âge
       de base, et `operator[]` lit hors d'un vecteur vide.
@@ -1754,7 +1754,8 @@ reconfiguré ; FMTlib inchangé depuis `f4252745`) :
 
 ### 5.10 Lot 7b : bornes, spécifications, contraintes, sorties et yields (2026-10-21)
 
-**Statut** : livré le 2026-10-21, à compiler et commiter par Gabriel. Étapes 3 et 4 de la section 6.3.4, et ce que le
+**Statut** : livré le 2026-10-21, commité par Gabriel le 2026-10-22 (`355b2edb`, changelog `1bd707f6`), **validé** le
+2026-10-22 (fin de cette section). Étapes 3 et 4 de la section 6.3.4, et ce que le
 lot 7a a laissé faute de `FMTSpec` et de `FMTYields` (section 5.9, « Non couvert »).
 
 **Ajouts** (cp1252, CRLF, en-tête de licence) : une source par classe, une suite au nom de la classe, cas
@@ -1770,9 +1771,9 @@ Given…When…Then en Arrange / Act / Assert ; 154 cas nouveaux, dont 7 désact
 | `FMTSpec.cpp` | 17 nouveaux (19) | 0 | sans borne, périodes, verrou (sa borne haute n'est pas lue), yields (`allow`, `allowYields`), fusion d'un yield, `empty*`, accesseurs, `add`, copie, égalité et ordre, hachage, chaîne, `isSubsetOf` |
 | `FMTConstraint.cpp` | 36 | 2 | bornes, types (`isObjective`, `sense`, `extraVariables`, `acrossPeriod`, `isSpatial`, `getGroup`, `isRandomAction`), `setLength`, variations, buts et pénalités, chaînes (`>=`, `=`, `<=`, `_MAX`, `_MIN` et pénalités, `_EVEN`, `_NDY`), égalité, copie, hachage, `evaluate` ; désactivés : #379, #382 |
 | `FMTOutput.cpp` | 21 | 0 | accesseurs, `empty`, copie, égalité, hachage, `+=`, `-=`, `*=`, `/=`, constantes, `shuntingYard`, `isLinear`, sources d'action et d'inventaire, niveau constant, chaînes |
-| `FMTYields.cpp` | 22 | 3 | `get` (âge, temps, complexe, yield inconnu, masque d'un autre attribut : `FMTmissingyield`, premier gestionnaire du développement), `isYld`, `isNullYld`, `getAllYieldNames`, `gotYieldType`, copie, égalité avec soi, `getFromFactor`, `getStacked`, `clear`, `swap`, `getAge` ; désactivés : #383, défauts 15 et 16 |
+| `FMTYields.cpp` | 22 | 3 | `get` (âge, temps, complexe, yield inconnu, masque d'un autre attribut : `FMTmissingyield`, premier gestionnaire du développement), `isYld`, `isNullYld`, `getAllYieldNames`, `gotYieldType`, copie, égalité avec soi, `getFromFactor`, `getStacked`, `clear`, `swap`, `getAge` ; désactivés : #383, défauts 15 (#390) et 16 (#391) |
 | `FMTAgeYieldHandler.cpp` | 5 nouveaux (25) | 0 | `getAge` (âge de base le plus proche, premier âge de base), `getEndPoint` |
-| `FMTComplexYieldHandler.cpp` | 12 nouveaux (45) | 2 | `_MIN` de yields négatifs, `_ENDPOINT` dans ses bornes, `getAge`, `complexYldToAgeYld`, surcharges (`compareSources`, `setTabou`, `getTabous`, `_OVERRIDE` écrit, valeurs avec et sans tabou) ; désactivés : défauts 14 et 17 |
+| `FMTComplexYieldHandler.cpp` | 12 nouveaux (45) | 2 | `_MIN` de yields négatifs, `_ENDPOINT` dans ses bornes, `getAge`, `complexYldToAgeYld`, surcharges (`compareSources`, `setTabou`, `getTabous`, `_OVERRIDE` écrit, valeurs avec et sans tabou) ; désactivés : défauts 14 (#389) et 17 (#392) |
 | `Tests/Integration/Parser/FMTTransitionParser.cpp` | 1 | 0 | #358, comportement connu (section 2.7) |
 
 - Niveau unitaire : aucun modèle sur disque, objets construits en code comme les parseurs les construisent (bornes
@@ -1859,16 +1860,40 @@ de FMTlib.
 34 de priorité 1 sans test propre au lieu de 41 ; deux générations identiques), changelog (section non publiée,
 anglais et français).
 
-**Attendu après le build de Gabriel** : `RunTests.bat unit`, 290 verts et 11 désactivés sur 301 ;
-`RunTests.bat all-public`, 565 verts et 30 désactivés sur 595 (418 et 23 sur 441, plus 147 et 7 nouveaux).
+**Validation après le build de Gabriel** (2026-10-22, commits `355b2edb` et `1bd707f6` ; FMTlib inchangé depuis
+`f4252745`) :
+- avant le report des numéros d'issues, l'arbre de travail était identique à `HEAD`, et les deux commits contiennent
+  les 17 fichiers du lot (`git show --stat`) ; `UnitCore.exe` du build date de 8 h 08, `IntegrationParser.exe` de
+  8 h 07 ;
+- installation (`INSTALL_TEST_SUITE=public`, 8 h 09) : 595 tests, 0 échec, 565 exécutés et 30 désactivés, 19 s ;
+  unit 290 verts et 11 désactivés, integration 14 verts et 7 désactivés, system 236 verts et 12 désactivés,
+  performance 23, other 2 ; aucun test en `T:/`, et les 7 tests Python passent. La roue
+  `FMT-1.3.0-cp310-cp310-win_amd64.whl` date de 8 h 09. `InstallTests.xml`, `InstallTests.json`, `LastTest.log` et
+  `LastTestsDisabled.log` copiés dans le scratchpad de la session avant tout appel de ctest ;
+- `RunTests.bat unit` : « 0 tests failed out of 290 », 2,9 s réelles ; unit 290 verts et 11 désactivés sur 301, les
+  4 cas désactivés du lot 7a et les 7 de ce lot ;
+- `RunTests.bat all-public` : « 0 tests failed out of 565 », 16,5 s réelles ; unit 290 verts et 11 désactivés sur
+  301, integration 14 verts et 7 désactivés sur 21, system 236 verts et 12 désactivés sur 248, performance 23,
+  other 2 ; Total 565 verts et 30 désactivés sur 595. Par rapport au lot 7a (section 5.9), seuls les niveaux unit
+  et integration changent, des 154 cas ajoutés : 147 verts et 7 désactivés (#379, #382, #383, #389 à #392),
+  justifiés en section 2.7. Le cas de #358 et la fixture `ExamplesModelsUnchanged` sont verts, et l'arbre de travail
+  est resté identique à `HEAD` après le passage ;
+- non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par la passe
+  `/W4` hors dépôt d'avant le build (aucun dans les sources de tests) ;
+- issues des défauts 14 à 17 ouvertes par Gabriel le 2026-10-22 : #389, #390, #391 et #392. Leurs numéros sont
+  reportés en section 2.7, dans les commentaires des quatre cas désactivés, dans `CoreTestCoverage.csv` (document
+  régénéré, deux générations identiques) et dans le changelog. Commentaires seuls : les deux sources, recompilées
+  hors dépôt en `/W4`, ne donnent ni erreur ni avertissement. Le lot n'ajoute que des tests unitaires et un cas
+  d'intégration en lecture : la suite BFEC n'est pas relancée.
 
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
 
-- **Lot 7b livré le 2026-10-21, à compiler et commiter par Gabriel** (section 5.10) : 153 cas unitaires des bornes,
-  des spécifications, des contraintes, des sorties et des yields, dont 7 désactivés (#379, #382, #383, défauts 14 à
-  17), et un cas d'intégration pour #358 ; issues des défauts 14 à 17 à ouvrir.
+- **Lot 7b livré, commité (`355b2edb`, `1bd707f6`) et validé le 2026-10-22** (section 5.10) : 153 cas unitaires des
+  bornes, des spécifications, des contraintes, des sorties et des yields, dont 7 désactivés (#379, #382, #383, et les
+  défauts 14 à 17, #389 à #392), et un cas d'intégration pour #358. Suite publique : 595 tests, 565 verts et 30
+  désactivés. Le lot 7c suit (section 6.3.4).
 - **Lot 7a livré, commité (`0c35c546`, `51d03e83`) et validé le 2026-10-21** (section 5.9) : 141 cas unitaires des
   expressions et des gestionnaires de rendements, dont 4 désactivés (#380, défauts 11 et 12, #386 et #388), et le
   défaut 13 (#387) sans cas. Les lots 7b et 7c suivent (section 6.3.4).
@@ -2083,9 +2108,9 @@ le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à
     141 cas, dont 4 désactivés ; défauts 11 à 13 (section 2.7) ; non couverts : `getEndPoint`,
     `_ENDPOINT`, `getAge`, `complexYldToAgeYld` et les surcharges, qui demandent `FMTSpec` et `FMTYields`.
   - **7b** : étapes 3 et 4, les bornes (`FMTSpec`, `FMTBounds` et ses quatre classes dérivées),
-    `FMTConstraint`, `FMTOutput` et `FMTYields`. **Livré le 2026-10-21** (section 5.10) : 154 cas, dont 7
-    désactivés, avec ce que 7a avait laissé ; défauts 14 à 17 (section 2.7). Reste à décider : le test du
-    défaut 13 (#387, lecture de `_CP`).
+    `FMTConstraint`, `FMTOutput` et `FMTYields`. **Fait et validé le 2026-10-22** (section 5.10, `355b2edb`) :
+    154 cas, dont 7 désactivés, avec ce que 7a avait laissé ; défauts 14 à 17 (#389 à #392, section 2.7). Reste
+    à décider : le test du défaut 13 (#387, lecture de `_CP`).
   - **7c** : étape 5, `FMTMask`, `FMTTheme` et `FMTDevelopment`. À faire.
 
 #### 6.3.5 Lot 8 : unitaires du reste de Core (jalons 5 à 7 de #350) — effort `high`
@@ -2406,6 +2431,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-15 (taux décimal, `62f9e288`) | 273 `all-public` (270 + 3 lignes `DISCOUNT*`) ; résumé : system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 13,2 s réelles | — | — | — | — | 12 | — |
 | 2026-10-20 (lot 5, `90ef4ad2`) | 300 `all-public` (280 + 20 cas `Integration.`) ; résumé : unit 7, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 13,8 s réelles | — | 13 | 2 | 0 | 19 | —
 | 2026-10-21 (lot 7a, `0c35c546`) | 441 `all-public` (300 + 141 cas `Unit.`) ; résumé : unit 144 verts et 4 désactivés sur 148, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 15,5 s réelles | — | 13 | 2 | 0 | 23 | —
+| 2026-10-22 (lot 7b, `355b2edb`) | 595 `all-public` (441 + 153 cas `Unit.` + 1 cas `Integration.`) ; résumé : unit 290 verts et 11 désactivés sur 301, integration 14 verts et 7 désactivés sur 21, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 16,5 s réelles | — | 13 | 2 | 0 | 30 | —
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).

@@ -426,7 +426,7 @@ TEST(FMTYields, GivenADiscountFactorWhenGetThenReturnsTheFactorOfThePeriod)
 
 // Disabled: FMTTimeYieldHandler::getFromFactor multiplies every value of the data of a yield, and those of a
 // _DISCOUNTFACTOR are its rate and its years per period (FMTData::operator*): the factor gives 1 / 1.08^10 instead of
-// 2 / 1.04^5 (Tests/ETAT.md, section 2.7, defect 15).
+// 2 / 1.04^5 (#390, defect 15 of section 2.7 of Tests/ETAT.md).
 TEST(FMTYields, DISABLED_GivenAFactorOfADiscountFactorWhenGetFromFactorThenMultipliesItsValue)
 {
     // Arrange
@@ -440,7 +440,7 @@ TEST(FMTYields, DISABLED_GivenAFactorOfADiscountFactorWhenGetFromFactorThenMulti
 }
 
 // Disabled: getFromFactor multiplies the yields named only, and none when no yield is named, while its documentation
-// says all when the list is empty, as the handlers do (Tests/ETAT.md, section 2.7, defect 16).
+// says all when the list is empty, as the handlers do (#391, defect 16 of section 2.7 of Tests/ETAT.md).
 TEST(FMTYields, DISABLED_GivenAFactorWithoutYieldNamesWhenGetFromFactorThenMultipliesEveryYield)
 {
     // Arrange
