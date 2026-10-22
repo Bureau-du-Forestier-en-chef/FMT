@@ -24,6 +24,11 @@
   - #386 [BUG] Un moins qui suit un opérateur est lu comme une soustraction dans `_EQUATION`
   - #388 [BUG] Les yields d’un bloc `*YT` lisent tous la période de départ du premier
   - #387 [BUG] En colonnes (`_CP`), chaque ligne d’un bloc `*YT` retarde d’une période les valeurs des lignes suivantes
+- Ajout de tests unitaires des bornes, des spécifications, des contraintes, des sorties et des rendements du Core, construits en code sans modèle : `FMTBounds` par `FMTAgeBounds`, `FMTYldBounds`, `FMTLockBounds` et `FMTPerBounds`, `FMTSpec`, `FMTConstraint`, `FMTOutput` et `FMTYields`, avec les surcharges, `getAge` et `getEndPoint` des gestionnaires de rendements, et d’un test d’intégration de `FMTTransitionParser` qui fixe le comportement connu de #358 (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). Ils montrent #379, #382 et #383 plus près de leur cause, et ont révélé quatre défauts, chacun gardé comme cas désactivé jusqu’à sa correction :
+  - [BUG] `_MAX` part de 0 : le maximum de yields tous négatifs vaut 0 (issue à ouvrir)
+  - [BUG] `FMTYields::getFromFactor` multiplie le taux et les années d’un `_DISCOUNTFACTOR` au lieu de sa valeur (issue à ouvrir)
+  - [BUG] `FMTYields::getFromFactor` ne multiplie aucun yield quand on n’en nomme aucun, alors que sa documentation dit tous (issue à ouvrir)
+  - [BUG] `_ENDPOINT` provoque une violation d’accès dès que sa source sort de ses bornes (issue à ouvrir)
 - Ajout de tests système sur le modèle public `TWD_land` : lecture des scénarios (rendements, sorties, opérabilité, transitions, croissance), erreurs de lecture et leurs codes d’exception, scénarios lus ensemble, statistiques de planification et rejeu du calendrier optimal. Une fixture vérifie qu’aucun test ne modifie `Examples/Models`, et les défauts connus restent inscrits comme tests désactivés.
 - Ajout de vérifications à `WriteAndReadProject`, `SolveAndWriteSchedules`, `CreateModel` et `UpdateNonSpatialModel`, qui vérifient maintenant ce qu’ils écrivent, et réparation de la vérification morte d’`AddYieldHandlers`.
 - Ajout de bancs de performance et d’allocation avec leurs bornes attendues, et de `tools/performance/Measure_Performance.bat`, qui mesure un changement en comparant des passages d’avant et d’après (#349 [FEATURE] Add performance and allocation benchmarks).
