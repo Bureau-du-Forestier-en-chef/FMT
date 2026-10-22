@@ -718,7 +718,8 @@ repérer les valeurs attendues qui changent, et justifier au journal toute valeu
 `ReadScenario` du build de `new_test` (FMTlib de `f4252745`), sur une copie de TWD_land hors du dépôt
 (scratchpad), en ajoutant une ligne ou un bloc au `._yld` du scénario `timeyields` (A/B, une seule chose
 change). Les deux premiers ont un cas `DISABLED_` dans `UnitCore`. Le troisième est dans `FMTYieldParser`,
-hors des classes du lot, et n'a pas encore de cas. Leurs issues, #386 (défaut 11), #388 (défaut 12) et
+hors des classes du lot : son cas `DISABLED_` est dans `IntegrationParser` depuis le lot 7c (section 5.11). Leurs
+issues, #386 (défaut 11), #388 (défaut 12) et
 #387 (défaut 13), ont été ouvertes par Gabriel le 2026-10-21 (règle 3) ; leurs numéros sont aussi dans
 les commentaires des cas désactivés, dans `CoreTestCoverage.csv` et dans le changelog. Aucun n'est
 corrigé dans ce chantier.
@@ -766,9 +767,12 @@ corrigé dans ce chantier.
     - Origine : la boucle date de `2e3dc129` (2019-06-07). D'après le code, avant `9fd69f73`, `get`
       lisait l'indice de la période, ce qui compensait le doublon de la deuxième ligne quand la première
       est à la période 1, mais pas ceux des lignes suivantes.
-    - Aucun modèle de `Examples/Models` n'écrit de `_CP`. Pas de cas dans ce lot : le défaut est dans la
-      lecture, et son test serait un cas de `IntegrationParser`, ou une ligne de `knownbugs.csv` sur un
-      nouveau scénario de TWD_land (à décider).
+    - Aucun modèle de `Examples/Models` n'écrit de `_CP`, hors du scénario `timeyieldcolumns` du lot 7c.
+    - Cas (lot 7c, proposé à Gabriel et retenu le 2026-10-22) :
+      `Integration.FMTYieldParser.GivenTimeYieldsWrittenInColumnsWhenReadThenEachLineGivesItsValuesFromItsPeriod`,
+      désactivé, sur le nouveau scénario `timeyieldcolumns` : le `.yld` de la racine suivi du bloc ci-dessus. Il attend
+      `CPA` à 10, 10, 30, 30, 50, 50, 50 et `CPB` à 100, 100, 300, 300, 500, 500, 500 aux périodes 1 à 7, et lit 10, 10,
+      10, 30, 30, 30, 50 et 100, 100, 100, 300, 300, 300, 500. `ReadScenario` (`YIELD`) donne les mêmes valeurs.
 
 **Défauts révélés par le lot 7b (2026-10-21).** Quatre défauts de FMTlib, démontrés comme ceux du lot 7a : cause
 dans le code, A/B où une seule chose change, exécutable officiel du build de `new_test` (FMTlib de `f4252745`),
@@ -829,6 +833,40 @@ dans `CoreTestCoverage.csv` et dans le changelog. Aucun n'est corrigé dans ce c
       5.5) : le cas demande seulement que l'appel ne lève rien.
     - Cas : `Unit.FMTComplexYieldHandler.GivenAnEndPointWhoseSourceIsBelowItsLowerBoundWhenGetThenRaisesNothing`, à
       côté du cas vert `GivenAnEndPointWhoseSourceIsWithinItsBoundsWhenGetThenReturnsZero`.
+
+**Défaut révélé par le lot 7c (2026-10-22).** L'observation de `FMTParser::bounds` du lot 7b (section 5.10), démontrée
+comme les défauts des lots 7a et 7b : cause dans le code, A/B où une seule chose change, exécutable officiel
+`ReadScenario` du build de `new_test` (FMTlib de `f4252745`), origine git. Il a deux cas `DISABLED_` dans
+`IntegrationParser`. Son issue est à ouvrir par Gabriel (règle 3) : texte dans le rapport du lot 7c. Son numéro ira ici,
+dans les commentaires des cas, dans `CoreTestCoverage.csv` et dans le changelog. Il n'est pas corrigé dans ce chantier.
+
+18. **Une condition d'opérabilité écrite avec `>` ou `<` est lue sans sa borne** (`FMTParser::bounds`, issue à ouvrir).
+    - `FMTParser::getBaseOperators` (`Source/FMTParser.cpp:2195`) liste `=`, `<=`, `>=`, `<` et `>`, que
+      `FMTActionParser::_getBounds` reconnaît donc tous les cinq ; mais `FMTParser::bounds` (`Source/FMTParser.cpp:405`)
+      ne traite que les trois premiers. Pour `<` et `>`, il rend des bornes du plus petit au plus grand entier, ou réel,
+      sans message : la condition disparaît. Seul le parseur des actions l'appelle, pour `_AGE`, `_CP` et les yields
+      d'une condition d'opérabilité.
+    - A/B avec `ReadScenario` (`OPERABLE`) sur le nouveau scénario `strictbounds`, `UNITE1 PEUPLEMENT1 UTR1` à la
+      période 1 : `_AGE > 10` est opérable à 0, 5, 10, 11 et 20 ans, `_AGE >= 11` à 11 et 20 ans seulement ;
+      `_AGE < 5` à 0, 4, 5 et 20 ans, `_AGE <= 4` à 0 et 4 ans seulement. Sur une copie du scénario dans le
+      scratchpad, les deux autres formes : `volumetotal > 100` est opérable à 0, 5 et 6 ans (`volumetotal >= 100`, la
+      condition de `COUPEtotale`, à 5 et 6 ans seulement), et `_CP > 2` aux périodes 1 à 3 (`_CP >= 3` à la période 3
+      seulement). La lecture n'émet aucun avertissement sur ces conditions.
+    - `FMTModelParser::write` écrit ces actions sans condition (`? PROD ?`) : le modèle écrit puis relu n'en garde
+      aucune trace (sonde du lot 7c).
+    - Woodstock refuse ces deux opérateurs : les messages 142 et 143 de `Wk.msg`, fatals, demandent `>=` et `<=`. Un
+      modèle valide pour Woodstock n'en contient donc pas. La correction choisira entre les lire comme des bornes
+      strictes (`_AGE > 10` comme `_AGE >= 11` ; pour un réel, il faut une borne ouverte) et les refuser comme
+      Woodstock. Les deux cas désactivés attendent la première ; si la seconde est retenue, ils deviendront des tests
+      de l'exception.
+    - Origine : `2e3dc129` (2019-06-07, le premier commit), où `FMTparser::bounds` avait déjà la même liste et les
+      mêmes trois branches.
+    - Aucun des 42 fichiers d'actions d'`Examples/Models` n'écrit `<` ni `>`, hors de `strictbounds`. Modèles BFEC :
+      non vérifié.
+    - Cas : `Integration.FMTActionParser.GivenAMinimumAgeWrittenWithGreaterThanWhenReadThenTheActionIsOperableAboveThatAgeOnly`
+      et `Integration.FMTActionParser.GivenAMaximumAgeWrittenWithLessThanWhenReadThenTheActionIsOperableBelowThatAgeOnly`,
+      à côté des cas verts `GivenAMinimumAgeWrittenWithGreaterOrEqual…` et `GivenAMaximumAgeWrittenWithLessOrEqual…`
+      du même scénario.
 
 ## 3. Lacunes classées par criticité
 
@@ -1029,6 +1067,7 @@ Le reste de la marche à suivre :
 | Ordonnanceur d'UA | carte synthétique probable | yield `YOUVERT` utilisé par une action, CSV de paramètres, thème d'UA en argument (codé 14 dans `RunOpAreaSchedulerTask`), plus de polygones |
 | Adjacence, patchs | carte synthétique | `FMTLayer` construit en mémoire (constructeur depuis `std::map<FMTCoordinate,T>`), ou écrit par `FMTAreaParser::writeForest` / `writeLayer` : ni Python ni GDAL Python requis |
 | Transformations d'actions | à évaluer | structure d'actions agrégées à reproduire |
+| Opérateurs stricts d'une condition d'action, bloc `*YT` en colonnes | **fait au lot 7c** | `strictbounds` (`_AGE` avec `>`, `>=`, `<` et `<=`, défaut 18 de la section 2.7) et `timeyieldcolumns` (`_CP`, défaut 13) : chacun copie une section de la racine et y ajoute ses lignes, commentées en tête |
 
 **Scénarios existants qu'aucun test C++ n'utilise** : `actionrecurse`, `AVERAGEP`, `peak`,
 `Predeclared_Primary`, `Predeclared_Primary_ref`, `Spatial_8`, `LPwfire`, `Globalex4`,
@@ -1886,10 +1925,110 @@ anglais et français).
   hors dépôt en `/W4`, ne donnent ni erreur ni avertissement. Le lot n'ajoute que des tests unitaires et un cas
   d'intégration en lecture : la suite BFEC n'est pas relancée.
 
+### 5.11 Lot 7c : masques, thèmes et développements (2026-10-22)
+
+**Statut** : livré le 2026-10-22, à valider après le build de Gabriel. Étape 5 de la section 6.3.4, qui termine le
+lot 7, avec l'observation de `FMTParser::bounds` du lot 7b (section 5.10) et le cas du défaut 13 (#387).
+
+**Ajouts** (sources en cp1252, CRLF, en-tête de licence ; scénarios en ASCII, CRLF, comme leurs voisins) : une source
+par classe, une suite au nom de la classe, cas Given…When…Then en Arrange / Act / Assert ; 124 cas nouveaux, dont 3
+désactivés.
+
+| Source | Cas | Désactivés | Ce qu'ils couvrent |
+|---|---|---|---|
+| `FMTMask.cpp` | 43 | 0 | construction depuis une chaîne et les thèmes (attributs, `?`, agrégats, négations, une valeur par thème, chaîne trop courte, attribut inconnu : `FMTundefined_attribute`, thèmes seuls, défaut), copie, déplacement, égalité par les bits, ordre, hachage (dont un ensemble haché), `isSubsetOf` (développement, masque générique, blocs non pleins), intersection, union, valeurs par thème (`get`, `getAttribute`, `getSubsetCount`, agrégat d'un seul attribut, négation, bits qu'aucun agrégat ne nomme : `FMTundefined_attribute`), `decompose`, `set`, thèmes statiques et sélectionnés, `isNotThemesSubset`, `removeAggregates`, `refine`, `resume`, `setExclusiveBits`, `append`, `swap`, `clear`, presolve (`preSolve`, `canPreSolve`, `getPostSolveMask` et `postSolve`) |
+| `FMTTheme.cpp` | 34 | 0 | construction comme `FMTLandscapeParser` (noms vides, agrégats, index du thème et premier bit), sans agrégat et sans index, thème vide, `isAttribute` (dont un agrégat), `isAggregate`, `getAttributes` (`?`, attribut, agrégats, négations, agrégat d'agrégat et sa source, valeur inconnue : `FMTundefined_attribute`), `inAggregate`, `isValid`, `validate` (masque complet, plus court, plus long, tabulations, attribut inconnu : `FMTundefined_attribute`), noms et chaîne de la section, thèmes indexés (`useIndex`, `getIndex`, `isIndex`, index absent, attribut inconnu : `FMTundefined_attribute`, chaîne `_INDEX`), copie, égalité, presolve (thème gardé avec ses agrégats, thème réduit à un attribut, filtre vide : `FMTinvalid_maskrange`), `updateFromMask` |
+| `FMTDevelopment.cpp` | 42 | 0 | construction, copie, clone, déplacement, égalité, ordre, hachage (dont un ensemble haché), chaîne, accesseurs, `clearLock`, `grow` (âge, période, verrou), `getYieldRequest`, `operable` (âge minimal, intervalle d'âges, yield, masque, verrou, `_LOCKEXEMPT`, période), `anyOperable`, `worthTestingOperability` et ses deux variantes, `getNonOperabilityInfo`, `is`, `operate` à travers des transitions construites en code (âge remis à zéro, attribut cible, âge gardé, `_LOCK` et `_AGE` de cible, deux cibles, deux sources du même masque, aucune source : `FMTinvalid_transition_case`, cible qui ne change rien : `FMTsourcetotarget_transition`, deux cibles identiques : `FMTsame_transitiontargets`), `getInventoryCoef`, `getHarvestCoef` (action entière et partielle) |
+| `Tests/Integration/Parser/FMTActionParser.cpp` | 4 | 2 | défaut 18 (section 2.7) : `_AGE > 10` et `_AGE < 5`, désactivés, à côté de `_AGE >= 11` et `_AGE <= 4`, verts, scénario `strictbounds` |
+| `Tests/Integration/Parser/FMTYieldParser.cpp` | 1 | 1 | défaut 13 (#387) : un bloc `*YT` en colonnes, scénario `timeyieldcolumns` |
+
+- Deux scénarios nouveaux dans `Examples/Models/TWD_land/Scenarios`, qui le disent en tête par un commentaire :
+  `strictbounds` (le `.act` et le `.trn` de la racine, suivis de quatre actions de masque `? prod ?` et de leurs
+  transitions) et `timeyieldcolumns` (le `.yld` de la racine, suivi du bloc `_CP` de la section 2.7, défaut 13). Aucun
+  scénario existant n'a changé.
+- Niveau unitaire : aucun modèle sur disque. Les thèmes sont ceux de TWD_land, construits comme `FMTLandscapeParser`
+  (constructeur à huit arguments, un nom vide par attribut) ; les actions et les transitions de TWD_land, comme
+  `FMTActionParser`, `FMTTransitionParser` et `FMTModel` (une spécification ou une fourche par masque, puis `update`) ;
+  `VOLUMETOTAL` est celui de `peuplement1`. Le presolve suit `FMTModel::preSolve` (filtre de l'union des masques des
+  développements, puis thèmes présolvés), et le postsolve `FMTModel::getPostSolveFilter`. Aucune classe du lot ne
+  demande un modèle ou un état global, et aucun cas ne contourne le code : aucune ligne de dette.
+- `FMTTheme` n'a ni `hash` ni `operator!=` : aucun cas de hachage pour lui. `FMTMaskComparator` et `FMTThemeComparator`
+  restent au lot 8, comme `FMTActualDevelopment` et `FMTFuturDevelopment`, que les cas ne lisent qu'à travers
+  `FMTDevelopment` (`grow` rend un `FMTFuturDevelopment`).
+- Valeurs : bits et chaînes lus dans le code des parseurs et des classes (les bits de `UNITE1` à `UNITE3` sont 0 à 2,
+  ceux de `PEUPLEMENT1` à `FEU` 3 à 6, ceux de `UTR1` à `UTR3` 7 à 9) ; `VOLUMETOTAL` interpolé (80 à 4 ans, 120 à 7
+  ans, 130 à 8 ans) ; index du scénario `AVERAGEP` ; `std::to_string` écrit six décimales (`16.360000`).
+
+**Étape 2, `FMTParser::bounds` sur `<` et `>`** : démontré, défaut 18 (section 2.7), deux cas désactivés et une issue
+à ouvrir. A/B avec l'exécutable officiel `ReadScenario` (`OPERABLE`), d'abord sur une copie de TWD_land dans le
+scratchpad, dont le scénario `strictbounds` avait en plus `volumetotal > 100`, `_CP > 2` et `_CP >= 3`, puis sur le
+scénario du dépôt ; origine dans `2e3dc129` ; refus de Woodstock dans les messages 142 et 143 de `Wk.msg`.
+
+**Étape 3, défaut 13 (#387)** : cas désactivé dans `IntegrationParser` (section 2.7, item 13), sur `timeyieldcolumns`.
+
+**Observations, sans défaut annoncé** (vérifiées par une sonde hors du dépôt, compilée contre le `FMTlib.lib` du build ;
+rien de ce que FMT exécute à partir d'un modèle n'en dépend, ou ce n'est pas démontré) :
+- un masque construit depuis une chaîne plus courte que les thèmes est complété par le premier attribut de chaque thème
+  manquant (`UNITE1 PEUPLEMENT1` donne `UNITE1 PEUPLEMENT1 UTR1`, cas vert commenté), alors que `FMTTheme::validate`,
+  que les parseurs appellent avant de construire un masque, le complète par `?`. Ce constructeur est exposé en Python
+  (`FMTmask(str, themes)`) ;
+- `FMTTheme::isAttribute` accepte un agrégat (cas vert commenté) : `isValid` s'en sert pour accepter les agrégats d'un
+  masque. `FMTTransitionMask::build` s'en sert aussi, si bien qu'une cible écrite avec un agrégat garderait les bits de
+  l'agrégat dans le masque du développement (lu dans le code ; classe du lot 8) ;
+- `FMTTheme::updateFromMask` crée l'agrégat `~FMT1A_1` pour `PEUPLEMENT1` et `FEU`, puis rend `!POURPL`, que
+  `_bitsToStr` trouve avant lui : l'agrégat créé ne sert pas. Les cas verts prennent des attributs qu'aucune négation
+  ne nomme ;
+- `FMTMask::setIntersect` garde le nom d'avant (`UC PROD ?` pour les valeurs `UC POURPL UTR3`) ; ses deux appelants,
+  dans `FMTModel` et `FMTLineGraph`, ne lisent que les bits ;
+- l'âge, le verrou et la période d'un développement sont des `uint8_t` : `setAge(256)` donne 0, `setLock(300)` 44, et
+  `grow` d'un développement de 255 ans à la période 255 donne l'âge 0 à la période 0, sans erreur. TWD_land ne dépasse
+  pas 80 ans (durée de vie). Modèles BFEC : non vérifié ;
+- une action construite en code sans `update` a des bornes d'âge et de période de 0 à 0 : `operable` la refuse à tout
+  développement d'âge ou de période non nul (section 7).
+
+**Non couvert, et pourquoi** : `getYieldRequest`, `operable` et `is` avec un sommet de graphe
+(`Graph::FMTGraphVertexToYield`, hors du Core) ; `FMTMask::binarizedAppend` et `filter`, qui servent aux clés de
+`FMTLineGraph` et de `FMTOutputNode` et à `FMTMaskFilter` (lot 8) ; les data frames du build R de `FMTTheme`
+(`FMTWITHR`) ; la sérialisation (lot 9).
+
+**Vu rouge** (règle 1), rien de commité :
+- une copie faussée des cinq sources, hors du dépôt, avec l'en-tête des lots 7a et 7b qui retourne chaque assertion (le
+  script qui écrit la copie refuse toute autre macro ; `ADD_FAILURE`, qui signale une action absente du modèle, n'est
+  pas retourné), compilée par `cl` contre le `FMTlib.lib` de `build/release` : les 119 cas unitaires et les 2 cas
+  d'intégration actifs échouent, aucun ne passe, aucun par une exception inattendue ;
+- les 3 cas désactivés, lancés avec `GTEST_ALSO_RUN_DISABLED_TESTS=1`, échouent chacun pour sa raison : `_AGE > 10` et
+  `_AGE < 5` sont opérables à 0, 4, 5, 10, 11 et 20 ans ; `CPA` vaut 10, 10, 10, 30, 30, 30, 50 et `CPB` 100, 100, 100,
+  300, 300, 300, 500.
+
+**Vu vert avant le build de Gabriel** : les sources du dépôt, compilées par `cl` avec les options de `UnitCore` et
+d'`IntegrationParser` (leurs `CL.command.1.tlog`, identiques), `/Fo` `/Fd` `/Fp` dans le scratchpad, liées au
+`FMTlib.lib` de `build/release` (FMTlib de `f4252745`, inchangé depuis) :
+- `UnitCore`, ses 19 sources, lancé depuis `bin/Release` : 409 cas verts (290 d'avant et 119 nouveaux), 11
+  désactivés ; mêmes résultats dans un ordre mélangé (`GTEST_SHUFFLE`, graines 4242 à 4244, 3 répétitions) ;
+- `IntegrationParser`, ses 5 sources, lancé depuis une racine du scratchpad (`runroot\build\release\bin\Release`, à
+  côté d'une copie de `Examples/Models/TWD_land` identique au dépôt), pour que ses écritures restent hors de
+  `build/release` : 16 cas verts (14 d'avant et 2 nouveaux), 10 désactivés ; mêmes résultats dans un ordre mélangé
+  (graines 4242 à 4244). L'exécutable officiel, lancé de la même racine, donne 14 verts et 7 désactivés, et les mêmes
+  six messages « Calling pure virtual function » du cas `COS`, préexistants ;
+- en `/W4`, aucun avertissement ne vient des cinq sources nouvelles : les 330 viennent des en-têtes de FMTlib ;
+- rien n'a été écrit dans `build/release`, ni sous `Examples/Models` hors des deux scénarios (`find -newer`,
+  `git status`).
+
+**Documents** : `CoreTestCoverage.csv` (statut `Lot 7c (step 5), done` des trois classes, défaut 18 sur `FMTAction`,
+#387 sur `FMTTimeYieldHandler`, tests manquants), `CoreTestCoverage.md` régénéré (19 classes avec des tests unitaires,
+31 de priorité 1 sans test propre au lieu de 34 ; deux générations identiques), sections 2.7, 4.4, 6.1, 6.3.4, 7 et 8,
+changelog (section non publiée, anglais et français).
+
+**Validation après le build de Gabriel** : à faire (`RunTests.bat unit`, `integration` et `all-public`, installation,
+fixture `ExamplesModelsUnchanged`).
+
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
 
+- **Lot 7c livré le 2026-10-22, à valider après le build de Gabriel** (section 5.11) : 119 cas unitaires des masques,
+  des thèmes et des développements, et 5 cas d'intégration, dont 3 désactivés (le défaut 18, nouveau, et #387). **Le
+  lot 7 est terminé** ; le lot 8 suit (section 6.3.5). Suite publique attendue : 719 tests, 686 verts et 33 désactivés.
 - **Lot 7b livré, commité (`355b2edb`, `1bd707f6`) et validé le 2026-10-22** (section 5.10) : 153 cas unitaires des
   bornes, des spécifications, des contraintes, des sorties et des yields, dont 7 désactivés (#379, #382, #383, et les
   défauts 14 à 17, #389 à #392), et un cas d'intégration pour #358. Suite publique : 595 tests, 565 verts et 30
@@ -2109,9 +2248,13 @@ le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à
     `_ENDPOINT`, `getAge`, `complexYldToAgeYld` et les surcharges, qui demandent `FMTSpec` et `FMTYields`.
   - **7b** : étapes 3 et 4, les bornes (`FMTSpec`, `FMTBounds` et ses quatre classes dérivées),
     `FMTConstraint`, `FMTOutput` et `FMTYields`. **Fait et validé le 2026-10-22** (section 5.10, `355b2edb`) :
-    154 cas, dont 7 désactivés, avec ce que 7a avait laissé ; défauts 14 à 17 (#389 à #392, section 2.7). Reste
-    à décider : le test du défaut 13 (#387, lecture de `_CP`).
-  - **7c** : étape 5, `FMTMask`, `FMTTheme` et `FMTDevelopment`. À faire.
+    154 cas, dont 7 désactivés, avec ce que 7a avait laissé ; défauts 14 à 17 (#389 à #392, section 2.7). Le test
+    du défaut 13 (#387, lecture de `_CP`) est fait au lot 7c.
+  - **7c** : étape 5, `FMTMask`, `FMTTheme` et `FMTDevelopment`. **Fait le 2026-10-22** (section 5.11), à valider
+    après le build de Gabriel : 124 cas, dont 3 désactivés ; défaut 18 (section 2.7) et le cas de #387.
+    `FMTActualDevelopment` et `FMTFuturDevelopment` restent au lot 8.
+- **Le lot 7 est terminé** (2026-10-22) : ses cinq étapes ont leurs tests unitaires, et les défauts qu'elles ont révélés
+  ont leur cas désactivé.
 
 #### 6.3.5 Lot 8 : unitaires du reste de Core (jalons 5 à 7 de #350) — effort `high`
 
@@ -2294,8 +2437,8 @@ abandonne.
   - `WrapperCoreRunAreaVariability`, `WrapperCoreRunPlanning` et `WrapperCoreRunSimulatedAnnealing`
     l'appellent encore dans leur affichage d'erreur : à corriger quand on les touche.
 - **Macros de `windows.h`** (par GDAL) : outre `min`, `max`, `ERROR`, `NEAR`, `FAR`, `IN`,
-  `OUT`, `DELETE`, aussi `DIFFERENCE` (lot 2). Écrire `(std::max)(...)` et
-  `(std::numeric_limits<int>::max)()`.
+  `OUT`, `DELETE`, aussi `DIFFERENCE` (lot 2) et `small` (`#define small char`, de `rpcndr.h`, lot 7c). Écrire
+  `(std::max)(...)` et `(std::numeric_limits<int>::max)()`.
 - **Classes non exportées** : une classe sans `FMTEXPORT` dont les membres sont définis dans
   `Source/` ne se lie pas dans un test (LNK2019). Depuis le 2026-10-20 (section 5.8), les comparateurs
   du Core, `FMTYieldRequest`, `FMTExpression` et `FMTFunctionCall` sont exportés. Restent sans export :
@@ -2332,7 +2475,12 @@ abandonne.
     `GTEST_BRIEF`, `GTEST_SHUFFLE` (lot 7a) ;
   - vu rouge d'une suite entière (lot 7a) : une copie faussée hors du dépôt, où un en-tête inclus après
     `<gtest/gtest.h>` redéfinit chaque assertion en son contraire ; tous les cas actifs doivent échouer
-    (section 5.9).
+    (section 5.9) ;
+  - `IntegrationParser` lu et écrit par des chemins relatifs à `bin/Release` (`../../../../Examples/Models`,
+    `../../tests/IntegrationParser`) : pour le lancer sans écrire dans `build/release` (lot 7c), lui donner pour dossier
+    courant `<racine>\build\release\bin\Release`, à côté d'une copie de `Examples/Models/TWD_land` dans
+    `<racine>\Examples\Models`. Depuis le scratchpad, les chemins de ses cas dépassent 260 caractères
+    (`create_directories` échoue) : prendre le nom court 8.3 de la racine (`for %I in (...) do @echo %~sI`).
 - **Argument vide** : CMake retire une colonne vide de la commande, donc un test ne peut pas
   attendre une valeur vide. Par exemple, les thèmes de la racine n'ont pas de nom.
 - **Longueur des chemins** : le dossier de sortie d'un test ne doit pas porter une liste de
@@ -2397,6 +2545,9 @@ abandonne.
 - **Une `FMTYieldRequest` garde l'adresse de son développement** (lot 7b) : construite sur un temporaire
   (`FMTYieldRequest request(getDevelopment(...))`), elle lit de la mémoire libérée dès l'instruction suivante. Nommer
   le développement et le garder en vie aussi longtemps que la requête.
+- **Une action ou une transition construite dans le code passe par `update`** (lot 7c), comme dans `FMTModel` : c'est
+  `update` qui réduit les masques et fixe les bornes d'âge et de période que `FMTDevelopment::operable` lit d'abord.
+  Sans lui, ces bornes valent 0 à 0, et l'action n'est opérable pour aucun développement d'âge ou de période non nul.
 - **Un modèle construit en code ne se compare pas section par section à sa relecture** : la lecture
   remplit des noms d'attributs que le code laisse vides, et FMT ajoute un `_DEATH` par défaut, dont la
   transition n'est pas égale à sa forme écrite et relue (`CreateModel`, `level`). Comparer l'optimum.
@@ -2432,6 +2583,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-20 (lot 5, `90ef4ad2`) | 300 `all-public` (280 + 20 cas `Integration.`) ; résumé : unit 7, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 13,8 s réelles | — | 13 | 2 | 0 | 19 | —
 | 2026-10-21 (lot 7a, `0c35c546`) | 441 `all-public` (300 + 141 cas `Unit.`) ; résumé : unit 144 verts et 4 désactivés sur 148, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 15,5 s réelles | — | 13 | 2 | 0 | 23 | —
 | 2026-10-22 (lot 7b, `355b2edb`) | 595 `all-public` (441 + 153 cas `Unit.` + 1 cas `Integration.`) ; résumé : unit 290 verts et 11 désactivés sur 301, integration 14 verts et 7 désactivés sur 21, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 16,5 s réelles | — | 13 | 2 | 0 | 30 | —
+| 2026-10-22 (lot 7c, attendu avant le build) | 719 `all-public` attendus (595 + 119 cas `Unit.` + 5 cas `Integration.`) ; résumé attendu : unit 409 verts et 11 désactivés sur 420, integration 16 verts et 10 désactivés sur 26, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | à mesurer | — | 13 | 2 | 0 | 33 | —
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).

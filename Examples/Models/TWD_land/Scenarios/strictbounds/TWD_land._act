@@ -1,0 +1,40 @@
+; The root actions, then four actions for IntegrationParser (Tests/Integration/Parser/FMTActionParser.cpp):
+; two age conditions written with the strict operators > and <, and the same conditions written
+; with >= and <=. Woodstock refuses > and < (messages 142 and 143 of Wk.msg); FMT reads them
+; without their bound (Tests/ETAT.md, section 2.7).
+*ACTION aFire N
+*OPERABLE AFire
+? prod ? _AGE >= 1
+
+*ACTION arecup Y
+*OPERABLE arecup
+? feu ? volumetotal >= 100
+
+*ACTION COUPEtotale Y CT
+*OPERABLE COUPEtotale
+? prod ? volumetotal >= 100
+
+*ACTION aCaribou N Massif protection du caribou
+*OPERABLE aCaribou
+UC prod ? _AGE >= 8
+
+*ACTION plantation Y _LOCKEXEMPT
+*OPERABLE plantation
+;c'est rendu dans chacun des scenario de replanning - > ? pourpl ? _AGE = 0 ;_AGE >= 1 AND _AGE <= 3
+? prod ? _AGE >= 1 AND _AGE <= 3
+
+*ACTION aOlderThan Y
+*OPERABLE aOlderThan
+? prod ? _AGE > 10
+
+*ACTION aFromAge Y
+*OPERABLE aFromAge
+? prod ? _AGE >= 11
+
+*ACTION aYoungerThan Y
+*OPERABLE aYoungerThan
+? prod ? _AGE < 5
+
+*ACTION aUpToAge Y
+*OPERABLE aUpToAge
+? prod ? _AGE <= 4
