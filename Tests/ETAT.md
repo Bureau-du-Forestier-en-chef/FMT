@@ -861,8 +861,10 @@ dans les commentaires des cas, dans `CoreTestCoverage.csv` et dans le changelog.
       de l'exception.
     - Origine : `2e3dc129` (2019-06-07, le premier commit), où `FMTparser::bounds` avait déjà la même liste et les
       mêmes trois branches.
-    - Aucun des 42 fichiers d'actions d'`Examples/Models` n'écrit `<` ni `>`, hors de `strictbounds`. Modèles BFEC :
-      non vérifié.
+    - Aucun des 42 fichiers d'actions d'`Examples/Models` n'écrit `<` ni `>`, hors de `strictbounds`. Modèles BFEC,
+      relevé en lecture seule le 2026-10-22 : aucune condition d'opérabilité en `<` ni `>` dans les 113 fichiers
+      d'actions des 62 modèles de la suite privée ; leurs 16 `>` isolés séparent des actions, dans une `*ACTIONSERIES`
+      (15) ou un `*AGGREGATE` (1). Le défaut ne change donc aucun résultat de ces modèles.
     - Cas : `Integration.FMTActionParser.GivenAMinimumAgeWrittenWithGreaterThanWhenReadThenTheActionIsOperableAboveThatAgeOnly`
       et `Integration.FMTActionParser.GivenAMaximumAgeWrittenWithLessThanWhenReadThenTheActionIsOperableBelowThatAgeOnly`,
       à côté des cas verts `GivenAMinimumAgeWrittenWithGreaterOrEqual…` et `GivenAMaximumAgeWrittenWithLessOrEqual…`
@@ -1927,8 +1929,9 @@ anglais et français).
 
 ### 5.11 Lot 7c : masques, thèmes et développements (2026-10-22)
 
-**Statut** : livré le 2026-10-22, à valider après le build de Gabriel. Étape 5 de la section 6.3.4, qui termine le
-lot 7, avec l'observation de `FMTParser::bounds` du lot 7b (section 5.10) et le cas du défaut 13 (#387).
+**Statut** : livré le 2026-10-22, commité par Gabriel le même jour (`5956123b`, changelog `1754fe30`), **validé** le
+2026-10-22 (fin de cette section). Étape 5 de la section 6.3.4, qui termine le lot 7, avec l'observation de
+`FMTParser::bounds` du lot 7b (section 5.10) et le cas du défaut 13 (#387).
 
 **Ajouts** (sources en cp1252, CRLF, en-tête de licence ; scénarios en ASCII, CRLF, comme leurs voisins) : une source
 par classe, une suite au nom de la classe, cas Given…When…Then en Arrange / Act / Assert ; 124 cas nouveaux, dont 3
@@ -2019,16 +2022,39 @@ d'`IntegrationParser` (leurs `CL.command.1.tlog`, identiques), `/Fo` `/Fd` `/Fp`
 31 de priorité 1 sans test propre au lieu de 34 ; deux générations identiques), sections 2.7, 4.4, 6.1, 6.3.4, 7 et 8,
 changelog (section non publiée, anglais et français).
 
-**Validation après le build de Gabriel** : à faire (`RunTests.bat unit`, `integration` et `all-public`, installation,
-fixture `ExamplesModelsUnchanged`).
+**Validation après le build de Gabriel** (2026-10-22, commits `5956123b` et `1754fe30`, build reconfiguré ; FMTlib
+inchangé depuis `f4252745`) :
+- l'arbre de travail est identique à `HEAD`, et les deux commits contiennent les 13 fichiers du lot (`git show --stat`) ;
+  `IntegrationParser.exe` du build date de 9 h 34, `UnitCore.exe` de 9 h 35 ;
+- installation (`INSTALL_TEST_SUITE=public`, 9 h 37) : 719 tests, 0 échec, 686 exécutés et 33 désactivés, 21 s ; unit
+  409 verts et 11 désactivés, integration 16 verts et 10 désactivés, system 236 verts et 12 désactivés, performance 23,
+  other 2 ; aucun test en `T:/` ; les 7 tests Python et la fixture `ExamplesModelsUnchanged` passent. La roue
+  `FMT-1.3.0-cp310-cp310-win_amd64.whl` date de 9 h 36. `InstallTests.xml`, `InstallTests.json`, `LastTest.log` et
+  `LastTestsDisabled.log` copiés dans le scratchpad de la session avant tout appel de ctest ;
+- `RunTests.bat unit` : « 0 tests failed out of 409 », 5,7 s réelles ; unit 409 verts et 11 désactivés sur 420, les 11
+  cas désactivés des lots 7a et 7b (ce lot n'en ajoute aucun au niveau unit) ;
+- `RunTests.bat integration` : « 0 tests failed out of 18 », 2,4 s réelles ; integration 16 verts et 10 désactivés sur
+  26, other 2 (les deux fixtures) : les 3 cas désactivés de ce lot (défaut 18, deux cas ; #387) et les 7 du lot 5 ;
+- `RunTests.bat all-public` : « 0 tests failed out of 686 », 20,1 s réelles ; unit 409 verts et 11 désactivés sur 420,
+  integration 16 verts et 10 désactivés sur 26, system 236 verts et 12 désactivés sur 248, performance 23, other 2 ;
+  Total 686 verts et 33 désactivés sur 719. Par rapport au lot 7b (section 5.10), seuls les niveaux unit et
+  integration changent, des 124 cas ajoutés : 121 verts et 3 désactivés (défaut 18 et #387), justifiés en section
+  2.7. La fixture `ExamplesModelsUnchanged` est verte malgré les deux nouveaux scénarios, et l'arbre de travail est
+  resté identique à `HEAD` après le passage ;
+- non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par la passe
+  `/W4` hors dépôt d'avant le build (aucun dans les sources de tests) ;
+- reste l'issue du défaut 18, à ouvrir par Gabriel (texte dans le rapport du lot 7c) : son numéro ira dans la section
+  2.7, dans les commentaires des deux cas désactivés, dans `CoreTestCoverage.csv` et dans le changelog. Le lot n'ajoute
+  que des tests et deux scénarios qu'eux seuls lisent : la suite BFEC n'est pas relancée.
 
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
 
-- **Lot 7c livré le 2026-10-22, à valider après le build de Gabriel** (section 5.11) : 119 cas unitaires des masques,
-  des thèmes et des développements, et 5 cas d'intégration, dont 3 désactivés (le défaut 18, nouveau, et #387). **Le
-  lot 7 est terminé** ; le lot 8 suit (section 6.3.5). Suite publique attendue : 719 tests, 686 verts et 33 désactivés.
+- **Lot 7c livré, commité (`5956123b`, `1754fe30`) et validé le 2026-10-22** (section 5.11) : 119 cas unitaires des
+  masques, des thèmes et des développements, et 5 cas d'intégration, dont 3 désactivés (le défaut 18, nouveau, et
+  #387). Suite publique : 719 tests, 686 verts et 33 désactivés. L'issue du défaut 18 est à ouvrir. **Le lot 7 est
+  terminé** ; le lot 8 suit (section 6.3.5).
 - **Lot 7b livré, commité (`355b2edb`, `1bd707f6`) et validé le 2026-10-22** (section 5.10) : 153 cas unitaires des
   bornes, des spécifications, des contraintes, des sorties et des yields, dont 7 désactivés (#379, #382, #383, et les
   défauts 14 à 17, #389 à #392), et un cas d'intégration pour #358. Suite publique : 595 tests, 565 verts et 30
@@ -2250,8 +2276,8 @@ le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à
     `FMTConstraint`, `FMTOutput` et `FMTYields`. **Fait et validé le 2026-10-22** (section 5.10, `355b2edb`) :
     154 cas, dont 7 désactivés, avec ce que 7a avait laissé ; défauts 14 à 17 (#389 à #392, section 2.7). Le test
     du défaut 13 (#387, lecture de `_CP`) est fait au lot 7c.
-  - **7c** : étape 5, `FMTMask`, `FMTTheme` et `FMTDevelopment`. **Fait le 2026-10-22** (section 5.11), à valider
-    après le build de Gabriel : 124 cas, dont 3 désactivés ; défaut 18 (section 2.7) et le cas de #387.
+  - **7c** : étape 5, `FMTMask`, `FMTTheme` et `FMTDevelopment`. **Fait et validé le 2026-10-22** (section 5.11,
+    `5956123b`) : 124 cas, dont 3 désactivés ; défaut 18 (section 2.7) et le cas de #387.
     `FMTActualDevelopment` et `FMTFuturDevelopment` restent au lot 8.
 - **Le lot 7 est terminé** (2026-10-22) : ses cinq étapes ont leurs tests unitaires, et les défauts qu'elles ont révélés
   ont leur cas désactivé.
@@ -2583,7 +2609,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-20 (lot 5, `90ef4ad2`) | 300 `all-public` (280 + 20 cas `Integration.`) ; résumé : unit 7, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 13,8 s réelles | — | 13 | 2 | 0 | 19 | —
 | 2026-10-21 (lot 7a, `0c35c546`) | 441 `all-public` (300 + 141 cas `Unit.`) ; résumé : unit 144 verts et 4 désactivés sur 148, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 15,5 s réelles | — | 13 | 2 | 0 | 23 | —
 | 2026-10-22 (lot 7b, `355b2edb`) | 595 `all-public` (441 + 153 cas `Unit.` + 1 cas `Integration.`) ; résumé : unit 290 verts et 11 désactivés sur 301, integration 14 verts et 7 désactivés sur 21, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 16,5 s réelles | — | 13 | 2 | 0 | 30 | —
-| 2026-10-22 (lot 7c, attendu avant le build) | 719 `all-public` attendus (595 + 119 cas `Unit.` + 5 cas `Integration.`) ; résumé attendu : unit 409 verts et 11 désactivés sur 420, integration 16 verts et 10 désactivés sur 26, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | à mesurer | — | 13 | 2 | 0 | 33 | —
+| 2026-10-22 (lot 7c, `5956123b`) | 719 `all-public` (595 + 119 cas `Unit.` + 5 cas `Integration.`) ; résumé : unit 409 verts et 11 désactivés sur 420, integration 16 verts et 10 désactivés sur 26, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 20,1 s réelles | — | 13 | 2 | 0 | 33 | —
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
