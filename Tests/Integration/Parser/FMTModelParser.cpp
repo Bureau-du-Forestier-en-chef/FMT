@@ -171,9 +171,7 @@ TEST(FMTModelParser, GivenThousandsSeparatorsAndListsOfPeriodsWhenWriteThenRerea
     EXPECT_EQ(Testing::getFirstDifference(roundTrip.firstFiles.at(".opt"), roundTrip.secondFiles.at(".opt")), "");
 }
 
-// Disabled: the objective _MIN _PENALTY(caribou,recolte) of the root is written _MIN y_PENALTY(CARIBOU,RECOLTE), the
-// last letter of Penalty taking the place of the missing sign (FMTConstraint::operator std::string, #379).
-TEST(FMTModelParser, DISABLED_GivenAPenaltyObjectiveWithoutSignWhenWriteThenRereadsTheSameObjective)
+TEST(FMTModelParser, GivenAPenaltyObjectiveWithoutSignWhenWriteThenRereadsTheSameObjective)
 {
     // Arrange
     const Models::FMTModel model = Testing::readScenario("ROOT");

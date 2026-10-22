@@ -686,10 +686,11 @@ namespace Core
 					{
 						std::vector<std::string>names;
 						boost::split(names, yieldnames.at(id), boost::is_any_of("_"));
+						const std::string penaltyoperator = names.at(0) == "Penalty" ? "" : std::string(1, names.at(0).back());
 
 						if (names.at(1) == "_ALL")
 						{
-							penalty += (std::string(1, names.at(0).back()) + "_PENALTY(_ALL");
+							penalty += penaltyoperator + "_PENALTY(_ALL";
 						}
 						else {
 							if (!penalty.empty())
@@ -697,11 +698,12 @@ namespace Core
 								penalty += "," + names.at(1);
 							}
 							else {
-								penalty += (std::string(1, names.at(0).back()) + "_PENALTY(");
+								penalty += penaltyoperator + "_PENALTY(";
 								penalty += names.at(1);
 							}
 
 						}
+
 					}
 					if (yieldnames.at(id).find("_SETGLOBALSCHEDULE") != std::string::npos)
 					{
