@@ -663,7 +663,7 @@ namespace Core
 				}
 
 			}
-
+			
 			std::string goal = "";
 			std::string penalty = "";
 			std::string global = "";
@@ -729,6 +729,25 @@ namespace Core
 					ScheduleWeight = "_SETGLOBALSCHEDULE(" + ScheduleWeight + ")";
 				}
 			}
+			static const std::unordered_map<FMTconstrainttype, std::string> prefixes = {
+						{FMTconstrainttype::FMTevenflow,    "_EVEN("},
+						{FMTconstrainttype::FMTnondeclining, "_NDY("},
+						{FMTconstrainttype::FMTsequence,    "_SEQ("},
+						{FMTconstrainttype::FMTMAXobjective,    "_MAX "},
+						{FMTconstrainttype::FMTMINobjective,    "_MIN "},
+						{FMTconstrainttype::FMTMAXMINobjective, "_MAXMIN "},
+						{FMTconstrainttype::FMTMINMAXobjective, "_MINMAX "},
+						{FMTconstrainttype::FMTspatialsize, "_SIZE("},
+						{FMTconstrainttype::FMTspatialadjacency,"_ADJACENCY("},
+						{FMTconstrainttype::FMTspatialgreenup,"_GROUP("},
+						{FMTconstrainttype::FMTrandomaction,"_RANDOM("} };
+
+			const auto& FOUND = prefixes.find(this->m_type);
+			if (FOUND!= prefixes.end())
+				{
+				line += prefixes.at(this->m_type);
+				}
+
 			switch (this->m_type)
 			{
 				case FMTconstrainttype::FMTMAXobjective:
@@ -736,30 +755,16 @@ namespace Core
 				case FMTconstrainttype::FMTMAXMINobjective:
 				case FMTconstrainttype::FMTMINMAXobjective:
 				{
-					static const std::unordered_map<FMTconstrainttype, std::string> prefixes = {
-						{FMTconstrainttype::FMTMAXobjective,    "_MAX "},
-						{FMTconstrainttype::FMTMINobjective,    "_MIN "},
-						{FMTconstrainttype::FMTMAXMINobjective, "_MAXMIN "},
-						{FMTconstrainttype::FMTMINMAXobjective, "_MINMAX "},
-					};
-					line += prefixes.at(this->m_type);
 					line += this->m_name;
 					if (!penalty.empty()) line += penalty;
 					line += " ";
 					line += period_bounds + " " + ScheduleWeight;
 					break;
 				}
-
 				case FMTconstrainttype::FMTevenflow:
 				case FMTconstrainttype::FMTnondeclining:
 				case FMTconstrainttype::FMTsequence:
 				{
-					static const std::unordered_map<FMTconstrainttype, std::string> keywords = {
-						{FMTconstrainttype::FMTevenflow,    "_EVEN("},
-						{FMTconstrainttype::FMTnondeclining, "_NDY("},
-						{FMTconstrainttype::FMTsequence,    "_SEQ("},
-					};
-					line += keywords.at(this->m_type);
 					line += this->m_name;
 					if (!variation.empty()) line += variation;
 					line += ") ";
@@ -769,14 +774,12 @@ namespace Core
 				case FMTconstrainttype::FMTspatialadjacency:
 				case FMTconstrainttype::FMTSpatialGroup:
 				case FMTconstrainttype::FMTspatialsize:
-					_standardString(line, period_bounds, goal, global, true);
-					break;
-
-				case FMTconstrainttype::FMTstandard:
 				case FMTconstrainttype::FMTrandomaction:
+					_standardString(line, period_bounds, goal, global, true,true);
+					break;
+				case FMTconstrainttype::FMTstandard:
 					_standardString(line, period_bounds, goal, global);
 					break;
-
 				default:
 					break;
 			}
@@ -790,7 +793,7 @@ namespace Core
 		}
 
 		void FMTConstraint::_standardString(std::string& line, std::string& period_bounds,
-			std::string& goal, std::string& global,bool asInt) const
+			std::string& goal, std::string& global,bool asInt, bool p_specialKey) const
 		{
 			try {
 				double lower_b = 0;
@@ -828,8 +831,12 @@ namespace Core
 					opt_str = "<= ";
 					opt_str += upperStr;
 				}
-				line += (this->m_name + " " + opt_str + " "+ period_bounds+" " + goal + " " + global+"\n");
-				//line += " " + period_bounds + "\n";
+				line += this->m_name;
+				if (p_specialKey)
+					{
+					line += ")";
+					}
+				line += " " + opt_str + " " + period_bounds + " " + goal + " " + global + "\n";
 		}
 		catch (...)
 		{
