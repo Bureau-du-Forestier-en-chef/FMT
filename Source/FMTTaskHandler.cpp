@@ -10,6 +10,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/thread.hpp>
 #include <functional>
 #include <list>
+#include <chrono>
+#include <cstdint>
+#include <mutex>
 #if defined FMTWITHPYTHON
 	#include "boost/python.h"
 #endif
@@ -170,7 +173,9 @@ namespace Parallel
 
 	void FMTTaskHandler::onDemandRun()
 	{
+		FMTWorkerTaskCompletionSignal completion;
 		std::list<FMTWorkerTask> workers;
+		const std::chrono::milliseconds signalCheckInterval(10);
 
 		try
 		{
@@ -196,12 +201,18 @@ namespace Parallel
 
 			while (workers.size() < static_cast<size_t>(m_maxnumberofthread) && newtask)
 			{
-				workers.emplace_back(std::move(newtask));
+				workers.emplace_back(std::move(newtask), completion);
 				newtask = m_alltasks.at(0)->spawn();
 			}
 
 			while (!workers.empty())
 			{
+				std::uint64_t observedGeneration;
+				{
+					std::lock_guard<std::mutex> lock(completion.m_mutex);
+					observedGeneration = completion.m_generation;
+				}
+
 				for (auto it = workers.begin(); it != workers.end();)
 				{
 					if (it->isDone())
@@ -209,7 +220,7 @@ namespace Parallel
 						it = workers.erase(it);
 						if (newtask)
 						{
-							workers.emplace_back(std::move(newtask));
+							workers.emplace_back(std::move(newtask), completion);
 							newtask = m_alltasks.at(0)->spawn();
 						}
 					}
@@ -219,6 +230,15 @@ namespace Parallel
 					}
 				}
 				checkSignals();
+
+				if (!workers.empty())
+				{
+					std::unique_lock<std::mutex> lock(completion.m_mutex);
+					completion.m_condition.wait_for(lock, signalCheckInterval,
+						[&completion, observedGeneration]() {
+							return completion.m_generation != observedGeneration;
+						});
+				}
 			}
 
 			_finalize(m_alltasks.back());

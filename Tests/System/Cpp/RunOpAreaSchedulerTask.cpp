@@ -146,12 +146,12 @@ else
     //fichierShp = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02020265\\02_Travail_Realisme\\Carte\\PC_9943_UA_U08651.shp";
     //results = std::vector<std::string> (1, "323_TYFSansPre_avsp");
     //length = 20;
-    primarylocation = "T:/Donnees/Usagers/TROAL1/TEST_FMT_9471/Modele/PC_9584_U09471_Vg4_2023_vSSPR.pri";
-    scenarios = std::vector<std::string>(1, "6001_Determination_avsp");
+    primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
+    scenarios = std::vector<std::string>(1, "13_Sc5a_Determin_avsp_CLE_PESSIERE_rand_7m");
     boost::filesystem::path primpath(primarylocation);
     const boost::filesystem::path basefolder = primpath.parent_path();
-    lfichierParam = "T:/Donnees/Usagers/TROAL1/TEST_FMT_9471/parametres.csv";
-    fichierShp = "T:/Donnees/Usagers/TROAL1/TEST_FMT_9471/Modele/Carte/PC_9584_UA_U09471.shp";
+    lfichierParam = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/Scenarios/13_Sc5a_Determin_avsp_CLE_PESSIERE_rand_7m/parameters8551_flex_random.csv";
+    fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/08551_det/Carte/PC_9424_UA_U08551.shp";
     results = std::vector<std::string>(1, "test");
     length = 20;
             }

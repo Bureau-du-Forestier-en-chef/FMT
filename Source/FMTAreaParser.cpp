@@ -1969,7 +1969,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 						int lineid = 0;
 						std::string line;
 						std::map<std::string, int>columns;
-						bool useRETasMAXRET = true;
+						bool useRETasMAXRET = false;
 						while (std::getline(oaparameterfile, line))
 						{
 							//std::vector<std::string>splittedline = splitoaparamlines(line);
@@ -2044,9 +2044,10 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 									{
 										maxret = ret;
 									}
-									else {
+									else if(_isNum(splittedline[columns["MAXRET"]]))
+										{
 										maxret = std::stoi(splittedline[columns["MAXRET"]]);
-									}
+										}
 									if (maxret < ret)
 									{
 										maxret = ret;

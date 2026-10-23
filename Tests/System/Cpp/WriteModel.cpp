@@ -21,8 +21,8 @@ int main(int argc, char* argv[])
 		primarylocation = std::string(argv[1]);
 		scenarios = std::vector<std::string>(1, std::string(argv[2]));
 	}else {
-		primarylocation = "C:\\Users\\Admlocal\\Documents\\issues\\C2_02031521\\PC_10067_U02571_2028_Corr_Vol_Phase2\\PC_10067_U02571_2028_MODB01.pri";
-		scenarios = std::vector<std::string> (1, "200_StratReg_apsp");
+		primarylocation = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";
+		scenarios = std::vector<std::string> (1, "ACT_DEATH");
 	}
 
 	//const std::string primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 	//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Feux_2023_ouest/feux_2023_ouest_V01.pri";
 	Parser::FMTModelParser modelparser;
 	modelparser.setDefaultExceptionHandler();
-	const std::string outdir = "../../tests/WriteModel/";
+	const std::string outdir = "D:/FMT/build/release/tests/WriteModel/";
 
 	std::vector<Exception::FMTexc> errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
