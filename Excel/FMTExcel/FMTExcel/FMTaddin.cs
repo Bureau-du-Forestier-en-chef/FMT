@@ -213,7 +213,7 @@ namespace FMTXLL
             object orientation)
         {
 
-                return FMTCache.get("getaggregates", new object[] { primaryname, scenario, themeid - 1 }, orientation);
+                return FMTCache.get("getAggregates", new object[] { primaryname, scenario, themeid - 1 }, orientation);
 
 
         }
@@ -228,7 +228,7 @@ namespace FMTXLL
            [ExcelArgument(Name = "Orientation", Description = "Format de retour (VRAI = plusieurs lignes, FAUX = plusieurs colonnes)")]
             object orientation)
         {
-                return FMTCache.get("getactions", new object[] { primaryname, scenario, actionaggregate }, orientation);
+                return FMTCache.get("getActions", new object[] { primaryname, scenario, actionaggregate }, orientation);
 
         }
         [ExcelFunction(Description = "Obtenir toutes les séries", Category = "FMT", HelpTopic = "Renvoie toutes les séries d'une sélection de thème et d'aggrégat")]
@@ -346,7 +346,7 @@ namespace FMTXLL
             object orientation)
         {
 
-                return FMTCache.get("getoutputs", new object[] { primaryname, scenario}, orientation);
+                return FMTCache.get("getOutputs", new object[] { primaryname, scenario}, orientation);
 
 
         }
@@ -360,7 +360,7 @@ namespace FMTXLL
             object orientation)
         {
 
-            return FMTCache.get("getyields", new object[] { primaryname, scenario }, orientation);
+            return FMTCache.get("getYields", new object[] { primaryname, scenario }, orientation);
 
 
         }
@@ -374,7 +374,7 @@ namespace FMTXLL
             object orientation)
         {
 
-            return FMTCache.get("getyields", new object[] { primaryname, scenario }, orientation);
+            return FMTCache.get("getThemes", new object[] { primaryname, scenario }, orientation);
 
 
         }
@@ -546,7 +546,7 @@ namespace FMTXLL
             [ExcelArgument(Name = "Orientation", Description = "Format de retour (VRAI = plusieurs lignes, FAUX = plusieurs colonnes)")]
             object orientation)
         {
-            return FMTCache.get("getconstraints", new object[] { primaryname, scenario, outputname }, orientation);
+            return FMTCache.get("getConstraints", new object[] { primaryname, scenario, outputname }, orientation);
 
         }
         [ExcelFunction(Description = "Obtenir les statistiques du graph du modèle", Category = "FMT", HelpTopic = "Renvoie une liste de stratistique du graph: nombre de colonnes, lignes, branches, noeuds , lignes de transfert de superficie, lignes d'outputs et colonnes d'outputs")]
