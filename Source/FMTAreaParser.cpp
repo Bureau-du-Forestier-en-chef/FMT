@@ -80,6 +80,7 @@ double FMTAreaParser::_GetGeometryArea(const OGRGeometry* p_geometry)
 							area += FMTAreaParser::_GetGeometryArea(poGC->getGeometryRef(i));
 						}
 					}
+					break;
 				}
 				default:
 					area = 0.0;
@@ -1738,7 +1739,7 @@ bool FMTAreaParser::_isMapWithSameThemes(const std::vector<Core::FMTTheme>& p_th
 
 										if (subbinarymask != binarymask && subbinarymask != mainmask && intersection->Intersects(subbinary_polygon))
 										{
-											OGRGeometry* subintersection = dynamic_cast<OGRPolygon*>(intersection->Intersection(subbinary_polygon));
+											OGRGeometry* subintersection = intersection->Intersection(subbinary_polygon);
 											if (_GetGeometryArea(subintersection) >= 
 												_GetGeometryArea(subbinary_polygon) * 0.5)
 											{

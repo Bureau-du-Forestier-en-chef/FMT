@@ -20,6 +20,7 @@
 - Restored the fix of the lifetime of the logger of `FMTLpSolver`, which v1.4.0 lost in the resolution of a merge conflict: each solver holds its own copy of the logger again, and the `loggerlifetime` case of `SolveWithEachSolver`, whose row was still registered, again copies a solved model 2000 times.
 - An objective `_PENALTY` without sign is written without a sign again, instead of `y_PENALTY` (#379 [BUG] Un objectif `_PENALTY` sans signe est réécrit `y_PENALTY`).
 - The `MAX_RET` column of the operating-area scheduler parameters is read only when it holds a number, and the margin between the minimal and maximal return times is no longer computed backwards.
+- `FMTAreaParser::getSchemeNeighbors` and `getClusters` keep the operating areas whose intersection with the buffer of another one is in several pieces: the area of a multipolygon or of a geometry collection was 0, so such a neighbor was dropped, and the operating-area scheduler applied its adjacency and green-up constraints to fewer pairs of areas. `getClusters` also measures the intersections it compares on all their pieces, and destroys those in several pieces, which it leaked (#394 [BUG] `_GetGeometryArea` vaut 0 pour tout multipolygone : l'ordonnanceur des unités d'aménagement perd des voisins).
 
 ## [v1.4.0] - 2026-10-21 (1cf2b516)
 

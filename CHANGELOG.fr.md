@@ -20,6 +20,7 @@
 - Rétablissement du correctif de la durée de vie du journal de `FMTLpSolver`, que la v1.4.0 avait perdu dans la résolution d’un conflit de fusion : chaque solveur garde de nouveau sa propre copie du journal, et le cas `loggerlifetime` de `SolveWithEachSolver`, dont la ligne était toujours inscrite, copie de nouveau 2000 fois un modèle résolu.
 - Un objectif `_PENALTY` sans signe s’écrit de nouveau sans signe, au lieu de `y_PENALTY` (#379 [BUG] Un objectif `_PENALTY` sans signe est réécrit `y_PENALTY`).
 - La colonne `MAX_RET` des paramètres de l’ordonnanceur des unités d’aménagement n’est lue que si elle contient un nombre, et l’écart entre les temps de retour minimal et maximal ne se calcule plus à l’envers.
+- `FMTAreaParser::getSchemeNeighbors` et `getClusters` gardent les unités d’aménagement dont l’intersection avec la zone tampon d’une autre forme plusieurs morceaux : l’aire d’un multipolygone ou d’une collection de géométries valait 0, ce voisin était donc écarté, et l’ordonnanceur des unités d’aménagement appliquait ses contraintes d’adjacence et de délai de reverdissement à moins de paires d’unités. `getClusters` mesure aussi sur tous leurs morceaux les intersections qu’il compare, et détruit celles en plusieurs morceaux, qu’il ne libérait pas (#394 [BUG] `_GetGeometryArea` vaut 0 pour tout multipolygone : l'ordonnanceur des unités d'aménagement perd des voisins).
 
 ## [v1.4.0] - 2026-10-21 (1cf2b516)
 

@@ -23,7 +23,7 @@ lives in exactly one document, and changes to it belong in that document only.
 | `Excel/` | Excel integration. |
 | `Examples/Models/` | Woodstock models used by the tests. |
 | `Tests/` | Test registration and the tests by level: see [Testing](#testing). |
-| `Tests/Unit/Core/`, `Tests/Integration/` | GoogleTest tests: the unit tests of FMTlib, one source per class, built into `UnitCore`; the integration tests, one folder per component, `Parser/` for the parsers of FMTlib with the Woodstock files they write and read back, built into `IntegrationParser`. |
+| `Tests/Unit/Core/`, `Tests/Integration/` | GoogleTest tests: the unit tests of FMTlib, one source per class, built into `UnitCore`; the integration tests, one folder per component, `Parser/` for the parsers of FMTlib with the Woodstock files they write and read back, and the vector maps that `FMTAreaParser` reads, built into `IntegrationParser`. |
 | `Tests/System/Cpp/` | C++ system tests: each `.cpp` becomes a test executable, which the rows of the CSV files of the folder run; `FMTWrapperCore/` and `Excel/` hold those of the wrapper core and of Excel. |
 | `Tests/System/Python/`, `Tests/System/R/` | pytest and testthat suites, one system test per file, run by ctest. |
 | `Tests/Performance/` | Performance and allocation benchmarks: `FMTPerformanceTests`, its harness and `performance.csv`. |
