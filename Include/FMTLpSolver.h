@@ -674,6 +674,7 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
+		std::shared_ptr<Logging::FMTLogger> m_solverLogger;
 		// DocString: FMTLpSolver::solverinterface
 		///The osisolverinterface Abstract class (constraints/objectives/matrix ....LP) can be shared with an heuristic!
 		std::shared_ptr<OsiSolverInterface>solverinterface;

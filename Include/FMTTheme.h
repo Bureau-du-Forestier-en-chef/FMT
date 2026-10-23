@@ -502,7 +502,7 @@ class FMTEXPORT FMTTheme : public FMTObject
 	/**
 	@brief Comparator used to check if two themes are the same.
 	*/
-	class FMTThemeComparator
+	class FMTEXPORT FMTThemeComparator
 	{
 	public:
 		// DocString: FMTThemeComparator(const FMTTheme&,const bool&)

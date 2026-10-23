@@ -41,7 +41,7 @@ namespace Core
 	/**
 	@brief Abstract class to be implemented as a machine learning yield model.
 	*/
-	class FMTYieldModel : public FMTObject
+	class FMTEXPORT FMTYieldModel : public FMTObject
 	{
 	public:
 		// DocString: FMTYieldModel::setModel

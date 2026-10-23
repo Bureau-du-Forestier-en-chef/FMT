@@ -225,7 +225,7 @@ class FMTEXPORT FMTOutputNode
 /**
 @brief Comparator comparing output nodes by value.
 */
-class FMTOutputNodeValueComparator
+class FMTEXPORT FMTOutputNodeValueComparator
 	{
 	public:
 		// DocString: FMTOutputNodeValueComparator::operator()
@@ -243,7 +243,7 @@ class FMTOutputNodeValueComparator
 /**
 @brief Comparator comparing output nodes by origin.
 */
-class FMTOutputNodeOriginComparator
+class FMTEXPORT FMTOutputNodeOriginComparator
 {
 public:
 	// DocString: FMTOutputNodeOriginComparator::operator()
@@ -261,7 +261,7 @@ public:
 /**
 @brief Hasher for output nodes.
 */
-class FMTOutputNodeHasher 
+class FMTEXPORT FMTOutputNodeHasher 
 	{
 	public:
 		// DocString: FMTOutputNodeHasher::operator()

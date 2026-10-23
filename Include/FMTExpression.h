@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTEXPRESSION_Hm_included
 #define FMTEXPRESSION_Hm_included
 
+#include "FMTutility.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -19,7 +20,7 @@ namespace Core
 	/**
 	@brief Mathematical expression evaluated with the shunting yard algorithm, used in yields and outputs.
 	*/
-	class FMTExpression
+	class FMTEXPORT FMTExpression
 	{
 	public:
 		// DocString: FMTExpression()

@@ -70,6 +70,15 @@ to work around the code is covered in
 [Tests that reveal architectural debt](Documentation/CodingStandards.md#tests-that-reveal-architectural-debt).
 This section covers where tests live and how they run.
 
+[Documentation/Testing/CoreTestCoverage.md](Documentation/Testing/CoreTestCoverage.md) lists every class of
+namespace `Core` with its priority and its tests at each level (issue #350). It is generated: after adding
+a class to `Core` or a unit or integration test, edit its hand-written columns in
+`Documentation/Testing/CoreTestCoverage.csv` if needed, then regenerate it, without a build:
+
+```bash
+cmake -P Documentation/Testing/CoreTestCoverage.cmake
+```
+
 The root `CMakeLists.txt` includes `Tests/CMakeLists.txt`, unless `WITHOUT_TESTS` is on, after `Excel/`
 and `FMTWrapperCore/`, whose libraries the C++ tests link to. That file declares the `ExamplesModels`
 fixture, which every system test and benchmark requires, and every integration test that reads

@@ -74,6 +74,7 @@ Un test base ne fait jamais rien d'autre que ceci : partir de TWD_land, s'arrêt
 | Sources des exécutables de test | `Tests/System/Cpp/*.cpp`, `Tests/System/Cpp/FMTWrapperCore/*.cpp` pour le Core et `Tests/System/Cpp/Excel/*.cpp` pour Excel (depuis la phase 6) |
 | Tests unitaires (GoogleTest) | `Tests/Unit/Core/<Classe>.cpp`, une suite par classe, dans l'exécutable `UnitCore` (depuis la phase 8) ; comment en ajouter : `AGENTS.md`, « Adding a unit or integration test » |
 | Tests d'intégration (GoogleTest) | `Tests/Integration/Parser/<Parseur>.cpp`, une suite par parseur, dans l'exécutable `IntegrationParser`, étiquettes `integration;parser`, avec la fixture `ExamplesModels` (depuis le lot 5) ; outils communs dans `ParserRoundTrip.h` du même dossier |
+| Inventaire par classe de `Core` (#350) | `Documentation/Testing/CoreTestCoverage.md`, en anglais, régénéré par `cmake -P Documentation/Testing/CoreTestCoverage.cmake` depuis les en-têtes, les cas GoogleTest et les colonnes écrites à la main de `CoreTestCoverage.csv` (depuis le 2026-10-20) |
 | Lignes qui inscrivent les tests | `Tests/System/Cpp/basetests.csv` (public), `knownbugs.csv` (désactivées), `BFECtests.csv` (local, privé, ignoré par git) |
 | En-tête commun des tests | `Tests/Support/TestTools.h` |
 | Modèle public et ses scénarios | `Examples/Models/TWD_land`, `Examples/Models/TWD_land/Scenarios/<nom>/` |
@@ -136,7 +137,7 @@ est, et quel lot s'en charge :
 
 | Demande de #350 | État | Lot |
 |---|---|---|
-| Inventaire des composants et de leur couverture | partiel : fait par étape de la chaîne (section 2.2), reste à faire par classe ; reporté au lot qui suit la réorganisation (section 6.3) | après la phase 9 |
+| Inventaire des composants et de leur couverture | fait : par étape de la chaîne (section 2.2), et par classe dans `Documentation/Testing/CoreTestCoverage.md` (2026-10-20, section 6.3), qui se régénère depuis les en-têtes | inventaire du 2026-10-20 |
 | Cible et infrastructure de test dans CMake et ctest | fait : tests de chaîne (section 2.1), puis cible `UnitCore` et étiquettes `unit;core` (phase 8, section 9.5) | 6, phase 8 |
 | Cadre de test unitaire choisi et documenté | fait : GoogleTest (décision du 2026-09-25), dans `vcpkg.json` et décrit dans `AGENTS.md` depuis la phase 8 | 6, phase 8 |
 | Tests unitaires des classes déjà suspectes (défauts de la section 2.7) | non fait ; leur comportement n'est touché qu'indirectement | 7 |
@@ -528,6 +529,16 @@ Depuis les phases 8 et 9a, #346 a deux tests qui se contredisent : le cas unitai
 `Unit.FMTOperator.GivenPowerAndMultiplyWhenPrecedenceThenTheyAreEqual` fixe le comportement
 actuel, et les deux lignes désactivées de `knownbugs.csv` (`…ThenAppliesThePowerFirst`) attendent
 la priorité mathématique. La revue commune gardera l'un des deux.
+Le lot 7a (section 5.9) ajoute quatre cas unitaires de `FMTExpression` sur #346 : trois fixent le
+comportement actuel (`2*3^2` = 36, `12/2^2` = 36, et `2^3^2` = 64, le même mécanisme), le quatrième le
+contournement (`2*(3^2)` = 18). Pour #347, deux cas, présentés à Gabriel et retenus le 2026-10-21, fixent
+deux étapes du mécanisme décrit ci-dessous : `Unit.FMTComplexYieldHandler.GivenAnEquationWhoseNumberIsKeptAsTextWhenIndexesThenTakesTheNumberForAThemeIndex`
+(étape 2) et `Unit.FMTData.GivenASumWhenToExpressionThenJoinsItsSourcesWithoutAnOperator` (étapes 3 et 4).
+Pour #358, un cas d'intégration, présenté à Gabriel et retenu le 2026-10-21 (lot 7b, section 5.10), fixe le
+comportement actuel : `Integration.FMTTransitionParser.GivenASourceConditionInTheActionFormWhenReadThenAppliesTheSourceToEveryAge`
+lit le scénario `INVALID_sourcecondition` et donne la fourche de `arecup` (`_AGE >= 10`) à un développement de 5 ans.
+Il contredit la ligne désactivée `ReadInvalidScenario` de `knownbugs.csv`, qui attend le refus (`FMTexc(31)`) : la
+revue commune gardera l'un des deux, comme pour #346.
 Démonstrations refaites le
 2026-09-17 avec les exécutables du build de `new_test`, sur des copies de TWD_land hors dépôt.
 
@@ -670,6 +681,10 @@ des cas. Aucun n'est corrigé dans ce chantier.
    reprend le dernier caractère du nom `Penalty<opérateur>_<variable>`, `y` quand l'opérateur est
    vide. Relu, l'opérateur vaut `Y`, traité comme `+` : même optimum, objectif relu différent. Depuis
    `2e3dc129` (2019-06-07). Cas `GivenAPenaltyObjectiveWithoutSignWhenWriteThenRereadsTheSameObjective`.
+   **Corrigé** par `83e2309e` (« fix(penalty) », sur `master`, entré dans `new_test` par la fusion `eea7fea2`
+   du 2026-10-23) : un opérateur vide n'écrit plus de signe. La fusion a réactivé le cas d'intégration ; le cas
+   unitaire `GivenAMinimizationOfPenaltiesWithoutSignWhenConvertedToStringThenWritesThemWithoutSign` (lot 7b) l'est
+   depuis le 2026-10-23, à valider au prochain build.
 7. **`_DISCOUNTFACTOR` réécrit en série temporelle de ses paramètres (issue #380)** (`DISCOUNTFULL 1 0.04 5`),
    silencieux : relu, `DISCOUNTFULL` vaut 0,04 à la période 1 et 5 à la période 2. Et l'écriture
    lève (« invalid vector subscript ») quand le bloc `*YT` n'a pas de base, comme dans
@@ -702,6 +717,162 @@ Dans TWD_land, `YBM_RTM_BOG`, `YBM_RTM_MEH` et `YBM_RTM_F` ne servent qu'à l'ou
 qu'aucun objectif ni aucune contrainte n'utilise. À la correction, relancer la suite base pour
 repérer les valeurs attendues qui changent, et justifier au journal toute valeur modifiée
 (règle 9).
+
+**Défauts révélés par le lot 7a (2026-10-21).** Trois défauts, démontrés avec l'exécutable officiel
+`ReadScenario` du build de `new_test` (FMTlib de `f4252745`), sur une copie de TWD_land hors du dépôt
+(scratchpad), en ajoutant une ligne ou un bloc au `._yld` du scénario `timeyields` (A/B, une seule chose
+change). Les deux premiers ont un cas `DISABLED_` dans `UnitCore`. Le troisième est dans `FMTYieldParser`,
+hors des classes du lot : son cas `DISABLED_` est dans `IntegrationParser` depuis le lot 7c (section 5.11). Leurs
+issues, #386 (défaut 11), #388 (défaut 12) et
+#387 (défaut 13), ont été ouvertes par Gabriel le 2026-10-21 (règle 3) ; leurs numéros sont aussi dans
+les commentaires des cas désactivés, dans `CoreTestCoverage.csv` et dans le changelog. Aucun n'est
+corrigé dans ce chantier.
+
+11. **Un moins qui suit un opérateur est lu comme une soustraction** (`FMTExpression`, issue #386).
+    - `_getPostFix` (`Source/FMTExpression.cpp:65`) traite tout `-` comme l'opérateur binaire : dans
+      `2*-3`, le `-`, moins prioritaire que `*`, donne le postfixe `2 * 3 -`. `_evaluatePostFix`
+      (ligne 230) donne alors au `*` un opérande gauche absent, 0 : `0*2`, puis `0-3`, soit -3 au lieu
+      de -6. Le moins en tête marche par la même règle (`-5+2` vaut -3).
+    - Sur la racine (`UNITE1 PEUPLEMENT1 UTR1`, 7 ans, `VOLUMETOTAL` = 120), dans un bloc `*YC` ajouté :
+      `_EQUATION(-1*VOLUMETOTAL)` vaut -120, `_EQUATION(VOLUMETOTAL*-1)` vaut -1, et
+      `_EQUATION(VOLUMETOTAL*(-1))` vaut 0 : les parenthèses n'y font rien. Dans un autre bloc, sans
+      aucun nombre, donc hors du mécanisme de #347 : `_EQUATION(VOLUMETOTAL*VOLUMETOTAL)` vaut 14400,
+      `_EQUATION(VOLUMETOTAL*-VOLUMETOTAL)` vaut -120 au lieu de -14400.
+    - Contournement : `(0-1)` (`_EQUATION(VOLUMETOTAL*(0-1))` vaut -120), ou le moins en tête.
+    - Origine : la conversion en postfixe est la même depuis `2e3dc129` (2019-06-07) ; le 0 de
+      l'opérande absent vient de `bb73b9f2` (2019-08-23), qui a rendu possible le moins en tête.
+    - Aucun modèle de `Examples/Models` n'écrit de moins après un opérateur. Non vérifié dans les
+      outputs, qui passent aussi par `FMTExpression::shuntingYard` (`FMTOutput::shuntingYard`).
+    - Cas : `Unit.FMTExpression.GivenAMinusAfterAMultiplicationWhenShuntingYardThenNegatesTheValueThatFollows`.
+12. **Les yields d'un bloc `*YT` lisent tous la période de départ du premier** (`FMTTimeYieldHandler`,
+    issue #388).
+    - `FMTYieldParser` pousse une période de départ par ligne d'un bloc `*YT`, et
+      `FMTTimeYieldHandler::pushData` les range dans l'ordre des noms (`cmpYieldString` : le plus court
+      d'abord). `get` (`Source/FMTTimeYieldHandler.cpp:116`) lit `getBases().at(0)` pour tout yield du
+      bloc, alors que `operator std::string` (ligne 29) écrit la période de chaque yield à sa place.
+    - A : `timeyields` plus la ligne `LATE 1 5 6` ; `PERIODVALUE` vaut 10 à la période 1 et 30 à la
+      période 3. B : `LATE 3 5 6` ; `PERIODVALUE` vaut 0 et 10. `LATE`, premier dans l'ordre des noms,
+      reste juste (0 à la période 1, 5 à la période 3).
+    - Origine : `9fd69f73` (2025-02-05), qui a fait lire une période de départ à `get` ; avant, `get`
+      n'en lisait aucune (valeur à l'indice de la période).
+    - Dans TWD_land, chaque bloc `*YT` n'a qu'une période de départ (0, ou 1 dans `timeyields`, dont les
+      `_DISCOUNTFACTOR` n'en poussent pas) : aucun test public n'est touché. Modèles BFEC : non vérifié.
+    - Cas : `Unit.FMTTimeYieldHandler.GivenTwoTimeYieldsStartingAtDifferentPeriodsWhenGetThenEachStartsAtItsOwnPeriod`,
+      construit comme le parseur, à côté du cas vert `GivenTwoTimeYieldsStartingAtTheSamePeriod…`, qui ne
+      diffère que par la période de départ de `LATE`.
+13. **En colonnes (`_CP`), chaque ligne d'un bloc `*YT` retarde d'une période les valeurs des lignes
+    suivantes** (`FMTYieldParser`, issue #387, relevé en lisant le parseur pour le défaut 12).
+    - Pour chaque ligne après la première, `FMTYieldParser::read` (`Source/FMTYieldParser.cpp:637`)
+      remplit les périodes de `getLastBase()` à celle de la ligne : la première de la boucle est la
+      dernière déjà poussée, dont la valeur est donc poussée deux fois.
+    - Bloc `_CP CPA CPB`, lignes `1 10 100`, `3 30 300`, `5 50 500` : `CPA` vaut 10, 10, 10, 30, 30, 30,
+      50 aux périodes 1 à 7, au lieu de 10, 10, 30, 30, 50, 50, 50 que la boucle cherche à donner (à la
+      période d'une ligne, sa valeur ; entre deux lignes, la précédente). `CPB` vaut 100 à la période 3.
+    - Origine : la boucle date de `2e3dc129` (2019-06-07). D'après le code, avant `9fd69f73`, `get`
+      lisait l'indice de la période, ce qui compensait le doublon de la deuxième ligne quand la première
+      est à la période 1, mais pas ceux des lignes suivantes.
+    - Aucun modèle de `Examples/Models` n'écrit de `_CP`, hors du scénario `timeyieldcolumns` du lot 7c.
+    - Cas (lot 7c, proposé à Gabriel et retenu le 2026-10-22) :
+      `Integration.FMTYieldParser.GivenTimeYieldsWrittenInColumnsWhenReadThenEachLineGivesItsValuesFromItsPeriod`,
+      désactivé, sur le nouveau scénario `timeyieldcolumns` : le `.yld` de la racine suivi du bloc ci-dessus. Il attend
+      `CPA` à 10, 10, 30, 30, 50, 50, 50 et `CPB` à 100, 100, 300, 300, 500, 500, 500 aux périodes 1 à 7, et lit 10, 10,
+      10, 30, 30, 30, 50 et 100, 100, 100, 300, 300, 300, 500. `ReadScenario` (`YIELD`) donne les mêmes valeurs.
+
+**Défauts révélés par le lot 7b (2026-10-21).** Quatre défauts de FMTlib, démontrés comme ceux du lot 7a : cause
+dans le code, A/B où une seule chose change, exécutable officiel du build de `new_test` (FMTlib de `f4252745`),
+origine git. Les deux premiers sont les observations du lot 7a (section 5.9). Chacun a un cas `DISABLED_` dans
+`UnitCore`. Leurs issues, #389 (défaut 14), #390 (défaut 15), #391 (défaut 16) et #392 (défaut 17), ont été
+ouvertes par Gabriel le 2026-10-22 (règle 3) ; leurs numéros sont aussi dans les commentaires des cas désactivés,
+dans `CoreTestCoverage.csv` et dans le changelog. Aucun n'est corrigé dans ce chantier.
+
+14. **`_MAX` part de 0** (`FMTComplexYieldHandler`, issue #389).
+    - `_getMax` (`Source/FMTComplexYieldHandler.cpp:677`) part de `maxValue = 0`, alors que `_getMin` part du plus
+      grand double et lève quand il ne trouve aucune source : le maximum de yields tous négatifs vaut 0.
+    - A/B avec `ReadScenario` sur une copie de TWD_land hors du dépôt (scratchpad), un bloc `*YC` sans nombre ajouté
+      au `._yld` de `yieldoperatorsalone`, `UNITE1 PEUPLEMENT1 UTR1` à 7 ans (`VOLUMETOTAL` = 120) :
+      `NEGATIVE _MULTIPLY(VOLUMETOTAL,-1)` vaut -120 et `MORENEGATIVE _MULTIPLY(VOLUMETOTAL,-2)` -240 ;
+      `_MAX(NEGATIVE,MORENEGATIVE)` vaut 0 au lieu de -120, alors que `_MIN(NEGATIVE,MORENEGATIVE)` vaut -240 et
+      `_MAX(NEGATIVE,VOLUMETOTAL)` 120.
+    - Origine : `20cbff3a` (2023-12-14, « fix #191 »), qui ajoute `_MAX` et `_MIN`.
+    - Aucun modèle de `Examples/Models` ne prend le `_MAX` de yields négatifs. Modèles BFEC : non vérifié.
+    - Cas : `Unit.FMTComplexYieldHandler.GivenAMaximumOfNegativeYieldsWhenGetThenReturnsTheLargest`, à côté du cas
+      vert `GivenAMinimumOfNegativeYieldsWhenGetThenReturnsTheSmallest`.
+15. **`FMTYields::getFromFactor` multiplie le taux et les années d'un `_DISCOUNTFACTOR`** (`FMTTimeYieldHandler`,
+    issue #390).
+    - `FMTTimeYieldHandler::getFromFactor` (`Source/FMTTimeYieldHandler.cpp:170`) multiplie tout le `FMTData` du yield
+      (`FMTData::operator*`, `Source/FMTData.cpp:394`), et les données d'un `_DISCOUNTFACTOR` sont son taux et ses
+      années par période (item 3 ci-dessus) : un facteur 2 donne 1/1,08^10 au lieu de 2/1,04^5.
+    - A/B avec `FMT.pyd` du build (`getfromfactor`, module importé de `build/release/bin/Release`), scénario
+      `timeyields` lu dans le dépôt, `UNITE1 PEUPLEMENT1 UTR1` à 7 ans, période 1 : un facteur 2 fait passer
+      `VOLUMETOTAL` de 120 à 240 et `PERIODVALUE` de 10 à 20, mais `DISCOUNTFULL` de 0,821927106759 à 0,463193488085
+      (1/1,08^10) au lieu de 1,643854213519.
+    - Origine : `2cbb45a6` (2021-10-29), qui donne `getfromfactor` aux yields de temps ; avant, seuls les yields
+      d'âge étaient multipliés.
+    - Exposé en Python et en R (`getfromfactor`). `GetYieldsFromFactor` ne multiplie que `VOLUMETOTAL` : aucun test
+      public n'est touché.
+    - Cas : `Unit.FMTYields.GivenAFactorOfADiscountFactorWhenGetFromFactorThenMultipliesItsValue`, à côté du cas
+      vert `GivenADiscountFactorWhenGetThenReturnsTheFactorOfThePeriod`.
+16. **`FMTYields::getFromFactor` ne multiplie aucun yield quand on n'en nomme aucun** (`FMTYields`, issue #391,
+    relevé en écrivant le cas du défaut 15).
+    - `FMTYields::getFromFactor` (`Source/FMTYields.cpp:343`) ne passe un gestionnaire à son `getFromFactor` que s'il
+      contient un des yields nommés : sans nom, aucun. Sa documentation (`Include/FMTYields.h:218`, « all if
+      empty ») et les gestionnaires d'âge et de temps, qui multiplient tout sur une liste vide, disent tous.
+    - Démonstration : même script `FMT.pyd`, `getfromfactor(2.0, [])` laisse `VOLUMETOTAL`, `PERIODVALUE` et
+      `DISCOUNTFULL` à 120, 10 et 0,821927106759, alors que `getfromfactor(2.0, ["VOLUMETOTAL"])` donne 240.
+    - Origine : `087e2278` (2021-12-09, « fix for getfromfactor »), qui ajoute ce filtre ; avant, chaque
+      gestionnaire recevait la liste, et une liste vide les multipliait tous.
+    - Cas : `Unit.FMTYields.GivenAFactorWithoutYieldNamesWhenGetFromFactorThenMultipliesEveryYield`.
+17. **`_ENDPOINT` provoque une violation d'accès dès que sa source sort de ses bornes** (`FMTComplexYieldHandler`,
+    issue #392, relevé en couvrant `_ENDPOINT`, que le lot 7a avait laissé).
+    - `_getEndPoint` (`Source/FMTComplexYieldHandler.cpp:573` et `583`) appelle `_getChangesFrom` sur le gestionnaire
+      complexe, qui lit `m_bases[peakstep]` (`Source/FMTYieldHandler.cpp:318`) : un gestionnaire `*YC` n'a aucun âge
+      de base, et `operator[]` lit hors d'un vecteur vide.
+    - A/B avec `ReadScenario` sur la même copie : `_ENDPOINT(VOLUMETOTAL,VOLUMETOTAL,100,200)` vaut 0 à 7 ans
+      (`VOLUMETOTAL` dans ses bornes) et lève `FMTexc(85)`, erreur Win32 3221225477 (0xC0000005, violation d'accès), à
+      20 ans ; `_ENDPOINT(VOLUMETOTAL,VOLUMETOTAL,150,250)` lève à 7 ans et vaut 0 à 20 ans. Une sonde unitaire hors
+      du dépôt donne la même chaîne : quatre `FMTexc(53)`, puis `FMTexc(85)`.
+    - Origine : `bb73b9f2` (2019-08-23), qui introduit ce calcul ; la séparation des gestionnaires (`2cbb45a6`,
+      2021-10-29) l'a gardé.
+    - Aucun modèle de `Examples/Models` n'a de `_ENDPOINT`. Sa valeur hors de ses bornes reste à trancher (section
+      5.5) : le cas demande seulement que l'appel ne lève rien.
+    - Cas : `Unit.FMTComplexYieldHandler.GivenAnEndPointWhoseSourceIsBelowItsLowerBoundWhenGetThenRaisesNothing`, à
+      côté du cas vert `GivenAnEndPointWhoseSourceIsWithinItsBoundsWhenGetThenReturnsZero`.
+
+**Défaut révélé par le lot 7c (2026-10-22).** L'observation de `FMTParser::bounds` du lot 7b (section 5.10), démontrée
+comme les défauts des lots 7a et 7b : cause dans le code, A/B où une seule chose change, exécutable officiel
+`ReadScenario` du build de `new_test` (FMTlib de `f4252745`), origine git. Il a deux cas `DISABLED_` dans
+`IntegrationParser`. Son issue est à ouvrir par Gabriel (règle 3) : texte dans le rapport du lot 7c. Son numéro ira ici,
+dans les commentaires des cas, dans `CoreTestCoverage.csv` et dans le changelog. Il n'est pas corrigé dans ce chantier.
+
+18. **Une condition d'opérabilité écrite avec `>` ou `<` est lue sans sa borne** (`FMTParser::bounds`, issue à ouvrir).
+    - `FMTParser::getBaseOperators` (`Source/FMTParser.cpp:2195`) liste `=`, `<=`, `>=`, `<` et `>`, que
+      `FMTActionParser::_getBounds` reconnaît donc tous les cinq ; mais `FMTParser::bounds` (`Source/FMTParser.cpp:405`)
+      ne traite que les trois premiers. Pour `<` et `>`, il rend des bornes du plus petit au plus grand entier, ou réel,
+      sans message : la condition disparaît. Seul le parseur des actions l'appelle, pour `_AGE`, `_CP` et les yields
+      d'une condition d'opérabilité.
+    - A/B avec `ReadScenario` (`OPERABLE`) sur le nouveau scénario `strictbounds`, `UNITE1 PEUPLEMENT1 UTR1` à la
+      période 1 : `_AGE > 10` est opérable à 0, 5, 10, 11 et 20 ans, `_AGE >= 11` à 11 et 20 ans seulement ;
+      `_AGE < 5` à 0, 4, 5 et 20 ans, `_AGE <= 4` à 0 et 4 ans seulement. Sur une copie du scénario dans le
+      scratchpad, les deux autres formes : `volumetotal > 100` est opérable à 0, 5 et 6 ans (`volumetotal >= 100`, la
+      condition de `COUPEtotale`, à 5 et 6 ans seulement), et `_CP > 2` aux périodes 1 à 3 (`_CP >= 3` à la période 3
+      seulement). La lecture n'émet aucun avertissement sur ces conditions.
+    - `FMTModelParser::write` écrit ces actions sans condition (`? PROD ?`) : le modèle écrit puis relu n'en garde
+      aucune trace (sonde du lot 7c).
+    - Woodstock refuse ces deux opérateurs : les messages 142 et 143 de `Wk.msg`, fatals, demandent `>=` et `<=`. Un
+      modèle valide pour Woodstock n'en contient donc pas. La correction choisira entre les lire comme des bornes
+      strictes (`_AGE > 10` comme `_AGE >= 11` ; pour un réel, il faut une borne ouverte) et les refuser comme
+      Woodstock. Les deux cas désactivés attendent la première ; si la seconde est retenue, ils deviendront des tests
+      de l'exception.
+    - Origine : `2e3dc129` (2019-06-07, le premier commit), où `FMTparser::bounds` avait déjà la même liste et les
+      mêmes trois branches.
+    - Aucun des 42 fichiers d'actions d'`Examples/Models` n'écrit `<` ni `>`, hors de `strictbounds`. Modèles BFEC,
+      relevé en lecture seule le 2026-10-22 : aucune condition d'opérabilité en `<` ni `>` dans les 113 fichiers
+      d'actions des 62 modèles de la suite privée ; leurs 16 `>` isolés séparent des actions, dans une `*ACTIONSERIES`
+      (15) ou un `*AGGREGATE` (1). Le défaut ne change donc aucun résultat de ces modèles.
+    - Cas : `Integration.FMTActionParser.GivenAMinimumAgeWrittenWithGreaterThanWhenReadThenTheActionIsOperableAboveThatAgeOnly`
+      et `Integration.FMTActionParser.GivenAMaximumAgeWrittenWithLessThanWhenReadThenTheActionIsOperableBelowThatAgeOnly`,
+      à côté des cas verts `GivenAMinimumAgeWrittenWithGreaterOrEqual…` et `GivenAMaximumAgeWrittenWithLessOrEqual…`
+      du même scénario.
 
 ## 3. Lacunes classées par criticité
 
@@ -902,6 +1073,7 @@ Le reste de la marche à suivre :
 | Ordonnanceur d'UA | carte synthétique probable | yield `YOUVERT` utilisé par une action, CSV de paramètres, thème d'UA en argument (codé 14 dans `RunOpAreaSchedulerTask`), plus de polygones |
 | Adjacence, patchs | carte synthétique | `FMTLayer` construit en mémoire (constructeur depuis `std::map<FMTCoordinate,T>`), ou écrit par `FMTAreaParser::writeForest` / `writeLayer` : ni Python ni GDAL Python requis |
 | Transformations d'actions | à évaluer | structure d'actions agrégées à reproduire |
+| Opérateurs stricts d'une condition d'action, bloc `*YT` en colonnes | **fait au lot 7c** | `strictbounds` (`_AGE` avec `>`, `>=`, `<` et `<=`, défaut 18 de la section 2.7) et `timeyieldcolumns` (`_CP`, défaut 13) : chacun copie une section de la racine et y ajoute ses lignes, commentées en tête |
 | Transitions GCBM d'un SES (issue #369) | **fait** | `GCBMtransitions` : la racine, sauf la plantation de `unite2` qui passe en `UTR1` ; une clé GCBM sur THEME3 finit alors avec deux attributs, dont le majoritaire n'est pas le premier en ordre alphabétique. `GetGCBMTransitions` le lit avec la cédule de `Spatial` |
 
 **Scénarios existants qu'aucun test C++ n'utilise** : `actionrecurse`, `AVERAGEP`, `peak`,
@@ -1261,7 +1433,7 @@ Pas de ligne de dette ni d'issue.
 
 | Cas | Scénario | Vérifie | État |
 |---|---|---|---|
-| `GivenTheRootModelWhenWrite…ThenRereadsTheSameModelAndRewritesTheSameFiles` | ROOT | modèle et fichiers | désactivé : #347, #379 |
+| `GivenTheRootModelWhenWrite…ThenRereadsTheSameModelAndRewritesTheSameFiles` | ROOT | modèle et fichiers | désactivé : #347 (#379 corrigé par `83e2309e`) |
 | `GivenYieldsOnNegatedMasks…` | `NOT_MASK` | modèle et fichiers | vert |
 | `GivenEquationsInYieldsOutputsAndConstraints…` | `equation` | modèle et fichiers | vert |
 | `GivenItsOwnLandscapeActionsAndTimeYields…` | `COS` | modèle et fichiers | vert |
@@ -1271,7 +1443,7 @@ Pas de ligne de dette ni d'issue.
 | `GivenRandomActionConstraints…` | `COMPLEX_NSS` | modèle et fichiers | désactivé : #382 |
 | `GivenSplitTargetsAgesLocksAndSourceConditions…ThenRereadsTheSameTransitions` | `transitions` | transitions et `.trn` | vert |
 | `GivenThousandsSeparatorsAndListsOfPeriods…ThenRereadsTheSameConstraints` | `stdconstraints` | contraintes et `.opt` | vert |
-| `GivenAPenaltyObjectiveWithoutSign…ThenRereadsTheSameObjective` | ROOT | contraintes et `.opt` | désactivé : #379 |
+| `GivenAPenaltyObjectiveWithoutSign…ThenRereadsTheSameObjective` | ROOT | contraintes et `.opt` | actif depuis la correction de #379 (`83e2309e`) |
 | `GivenOutputsBuiltByForLoops…ThenRereadsTheSameOutputs` | `ForLoops` | outputs et `.out` | vert |
 | `GivenARatioOfAnInventoryOutputToAnActionOutput…ThenRereadsTheSameOutputs` | `TSLA` | outputs et `.out` | désactivé : #381 |
 | `GivenDiscountFactors…ThenRereadsTheirValues` | `timeyields` | valeurs des `DISCOUNT*` | désactivé : #380 |
@@ -1373,10 +1545,537 @@ depuis le 2026-10-16) :
   250 tests `system` : 240 lignes CSV publiques, `UseExcelCache`, les 7 tests Python et les 2
   fixtures, comme avant le lot.
 
+### 5.8 Session à part : export des classes de Core (2026-10-20)
+
+**Décision de Gabriel (2026-10-20)** : les classes de Core qu'un test lié à la DLL de FMTlib ne peut
+pas atteindre sont exportées dans une session à part, avant le lot 7, plutôt que contournées. C'est une
+modification de FMTlib, hors d'un lot de tests (section 1.2) : des déclarations seulement, aucun
+comportement.
+
+**Démonstration A, avant l'export.** Une sonde hors du dépôt (`ExportProbe.cpp`, scratchpad de la
+session), compilée par `cl` avec les options de `UnitCore` (son `CL.command.1.tlog`, sans GoogleTest)
+et liée au `FMTlib.lib` de `build/release`, lit la racine de TWD_land, puis construit et appelle
+chacune des 23 classes. Le lien échoue sur 64 symboles dans 21 classes : 57 LNK2019, et 7 LNK2001
+venus de la table virtuelle de `FMTYieldModelDecisionTree`, construite par la sonde. `dumpbin
+/exports` ne trouve aucun membre de ces classes dans `FMTlib.dll` (35 pour `FMTYields`, témoin).
+
+| Classe | Symboles non résolus |
+|---|---|
+| `FMTActionComparator` | 4 : constructeur, `getAllAggregates`, `getAllAggregatesSet`, `operator()` |
+| `FMTActualDevelopmentComparator`, `FMTMaskComparator`, `FMTOutputSourceComparator`, `FMTThemeComparator`, `FMTTransitionComparator` | 2 chacune : constructeur, `operator()` |
+| `FMTOutputNodeValueComparator`, `FMTOutputNodeOriginComparator`, `FMTOutputNodeHasher` | 1 chacune : `operator()` |
+| `FMTYieldRequest` | 7 : deux constructeurs, `getDevelopment`, `getDatas`, `getResumeMask`, `getVertexGraphInfo`, `getFirstSeen` |
+| `FMTExpression` | 6 : deux constructeurs, `getVariables`, `shuntingYard`, `getInFix`, `operator std::string` |
+| `FMTFunctionCall` | 3 : constructeur, `call`, `valid` |
+| `FMTYieldsCache` | 5 : `inCache`, `get`, `tryToGet`, `set`, `reserve` |
+| `FMTYieldDevelopment` | 4 : constructeur, `operator==`, `hash`, `getPeriod` |
+| `FMTYieldModel` | 7 : constructeur, destructeur, `getModelName`, `getModelYields`, et par la table virtuelle `setModel`, `operator std::string`, `clearRandomYieldsCache` |
+| `FMTYieldModelDecisionTree` | 6 : `getModelType`, `getPeriodicValues`, et par sa table virtuelle `clone`, `predict`, `preSolve`, `postSolve` |
+| `FMTYieldModelNep`, `FMTYieldModelPools` | 1 chacune : `getModelType` |
+| `FMTYieldModelRandom` | 2 : constructeur, `getModelType` |
+| `FMTYieldModelTsla` | 3 : constructeur, `clone`, `getModelType` |
+| `FMTYieldModelUnitCoverage` | 2 : constructeur, `clone` |
+
+- `cmpYieldString` se lie : elle est entièrement définie dans son en-tête.
+- `FMTYieldModelNn` : abstraite, et ses dérivées demandent un fichier ONNX. La sonde prend l'adresse de
+  `predict`, virtuelle, que MSVC atteint par un thunk local, sans demander de symbole. Ses membres
+  définis dans `Source/` ne sont pas plus exportés que les autres (`dumpbin`).
+
+**Export.** `FMTEXPORT` devant le nom de 18 classes, comme les classes exportées de Core
+(`class FMTEXPORT FMTAction`), et `#include "FMTutility.h"`, où la macro est définie, dans les trois
+en-têtes qui ne le voyaient pas : `FMTExpression.h`, `FMTFunctionCall.h`, `FMTYieldDevelopment.h`.
+Aucune signature, aucun corps, aucun ordre de déclaration ne change. Édition octet par octet en
+Python ; vérifié après coup : chaque en-tête, ses ajouts retirés, est identique au blob de `HEAD`, en
+CRLF seulement, l'octet 0xE9 de « Québec » intact, sans U+FFFD.
+
+**Laissées, et pourquoi.**
+- `cmpYieldString` : entièrement définie dans son en-tête (ci-dessus).
+- `FMTYieldModelNn`, `FMTYieldModelNep`, `FMTYieldModelPools` et `FMTYieldModelDecisionTree` :
+  exportées, elles cassent la compilation de FMTlib. Une classe exportée voit les membres définis dans
+  son en-tête compilés dans toute source qui l'inclut, dont ses constructeurs `= default`. Or
+  `FMTYieldModelNn()` détruit, sur le chemin d'une exception, un `std::unique_ptr<Ort::Session>`, et
+  `FMTYieldModelDecisionTree()` un `std::vector<FMTConstraint>`, deux types que leur en-tête ne fait
+  que déclarer. Rejeu : C2027 et C2338 dans `FMTYieldModelNep.cpp` et `FMTYieldModelPools.cpp`, C2036
+  dans `FMTYieldParser.cpp`. `FMTYieldModelNep` ou `FMTYieldModelPools` exportée seule échoue de même
+  (C2027 et C2338, dans sa source et dans `FMTYieldParser.cpp`) : son constructeur `= default` appelle
+  celui de `FMTYieldModelNn`. Les exporter demande les types complets dans ces trois sources (des
+  `#include`), ou ces constructeurs et destructeurs définis dans `Source/` : plus que `FMTEXPORT`.
+  **Décision de Gabriel (2026-10-20)** : on les laisse ainsi pour l'instant. Nouvelle ligne de dette
+  dans `Architecture.md`.
+- Hors du Core, `Models::FMTModelComparator` et `Heuristics::FMTOperatingAreaSchemeComparator` restent
+  sans export : la ligne de dette des comparateurs se réduit à eux.
+
+**Hors MSVC.** `FMTEXPORT` (`Include/FMTutility.h`) ne change pas. Avec GCC, il vaut
+`__attribute__((dllexport))` pour FMTlib, que le build MSYS2 lie déjà avec `-Wl,--export-all-symbols` :
+tous ses symboles sont déjà exportés. Il est vide dans la cible R `FMT`, qui compile les sources sans
+`FMTSHAREDLIB` ni `FMTLIBIMPORT`. Non compilé ici, faute de GCC sur le poste : le build R reste à
+Gabriel.
+
+**Avertissements.** Rejeu de toutes les unités du build avant et après (`CL.command.1.tlog` de chaque
+cible, objets et `.pch` envoyés dans le scratchpad) : 368 unités de 90 cibles, dont les 222 de FMTlib,
+`FMT`, `FMTWrapperCore`, `UnitCore`, `IntegrationParser`, les bancs, les tests système et les deux
+cibles C++/CLI, leur en-tête précompilé d'abord. Aucune différence d'erreur ni d'avertissement, unité
+par unité : avant comme après, un C4244 dans `FMTYieldModelNn.cpp` (`xmemory`) et onze C4273 dans
+`FMTExcelWrapper`. C4251 et C4275 sont de niveau 2 (vérifié sur un fichier minimal) : le build, en
+`/W1`, n'en montre aucun, pour aucune classe exportée. En `/W2`, les nouvelles classes donnent des
+C4251 du même genre que les classes déjà exportées (`FMTAction`, `FMTTheme`, le comparateur exporté
+`FMTOutputComparator`), et aucun C4275 : les bases de `FMTYieldRequest` et des modèles de rendement
+sont exportées. Rien n'est désactivé.
+
+**DLL d'essai et sonde B, avant le build de Gabriel.** Les 222 objets de FMTlib rejoués, liés par la
+commande de son `link.command.1.tlog`, sorties dans le scratchpad : `FMTlib.dll` se lie et exporte
+149 symboles de plus, aucun de moins (4590, puis 4739), tous membres ou tables virtuelles des 18
+classes. La sonde, sans les trois modèles laissés, se lie à cette DLL et passe ses 32 vérifications
+sur TWD_land (`ALL CHECKS PASSED`, code 0). Avec eux, il reste 8 symboles non résolus, tous de
+`FMTYieldModelDecisionTree`, `FMTYieldModelNep` et `FMTYieldModelPools`. `FMT.pyd` (`main.cpp`
+rejoué) se lie aussi à cette DLL ; il importe désormais de `FMTlib.dll` les quatre membres par défaut
+de `FMTYieldRequest`, qu'expose `PYexportCore.h` et qu'il compilait jusqu'ici en ligne : un `FMT.pyd`
+de ce build demande le `FMTlib.dll` du même build, ce que la roue livre déjà ensemble.
+
+**Incident.** Le premier rejeu n'envoyait pas `/Fp` dans le scratchpad : l'unité `/Yc` des deux cibles
+C++/CLI a réécrit `build/release/FMTWrapper.dir/Release/cmake_pch.pch` et
+`build/release/FMTExcelWrapper.dir/Release/cmake_pch.pch` (mêmes entrées, même taille). Rien d'autre
+n'a été écrit dans `build/release` (`find -newer`). L'effet annoncé ici, une simple recompilation,
+était faux : un PCH managé (`/clr`) garde le chemin de l'objet de son unité `/Yc`, ici celui du rejeu,
+supprimé depuis, et MSBuild, qui voyait ces `.pch` plus récents que leurs entrées, ne les a pas
+régénérés. Le build de Gabriel a donc échoué sur les 11 unités `/Yu` de `FMTWrapper`, en C1093
+(`ImportFile`, fichier introuvable), comme le rejeu quand il supprimait cet objet. Les deux `.pch`
+contenaient bien le chemin du scratchpad. Ils ont été supprimés le 2026-10-20 : MSBuild les suit comme
+sorties de `cmake_pch.cxx` (`CL.write.1.tlog`) et les recrée au build suivant.
+
+**Validation après le build de Gabriel** (2026-10-20, commit `f4252745` de Gabriel, 22 fichiers) :
+- premier build en échec sur `FMTWrapper` (C1093, incident ci-dessus) ; après la suppression des deux
+  `.pch`, le second passe. MSBuild a recréé les deux `.pch` (15 h 19 et 15 h 20), sans chemin du
+  scratchpad, et recompilé `FMTWrapper` et `FMTExcelWrapper` ;
+- `FMTlib.dll` du build : 4739 exports, la même liste que la DLL d'essai (149 de plus qu'avant,
+  aucun de moins) ;
+- sonde B liée au `FMTlib.lib` du build, lancée depuis `bin/Release` : 32 vérifications vertes, code
+  0 ;
+- installation (`INSTALL_TEST_SUITE=public`, 15 h 23) : 300 tests, 0 échec, 281 exécutés et 19
+  désactivés, 19 s, dont les 7 tests Python exécutés. La roue `FMT-1.3.0-cp310-cp310-win_amd64.whl`,
+  construite à 15 h 23 et installée dans le Python de vcpkg, s'importe en mode isolé depuis
+  `site-packages`, et sa `FMTlib.dll` est celle de `bin/Release` (même SHA-256). `InstallTests.xml`,
+  `InstallTests.json`, `LastTest.log` et `LastTestsDisabled.log` copiés dans le scratchpad avant tout
+  appel de ctest ;
+- `RunTests.bat all-public` : « 0 tests failed out of 281 », 16,3 s réelles ; unit 7 verts,
+  integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248,
+  performance 23, other 2 ; Total 281 verts et 19 désactivés sur 300, comme au lot 5 ;
+- avertissements : la console du build n'a pas été relue. Le rejeu de toutes les unités avec les
+  commandes de ce build (ses `CL.command.1.tlog`, `/Fo` `/Fd` `/Fp` dans le scratchpad, `.pch` de
+  `build/release` inchangés après coup) ne diffère du rejeu d'avant le changement dans aucune des 367
+  unités : toujours un C4244 et onze C4273, rien de nouveau. Les avertissements de l'édition de liens
+  ne sont pas couverts ;
+- restent à Gabriel : la suite BFEC (`RunPrivateTests.bat`) et le build R.
+
+### 5.9 Lot 7a : expressions et gestionnaires de rendements (2026-10-21)
+
+**Statut** : livré le 2026-10-21, commité par Gabriel le même jour (`0c35c546`, changelog `51d03e83`),
+**validé** le 2026-10-21 (fin de cette section). Étapes 1 et 2 de la section 6.3.4, découpage de Gabriel
+du même jour (section 6.3.4).
+
+**Ajouts** (`Tests/Unit/Core`, cp1252, CRLF, en-tête de licence) : une source par classe, une suite au
+nom de la classe, cas Given…When…Then en Arrange / Act / Assert ; 141 cas nouveaux, dont 4 désactivés.
+
+| Source | Cas | Désactivés | Ce qu'ils couvrent |
+|---|---|---|---|
+| `FMTOperator.cpp` | 18 nouveaux (20) | 0 | construction par symbole et retour au symbole, symbole inconnu, opérateur par défaut, `call` (arithmétique, virgule, division par zéro : infini), `reverse`, `isFactor`, `isDivide`, `associativity`, copie, égalité, hachage, priorités de `-` et de `,` |
+| `FMTFunctionCall.cpp` | 10 | 0 | `EXP` et `LN` arrondis à 8 décimales, `EXP(-20)` arrondi à 0, `LN` de 0 et d'un négatif, noms en minuscules et inconnus, appel par défaut, copie |
+| `FMTExpression.cpp` | 22 | 1 | évaluation (priorités, parenthèses, gauche à droite, #346, moins en tête, variables, fonctions), variable sans valeur (`std::invalid_argument`), `getInFix`, chaîne, copie, `getVariables`, `simplify` (facteurs et membre de droite d'une équation linéaire, expression rendue) ; désactivé : défaut 11 (#386) |
+| `FMTData.cpp` | 22 | 0 | constructeurs, `constant`, `nullData`, `getSources` (somme, équation), `getValues`, chaînes (`_SUM`, `_DISCOUNTFACTOR`, `_EQUATION`), `toExpression` (dont #347), égalité, copie, produit par un facteur, cache (`set`, `get`, `clearCache`, copie sans cache) |
+| `FMTAgeYieldHandler.cpp` | 20 | 0 | `get` aux âges de base, entre eux, avant le premier et après le dernier, yield absent, `getYieldLinearValue` sans hors-bornes (`FMToutofrangeyield`), `setYieldValues` (tailles ou âges différents : `FMTrangeerror`), noms, copie, clone, `getFromFactor`, pic (`getPeakfrom`, `getPeak`), type, chaîne `*Y` |
+| `FMTTimeYieldHandler.cpp` | 16 | 3 | valeurs avant, pendant et après les périodes, yield absent, deux yields de même départ, `FULL`, `NONE` et `HALF` sur trois périodes, `setYieldValues` (`FMTrangeerror`), copie, clone, `getFromFactor`, chaîne `*YT` ; désactivés : défaut 12 (#388), #380 (deux cas) |
+| `FMTComplexYieldHandler.cpp` | 33 | 0 | `_SUM`, `_MULTIPLY`, `_SUBTRACT`, `_DIVIDE` (par zéro, arrondi à 8 décimales), `_RANGE`, `_MAI` (avec années, après le dernier âge : `FMToutofrangeyield`), `_CAI`, `_YTP`, `_EQUATION` (yields, nombre, fonction), `_MAX`, `_MIN`, `_SHIFT`, `_DELTA`, `_DISTANCE`, source inconnue, yield complexe d'un autre, récursion entre deux gestionnaires (`FMTinvalid_yield`), `indexes` (index de thème, #347), type, copie, clone, chaîne `*YC` |
+
+- `Tests/Unit/Core/ExceptionChain.h` : `Testing::getRaisedTypes` rend les codes des exceptions FMT d'un
+  appel, de l'extérieure à la plus profonde (par `Testing::visitNested`), et `Testing::hasType` y
+  cherche un code. FMT enveloppe l'erreur dans un `FMTfunctionfailed` à chaque méthode traversée : le
+  code attendu est celui d'une exception imbriquée.
+- Niveau unitaire : aucun modèle sur disque, objets construits en code, données construites comme
+  `FMTYieldParser` les construit (commentaire en tête de `FMTData.cpp`). `FMTComplexYieldHandler` ne
+  s'évalue qu'à travers `FMTYields::get` : ses cas mettent dans un `FMTYields` construit en code un
+  gestionnaire d'âge (`VOLUME`, `STEMS`, `ZERO`), un de temps (`PERIODVALUE`), puis le gestionnaire
+  complexe. Nouvelle ligne de dette dans `Architecture.md` : une sonde hors dépôt montre que, sur une
+  requête faite d'un développement seul, `get` lit un `FMTYields` nul (violation d'accès 0xC0000005,
+  levée en `FMTexc(85)`). Aucune classe du lot ne demande un modèle ou un état global : aucun cas au
+  niveau intégration.
+- Valeurs calculées à la main (consigne de Gabriel pour `FMTTimeYieldHandler`),
+  `_DISCOUNTFACTOR(4%,5,<type>)` : facteur 1 / 1,04^(5 × exposant), exposant `FULL` = p, `NONE` = p - 1,
+  `HALF` = p - 0,5 (section 2.7, item 3), tolérance 1e-12 :
+
+  | Type | Période | Exposant | Calcul | Valeur attendue |
+  |---|---|---|---|---|
+  | `FULL` | 1 | 1 | 1/1,04^5 | 0,821927106759 |
+  | `FULL` | 2 | 2 | 1/1,04^10 | 0,675564168826 |
+  | `FULL` | 3 | 3 | 1/1,04^15 | 0,555264502713 |
+  | `NONE` | 1 | 0 | 1/1,04^0 | 1 |
+  | `NONE` | 2 | 1 | 1/1,04^5 | 0,821927106759 |
+  | `NONE` | 3 | 2 | 1/1,04^10 | 0,675564168826 |
+  | `HALF` | 1 | 0,5 | 1/1,04^2,5 | 0,906601956075 |
+  | `HALF` | 2 | 1,5 | 1/1,04^7,5 | 0,745160722739 |
+  | `HALF` | 3 | 2,5 | 1/1,04^12,5 | 0,612467796912 |
+
+  Les autres valeurs : celles de `FMTFunctionCall` et des yields complexes sont les valeurs exactes
+  arrondies à 8 décimales, comme `call` et `FMTComplexYieldHandler::get` les arrondissent (e = 2,71828183,
+  ln 10 = 2,30258509, ln 200 = 5,29831737, 200/3 = 66,66666667) ; le reste est de l'arithmétique sur des
+  valeurs choisies (`VOLUME` vaut 100, 200 et 240 aux âges 10, 20 et 30, donc 150 à 15 ans, 220 à 25 ans
+  et 50 à 5 ans, interpolé depuis 0 à l'âge 0).
+- **#380** : deux cas désactivés montrent qu'il passe par `FMTTimeYieldHandler::operator std::string` :
+  le gestionnaire écrit `DISCOUNTFULL 1 0.04 5`, et lève sans période de départ. `FMTData` écrit pourtant
+  `_DISCOUNTFACTOR(0.040000000000000001,5,FULL)` (cas vert), que le parseur relit au même taux depuis
+  #374 : la correction de #380 peut s'en servir.
+- **#346 et #347** : section 2.7. **Défauts révélés** : 11 et 12, avec leur cas désactivé, et 13, sans
+  cas (section 2.7).
+
+**Observations, sans défaut annoncé** (rien de ce que FMT exécute n'en dépend, ou ce n'est pas
+démontré) :
+- l'opérateur et l'appel de fonction par défaut portent la clé 0, d'aucune énumération : `valid()` les
+  accepte (cas verts qui le fixent) ;
+- `FMTOperator::associativity` rend `RIGHT` pour `-` et `/`, et `LEFT` pour `^` ;
+  `FMTExpression::getVariables` compte les parenthèses parmi les variables. Aucune méthode de FMT ne les
+  appelle (cas verts commentés) ;
+- `FMTExpression::simplify` traiterait une parenthèse comme une variable, mais le parseur de la section
+  optimisation ne lui en passe pas : il ne coupe que sur `+ - * /` ;
+- `FMTData::getSummaryDevelopment` calcule une période qu'il n'utilise pas : le cache des yields
+  complexes garde toujours la période, sans effet sur les valeurs. `FMTData::cacheValue` sur un data sans
+  opérateur lit un cache jamais alloué ; seuls les yields complexes l'appellent ;
+- d'après le code, `FMTData::operator*` multiplie aussi le taux et les années d'un `_DISCOUNTFACTOR`
+  (`getFromFactor` d'un tel yield, quand on le nomme), et `_MAX` part de 0 (le maximum de yields tous
+  négatifs vaudrait 0) : non démontré ;
+- `FMTData.h` ne se compile pas sans `FMTDevelopment.h` (section 7).
+
+**Non couvert, et pourquoi** : `getEndPoint` et `_ENDPOINT`, `getAge` (gestionnaires d'âge et complexe,
+qui lisent un `FMTSpec`), `complexYldToAgeYld`, les surcharges (`_OVERRIDE` : `setTabou`,
+`compareSources`) : leurs cas demandent `FMTSpec` et `FMTYields`, et vont avec le lot 7b ou le lot 8.
+`getAllYieldsData` : son seul appelant, `FMTYields::getAllYields`, n'est appelé nulle part.
+
+**Vu rouge** (règle 1), rien de commité :
+- une copie faussée des sept sources, hors du dépôt, où un en-tête inclus après `<gtest/gtest.h>`
+  retourne chaque assertion (`EXPECT_EQ` en `EXPECT_NE`, `EXPECT_TRUE` en `EXPECT_FALSE`,
+  `EXPECT_DOUBLE_EQ` et `EXPECT_NEAR` contre l'attendu plus 1, `EXPECT_THROW` en `EXPECT_NO_THROW`,
+  `EXPECT_GT` en `EXPECT_LE`, et de même pour les autres ; le script qui écrit la copie refuse toute
+  autre macro), compilée par `cl` contre le `FMTlib.lib` de `build/release` : les 139 cas actifs des
+  sept suites échouent (les 137 nouveaux et les 2 de `FMTOperator` d'avant), aucun ne passe, aucun par
+  une exception inattendue ;
+- les 4 cas désactivés, lancés avec `GTEST_ALSO_RUN_DISABLED_TESTS=1`, échouent chacun pour sa raison :
+  `2*-3` vaut -3 ; `PERIODVALUE` vaut 0 et 10 ; l'écriture ne contient pas `_DISCOUNTFACTOR(` ; sans
+  période de départ, l'écriture lève ;
+- les deux cas de #347, ajoutés après l'accord de Gabriel, sont dans ce passage.
+
+**Vu vert avant le build de Gabriel** : les sources du dépôt, telles quelles, compilées par `cl` avec
+les options de `UnitCore` (son `CL.command.1.tlog`), `/Fo` `/Fd` `/Fp` dans le scratchpad, liées au
+`FMTlib.lib` de `build/release` (FMTlib de `f4252745`, sources de FMTlib inchangées depuis), lancées
+depuis `bin/Release` : 144 cas verts (les 7 d'avant et 137 nouveaux), 4 désactivés, en 1 ms ; mêmes
+résultats dans un ordre mélangé (`GTEST_SHUFFLE`, graine 4242, 3 répétitions). En `/W4`, aucun
+avertissement ne vient des sources de tests : tous viennent des en-têtes de FMTlib. Rien n'a été écrit
+dans `build/release` ni sous `Examples/Models`.
+
+**Documents** : `CoreTestCoverage.csv` (statut `Lot 7a (step <n>), done` des sept classes, défauts 11 et
+12, ligne de dette, tests manquants), `CoreTestCoverage.md` régénéré (9 classes avec des tests
+unitaires, 41 de priorité 1 sans test propre au lieu de 47 ; deux générations identiques), ligne de
+dette d'`Architecture.md`, changelog (section non publiée, anglais et français).
+
+**Validation après le build de Gabriel** (2026-10-21, commits `0c35c546` et `51d03e83`, build
+reconfiguré ; FMTlib inchangé depuis `f4252745`) :
+- l'arbre de travail est identique à `HEAD`, et les deux commits contiennent les 14 fichiers du lot
+  (`git show --stat`) ; `UnitCore.exe` du build date de 10 h 47 ;
+- installation (`INSTALL_TEST_SUITE=public`, 10 h 48) : 441 tests, 0 échec, 418 exécutés et 23
+  désactivés, 17 s ; unit 144 verts et 4 désactivés ; aucun test en `T:/`. `InstallTests.xml`,
+  `InstallTests.json`, `LastTest.log` et `LastTestsDisabled.log` copiés dans le scratchpad de la session
+  avant tout appel de ctest ;
+- `RunTests.bat unit` : « 0 tests failed out of 144 », 1,9 s réelles ; unit 144 verts et 4 désactivés
+  sur 148, les quatre cas désactivés ci-dessus ;
+- `RunTests.bat all-public` : « 0 tests failed out of 418 », 15,5 s réelles ; unit 144 verts et 4
+  désactivés sur 148, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés
+  sur 248, performance 23, other 2 ; Total 418 verts et 23 désactivés sur 441. Par rapport au lot 5
+  (section 5.7), seul le niveau unit change, des 141 cas ajoutés : 137 verts et 4 désactivés, justifiés
+  en section 2.7 (#380, défauts 11 et 12). La fixture `ExamplesModelsUnchanged` est verte, et les 7
+  tests Python passent ;
+- non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par
+  la passe `/W4` hors dépôt d'avant le build (aucun dans les sources de tests) ;
+- issues des défauts 11 à 13 ouvertes par Gabriel le 2026-10-21 : #386, #388 et #387. Leurs numéros
+  sont reportés en section 2.7, dans les commentaires des deux cas désactivés, dans
+  `CoreTestCoverage.csv` et dans le changelog (commentaires seuls : les deux sources, recompilées hors
+  dépôt, ne donnent ni erreur ni avertissement). Le lot n'ajoute que des tests unitaires : la suite BFEC
+  n'est pas relancée.
+
+### 5.10 Lot 7b : bornes, spécifications, contraintes, sorties et yields (2026-10-21)
+
+**Statut** : livré le 2026-10-21, commité par Gabriel le 2026-10-22 (`355b2edb`, changelog `1bd707f6`), **validé** le
+2026-10-22 (fin de cette section). Étapes 3 et 4 de la section 6.3.4, et ce que le
+lot 7a a laissé faute de `FMTSpec` et de `FMTYields` (section 5.9, « Non couvert »).
+
+**Ajouts** (cp1252, CRLF, en-tête de licence) : une source par classe, une suite au nom de la classe, cas
+Given…When…Then en Arrange / Act / Assert ; 154 cas nouveaux, dont 7 désactivés.
+
+| Source | Cas | Désactivés | Ce qu'ils couvrent |
+|---|---|---|---|
+| `FMTBounds.cpp` | 11 nouveaux (14) | 0 | `out` (dont des bornes inutilisées, prises pour 0 à 0), `empty`, `add` (bornes ouvertes de l'action, remplacement), égalité, ordre, `setOrBound`, réels par `FMTYldBounds`, borne basse au-dessus de la haute |
+| `FMTAgeBounds.cpp` | 11 | 0 | copie, source et cible, chaînes de l'action (deux conditions, ouvertes, égalité), de la transition (`@AGE(10.._MAXAGE)`, `@AGE(10)`, `_AGE 5`) et des sorties |
+| `FMTYldBounds.cpp` | 7 | 0 | copie, deux yields, construction depuis des bornes réelles, chaînes de l'action et de la transition |
+| `FMTLockBounds.cpp` | 5 | 0 | copie, égalité, `_LOCK 2`, `_INVLOCK`, `in` sur le verrou |
+| `FMTPerBounds.cpp` | 6 | 0 | copie, égalité, `_CP`, périodes d'une contrainte (chaîne vide), `in` |
+| `FMTSpec.cpp` | 17 nouveaux (19) | 0 | sans borne, périodes, verrou (sa borne haute n'est pas lue), yields (`allow`, `allowYields`), fusion d'un yield, `empty*`, accesseurs, `add`, copie, égalité et ordre, hachage, chaîne, `isSubsetOf` |
+| `FMTConstraint.cpp` | 36 | 2 | bornes, types (`isObjective`, `sense`, `extraVariables`, `acrossPeriod`, `isSpatial`, `getGroup`, `isRandomAction`), `setLength`, variations, buts et pénalités, chaînes (`>=`, `=`, `<=`, `_MAX`, `_MIN` et pénalités, `_EVEN`, `_NDY`), égalité, copie, hachage, `evaluate` ; désactivés : #379, #382 |
+| `FMTOutput.cpp` | 21 | 0 | accesseurs, `empty`, copie, égalité, hachage, `+=`, `-=`, `*=`, `/=`, constantes, `shuntingYard`, `isLinear`, sources d'action et d'inventaire, niveau constant, chaînes |
+| `FMTYields.cpp` | 22 | 3 | `get` (âge, temps, complexe, yield inconnu, masque d'un autre attribut : `FMTmissingyield`, premier gestionnaire du développement), `isYld`, `isNullYld`, `getAllYieldNames`, `gotYieldType`, copie, égalité avec soi, `getFromFactor`, `getStacked`, `clear`, `swap`, `getAge` ; désactivés : #383, défauts 15 (#390) et 16 (#391) |
+| `FMTAgeYieldHandler.cpp` | 5 nouveaux (25) | 0 | `getAge` (âge de base le plus proche, premier âge de base), `getEndPoint` |
+| `FMTComplexYieldHandler.cpp` | 12 nouveaux (45) | 2 | `_MIN` de yields négatifs, `_ENDPOINT` dans ses bornes, `getAge`, `complexYldToAgeYld`, surcharges (`compareSources`, `setTabou`, `getTabous`, `_OVERRIDE` écrit, valeurs avec et sans tabou) ; désactivés : défauts 14 (#389) et 17 (#392) |
+| `Tests/Integration/Parser/FMTTransitionParser.cpp` | 1 | 0 | #358, comportement connu (section 2.7) |
+
+- Niveau unitaire : aucun modèle sur disque, objets construits en code comme les parseurs les construisent (bornes
+  ouvertes au plus petit ou au plus grand de leur type, `RHS`, `Variation`, `GOAL_`, `Penalty<opérateur>_<but>`,
+  surcharges données comme `FMTYieldParser::_setOveridedYlds`). Aucune classe du lot ne demande un modèle ou un
+  état global : aucune ligne de dette. Seul #358 a un cas d'intégration : son mécanisme est dans
+  `FMTParser::_setSpec` (namespace `Parser`), et un cas de `FMTSpec` resterait vert après la correction.
+- **#358** : cas présenté à Gabriel, qui a retenu le niveau intégration le 2026-10-21 (section 2.7). Il lit le
+  scénario `INVALID_sourcecondition` et vérifie que `arecup` donne à un développement de 5 ans une fourche sans
+  borne d'âge. Contrôle hors du dépôt : dans le scénario `transitions`, où la même action a `@AGE(10.._MAXAGE)`, la
+  fourche d'un développement de 15 ans garde ses bornes ; dans `INVALID_sourcecondition`, aucune n'en a, à 5 comme
+  à 15 ans.
+- **#379, #382 et #383** : un cas désactivé de plus chacun, plus près de la cause que le cas d'intégration du lot 5 :
+  la chaîne de `_MIN _PENALTY(CARIBOU,RECOLTE)` vaut `_MIN y_PENALTY(CARIBOU,RECOLTE) 1.._LENGTH` ; celle d'une
+  contrainte `_RANDOM(OVOL) >= 1` ne contient pas `_RANDOM(` ; une copie de `FMTYields` n'égale pas l'original.
+  **#381** : pas de cas unitaire. Le défaut tient à la relecture des sorties cachées que `_toWsFormat` et
+  `_operatorFormat` écrivent, et Woodstock demande peut-être ce découpage : un cas de `FMTOutput` seul supposerait
+  la correction du côté de l'écriture.
+- **Observations du lot 7a** (section 5.9) : toutes deux démontrées, défauts 14 (`_MAX`) et 15 (`getFromFactor` d'un
+  `_DISCOUNTFACTOR`), à travers `FMTYields`. Deux autres défauts sont apparus en écrivant les cas : 16 et 17
+  (section 2.7).
+- **Piège de ce lot** : une `FMTYieldRequest` garde l'adresse de son développement (section 7). Un premier brouillon
+  passait un temporaire : deux cas échouaient sans raison apparente, sur de la mémoire libérée.
+
+**Observations, sans défaut annoncé** (lues dans le code ; rien de ce que FMT exécute n'en dépend, ou ce n'est pas
+démontré) :
+- `FMTSpec::isSubsetOf` compare les bornes basses des yields à l'envers des périodes et des âges : `VOLUME 100..200`
+  n'est pas inclus dans `VOLUME 50..300`, et `VOLUME 10..200` l'est (cas vert commenté). Son seul appelant,
+  `FMTOutputSource::isSubsetOf`, sert le cache des nœuds d'outputs (`Include/FMTOutputNodeCache.h`), qui n'utilise
+  un nœud trouvé que si sa spécification égale celle qu'il cherche ; `_getParentNode` reçoit d'ailleurs
+  `m_foundSubset` par valeur, si bien que le sous-ensemble trouvé n'est jamais repris.
+- `FMTBounds::out` ne regarde pas si les bornes servent : des bornes inutilisées valent 0 à 0 (cas vert commenté).
+  FMT ne l'appelle que sur des bornes de yields, toujours utilisées.
+- `FMTSpec::allowWithoutYield` ne lit que la borne basse du verrou (cas vert commenté) ; `FMTSpec::add` ignore le
+  verrou de la spécification ajoutée, et rien dans FMT n'appelle `FMTSpec::add`.
+- `FMTConstraint::operator std::string` cherche `_ALL` après le découpage sur `_`, ce qui ne peut arriver :
+  `_PENALTY(_ALL)` est écrit `_PENALTY(ALL)`, que FMT relit à l'identique (`Penalty+_ALL`). Woodstock : non vérifié.
+- `FMTConstraint::evaluate` d'un `_EVEN` avec variation vaut toujours 0 (`_getVariability` compare chaque valeur au
+  maximum plus la variation, qu'aucune ne dépasse). Seules les heuristiques spatiales et `FMTYieldModelDecisionTree`
+  l'appellent : non démontré avec un exécutable.
+- `FMTConstraint::hash(false)` hache deux fois la période basse ; aucun appelant ne passe `false`.
+- `FMTOutput::operator=` ne copie pas le groupe (`m_group`), que le constructeur de copie copie, et
+  `FMTOutput::serialize` ne l'écrit pas. Il sert à écrire `*GROUP` : non démontré qu'un chemin de FMT y perde un
+  groupe.
+- `FMTOutputSource::operator==` ignore le yield et les valeurs : deux outputs de même nom et de même description qui
+  ne diffèrent que par le yield de leurs sources sont égaux (classe du lot 8).
+- `FMTAgeYieldHandler::getAge` ne compare jamais le premier âge de base, et le rend quand aucun autre n'est sous
+  l'âge du développement (cas vert commenté). `getEndPoint` lit un itérateur non initialisé quand la valeur égale la
+  borne ; `_ENDPOINT` ne l'appelle jamais ainsi.
+- `FMTParser::bounds` ne traite pas `<` ni `>`, pourtant dans `getBaseOperators` : `_AGE > 10` dans une action donnerait
+  des bornes sans limite (parseur, lu seulement).
+
+**Non couvert, et pourquoi** : `FMTConstraint` : les mots-clés rangés en bornes de yields (`_SETFROM`, `_REIGNORE`,
+`_REPLICATE`), `preSolve` et la conversion en yields, qui demandent actions, transitions et thèmes ; `FMTOutput` :
+`boundTo`, `getNodes`, `preSolve`, les décompositions et les formats de #381 ; `FMTYields` : `generateDefaultYields`
+et les yields de modèle, `preSolve`, `getAllYields` (aucun appelant). Le test du défaut 13 (#387, lecture de `_CP`)
+reste à décider (section 6.3.4).
+
+**Démonstrations** (règle de la section 2.7) : défauts 14 et 17 avec l'exécutable officiel `ReadScenario` du build,
+sur une copie de TWD_land dans le scratchpad (bloc `*YC` ajouté au `._yld` de `yieldoperatorsalone`) ; défauts 15
+et 16 avec `FMT.pyd` du build, par un script du scratchpad qui lit `timeyields` dans le dépôt. Rien n'a été écrit
+dans `build/release` ni sous `Examples/Models` (`find -newer`, `git status`).
+
+**Vu rouge** (règle 1), rien de commité :
+- une copie faussée des 11 sources unitaires touchées et de la source d'intégration, hors du dépôt, avec l'en-tête du
+  lot 7a qui retourne chaque assertion (`ASSERT_NE` ajouté), compilée par `cl` contre le `FMTlib.lib` de
+  `build/release` : les 204 cas actifs des 11 suites échouent (les 146 nouveaux et les 58 qu'elles avaient), aucun ne
+  passe, aucun par une exception inattendue ; le cas de #358 échoue aussi ;
+- les 11 cas désactivés de `UnitCore`, lancés avec `GTEST_ALSO_RUN_DISABLED_TESTS=1`, échouent chacun pour sa raison :
+  pour les 7 nouveaux, `y_PENALTY`, pas de `_RANDOM(`, une copie de `FMTYields` inégale, 0,463193488085 au lieu de
+  1,643854213518, `VOLUME` resté à 200, `_MAX` à 0 au lieu de -200, et la chaîne `FMTexc(53)` puis `FMTexc(85)` de
+  `_ENDPOINT`.
+
+**Vu vert avant le build de Gabriel** : les sources du dépôt, compilées par `cl` avec les options de `UnitCore`
+(`/Fo` `/Fd` `/Fp` dans le scratchpad), liées au `FMTlib.lib` de `build/release` (FMTlib de `f4252745`, inchangé
+depuis), lancées depuis `bin/Release` : `UnitCore`, 290 cas verts (144 d'avant et 146 nouveaux), 11 désactivés ;
+mêmes résultats dans un ordre mélangé (`GTEST_SHUFFLE`, graine 4242, 3 répétitions). `IntegrationParser`, compilé
+avec ses trois sources, se lie ; seul le nouveau cas a été lancé (`GTEST_FILTER`), vert, les autres écrivant dans
+`build/release/tests`. En `/W4`, aucun avertissement ne vient des sources de tests : les 380 viennent des en-têtes
+de FMTlib.
+
+**Documents** : `CoreTestCoverage.csv` (statut `Lot 7b (step <n>), done` de neuf classes, défauts 14 à 17, #358 sur
+`FMTSpec` et `FMTTransition`, tests manquants), `CoreTestCoverage.md` régénéré (16 classes avec des tests unitaires,
+34 de priorité 1 sans test propre au lieu de 41 ; deux générations identiques), changelog (section non publiée,
+anglais et français).
+
+**Validation après le build de Gabriel** (2026-10-22, commits `355b2edb` et `1bd707f6` ; FMTlib inchangé depuis
+`f4252745`) :
+- avant le report des numéros d'issues, l'arbre de travail était identique à `HEAD`, et les deux commits contiennent
+  les 17 fichiers du lot (`git show --stat`) ; `UnitCore.exe` du build date de 8 h 08, `IntegrationParser.exe` de
+  8 h 07 ;
+- installation (`INSTALL_TEST_SUITE=public`, 8 h 09) : 595 tests, 0 échec, 565 exécutés et 30 désactivés, 19 s ;
+  unit 290 verts et 11 désactivés, integration 14 verts et 7 désactivés, system 236 verts et 12 désactivés,
+  performance 23, other 2 ; aucun test en `T:/`, et les 7 tests Python passent. La roue
+  `FMT-1.3.0-cp310-cp310-win_amd64.whl` date de 8 h 09. `InstallTests.xml`, `InstallTests.json`, `LastTest.log` et
+  `LastTestsDisabled.log` copiés dans le scratchpad de la session avant tout appel de ctest ;
+- `RunTests.bat unit` : « 0 tests failed out of 290 », 2,9 s réelles ; unit 290 verts et 11 désactivés sur 301, les
+  4 cas désactivés du lot 7a et les 7 de ce lot ;
+- `RunTests.bat all-public` : « 0 tests failed out of 565 », 16,5 s réelles ; unit 290 verts et 11 désactivés sur
+  301, integration 14 verts et 7 désactivés sur 21, system 236 verts et 12 désactivés sur 248, performance 23,
+  other 2 ; Total 565 verts et 30 désactivés sur 595. Par rapport au lot 7a (section 5.9), seuls les niveaux unit
+  et integration changent, des 154 cas ajoutés : 147 verts et 7 désactivés (#379, #382, #383, #389 à #392),
+  justifiés en section 2.7. Le cas de #358 et la fixture `ExamplesModelsUnchanged` sont verts, et l'arbre de travail
+  est resté identique à `HEAD` après le passage ;
+- non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par la passe
+  `/W4` hors dépôt d'avant le build (aucun dans les sources de tests) ;
+- issues des défauts 14 à 17 ouvertes par Gabriel le 2026-10-22 : #389, #390, #391 et #392. Leurs numéros sont
+  reportés en section 2.7, dans les commentaires des quatre cas désactivés, dans `CoreTestCoverage.csv` (document
+  régénéré, deux générations identiques) et dans le changelog. Commentaires seuls : les deux sources, recompilées
+  hors dépôt en `/W4`, ne donnent ni erreur ni avertissement. Le lot n'ajoute que des tests unitaires et un cas
+  d'intégration en lecture : la suite BFEC n'est pas relancée.
+
+### 5.11 Lot 7c : masques, thèmes et développements (2026-10-22)
+
+**Statut** : livré le 2026-10-22, commité par Gabriel le même jour (`5956123b`, changelog `1754fe30`), **validé** le
+2026-10-22 (fin de cette section). Étape 5 de la section 6.3.4, qui termine le lot 7, avec l'observation de
+`FMTParser::bounds` du lot 7b (section 5.10) et le cas du défaut 13 (#387).
+
+**Ajouts** (sources en cp1252, CRLF, en-tête de licence ; scénarios en ASCII, CRLF, comme leurs voisins) : une source
+par classe, une suite au nom de la classe, cas Given…When…Then en Arrange / Act / Assert ; 124 cas nouveaux, dont 3
+désactivés.
+
+| Source | Cas | Désactivés | Ce qu'ils couvrent |
+|---|---|---|---|
+| `FMTMask.cpp` | 43 | 0 | construction depuis une chaîne et les thèmes (attributs, `?`, agrégats, négations, une valeur par thème, chaîne trop courte, attribut inconnu : `FMTundefined_attribute`, thèmes seuls, défaut), copie, déplacement, égalité par les bits, ordre, hachage (dont un ensemble haché), `isSubsetOf` (développement, masque générique, blocs non pleins), intersection, union, valeurs par thème (`get`, `getAttribute`, `getSubsetCount`, agrégat d'un seul attribut, négation, bits qu'aucun agrégat ne nomme : `FMTundefined_attribute`), `decompose`, `set`, thèmes statiques et sélectionnés, `isNotThemesSubset`, `removeAggregates`, `refine`, `resume`, `setExclusiveBits`, `append`, `swap`, `clear`, presolve (`preSolve`, `canPreSolve`, `getPostSolveMask` et `postSolve`) |
+| `FMTTheme.cpp` | 34 | 0 | construction comme `FMTLandscapeParser` (noms vides, agrégats, index du thème et premier bit), sans agrégat et sans index, thème vide, `isAttribute` (dont un agrégat), `isAggregate`, `getAttributes` (`?`, attribut, agrégats, négations, agrégat d'agrégat et sa source, valeur inconnue : `FMTundefined_attribute`), `inAggregate`, `isValid`, `validate` (masque complet, plus court, plus long, tabulations, attribut inconnu : `FMTundefined_attribute`), noms et chaîne de la section, thèmes indexés (`useIndex`, `getIndex`, `isIndex`, index absent, attribut inconnu : `FMTundefined_attribute`, chaîne `_INDEX`), copie, égalité, presolve (thème gardé avec ses agrégats, thème réduit à un attribut, filtre vide : `FMTinvalid_maskrange`), `updateFromMask` |
+| `FMTDevelopment.cpp` | 42 | 0 | construction, copie, clone, déplacement, égalité, ordre, hachage (dont un ensemble haché), chaîne, accesseurs, `clearLock`, `grow` (âge, période, verrou), `getYieldRequest`, `operable` (âge minimal, intervalle d'âges, yield, masque, verrou, `_LOCKEXEMPT`, période), `anyOperable`, `worthTestingOperability` et ses deux variantes, `getNonOperabilityInfo`, `is`, `operate` à travers des transitions construites en code (âge remis à zéro, attribut cible, âge gardé, `_LOCK` et `_AGE` de cible, deux cibles, deux sources du même masque, aucune source : `FMTinvalid_transition_case`, cible qui ne change rien : `FMTsourcetotarget_transition`, deux cibles identiques : `FMTsame_transitiontargets`), `getInventoryCoef`, `getHarvestCoef` (action entière et partielle) |
+| `Tests/Integration/Parser/FMTActionParser.cpp` | 4 | 2 | défaut 18 (section 2.7) : `_AGE > 10` et `_AGE < 5`, désactivés, à côté de `_AGE >= 11` et `_AGE <= 4`, verts, scénario `strictbounds` |
+| `Tests/Integration/Parser/FMTYieldParser.cpp` | 1 | 1 | défaut 13 (#387) : un bloc `*YT` en colonnes, scénario `timeyieldcolumns` |
+
+- Deux scénarios nouveaux dans `Examples/Models/TWD_land/Scenarios`, qui le disent en tête par un commentaire :
+  `strictbounds` (le `.act` et le `.trn` de la racine, suivis de quatre actions de masque `? prod ?` et de leurs
+  transitions) et `timeyieldcolumns` (le `.yld` de la racine, suivi du bloc `_CP` de la section 2.7, défaut 13). Aucun
+  scénario existant n'a changé.
+- Niveau unitaire : aucun modèle sur disque. Les thèmes sont ceux de TWD_land, construits comme `FMTLandscapeParser`
+  (constructeur à huit arguments, un nom vide par attribut) ; les actions et les transitions de TWD_land, comme
+  `FMTActionParser`, `FMTTransitionParser` et `FMTModel` (une spécification ou une fourche par masque, puis `update`) ;
+  `VOLUMETOTAL` est celui de `peuplement1`. Le presolve suit `FMTModel::preSolve` (filtre de l'union des masques des
+  développements, puis thèmes présolvés), et le postsolve `FMTModel::getPostSolveFilter`. Aucune classe du lot ne
+  demande un modèle ou un état global, et aucun cas ne contourne le code : aucune ligne de dette.
+- `FMTTheme` n'a ni `hash` ni `operator!=` : aucun cas de hachage pour lui. `FMTMaskComparator` et `FMTThemeComparator`
+  restent au lot 8, comme `FMTActualDevelopment` et `FMTFuturDevelopment`, que les cas ne lisent qu'à travers
+  `FMTDevelopment` (`grow` rend un `FMTFuturDevelopment`).
+- Valeurs : bits et chaînes lus dans le code des parseurs et des classes (les bits de `UNITE1` à `UNITE3` sont 0 à 2,
+  ceux de `PEUPLEMENT1` à `FEU` 3 à 6, ceux de `UTR1` à `UTR3` 7 à 9) ; `VOLUMETOTAL` interpolé (80 à 4 ans, 120 à 7
+  ans, 130 à 8 ans) ; index du scénario `AVERAGEP` ; `std::to_string` écrit six décimales (`16.360000`).
+
+**Étape 2, `FMTParser::bounds` sur `<` et `>`** : démontré, défaut 18 (section 2.7), deux cas désactivés et une issue
+à ouvrir. A/B avec l'exécutable officiel `ReadScenario` (`OPERABLE`), d'abord sur une copie de TWD_land dans le
+scratchpad, dont le scénario `strictbounds` avait en plus `volumetotal > 100`, `_CP > 2` et `_CP >= 3`, puis sur le
+scénario du dépôt ; origine dans `2e3dc129` ; refus de Woodstock dans les messages 142 et 143 de `Wk.msg`.
+
+**Étape 3, défaut 13 (#387)** : cas désactivé dans `IntegrationParser` (section 2.7, item 13), sur `timeyieldcolumns`.
+
+**Observations, sans défaut annoncé** (vérifiées par une sonde hors du dépôt, compilée contre le `FMTlib.lib` du build ;
+rien de ce que FMT exécute à partir d'un modèle n'en dépend, ou ce n'est pas démontré) :
+- un masque construit depuis une chaîne plus courte que les thèmes est complété par le premier attribut de chaque thème
+  manquant (`UNITE1 PEUPLEMENT1` donne `UNITE1 PEUPLEMENT1 UTR1`, cas vert commenté), alors que `FMTTheme::validate`,
+  que les parseurs appellent avant de construire un masque, le complète par `?`. Ce constructeur est exposé en Python
+  (`FMTmask(str, themes)`) ;
+- `FMTTheme::isAttribute` accepte un agrégat (cas vert commenté) : `isValid` s'en sert pour accepter les agrégats d'un
+  masque. `FMTTransitionMask::build` s'en sert aussi, si bien qu'une cible écrite avec un agrégat garderait les bits de
+  l'agrégat dans le masque du développement (lu dans le code ; classe du lot 8) ;
+- `FMTTheme::updateFromMask` crée l'agrégat `~FMT1A_1` pour `PEUPLEMENT1` et `FEU`, puis rend `!POURPL`, que
+  `_bitsToStr` trouve avant lui : l'agrégat créé ne sert pas. Les cas verts prennent des attributs qu'aucune négation
+  ne nomme ;
+- `FMTMask::setIntersect` garde le nom d'avant (`UC PROD ?` pour les valeurs `UC POURPL UTR3`) ; ses deux appelants,
+  dans `FMTModel` et `FMTLineGraph`, ne lisent que les bits ;
+- l'âge, le verrou et la période d'un développement sont des `uint8_t` : `setAge(256)` donne 0, `setLock(300)` 44, et
+  `grow` d'un développement de 255 ans à la période 255 donne l'âge 0 à la période 0, sans erreur. TWD_land ne dépasse
+  pas 80 ans (durée de vie). Modèles BFEC : non vérifié ;
+- une action construite en code sans `update` a des bornes d'âge et de période de 0 à 0 : `operable` la refuse à tout
+  développement d'âge ou de période non nul (section 7).
+
+**Non couvert, et pourquoi** : `getYieldRequest`, `operable` et `is` avec un sommet de graphe
+(`Graph::FMTGraphVertexToYield`, hors du Core) ; `FMTMask::binarizedAppend` et `filter`, qui servent aux clés de
+`FMTLineGraph` et de `FMTOutputNode` et à `FMTMaskFilter` (lot 8) ; les data frames du build R de `FMTTheme`
+(`FMTWITHR`) ; la sérialisation (lot 9).
+
+**Vu rouge** (règle 1), rien de commité :
+- une copie faussée des cinq sources, hors du dépôt, avec l'en-tête des lots 7a et 7b qui retourne chaque assertion (le
+  script qui écrit la copie refuse toute autre macro ; `ADD_FAILURE`, qui signale une action absente du modèle, n'est
+  pas retourné), compilée par `cl` contre le `FMTlib.lib` de `build/release` : les 119 cas unitaires et les 2 cas
+  d'intégration actifs échouent, aucun ne passe, aucun par une exception inattendue ;
+- les 3 cas désactivés, lancés avec `GTEST_ALSO_RUN_DISABLED_TESTS=1`, échouent chacun pour sa raison : `_AGE > 10` et
+  `_AGE < 5` sont opérables à 0, 4, 5, 10, 11 et 20 ans ; `CPA` vaut 10, 10, 10, 30, 30, 30, 50 et `CPB` 100, 100, 100,
+  300, 300, 300, 500.
+
+**Vu vert avant le build de Gabriel** : les sources du dépôt, compilées par `cl` avec les options de `UnitCore` et
+d'`IntegrationParser` (leurs `CL.command.1.tlog`, identiques), `/Fo` `/Fd` `/Fp` dans le scratchpad, liées au
+`FMTlib.lib` de `build/release` (FMTlib de `f4252745`, inchangé depuis) :
+- `UnitCore`, ses 19 sources, lancé depuis `bin/Release` : 409 cas verts (290 d'avant et 119 nouveaux), 11
+  désactivés ; mêmes résultats dans un ordre mélangé (`GTEST_SHUFFLE`, graines 4242 à 4244, 3 répétitions) ;
+- `IntegrationParser`, ses 5 sources, lancé depuis une racine du scratchpad (`runroot\build\release\bin\Release`, à
+  côté d'une copie de `Examples/Models/TWD_land` identique au dépôt), pour que ses écritures restent hors de
+  `build/release` : 16 cas verts (14 d'avant et 2 nouveaux), 10 désactivés ; mêmes résultats dans un ordre mélangé
+  (graines 4242 à 4244). L'exécutable officiel, lancé de la même racine, donne 14 verts et 7 désactivés, et les mêmes
+  six messages « Calling pure virtual function » du cas `COS`, préexistants ;
+- en `/W4`, aucun avertissement ne vient des cinq sources nouvelles : les 330 viennent des en-têtes de FMTlib ;
+- rien n'a été écrit dans `build/release`, ni sous `Examples/Models` hors des deux scénarios (`find -newer`,
+  `git status`).
+
+**Documents** : `CoreTestCoverage.csv` (statut `Lot 7c (step 5), done` des trois classes, défaut 18 sur `FMTAction`,
+#387 sur `FMTTimeYieldHandler`, tests manquants), `CoreTestCoverage.md` régénéré (19 classes avec des tests unitaires,
+31 de priorité 1 sans test propre au lieu de 34 ; deux générations identiques), sections 2.7, 4.4, 6.1, 6.3.4, 7 et 8,
+changelog (section non publiée, anglais et français).
+
+**Validation après le build de Gabriel** (2026-10-22, commits `5956123b` et `1754fe30`, build reconfiguré ; FMTlib
+inchangé depuis `f4252745`) :
+- l'arbre de travail est identique à `HEAD`, et les deux commits contiennent les 13 fichiers du lot (`git show --stat`) ;
+  `IntegrationParser.exe` du build date de 9 h 34, `UnitCore.exe` de 9 h 35 ;
+- installation (`INSTALL_TEST_SUITE=public`, 9 h 37) : 719 tests, 0 échec, 686 exécutés et 33 désactivés, 21 s ; unit
+  409 verts et 11 désactivés, integration 16 verts et 10 désactivés, system 236 verts et 12 désactivés, performance 23,
+  other 2 ; aucun test en `T:/` ; les 7 tests Python et la fixture `ExamplesModelsUnchanged` passent. La roue
+  `FMT-1.3.0-cp310-cp310-win_amd64.whl` date de 9 h 36. `InstallTests.xml`, `InstallTests.json`, `LastTest.log` et
+  `LastTestsDisabled.log` copiés dans le scratchpad de la session avant tout appel de ctest ;
+- `RunTests.bat unit` : « 0 tests failed out of 409 », 5,7 s réelles ; unit 409 verts et 11 désactivés sur 420, les 11
+  cas désactivés des lots 7a et 7b (ce lot n'en ajoute aucun au niveau unit) ;
+- `RunTests.bat integration` : « 0 tests failed out of 18 », 2,4 s réelles ; integration 16 verts et 10 désactivés sur
+  26, other 2 (les deux fixtures) : les 3 cas désactivés de ce lot (défaut 18, deux cas ; #387) et les 7 du lot 5 ;
+- `RunTests.bat all-public` : « 0 tests failed out of 686 », 20,1 s réelles ; unit 409 verts et 11 désactivés sur 420,
+  integration 16 verts et 10 désactivés sur 26, system 236 verts et 12 désactivés sur 248, performance 23, other 2 ;
+  Total 686 verts et 33 désactivés sur 719. Par rapport au lot 7b (section 5.10), seuls les niveaux unit et
+  integration changent, des 124 cas ajoutés : 121 verts et 3 désactivés (défaut 18 et #387), justifiés en section
+  2.7. La fixture `ExamplesModelsUnchanged` est verte malgré les deux nouveaux scénarios, et l'arbre de travail est
+  resté identique à `HEAD` après le passage ;
+- non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par la passe
+  `/W4` hors dépôt d'avant le build (aucun dans les sources de tests) ;
+- reste l'issue du défaut 18, à ouvrir par Gabriel (texte dans le rapport du lot 7c) : son numéro ira dans la section
+  2.7, dans les commentaires des deux cas désactivés, dans `CoreTestCoverage.csv` et dans le changelog. Le lot n'ajoute
+  que des tests et deux scénarios qu'eux seuls lisent : la suite BFEC n'est pas relancée.
+
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
 
+- **Fusion de `master` du 2026-10-23 (`eea7fea2`)**, après la v1.4.0 : #379 corrigé (`83e2309e`, défaut 6 de la
+  section 2.7), `MAX_RET` des paramètres de l'ordonnanceur (`9f2c58ca`), le test de `WriteModel` (`9b9ade0b`), et le
+  test `GetGCBMTransitions` (#369). Elle retirait aussi, par erreur (« Merge conflict in rebase fix », `45ac2df5`,
+  confirmé par Gabriel), le correctif du journal de `FMTLpSolver` (`975320eb`, section 9.5, phase 0) et le mode
+  `loggerlifetime` de `SolveWithEachSolver.cpp`, alors que sa ligne restait dans `basetests.csv`. Les deux sont
+  rétablis le 2026-10-23, à l'identique. `9b9ade0b` codait aussi dans `WriteModel.cpp` des chemins de la machine
+  de gcyr (`D:/FMT/...`), dont le dossier de sortie de chaque ligne : ils redeviennent relatifs le même jour. Le changelog, dont la fusion avait rangé sous la v1.4.0 des entrées que
+  cette version ne contient pas, est remis en ordre le même jour. **Rien de la fusion n'est encore compilé ni testé** :
+  la suite publique et la suite BFEC sont à relancer.
+- **Lot 7c livré, commité (`5956123b`, `1754fe30`) et validé le 2026-10-22** (section 5.11) : 119 cas unitaires des
+  masques, des thèmes et des développements, et 5 cas d'intégration, dont 3 désactivés (le défaut 18, nouveau, et
+  #387). Suite publique : 719 tests, 686 verts et 33 désactivés. L'issue du défaut 18 est à ouvrir. **Le lot 7 est
+  terminé** ; le lot 8 suit (section 6.3.5).
+- **Lot 7b livré, commité (`355b2edb`, `1bd707f6`) et validé le 2026-10-22** (section 5.10) : 153 cas unitaires des
+  bornes, des spécifications, des contraintes, des sorties et des yields, dont 7 désactivés (#379, #382, #383, et les
+  défauts 14 à 17, #389 à #392), et un cas d'intégration pour #358. Suite publique : 595 tests, 565 verts et 30
+  désactivés. Le lot 7c suit (section 6.3.4).
+- **Lot 7a livré, commité (`0c35c546`, `51d03e83`) et validé le 2026-10-21** (section 5.9) : 141 cas unitaires des
+  expressions et des gestionnaires de rendements, dont 4 désactivés (#380, défauts 11 et 12, #386 et #388), et le
+  défaut 13 (#387) sans cas. Les lots 7b et 7c suivent (section 6.3.4).
 - **La réorganisation en trois niveaux est terminée** (section 9, ce qui reste ouvert en 9.7) ;
   elle part vers `master` par une demande de tirage. Le lot 6 y est devenu la phase 8. La feuille
   de route reprend au lot 5.
@@ -1385,6 +2084,11 @@ depuis le 2026-10-16) :
   `SolveAndWriteSchedules`, `CreateModel`, `UpdateNonSpatialModel` et `AddYieldHandlers`, cinq défauts
   d'écriture, issues #379 à #383 (section 2.7, défauts 6 à 10). Suite publique : 300 tests, 281 verts
   et 19 désactivés.
+- **Export des classes de Core (session à part, 2026-10-20, section 5.8)** : 18 des 23 classes sans
+  `FMTEXPORT` de l'inventaire sont exportées (commit `f4252745`), validé après le build de Gabriel
+  (sonde B, suite publique et installation inchangées ; BFEC et build R à Gabriel) ; quatre modèles
+  de rendement ne peuvent pas l'être tels quels (ligne de dette d'`Architecture.md`). Le lot 7 peut
+  commencer.
 - **Commits de tests sur `new_test` (Gabriel, 2026-10-20)** : ajouter des commits qui ajoutent des
   tests et renforcent la protection de FMT n'est pas un problème, même avant la fusion de la demande
   de tirage de la réorganisation.
@@ -1426,6 +2130,38 @@ qu'un gros lot unique.
 **Inventaire par classe reporté (2026-10-16).** `Documentation/Testing/CoreTestCoverage.md`, prévu au
 lot 6 (section 6.3.3, point 3), n'est pas fait par la phase 8, qui reprend ce lot : il passe au lot
 qui suit la réorganisation, après la phase 9.
+
+**Inventaire par classe fait (2026-10-20).** `Documentation/Testing/CoreTestCoverage.md` liste les
+61 classes et structures de `Core` (templates et classes imbriquées publiques comprises), avec leur
+priorité, leurs tests unitaires, d'intégration et système, leurs défauts et les colonnes de #350. Il
+est en anglais, comme le reste de `Documentation/`, et se régénère sans build :
+
+```bash
+cmake -P Documentation/Testing/CoreTestCoverage.cmake
+```
+
+- Le script lit les en-têtes d'`Include/` en octets (certains sont en cp1252), compte les
+  `TEST(<Classe>, …)` de `Tests/Unit` et `Tests/Integration`, et garde les colonnes écrites à la main
+  dans `CoreTestCoverage.csv`, à côté du document ; le texte du document est dans
+  `CoreTestCoverage.md.in`. Une classe apparue reçoit une ligne vide dans le CSV, une classe disparue
+  y reste marquée `REMOVED` : le script les affiche et le document les liste.
+- Priorité : celle de la section 3 (1 : la chaîne de la section 3.1 ou un défaut de la section 2.7 ;
+  2 : le niveau 2 ; 3 : le niveau 3), la règle est écrite en tête du document. Résultat : 50 classes de
+  priorité 1, 1 de priorité 2 (`FMTGCBMTransition`), 10 de priorité 3 (les modèles de rendement et
+  `FMTSerie`).
+- Tests système : seulement une ligne ou un exécutable de la suite publique qui vérifie une valeur de la
+  classe (sections 2.2 et 3.1) ; sinon, la colonne dit *None with a check*.
+- État au 2026-10-20 : 3 classes ont des tests unitaires (`FMTBounds`, `FMTOperator`, `FMTSpec`), aucune
+  n'a de suite d'intégration à son nom, et 47 classes de priorité 1 n'ont aucun test propre. Les
+  classes imbriquées publiques de `Core` : aucune aujourd'hui.
+- Vérification : le script a été comparé à un prototype jetable en Python (mêmes 61 classes), à une
+  dizaine d'en-têtes relus à la main (`FMTBounds.hpp`, `FMTList.hpp`, `FMTOutputNode.h`,
+  `FMTYieldHandler.h`, `FMTutility.h`, `FMTMask.h`, `FMTTheme.h`, `FMTLookup.h`, `FMTObject.h`,
+  `FMTDevelopment.h`, `FMTAction.h`) et à un en-tête factice (classes imbriquées publiques, privées et
+  protégées, `struct` dans une fonction, spécialisation, `"/*"` dans une chaîne, macro sur plusieurs
+  lignes, classe retirée). Deux générations de suite donnent le même document.
+- Piège : `"+-/*"` dans `FMTGraph.hpp` ouvre un faux commentaire si l'on retire les commentaires avant
+  les chaînes ; le script les retire en une passe.
 
 
 #### 6.3.1 D'abord : corriger les quatre défauts de la section 2.7 — session séparée
@@ -1503,7 +2239,7 @@ le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à
   2. **`Tests/Core/CMakeLists.txt` et la cible `FMTCoreTests`**, inscrite avec
      `LABELS "unit;core"` pour que `ctest -L core` fonctionne, et respectant
      `-DWITHOUT_TESTS=ON`.
-  3. **`Documentation/Testing/CoreTestCoverage.md`** : l'inventaire par classe que demande #350,
+  3. **`Documentation/Testing/CoreTestCoverage.md`** (fait le 2026-10-20, section 6.3) : l'inventaire par classe que demande #350,
      avec ses colonnes. La colonne « Priority » se remplit depuis la section 3 de ce fichier plutôt
      que d'être réinventée. L'inventaire se génère depuis les en-têtes, pour qu'aucune classe ne
      manque.
@@ -1524,10 +2260,41 @@ le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à
      équation de rendement ;
   2. `FMTData` et les gestionnaires de rendements (`FMTAgeYieldHandler`,
      `FMTComplexYieldHandler`, `FMTTimeYieldHandler`) — défauts #347 et #357 ;
-  3. `FMTSpec` et `FMTBounds` — défaut #358, et c'est ce qui décide de toute opérabilité ;
-  4. `FMTMask`, puis `FMTTheme`, puis `FMTDevelopment` — traversés par tout modèle.
+  3. `FMTSpec` et `FMTBounds` — défaut #358, et c'est ce qui décide de toute opérabilité ; avec
+     `FMTBounds`, ses classes dérivées `FMTAgeBounds`, `FMTYldBounds`, `FMTLockBounds` et
+     `FMTPerBounds` ;
+  4. `FMTConstraint`, `FMTOutput` et `FMTYields` — défauts #379 et #382, #381, #383 ;
+  5. `FMTMask`, puis `FMTTheme`, puis `FMTDevelopment` — traversés par tout modèle.
+- **Ce que l'inventaire a changé (2026-10-20).** Deux ajouts, sans toucher à l'ordre par risque :
+  - l'étape 4 est nouvelle. Le critère de ce lot est la section 2.7 : une classe où un défaut a déjà
+    été trouvé. Les défauts 6 à 10 (#379 à #383) y sont entrés au lot 5, après l'écriture de cette
+    liste, et désignent ces trois classes ; `FMTConstraint` et `FMTOutput` étaient au lot 8, `FMTYields`
+    dans aucun lot. Elles passent devant l'étape 5, comme la section 6.3 met les classes à défaut
+    devant celles que tout modèle traverse ;
+  - à l'étape 3, les quatre classes dérivées de `FMTBounds` sont nommées : `FMTBounds<int>` n'est
+    atteignable que par elles (ligne de dette d'`Architecture.md`), et leurs constructeurs sont ce que
+    lit le parseur.
+  Les statuts `Lot 7, step <n>` de `CoreTestCoverage.md` suivent ces étapes.
+- **Vérifié avant l'étape 1 (2026-10-20, session à part, section 5.8).** `FMTExpression` et
+  `FMTFunctionCall` étaient déclarées sans `FMTEXPORT` : une sonde liée au `FMTlib.lib` du build ne se
+  liait pas (LNK2019 sur leurs constructeurs, `shuntingYard`, `getVariables`, `getInFix`, `call`,
+  `valid`). Elles sont exportées depuis cette session : l'étape 1 les construit directement, sans
+  passer par `FMTYields::get`, et aucune ligne de dette ne s'ajoute.
 - **Quoi pour chacune.** Construction, copie, comparaison, hachage quand il existe, bornes,
   entrées invalides et exceptions attendues, comme le détaille #350.
+- **Découpage en trois sessions (Gabriel, 2026-10-21).**
+  - **7a** : étapes 1 et 2. **Fait et validé le 2026-10-21** (section 5.9, `0c35c546`) :
+    141 cas, dont 4 désactivés ; défauts 11 à 13 (section 2.7) ; non couverts : `getEndPoint`,
+    `_ENDPOINT`, `getAge`, `complexYldToAgeYld` et les surcharges, qui demandent `FMTSpec` et `FMTYields`.
+  - **7b** : étapes 3 et 4, les bornes (`FMTSpec`, `FMTBounds` et ses quatre classes dérivées),
+    `FMTConstraint`, `FMTOutput` et `FMTYields`. **Fait et validé le 2026-10-22** (section 5.10, `355b2edb`) :
+    154 cas, dont 7 désactivés, avec ce que 7a avait laissé ; défauts 14 à 17 (#389 à #392, section 2.7). Le test
+    du défaut 13 (#387, lecture de `_CP`) est fait au lot 7c.
+  - **7c** : étape 5, `FMTMask`, `FMTTheme` et `FMTDevelopment`. **Fait et validé le 2026-10-22** (section 5.11,
+    `5956123b`) : 124 cas, dont 3 désactivés ; défaut 18 (section 2.7) et le cas de #387.
+    `FMTActualDevelopment` et `FMTFuturDevelopment` restent au lot 8.
+- **Le lot 7 est terminé** (2026-10-22) : ses cinq étapes ont leurs tests unitaires, et les défauts qu'elles ont révélés
+  ont leur cas désactivé.
 
 #### 6.3.5 Lot 8 : unitaires du reste de Core (jalons 5 à 7 de #350) — effort `high`
 
@@ -1535,6 +2302,34 @@ le comportement de `^` que Gabriel a classé comme connu (#346, section 2.7), à
 `FMTConstraint`, `FMTGraphStats` et les types spatiaux. Ces classes sont déjà exercées par les
 tests de chaîne des lots 3 et 4 : le travail consiste à descendre au niveau de l'objet construit
 dans le test, là où les copies, les comparaisons et les cas limites deviennent atteignables.
+
+**Liste revue avec l'inventaire (2026-10-20).** Le lot 8 prend les classes de `CoreTestCoverage.md`
+dont le statut est `Lot 8`, dans l'ordre de leur priorité : les classes de priorité 1 que le lot 7 ne
+prend pas, puis la priorité 2, puis la 3. Ce que cela change :
+
+- `FMTConstraint` et `FMTOutput` passent au lot 7 (section 6.3.4, étape 4) ;
+- s'ajoutent les classes de priorité 1 qu'aucun lot ne nommait : `FMTActualDevelopment`,
+  `FMTFuturDevelopment`, `FMTDevelopmentPath`, `FMTFork`, `FMTTransitionMask`, `FMTLifespans`,
+  `FMTList`, `FMTConstants`, `FMTObject`, `FMTYieldHandler`, `FMTYieldsCache`, `FMTYieldDevelopment`,
+  `FMTMaskFilter`, `FMTLookup`, `FMTOutputSource`, `FMTOutputNode`, et les aides `cmpYieldString`,
+  `FMTOutputComparator` et `FMTOutputNodeHasher` ;
+- puis `FMTGCBMTransition` (priorité 2), puis les modèles de rendement, `FMTModelYieldHandler` et
+  `FMTSerie` (priorité 3) ;
+- `FMTYieldRequest` et les huit comparateurs du Core n'étaient pas exportés : un test lié à la DLL ne
+  pouvait pas les appeler. Ils le sont depuis la session à part du 2026-10-20 (section 5.8), avec
+  `FMTOutputNodeHasher`, `FMTYieldsCache`, `FMTYieldDevelopment`, `FMTYieldModel`,
+  `FMTYieldModelRandom`, `FMTYieldModelTsla`, `FMTYieldModelUnitCoverage` et les deux classes de la
+  section 6.3.4 : 18 des 23 classes sans `FMTEXPORT` de l'inventaire. Leur statut est redevenu
+  `Lot 8`. Restent sans `FMTEXPORT` :
+  - `cmpYieldString`, entièrement définie dans son en-tête : un test l'appelle sans export ;
+  - `FMTYieldModelNn`, `FMTYieldModelNep`, `FMTYieldModelPools` et `FMTYieldModelDecisionTree`, qu'on
+    ne peut pas exporter telles quelles (ligne de dette d'`Architecture.md`, section 5.8). Un test ne
+    peut ni les construire ni appeler leurs membres : statut `Lot 8, after priority 2 and the debt
+    row`. Leur export demande plus que `FMTEXPORT` ; Gabriel les a laissées ainsi le 2026-10-20 (section
+    5.8) : une modification de FMTlib à faire dans une autre session avant leur tour ;
+- `FMTEvent`, `FMTGraphStats` et les types spatiaux ne sont pas dans l'espace de noms `Core`
+  (`Spatial`, `Graph`) : l'inventaire ne les liste pas. Ils restent au lot 8 parce que le jalon 7 de
+  #350 les nomme.
 
 #### 6.3.6 Lot 9 : exigences transverses de #350 — effort `xhigh`
 
@@ -1585,7 +2380,8 @@ des rendements faux.
 
 L'issue peut être fermée quand, ensemble :
 
-- `CoreTestCoverage.md` ne montre plus de composant prioritaire sans test ;
+- `CoreTestCoverage.md` ne montre plus de composant prioritaire sans test : sa section *Priority 1
+  classes without a test of their own* est vide (47 classes le 2026-10-20) ;
 - `ctest -L core` tourne, et la suite de chaîne reste verte ;
 - les exigences transverses du lot 9 sont satisfaites ou explicitement écartées dans l'issue, en
   disant pourquoi ;
@@ -1593,7 +2389,7 @@ L'issue peut être fermée quand, ensemble :
   des tests BFEC a décidé du sort de leurs lignes de `knownbugs.csv` et de leurs tests (section
   9.7) ;
 - ce fichier et `CoreTestCoverage.md` disent chacun ce qu'ils couvrent et pointent l'un vers
-  l'autre.
+  l'autre (fait le 2026-10-20 : sections 0.2 et 6.3 d'ici, introduction de `CoreTestCoverage.md`).
 
 Le jour de la fermeture, écrire en section 0.4 ce qui l'a fermée, et ce que ce chantier reprend ou
 abandonne.
@@ -1681,10 +2477,15 @@ abandonne.
   - `WrapperCoreRunAreaVariability`, `WrapperCoreRunPlanning` et `WrapperCoreRunSimulatedAnnealing`
     l'appellent encore dans leur affichage d'erreur : à corriger quand on les touche.
 - **Macros de `windows.h`** (par GDAL) : outre `min`, `max`, `ERROR`, `NEAR`, `FAR`, `IN`,
-  `OUT`, `DELETE`, aussi `DIFFERENCE` (lot 2). Écrire `(std::max)(...)` et
-  `(std::numeric_limits<int>::max)()`.
-- **Classes non exportées** : `Core::FMTActionComparator` (et d'autres comparateurs) n'a pas
-  `FMTEXPORT`. Un test qui l'utilise ne se lie pas.
+  `OUT`, `DELETE`, aussi `DIFFERENCE` (lot 2) et `small` (`#define small char`, de `rpcndr.h`, lot 7c). Écrire
+  `(std::max)(...)` et `(std::numeric_limits<int>::max)()`.
+- **Classes non exportées** : une classe sans `FMTEXPORT` dont les membres sont définis dans
+  `Source/` ne se lie pas dans un test (LNK2019). Depuis le 2026-10-20 (section 5.8), les comparateurs
+  du Core, `FMTYieldRequest`, `FMTExpression` et `FMTFunctionCall` sont exportés. Restent sans export :
+  `Models::FMTModelComparator`, `Heuristics::FMTOperatingAreaSchemeComparator`, `FMTYieldModelNn` et
+  ses dérivées `FMTYieldModelNep` et `FMTYieldModelPools`, et `FMTYieldModelDecisionTree` (lignes de
+  dette d'`Architecture.md`). `ReadScenario` cherche encore les actions et les transitions par leur
+  nom, avec un commentaire qui dit leurs comparateurs non exportés : à reprendre dans un lot de tests.
 - **`FMTBounds<int>` à côté d'une classe de bornes exportée** (phase 8) : un exécutable dont une
   source utilise `Core::FMTBounds<int>` directement et une autre `FMTAgeBounds`, `FMTPerBounds` ou
   `FMTLockBounds` (par `FMTSpec`, par exemple) ne se lie pas : LNK2005 sur `~FMTBounds<int>`. MSVC
@@ -1709,6 +2510,17 @@ abandonne.
   - les DLL de GoogleTest (`gtest`, `gtest_main`, `gmock`, `gmock_main`) partent dans
     `bin/Release` et dans la roue Python, comme toutes les DLL de vcpkg : laissé tel quel (décision
     de Gabriel, 2026-10-16), à reprendre avec la liste des DLL de l'installation.
+  - lancé par un `.bat`, un exécutable GoogleTest perd ses options `--gtest_x=y` : cmd coupe les
+    arguments sur `=`. Passer par les variables `GTEST_FILTER`, `GTEST_ALSO_RUN_DISABLED_TESTS`,
+    `GTEST_BRIEF`, `GTEST_SHUFFLE` (lot 7a) ;
+  - vu rouge d'une suite entière (lot 7a) : une copie faussée hors du dépôt, où un en-tête inclus après
+    `<gtest/gtest.h>` redéfinit chaque assertion en son contraire ; tous les cas actifs doivent échouer
+    (section 5.9) ;
+  - `IntegrationParser` lu et écrit par des chemins relatifs à `bin/Release` (`../../../../Examples/Models`,
+    `../../tests/IntegrationParser`) : pour le lancer sans écrire dans `build/release` (lot 7c), lui donner pour dossier
+    courant `<racine>\build\release\bin\Release`, à côté d'une copie de `Examples/Models/TWD_land` dans
+    `<racine>\Examples\Models`. Depuis le scratchpad, les chemins de ses cas dépassent 260 caractères
+    (`create_directories` échoue) : prendre le nom court 8.3 de la racine (`for %I in (...) do @echo %~sI`).
 - **Argument vide** : CMake retire une colonne vide de la commande, donc un test ne peut pas
   attendre une valeur vide. Par exemple, les thèmes de la racine n'ont pas de nom.
 - **Longueur des chemins** : le dossier de sortie d'un test ne doit pas porter une liste de
@@ -1755,6 +2567,14 @@ abandonne.
   - écrire, relire et réécrire ne suffit pas : un défaut de la première écriture peut se relire et se
     réécrire à l'identique (`_DISCOUNTFACTOR`, #380). Comparer aussi le modèle relu au modèle
     écrit (`Tests/Integration/Parser/ParserRoundTrip.h`).
+- **Un yield complexe ne s'évalue qu'à travers `FMTYields::get`** (lot 7a) : sa requête doit avoir été
+  préparée par `FMTYields` ; faite d'un développement seul, `FMTComplexYieldHandler::get` lit un
+  `FMTYields` nul (ligne de dette d'`Architecture.md`). Les gestionnaires d'âge et de temps lisent
+  seulement l'âge ou la période de la requête, et se testent seuls.
+- **`FMTData.h` ne se compile pas seul** (lot 7a) : son `std::map<FMTDevelopment, double>` demande le
+  type complet (C2079 dans `<utility>`). Inclure `FMTDevelopment.h` avec lui.
+- **`FMTData` écrit ses nombres avec 17 chiffres** (`boost::lexical_cast`) : 0,04 devient
+  `0.040000000000000001`, que le parseur relit 0,04. Une chaîne attendue doit le prévoir.
 - **`FMTYields` ne se compare pas** : `operator==` compare les adresses des gestionnaires (section
   2.7, défaut 10, #383), si bien que deux copies sont inégales. Comparer des valeurs de yields.
 - **`FMTYieldRequest` garde le premier `FMTYields` qui l'a servie** (`_updateData`), avec des
@@ -1762,6 +2582,12 @@ abandonne.
   après la destruction de la copie que rend `FMTModel::getYields()`, elle lit de la mémoire libérée
   (noms de yields illisibles et exceptions en série dans une sonde du lot 5). Construire une requête
   par appel : `yields.get(development.getYieldRequest(), nom)`, `yields` gardé en vie.
+- **Une `FMTYieldRequest` garde l'adresse de son développement** (lot 7b) : construite sur un temporaire
+  (`FMTYieldRequest request(getDevelopment(...))`), elle lit de la mémoire libérée dès l'instruction suivante. Nommer
+  le développement et le garder en vie aussi longtemps que la requête.
+- **Une action ou une transition construite dans le code passe par `update`** (lot 7c), comme dans `FMTModel` : c'est
+  `update` qui réduit les masques et fixe les bornes d'âge et de période que `FMTDevelopment::operable` lit d'abord.
+  Sans lui, ces bornes valent 0 à 0, et l'action n'est opérable pour aucun développement d'âge ou de période non nul.
 - **Un modèle construit en code ne se compare pas section par section à sa relecture** : la lecture
   remplit des noms d'attributs que le code laisse vides, et FMT ajoute un `_DEATH` par défaut, dont la
   transition n'est pas égale à sa forme écrite et relue (`CreateModel`, `level`). Comparer l'optimum.
@@ -1795,6 +2621,9 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-15 (#357, `15427a6d`) | 270 `all-public` (266 + 4 lignes `DISCOUNT*`) ; résumé : system 233 verts et 12 désactivés sur 245, performance 23, other 2 | 27,1 s réelles | — | — | — | — | 12 | — |
 | 2026-10-15 (taux décimal, `62f9e288`) | 273 `all-public` (270 + 3 lignes `DISCOUNT*`) ; résumé : system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 13,2 s réelles | — | — | — | — | 12 | — |
 | 2026-10-20 (lot 5, `90ef4ad2`) | 300 `all-public` (280 + 20 cas `Integration.`) ; résumé : unit 7, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 13,8 s réelles | — | 13 | 2 | 0 | 19 | —
+| 2026-10-21 (lot 7a, `0c35c546`) | 441 `all-public` (300 + 141 cas `Unit.`) ; résumé : unit 144 verts et 4 désactivés sur 148, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 15,5 s réelles | — | 13 | 2 | 0 | 23 | —
+| 2026-10-22 (lot 7b, `355b2edb`) | 595 `all-public` (441 + 153 cas `Unit.` + 1 cas `Integration.`) ; résumé : unit 290 verts et 11 désactivés sur 301, integration 14 verts et 7 désactivés sur 21, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 16,5 s réelles | — | 13 | 2 | 0 | 30 | —
+| 2026-10-22 (lot 7c, `5956123b`) | 719 `all-public` (595 + 119 cas `Unit.` + 5 cas `Integration.`) ; résumé : unit 409 verts et 11 désactivés sur 420, integration 16 verts et 10 désactivés sur 26, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 20,1 s réelles | — | 13 | 2 | 0 | 33 | —
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).

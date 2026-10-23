@@ -33,7 +33,7 @@ namespace Core
 	@brief Request for yield values using a development and optionally a graph vertex.
 	@details The yield is calculated using the FMTYields class and the graph to locate the actual state of the development. A request can also be built without any reference to a graph.
 	*/
-	class FMTYieldRequest final : public FMTObject
+	class FMTEXPORT FMTYieldRequest final : public FMTObject
 	{
 	public:
 		typedef typename std::vector<std::pair<FMTMask, std::unique_ptr<FMTYieldHandler>>>::const_iterator const_iterator;

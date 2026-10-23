@@ -1,0 +1,42 @@
+; The root transitions, then those of the four actions of this scenario.
+*CASE Coupetotale
+*SOURCE  ? ? ?
+*TARGET  ? ? ?  100.0
+
+*CASE aCaribou
+*SOURCE ? ? ?
+*TARGET ? ? ? 100.00 _LOCK 1
+
+*CASE plantation
+*SOURCE  ? ? ?
+*TARGET  ? peuplement1 ?  100.00
+
+*CASE aFire
+*SOURCE ? ? ?
+*TARGET ? feu ? 100.00
+
+*CASE arecup
+*SOURCE ? feu ?
+*TARGET  ? peuplement1 ?  100.00
+
+*CASE _DEATH
+*SOURCE ? feu ?
+*TARGET  ? peuplement1 ?  100.00
+*SOURCE ? ? ?
+*TARGET  ? ? ?  100.00
+
+*CASE aOlderThan
+*SOURCE ? ? ?
+*TARGET ? peuplement1 ? 100.00
+
+*CASE aFromAge
+*SOURCE ? ? ?
+*TARGET ? peuplement1 ? 100.00
+
+*CASE aYoungerThan
+*SOURCE ? ? ?
+*TARGET ? peuplement1 ? 100.00
+
+*CASE aUpToAge
+*SOURCE ? ? ?
+*TARGET ? peuplement1 ? 100.00
