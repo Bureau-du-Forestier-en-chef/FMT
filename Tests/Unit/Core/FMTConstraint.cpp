@@ -394,9 +394,7 @@ TEST(FMTConstraint, GivenAMinimizationWithSignedPenaltiesWhenConvertedToStringTh
     EXPECT_EQ(written, "_MIN OVOL+_PENALTY(CARIBOU,RECOLTE) 1.._LENGTH");
 }
 
-// Disabled: a penalty without sign is stored as Penalty_<goal>, and operator std::string takes the last letter of
-// Penalty for its sign (#379).
-TEST(FMTConstraint, DISABLED_GivenAMinimizationOfPenaltiesWithoutSignWhenConvertedToStringThenWritesThemWithoutSign)
+TEST(FMTConstraint, GivenAMinimizationOfPenaltiesWithoutSignWhenConvertedToStringThenWritesThemWithoutSign)
 {
     // Arrange: _MIN _PENALTY(CARIBOU,RECOLTE) 1.._LENGTH, as the objective of TWD_land
     Core::FMTConstraint objective(Core::FMTconstrainttype::FMTMINobjective, Core::FMTOutput());
