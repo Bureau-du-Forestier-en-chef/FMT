@@ -101,13 +101,13 @@ namespace Models
 		matrixcache(rhs.matrixcache),solvertype(rhs.solvertype), usecache(rhs.usecache),
 		m_ColdStartParameters(rhs.m_ColdStartParameters),m_WarmStartParameters(rhs.m_WarmStartParameters)
 		{
+       m_solverLogger = rhs.m_solverLogger;
 		solverinterface = copySolverInterface(rhs.solverinterface, rhs.solvertype);
 		//Fix because mosek resolve in the copysolver maybe return an non optimal solution 
 		if(rhs.solverinterface->isProvenOptimal() && !solverinterface->isProvenOptimal())
 		{
 			this->resolve();
 		}
-		//passInMessageHandler(*_logger);
 		}
 
 	void FMTLpSolver::swap(FMTLpSolver& rhs)
@@ -116,6 +116,7 @@ namespace Models
 		solvertype = rhs.solvertype;
 		usecache = rhs.usecache;
 		solverinterface.swap(rhs.solverinterface);
+      m_solverLogger.swap(rhs.m_solverLogger);
 		m_ColdStartParameters.swap(rhs.m_ColdStartParameters);
 		m_WarmStartParameters.swap(rhs.m_WarmStartParameters);
 	}
@@ -129,13 +130,13 @@ namespace Models
 			usecache = rhs.usecache;
 			solvertype = rhs.solvertype;
 			solverinterface = copySolverInterface(rhs.solverinterface,rhs.solvertype);
+            m_solverLogger = rhs.m_solverLogger;
 			m_ColdStartParameters=rhs.m_ColdStartParameters;
 			m_WarmStartParameters=rhs.m_WarmStartParameters;
 			if(rhs.solverinterface->isProvenOptimal() && !solverinterface->isProvenOptimal())
 			{
 				this->resolve();
 			}
-			//passInMessageHandler(*_logger);
 			}
 		return *this;
 		}
@@ -147,9 +148,10 @@ namespace Models
 		m_ColdStartParameters(strtoParams(p_ColdStartParameters)),
 		m_WarmStartParameters(strtoParams(p_WarmStartParameters))
 		{
+      m_solverLogger = _logger->Clone();
 		solverinterface = buildSolverInterface(lsolvertype);
 		//solverinterface->setStrParam(OsiStrParam::OsiProbName, p_problemName);
-		passInMessageHandler(*_logger);
+     passInMessageHandler(*m_solverLogger);
 		/*if (solvertype == FMTSolverInterface::MOSEK)//weird in debug...
 			{
 			OsiMskSolverInterface* mskSolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
@@ -1002,7 +1004,9 @@ namespace Models
 	{
 		try {
 			Core::FMTObject::passInLogger(logger);
-			passInMessageHandler(*getLogger());
+         std::shared_ptr<Logging::FMTLogger> newSolverLogger(_logger->Clone());
+			passInMessageHandler(*newSolverLogger);
+			m_solverLogger = std::move(newSolverLogger);
 		}
 		catch (...)
 		{
