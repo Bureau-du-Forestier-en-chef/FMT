@@ -1,3 +1,26 @@
+## [Non publié] - 2026-10-23 (eea7fea2)
+
+### Ajouté
+
+- Exportation par `FMTlib` de 18 classes du Core qu’un programme lié à la DLL, comme un test unitaire, ne pouvait pas utiliser : les comparateurs `FMTActionComparator`, `FMTActualDevelopmentComparator`, `FMTMaskComparator`, `FMTOutputNodeValueComparator`, `FMTOutputNodeOriginComparator`, `FMTOutputSourceComparator`, `FMTThemeComparator` et `FMTTransitionComparator`, `FMTOutputNodeHasher`, `FMTYieldRequest`, `FMTExpression`, `FMTFunctionCall`, `FMTYieldsCache`, `FMTYieldDevelopment`, et les modèles de rendement `FMTYieldModel`, `FMTYieldModelRandom`, `FMTYieldModelTsla` et `FMTYieldModelUnitCoverage` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace).
+- Ajout de tests unitaires des expressions et des gestionnaires de rendements du Core, construits en code sans modèle : `FMTOperator`, `FMTExpression`, `FMTFunctionCall`, `FMTData`, `FMTAgeYieldHandler`, `FMTTimeYieldHandler` et `FMTComplexYieldHandler` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). Ils fixent les comportements connus de #346 et de #347, et ont révélé trois défauts, dont les deux premiers sont gardés comme cas désactivés jusqu’à leur correction :
+  - #386 [BUG] Un moins qui suit un opérateur est lu comme une soustraction dans `_EQUATION`
+  - #388 [BUG] Les yields d’un bloc `*YT` lisent tous la période de départ du premier
+  - #387 [BUG] En colonnes (`_CP`), chaque ligne d’un bloc `*YT` retarde d’une période les valeurs des lignes suivantes
+- Ajout de tests unitaires des bornes, des spécifications, des contraintes, des sorties et des rendements du Core, construits en code sans modèle : `FMTBounds` par `FMTAgeBounds`, `FMTYldBounds`, `FMTLockBounds` et `FMTPerBounds`, `FMTSpec`, `FMTConstraint`, `FMTOutput` et `FMTYields`, avec les surcharges, `getAge` et `getEndPoint` des gestionnaires de rendements, et d’un test d’intégration de `FMTTransitionParser` qui fixe le comportement connu de #358 (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). Ils montrent #379, #382 et #383 plus près de leur cause, et ont révélé quatre défauts, chacun gardé comme cas désactivé jusqu’à sa correction :
+  - #389 [BUG] `_MAX` part de 0 : le maximum de yields tous négatifs vaut 0
+  - #390 [BUG] `FMTYields::getFromFactor` multiplie le taux et les années d’un `_DISCOUNTFACTOR` au lieu de sa valeur
+  - #391 [BUG] `FMTYields::getFromFactor` ne multiplie aucun yield quand on n’en nomme aucun, alors que sa documentation dit tous
+  - #392 [BUG] `_ENDPOINT` provoque une violation d’accès dès que sa source sort de ses bornes
+- Ajout de tests unitaires des masques, des thèmes et des développements du Core, construits en code sans modèle : `FMTMask`, `FMTTheme` et `FMTDevelopment`, avec l’opérabilité et `operate` à travers des actions et des transitions construites en code, et de tests d’intégration de `FMTActionParser` et de `FMTYieldParser` sur deux nouveaux scénarios de `TWD_land`, `strictbounds` et `timeyieldcolumns` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). Ils gardent #387 comme cas désactivé, et ont révélé un défaut, gardé comme cas désactivés jusqu’à sa correction :
+  - [BUG] Une condition d’opérabilité écrite avec `>` ou `<` est lue sans sa borne : l’action est opérable à tout âge (issue à ouvrir)
+
+### Corrigé
+
+- Rétablissement du correctif de la durée de vie du journal de `FMTLpSolver`, que la v1.4.0 avait perdu dans la résolution d’un conflit de fusion : chaque solveur garde de nouveau sa propre copie du journal, et le cas `loggerlifetime` de `SolveWithEachSolver`, dont la ligne était toujours inscrite, copie de nouveau 2000 fois un modèle résolu.
+- Un objectif `_PENALTY` sans signe s’écrit de nouveau sans signe, au lieu de `y_PENALTY` (#379 [BUG] Un objectif `_PENALTY` sans signe est réécrit `y_PENALTY`).
+- La colonne `MAX_RET` des paramètres de l’ordonnanceur des unités d’aménagement n’est lue que si elle contient un nombre, et l’écart entre les temps de retour minimal et maximal ne se calcule plus à l’envers.
+
 ## [v1.4.0] - 2026-10-21 (1cf2b516)
 
 ### Ajouté
@@ -19,18 +42,6 @@
   - #381 [BUG] Un output qui mêle sources d’inventaire et d’action écrit ses sorties cachées, que chaque réécriture répète
   - #382 [BUG] Une contrainte `_RANDOM(<output>)` est réécrite sans `_RANDOM`
   - #383 [BUG] `FMTYields::operator==` compare les adresses des gestionnaires : deux copies d’un modèle sont inégales, et `writeToProject` écrit toujours le `._yld` d’un scénario
-- Exportation par `FMTlib` de 18 classes du Core qu’un programme lié à la DLL, comme un test unitaire, ne pouvait pas utiliser : les comparateurs `FMTActionComparator`, `FMTActualDevelopmentComparator`, `FMTMaskComparator`, `FMTOutputNodeValueComparator`, `FMTOutputNodeOriginComparator`, `FMTOutputSourceComparator`, `FMTThemeComparator` et `FMTTransitionComparator`, `FMTOutputNodeHasher`, `FMTYieldRequest`, `FMTExpression`, `FMTFunctionCall`, `FMTYieldsCache`, `FMTYieldDevelopment`, et les modèles de rendement `FMTYieldModel`, `FMTYieldModelRandom`, `FMTYieldModelTsla` et `FMTYieldModelUnitCoverage` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace).
-- Ajout de tests unitaires des expressions et des gestionnaires de rendements du Core, construits en code sans modèle : `FMTOperator`, `FMTExpression`, `FMTFunctionCall`, `FMTData`, `FMTAgeYieldHandler`, `FMTTimeYieldHandler` et `FMTComplexYieldHandler` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). Ils fixent les comportements connus de #346 et de #347, et ont révélé trois défauts, dont les deux premiers sont gardés comme cas désactivés jusqu’à leur correction :
-  - #386 [BUG] Un moins qui suit un opérateur est lu comme une soustraction dans `_EQUATION`
-  - #388 [BUG] Les yields d’un bloc `*YT` lisent tous la période de départ du premier
-  - #387 [BUG] En colonnes (`_CP`), chaque ligne d’un bloc `*YT` retarde d’une période les valeurs des lignes suivantes
-- Ajout de tests unitaires des bornes, des spécifications, des contraintes, des sorties et des rendements du Core, construits en code sans modèle : `FMTBounds` par `FMTAgeBounds`, `FMTYldBounds`, `FMTLockBounds` et `FMTPerBounds`, `FMTSpec`, `FMTConstraint`, `FMTOutput` et `FMTYields`, avec les surcharges, `getAge` et `getEndPoint` des gestionnaires de rendements, et d’un test d’intégration de `FMTTransitionParser` qui fixe le comportement connu de #358 (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). Ils montrent #379, #382 et #383 plus près de leur cause, et ont révélé quatre défauts, chacun gardé comme cas désactivé jusqu’à sa correction :
-  - #389 [BUG] `_MAX` part de 0 : le maximum de yields tous négatifs vaut 0
-  - #390 [BUG] `FMTYields::getFromFactor` multiplie le taux et les années d’un `_DISCOUNTFACTOR` au lieu de sa valeur
-  - #391 [BUG] `FMTYields::getFromFactor` ne multiplie aucun yield quand on n’en nomme aucun, alors que sa documentation dit tous
-  - #392 [BUG] `_ENDPOINT` provoque une violation d’accès dès que sa source sort de ses bornes
-- Ajout de tests unitaires des masques, des thèmes et des développements du Core, construits en code sans modèle : `FMTMask`, `FMTTheme` et `FMTDevelopment`, avec l’opérabilité et `operate` à travers des actions et des transitions construites en code, et de tests d’intégration de `FMTActionParser` et de `FMTYieldParser` sur deux nouveaux scénarios de `TWD_land`, `strictbounds` et `timeyieldcolumns` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). Ils gardent #387 comme cas désactivé, et ont révélé un défaut, gardé comme cas désactivés jusqu’à sa correction :
-  - [BUG] Une condition d’opérabilité écrite avec `>` ou `<` est lue sans sa borne : l’action est opérable à tout âge (issue à ouvrir)
 - Ajout de tests système sur le modèle public `TWD_land` : lecture des scénarios (rendements, sorties, opérabilité, transitions, croissance), erreurs de lecture et leurs codes d’exception, scénarios lus ensemble, statistiques de planification et rejeu du calendrier optimal. Une fixture vérifie qu’aucun test ne modifie `Examples/Models`, et les défauts connus restent inscrits comme tests désactivés.
 - Ajout de vérifications à `WriteAndReadProject`, `SolveAndWriteSchedules`, `CreateModel` et `UpdateNonSpatialModel`, qui vérifient maintenant ce qu’ils écrivent, et réparation de la vérification morte d’`AddYieldHandlers`.
 - Ajout de bancs de performance et d’allocation avec leurs bornes attendues, et de `tools/performance/Measure_Performance.bat`, qui mesure un changement en comparant des passages d’avant et d’après (#349 [FEATURE] Add performance and allocation benchmarks).

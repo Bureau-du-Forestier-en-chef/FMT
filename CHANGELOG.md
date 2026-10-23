@@ -1,3 +1,26 @@
+## [Unreleased] - 2026-10-23 (eea7fea2)
+
+### Added
+
+- Exported from `FMTlib` 18 classes of the Core that a program linked to the DLL, such as a unit test, could not use: the comparators `FMTActionComparator`, `FMTActualDevelopmentComparator`, `FMTMaskComparator`, `FMTOutputNodeValueComparator`, `FMTOutputNodeOriginComparator`, `FMTOutputSourceComparator`, `FMTThemeComparator` and `FMTTransitionComparator`, `FMTOutputNodeHasher`, `FMTYieldRequest`, `FMTExpression`, `FMTFunctionCall`, `FMTYieldsCache`, `FMTYieldDevelopment`, and the yield models `FMTYieldModel`, `FMTYieldModelRandom`, `FMTYieldModelTsla` and `FMTYieldModelUnitCoverage` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace).
+- Added unit tests of the expressions and of the yield handlers of the Core, built in code without a model: `FMTOperator`, `FMTExpression`, `FMTFunctionCall`, `FMTData`, `FMTAgeYieldHandler`, `FMTTimeYieldHandler` and `FMTComplexYieldHandler` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). They characterize the known behaviours of #346 and #347, and revealed three defects, the first two kept as disabled cases until they are fixed:
+  - #386 [BUG] Un moins qui suit un opérateur est lu comme une soustraction dans `_EQUATION`
+  - #388 [BUG] Les yields d'un bloc `*YT` lisent tous la période de départ du premier
+  - #387 [BUG] En colonnes (`_CP`), chaque ligne d'un bloc `*YT` retarde d'une période les valeurs des lignes suivantes
+- Added unit tests of the bounds, specifications, constraints, outputs and yields of the Core, built in code without a model: `FMTBounds` through `FMTAgeBounds`, `FMTYldBounds`, `FMTLockBounds` and `FMTPerBounds`, `FMTSpec`, `FMTConstraint`, `FMTOutput` and `FMTYields`, with the overrides, `getAge` and `getEndPoint` of the yield handlers, and an integration test of `FMTTransitionParser` that characterizes the known behaviour of #358 (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). They show #379, #382 and #383 closer to their cause, and revealed four defects, each kept as a disabled case until it is fixed:
+  - #389 [BUG] `_MAX` part de 0 : le maximum de yields tous négatifs vaut 0
+  - #390 [BUG] `FMTYields::getFromFactor` multiplie le taux et les années d'un `_DISCOUNTFACTOR` au lieu de sa valeur
+  - #391 [BUG] `FMTYields::getFromFactor` ne multiplie aucun yield quand on n'en nomme aucun, alors que sa documentation dit tous
+  - #392 [BUG] `_ENDPOINT` provoque une violation d'accès dès que sa source sort de ses bornes
+- Added unit tests of the masks, themes and developments of the Core, built in code without a model: `FMTMask`, `FMTTheme` and `FMTDevelopment`, with operability and `operate` through actions and transitions built in code, and integration tests of `FMTActionParser` and `FMTYieldParser` on two new scenarios of `TWD_land`, `strictbounds` and `timeyieldcolumns` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). They keep #387 as a disabled case, and revealed one defect, kept as disabled cases until it is fixed:
+  - [BUG] Une condition d'opérabilité écrite avec `>` ou `<` est lue sans sa borne : l'action est opérable à tout âge (issue to open)
+
+### Fixed
+
+- Restored the fix of the lifetime of the logger of `FMTLpSolver`, which v1.4.0 lost in the resolution of a merge conflict: each solver holds its own copy of the logger again, and the `loggerlifetime` case of `SolveWithEachSolver`, whose row was still registered, again copies a solved model 2000 times.
+- An objective `_PENALTY` without sign is written without a sign again, instead of `y_PENALTY` (#379 [BUG] Un objectif `_PENALTY` sans signe est réécrit `y_PENALTY`).
+- The `MAX_RET` column of the operating-area scheduler parameters is read only when it holds a number, and the margin between the minimal and maximal return times is no longer computed backwards.
+
 ## [v1.4.0] - 2026-10-21 (1cf2b516)
 
 ### Added
@@ -19,18 +42,6 @@
   - #381 [BUG] Un output qui mêle sources d'inventaire et d'action écrit ses sorties cachées, que chaque réécriture répète
   - #382 [BUG] Une contrainte `_RANDOM(<output>)` est réécrite sans `_RANDOM`
   - #383 [BUG] `FMTYields::operator==` compare les adresses des gestionnaires : deux copies d'un modèle sont inégales, et `writeToProject` écrit toujours le `._yld` d'un scénario
-- Exported from `FMTlib` 18 classes of the Core that a program linked to the DLL, such as a unit test, could not use: the comparators `FMTActionComparator`, `FMTActualDevelopmentComparator`, `FMTMaskComparator`, `FMTOutputNodeValueComparator`, `FMTOutputNodeOriginComparator`, `FMTOutputSourceComparator`, `FMTThemeComparator` and `FMTTransitionComparator`, `FMTOutputNodeHasher`, `FMTYieldRequest`, `FMTExpression`, `FMTFunctionCall`, `FMTYieldsCache`, `FMTYieldDevelopment`, and the yield models `FMTYieldModel`, `FMTYieldModelRandom`, `FMTYieldModelTsla` and `FMTYieldModelUnitCoverage` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace).
-- Added unit tests of the expressions and of the yield handlers of the Core, built in code without a model: `FMTOperator`, `FMTExpression`, `FMTFunctionCall`, `FMTData`, `FMTAgeYieldHandler`, `FMTTimeYieldHandler` and `FMTComplexYieldHandler` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). They characterize the known behaviours of #346 and #347, and revealed three defects, the first two kept as disabled cases until they are fixed:
-  - #386 [BUG] Un moins qui suit un opérateur est lu comme une soustraction dans `_EQUATION`
-  - #388 [BUG] Les yields d'un bloc `*YT` lisent tous la période de départ du premier
-  - #387 [BUG] En colonnes (`_CP`), chaque ligne d'un bloc `*YT` retarde d'une période les valeurs des lignes suivantes
-- Added unit tests of the bounds, specifications, constraints, outputs and yields of the Core, built in code without a model: `FMTBounds` through `FMTAgeBounds`, `FMTYldBounds`, `FMTLockBounds` and `FMTPerBounds`, `FMTSpec`, `FMTConstraint`, `FMTOutput` and `FMTYields`, with the overrides, `getAge` and `getEndPoint` of the yield handlers, and an integration test of `FMTTransitionParser` that characterizes the known behaviour of #358 (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). They show #379, #382 and #383 closer to their cause, and revealed four defects, each kept as a disabled case until it is fixed:
-  - #389 [BUG] `_MAX` part de 0 : le maximum de yields tous négatifs vaut 0
-  - #390 [BUG] `FMTYields::getFromFactor` multiplie le taux et les années d'un `_DISCOUNTFACTOR` au lieu de sa valeur
-  - #391 [BUG] `FMTYields::getFromFactor` ne multiplie aucun yield quand on n'en nomme aucun, alors que sa documentation dit tous
-  - #392 [BUG] `_ENDPOINT` provoque une violation d'accès dès que sa source sort de ses bornes
-- Added unit tests of the masks, themes and developments of the Core, built in code without a model: `FMTMask`, `FMTTheme` and `FMTDevelopment`, with operability and `operate` through actions and transitions built in code, and integration tests of `FMTActionParser` and `FMTYieldParser` on two new scenarios of `TWD_land`, `strictbounds` and `timeyieldcolumns` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). They keep #387 as a disabled case, and revealed one defect, kept as disabled cases until it is fixed:
-  - [BUG] Une condition d'opérabilité écrite avec `>` ou `<` est lue sans sa borne : l'action est opérable à tout âge (issue to open)
 - Added system tests on the public `TWD_land` model: scenario reading (yields, outputs, operability, transitions, growth), reading errors and their exception codes, scenarios read together, planning statistics and replay of the optimal schedule. A fixture checks that no test modifies `Examples/Models`, and known defects are kept as disabled tests.
 - Added checks to `WriteAndReadProject`, `SolveAndWriteSchedules`, `CreateModel` and `UpdateNonSpatialModel`, which now verify what they write, and repaired the dead check of `AddYieldHandlers`.
 - Added performance and allocation benchmarks with expected bounds, and `tools/performance/Measure_Performance.bat`, which measures a change by comparing runs before and after it (#349 [FEATURE] Add performance and allocation benchmarks).

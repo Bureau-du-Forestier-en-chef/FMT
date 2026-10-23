@@ -681,6 +681,10 @@ des cas. Aucun n'est corrigé dans ce chantier.
    reprend le dernier caractère du nom `Penalty<opérateur>_<variable>`, `y` quand l'opérateur est
    vide. Relu, l'opérateur vaut `Y`, traité comme `+` : même optimum, objectif relu différent. Depuis
    `2e3dc129` (2019-06-07). Cas `GivenAPenaltyObjectiveWithoutSignWhenWriteThenRereadsTheSameObjective`.
+   **Corrigé** par `83e2309e` (« fix(penalty) », sur `master`, entré dans `new_test` par la fusion `eea7fea2`
+   du 2026-10-23) : un opérateur vide n'écrit plus de signe. La fusion a réactivé le cas d'intégration ; le cas
+   unitaire `GivenAMinimizationOfPenaltiesWithoutSignWhenConvertedToStringThenWritesThemWithoutSign` (lot 7b) l'est
+   depuis le 2026-10-23, à valider au prochain build.
 7. **`_DISCOUNTFACTOR` réécrit en série temporelle de ses paramètres (issue #380)** (`DISCOUNTFULL 1 0.04 5`),
    silencieux : relu, `DISCOUNTFULL` vaut 0,04 à la période 1 et 5 à la période 2. Et l'écriture
    lève (« invalid vector subscript ») quand le bloc `*YT` n'a pas de base, comme dans
@@ -1429,7 +1433,7 @@ Pas de ligne de dette ni d'issue.
 
 | Cas | Scénario | Vérifie | État |
 |---|---|---|---|
-| `GivenTheRootModelWhenWrite…ThenRereadsTheSameModelAndRewritesTheSameFiles` | ROOT | modèle et fichiers | désactivé : #347, #379 |
+| `GivenTheRootModelWhenWrite…ThenRereadsTheSameModelAndRewritesTheSameFiles` | ROOT | modèle et fichiers | désactivé : #347 (#379 corrigé par `83e2309e`) |
 | `GivenYieldsOnNegatedMasks…` | `NOT_MASK` | modèle et fichiers | vert |
 | `GivenEquationsInYieldsOutputsAndConstraints…` | `equation` | modèle et fichiers | vert |
 | `GivenItsOwnLandscapeActionsAndTimeYields…` | `COS` | modèle et fichiers | vert |
@@ -1439,7 +1443,7 @@ Pas de ligne de dette ni d'issue.
 | `GivenRandomActionConstraints…` | `COMPLEX_NSS` | modèle et fichiers | désactivé : #382 |
 | `GivenSplitTargetsAgesLocksAndSourceConditions…ThenRereadsTheSameTransitions` | `transitions` | transitions et `.trn` | vert |
 | `GivenThousandsSeparatorsAndListsOfPeriods…ThenRereadsTheSameConstraints` | `stdconstraints` | contraintes et `.opt` | vert |
-| `GivenAPenaltyObjectiveWithoutSign…ThenRereadsTheSameObjective` | ROOT | contraintes et `.opt` | désactivé : #379 |
+| `GivenAPenaltyObjectiveWithoutSign…ThenRereadsTheSameObjective` | ROOT | contraintes et `.opt` | actif depuis la correction de #379 (`83e2309e`) |
 | `GivenOutputsBuiltByForLoops…ThenRereadsTheSameOutputs` | `ForLoops` | outputs et `.out` | vert |
 | `GivenARatioOfAnInventoryOutputToAnActionOutput…ThenRereadsTheSameOutputs` | `TSLA` | outputs et `.out` | désactivé : #381 |
 | `GivenDiscountFactors…ThenRereadsTheirValues` | `timeyields` | valeurs des `DISCOUNT*` | désactivé : #380 |
@@ -2052,6 +2056,15 @@ inchangé depuis `f4252745`) :
 
 ### 6.1 État au 2026-10-19
 
+- **Fusion de `master` du 2026-10-23 (`eea7fea2`)**, après la v1.4.0 : #379 corrigé (`83e2309e`, défaut 6 de la
+  section 2.7), `MAX_RET` des paramètres de l'ordonnanceur (`9f2c58ca`), le test de `WriteModel` (`9b9ade0b`), et le
+  test `GetGCBMTransitions` (#369). Elle retirait aussi, par erreur (« Merge conflict in rebase fix », `45ac2df5`,
+  confirmé par Gabriel), le correctif du journal de `FMTLpSolver` (`975320eb`, section 9.5, phase 0) et le mode
+  `loggerlifetime` de `SolveWithEachSolver.cpp`, alors que sa ligne restait dans `basetests.csv`. Les deux sont
+  rétablis le 2026-10-23, à l'identique. `9b9ade0b` codait aussi dans `WriteModel.cpp` des chemins de la machine
+  de gcyr (`D:/FMT/...`), dont le dossier de sortie de chaque ligne : ils redeviennent relatifs le même jour. Le changelog, dont la fusion avait rangé sous la v1.4.0 des entrées que
+  cette version ne contient pas, est remis en ordre le même jour. **Rien de la fusion n'est encore compilé ni testé** :
+  la suite publique et la suite BFEC sont à relancer.
 - **Lot 7c livré, commité (`5956123b`, `1754fe30`) et validé le 2026-10-22** (section 5.11) : 119 cas unitaires des
   masques, des thèmes et des développements, et 5 cas d'intégration, dont 3 désactivés (le défaut 18, nouveau, et
   #387). Suite publique : 719 tests, 686 verts et 33 désactivés. L'issue du défaut 18 est à ouvrir. **Le lot 7 est
