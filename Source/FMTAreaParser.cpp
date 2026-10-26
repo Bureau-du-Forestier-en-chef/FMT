@@ -54,7 +54,8 @@ double FMTAreaParser::_GetGeometryArea(const OGRGeometry* p_geometry)
 	double area = 0.0;
 	if (p_geometry != nullptr)
 		{
-			const OGRwkbGeometryType TYPE = p_geometry->getGeometryType();
+			//Without its Z and M flags: a polygon with Z is a wkbPolygon25D, whose area is still the area in 2D.
+			const OGRwkbGeometryType TYPE = wkbFlatten(p_geometry->getGeometryType());
 			switch (TYPE)
 				{
 				case wkbPolygon:

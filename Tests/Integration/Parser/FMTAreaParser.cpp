@@ -30,6 +30,9 @@ namespace
     // The buffer around each operating area, in map units: a tenth of the side of the squares of the maps below.
     const double BUFFER_SIZE = 10.0;
 
+    // The Z of every corner of a map written with Z coordinates.
+    const int ELEVATION = 5;
+
     // A unit of a test map, one operating area: its attribute of the only theme, and the corners of its polygon.
     struct MapUnit
     {
@@ -39,6 +42,24 @@ namespace
 
     // The neighbors of each operating area, by attribute.
     using Neighbors = std::map<std::string, std::vector<std::string>>;
+
+    // Two squares of 100 side by side: the buffer of each one takes a single strip of the other, a polygon.
+    std::vector<MapUnit> getSquaresSideBySide()
+    {
+        return {
+            { "WEST", { { 0, 0 }, { 100, 0 }, { 100, 100 }, { 0, 100 } } },
+            { "EAST", { { 100, 0 }, { 200, 0 }, { 200, 100 }, { 100, 100 } } } };
+    }
+
+    // An upside-down U on a square of 100: its two legs, 20 wide, stand on the square, and its top is 50 above it.
+    // The buffer of each one takes two separate pieces of the other, a multipolygon.
+    std::vector<MapUnit> getArchOnASquare()
+    {
+        return {
+            { "SQUARE", { { 0, 0 }, { 100, 0 }, { 100, 100 }, { 0, 100 } } },
+            { "ARCH", { { 0, 100 }, { 20, 100 }, { 20, 150 }, { 80, 150 }, { 80, 100 }, { 100, 100 }, { 100, 200 },
+                { 0, 200 } } } };
+    }
 
     // The only theme of a test map, with one attribute per unit.
     std::vector<Core::FMTTheme> getThemes(const std::vector<MapUnit>& p_units)
@@ -67,9 +88,11 @@ namespace
     }
 
     // Writes the units as a GeoJSON map in the folder of the test case, with the fields that FMTAreaParser reads:
-    // THEME1, AGE and SUPERFICIE. Each polygon is closed on its first corner.
-    std::filesystem::path writeMap(const std::vector<MapUnit>& p_units)
+    // THEME1, AGE and SUPERFICIE. Each polygon is closed on its first corner. With p_withZ, every corner has the Z
+    // ELEVATION, and GDAL reads the polygons as wkbPolygon25D.
+    std::filesystem::path writeMap(const std::vector<MapUnit>& p_units, bool p_withZ = false)
     {
+        const std::string z = p_withZ ? "," + std::to_string(ELEVATION) : "";
         const std::filesystem::path map = Testing::getCaseFolder() / "map.geojson";
         std::ofstream stream(map);
         stream << "{\"type\":\"FeatureCollection\",\"features\":[";
@@ -81,9 +104,9 @@ namespace
                 << "\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[";
             for (const std::pair<int, int>& corner : mapUnit.corners)
             {
-                stream << "[" << corner.first << "," << corner.second << "],";
+                stream << "[" << corner.first << "," << corner.second << z << "],";
             }
-            stream << "[" << mapUnit.corners.front().first << "," << mapUnit.corners.front().second << "]]]}}";
+            stream << "[" << mapUnit.corners.front().first << "," << mapUnit.corners.front().second << z << "]]]}}";
         }
         stream << "\n]}\n";
         return map;
@@ -109,10 +132,7 @@ TEST(FMTAreaParser, GivenTwoUnitsSharingASideWhenGetSchemeNeighborsThenTheyAreNe
 {
 #if defined(FMTWITHGDAL) && defined(FMTWITHOSI)
     // Arrange
-    // Two squares of 100 side by side: the buffer of each one takes a single strip of the other, a polygon.
-    const std::vector<MapUnit> units = {
-        { "WEST", { { 0, 0 }, { 100, 0 }, { 100, 100 }, { 0, 100 } } },
-        { "EAST", { { 100, 0 }, { 200, 0 }, { 200, 100 }, { 100, 100 } } } };
+    const std::vector<MapUnit> units = getSquaresSideBySide();
     const std::vector<Core::FMTTheme> themes = getThemes(units);
     const std::filesystem::path map = writeMap(units);
     const Neighbors expected = { { "EAST", { "WEST" } }, { "WEST", { "EAST" } } };
@@ -133,15 +153,54 @@ TEST(FMTAreaParser, GivenTwoUnitsTouchingInTwoSeparatePlacesWhenGetSchemeNeighbo
 {
 #if defined(FMTWITHGDAL) && defined(FMTWITHOSI)
     // Arrange
-    // An upside-down U on a square of 100: its two legs, 20 wide, stand on the square, and its top is 50 above it.
-    // The buffer of each one takes two separate pieces of the other, a multipolygon, whose area was 0 before
-    // issue #394.
-    const std::vector<MapUnit> units = {
-        { "SQUARE", { { 0, 0 }, { 100, 0 }, { 100, 100 }, { 0, 100 } } },
-        { "ARCH", { { 0, 100 }, { 20, 100 }, { 20, 150 }, { 80, 150 }, { 80, 100 }, { 100, 100 }, { 100, 200 },
-            { 0, 200 } } } };
+    // The intersections are multipolygons, whose area was 0 before issue #394.
+    const std::vector<MapUnit> units = getArchOnASquare();
     const std::vector<Core::FMTTheme> themes = getThemes(units);
     const std::filesystem::path map = writeMap(units);
+    const Neighbors expected = { { "ARCH", { "SQUARE" } }, { "SQUARE", { "ARCH" } } };
+    Parser::FMTAreaParser parser;
+
+    // Act
+    const std::vector<Heuristics::FMTOperatingAreaScheme> schemes = parser.getSchemeNeighbors(
+        getSchemes(units, themes), themes, map.string(), "AGE", "SUPERFICIE", 1.0, 1.0, "", 0.0, BUFFER_SIZE);
+
+    // Assert
+    EXPECT_EQ(getNeighbors(schemes), expected);
+#else
+    GTEST_SKIP() << "FMT is built without GDAL or OSI";
+#endif
+}
+
+TEST(FMTAreaParser, GivenTwoUnitsSharingASideWithZCoordinatesWhenGetSchemeNeighborsThenTheyAreNeighbors)
+{
+#if defined(FMTWITHGDAL) && defined(FMTWITHOSI)
+    // Arrange
+    // The intersections are polygons with Z, whose area was 0 before issue #396.
+    const std::vector<MapUnit> units = getSquaresSideBySide();
+    const std::vector<Core::FMTTheme> themes = getThemes(units);
+    const std::filesystem::path map = writeMap(units, true);
+    const Neighbors expected = { { "EAST", { "WEST" } }, { "WEST", { "EAST" } } };
+    Parser::FMTAreaParser parser;
+
+    // Act
+    const std::vector<Heuristics::FMTOperatingAreaScheme> schemes = parser.getSchemeNeighbors(
+        getSchemes(units, themes), themes, map.string(), "AGE", "SUPERFICIE", 1.0, 1.0, "", 0.0, BUFFER_SIZE);
+
+    // Assert
+    EXPECT_EQ(getNeighbors(schemes), expected);
+#else
+    GTEST_SKIP() << "FMT is built without GDAL or OSI";
+#endif
+}
+
+TEST(FMTAreaParser, GivenTwoUnitsWithZCoordinatesTouchingInTwoSeparatePlacesWhenGetSchemeNeighborsThenTheyAreNeighbors)
+{
+#if defined(FMTWITHGDAL) && defined(FMTWITHOSI)
+    // Arrange
+    // The intersections are multipolygons with Z, made of polygons with Z, whose area was 0 before issue #396.
+    const std::vector<MapUnit> units = getArchOnASquare();
+    const std::vector<Core::FMTTheme> themes = getThemes(units);
+    const std::filesystem::path map = writeMap(units, true);
     const Neighbors expected = { { "ARCH", { "SQUARE" } }, { "SQUARE", { "ARCH" } } };
     Parser::FMTAreaParser parser;
 

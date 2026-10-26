@@ -21,6 +21,7 @@
 - Un objectif `_PENALTY` sans signe s’écrit de nouveau sans signe, au lieu de `y_PENALTY` (#379 [BUG] Un objectif `_PENALTY` sans signe est réécrit `y_PENALTY`).
 - La colonne `MAX_RET` des paramètres de l’ordonnanceur des unités d’aménagement n’est lue que si elle contient un nombre, et l’écart entre les temps de retour minimal et maximal ne se calcule plus à l’envers.
 - `FMTAreaParser::getSchemeNeighbors` et `getClusters` gardent les unités d’aménagement dont l’intersection avec la zone tampon d’une autre forme plusieurs morceaux : l’aire d’un multipolygone ou d’une collection de géométries valait 0, ce voisin était donc écarté, et l’ordonnanceur des unités d’aménagement appliquait ses contraintes d’adjacence et de délai de reverdissement à moins de paires d’unités. `getClusters` mesure aussi sur tous leurs morceaux les intersections qu’il compare, et détruit celles en plusieurs morceaux, qu’il ne libérait pas (#394 [BUG] `_GetGeometryArea` vaut 0 pour tout multipolygone : l'ordonnanceur des unités d'aménagement perd des voisins).
+- `FMTAreaParser::getSchemeNeighbors` et `getClusters` mesurent les géométries avec Z, lues par exemple d’un shapefile PolygonZ : leur aire valait 0, donc sur une carte en Z aucune unité d’aménagement n’avait de voisin (#396 [BUG] _GetGeometryArea vaut 0 pour une géométrie avec Z : sur une carte en Z, les unités d'aménagement n'ont aucun voisin).
 
 ## [v1.4.0] - 2026-10-21 (1cf2b516)
 

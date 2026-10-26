@@ -1001,8 +1001,8 @@ valeur mesurée une fois puis vue rouge.
 - Regroupement d'UA : `ClusterOperatingAreas` (une solution existe) ; prédicteurs :
   `GetCarbonPredictors` (rien) ; `GetRotations`, `GetYieldsFromGraph`, `ReadDatabaseSections`,
   `SolveTwentyPeriods`, `SetSolutionByLp` (BFEC).
-- Géométries : `UnitTestFMTAreaParser` à restaurer si son API existe encore. Depuis #394, `getSchemeNeighbors` a
-  deux cas d'intégration sur une carte synthétique (section 5.12) ; `getClusters` n'a que `ClusterOperatingAreas`.
+- Géométries : `UnitTestFMTAreaParser` à restaurer si son API existe encore. Depuis #394 et #396, `getSchemeNeighbors`
+  a quatre cas d'intégration sur des cartes synthétiques, avec ou sans Z (sections 5.12 et 5.13) ; `getClusters` n'a que `ClusterOperatingAreas`.
 
 ## 4. Scénarios bidons (TWD_land)
 
@@ -2093,8 +2093,8 @@ jour de la même façon. `ScheduleOperatingAreas` et `RunOpAreaSchedulerTask` ne
 `_GetGeometryArea` (sonde : GDAL 100, FMT 0), car le `switch` ne retire pas le drapeau Z (`wkbFlatten`). Avant
 `2dc1ad55`, le `dynamic_cast<OGRSurface*>` la mesurait. Sur des shapefiles de deux carrés côte à côte, avec le
 correctif de #394, `getSchemeNeighbors` trouve 2 voisins en `Polygon` et en `PolygonM`, 0 en `PolygonZ` et en
-`PolygonZM` ; 2 partout avec `wkbFlatten`. Issue #396, ouverte par Gabriel le 2026-10-23 ; aucun cas désactivé
-pour l'instant (l'issue en propose un).
+`PolygonZM` ; 2 partout avec `wkbFlatten`. Issue #396, ouverte par Gabriel le 2026-10-23, corrigée en section
+5.13.
 
 **Validation après le build de Gabriel** (2026-10-23, sources de `966b668c` et le correctif, non commité) :
 
@@ -2106,6 +2106,34 @@ pour l'instant (l'issue en propose un).
   désactivés sur 420, integration 19 verts et 9 désactivés sur 28, system 237 verts et 12 désactivés sur 249,
   performance 23, other 2 ; Total 691 verts et 31 désactivés sur 722. La fixture `ExamplesModelsUnchanged` est verte,
   et l'arbre de travail est resté le même après le passage.
+
+Commité par Gabriel en `44aee1fe`.
+
+### 5.13 Session à part : correction de #396 (2026-10-26)
+
+**Défaut.** `_GetGeometryArea` comparait le type de GDAL tel quel : un polygone avec Z est un `wkbPolygon25D`, qui
+tombait dans `default` et valait 0. Sur une carte en Z, `getSchemeNeighbors` ne trouvait aucun voisin. Démonstration
+en section 5.12 et dans l'issue.
+
+**Correction** (`Source/FMTAreaParser.cpp`) : `wkbFlatten` retire les drapeaux Z et M avant le `switch`. La
+documentation de `_GetGeometryArea` (`Include/FMTAreaParser.h`) le dit.
+
+**Test** : deux cas de plus dans `Tests/Integration/Parser/FMTAreaParser.cpp`, sur les cartes des deux cas de #394,
+avec un Z de 5 à chaque sommet. Les deux cartes sont devenues des fonctions partagées (`getSquaresSideBySide`,
+`getArchOnASquare`), et `writeMap` prend un `p_withZ`.
+
+| Cas | Intersections | Build de `44aee1fe` | Avec `wkbFlatten` |
+|---|---|---|---|
+| `GivenTwoUnitsSharingASideWithZCoordinates…ThenTheyAreNeighbors` | polygones avec Z | rouge, aucun voisin | vert |
+| `GivenTwoUnitsWithZCoordinatesTouchingInTwoSeparatePlaces…ThenTheyAreNeighbors` | multipolygones avec Z | rouge, aucun voisin | vert |
+
+Vus avant le build comme en section 5.12 : compilés par `cl` hors du dépôt contre le `FMTlib.lib` de `build/release`
+(`/W4 /permissive-` : aucun avertissement dans les sources du test), lancés depuis `bin/Release`, la fonction
+redirigée dans le processus pour la colonne de droite. Les deux cas de #394 restent verts des deux côtés.
+
+**Portée** : les 22 cartes des modèles de test BFEC sont en `Polygon` 2D ; la suite privée ne devrait pas changer.
+
+**À valider après le build** : `RunTests.bat integration` (quatre cas de `FMTAreaParser`, verts), `all-public`.
 
 ## 6. Prochain lot
 
