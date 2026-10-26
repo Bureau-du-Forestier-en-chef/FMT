@@ -841,10 +841,10 @@ dans `CoreTestCoverage.csv` et dans le changelog. Aucun n'est corrigé dans ce c
 **Défaut révélé par le lot 7c (2026-10-22).** L'observation de `FMTParser::bounds` du lot 7b (section 5.10), démontrée
 comme les défauts des lots 7a et 7b : cause dans le code, A/B où une seule chose change, exécutable officiel
 `ReadScenario` du build de `new_test` (FMTlib de `f4252745`), origine git. Il a deux cas `DISABLED_` dans
-`IntegrationParser`. Son issue est à ouvrir par Gabriel (règle 3) : texte dans le rapport du lot 7c. Son numéro ira ici,
-dans les commentaires des cas, dans `CoreTestCoverage.csv` et dans le changelog. Il n'est pas corrigé dans ce chantier.
+`IntegrationParser`. Son issue, #393, a été ouverte par Gabriel le 2026-10-22 (règle 3) ; son numéro est aussi dans les
+commentaires des cas, dans `CoreTestCoverage.csv` et dans le changelog. Il n'est pas corrigé dans ce chantier.
 
-18. **Une condition d'opérabilité écrite avec `>` ou `<` est lue sans sa borne** (`FMTParser::bounds`, issue à ouvrir).
+18. **Une condition d'opérabilité écrite avec `>` ou `<` est lue sans sa borne** (`FMTParser::bounds`, issue #393).
     - `FMTParser::getBaseOperators` (`Source/FMTParser.cpp:2195`) liste `=`, `<=`, `>=`, `<` et `>`, que
       `FMTActionParser::_getBounds` reconnaît donc tous les cinq ; mais `FMTParser::bounds` (`Source/FMTParser.cpp:405`)
       ne traite que les trois premiers. Pour `<` et `>`, il rend des bornes du plus petit au plus grand entier, ou réel,
@@ -874,6 +874,44 @@ dans les commentaires des cas, dans `CoreTestCoverage.csv` et dans le changelog.
       à côté des cas verts `GivenAMinimumAgeWrittenWithGreaterOrEqual…` et `GivenAMaximumAgeWrittenWithLessOrEqual…`
       du même scénario.
 
+**Défauts révélés par les lacunes 6 et 7 (2026-10-26, section 5.14).** Démontrés comme les précédents : cause dans le
+code, A/B où une seule chose change, origine git. Aucun exécutable officiel ne les appelle : ni FMT, ni le wrapper, ni
+Python, ni R (`unboundSolution` et `isPeriodBounded` ne sont pas exposés) ; la démonstration passe donc par les cas
+d'`IntegrationModels`, compilés hors du dépôt contre le `FMTlib.dll` du build de `new_test` du 2026-10-26. Chacun a
+son cas `DISABLED_`. Issues à ouvrir par Gabriel (règle 3) : textes dans le rapport du lot ; leurs numéros iront ici,
+dans les commentaires des cas, dans `CoreTestCoverage.csv` s'il le faut et dans le changelog. Ils ne sont pas corrigés
+dans ce chantier.
+
+19. **`unboundSolution` ne rend pas les bornes d'avant `boundSolution`** (`FMTSrModel`, issue à ouvrir).
+    - `FMTSrModel::unboundSolution` (`Source/FMTSrModel.cpp:130` et `131`) donne aux variables de la période les bornes
+      `-std::numeric_limits<double>::max()` et `max()`, et non celles qu'elles avaient : 0 et l'infini (`updateMatrix`,
+      lignes 1160 et 1161). Une superficie peut alors être négative, et la matrice n'a plus d'optimum.
+    - A/B sur `LP` (5 périodes, MOSEK puis CLP), modèle construit (`build`) et résolu (65 733,264791), puis
+      `boundSolution` sur les périodes 1 à 5 (optimum inchangé) : A, les bornes d'avant remises à la main par
+      `setColSetBounds`, `resolve` rend l'optimum 65 733,264791 ; B, `unboundSolution` sur les périodes 1 à 5, 666 des
+      675 colonnes ont une borne inférieure de -1e30 au lieu de 0 (MOSEK ramène `max()` à 1e30), `resolve` et
+      `initialSolve` échouent, et le modèle n'est plus optimal.
+    - Origine : `8594bf5a` (2019-07-22, « New unbound function for FMTlpmodel »), avec `-COIN_DBL_MAX` ; `0ed917f3`
+      (2023-12-08) n'a fait que passer à `std::numeric_limits`.
+    - Portée : aucun appel dans FMT ni dans les tests ; ni Python ni R ne l'exposent. Seul un programme C++ qui
+      replanifie à la main l'appelle.
+    - Cas : `Integration.FMTSrModel.GivenBoundSolutionsWhenUnboundSolutionThenResolvesToTheModelBefore` (bornes
+      inférieures d'avant, `resolve` optimal, même optimum), à côté du cas vert
+      `GivenTheOptimalSchedulesSetInTheWholeMatrixWhenBoundSolutionThenResolvesToTheOptimum`.
+20. **`isPeriodBounded` rend vrai pour toute période du graphe** (`FMTSrModel`, issue à ouvrir).
+    - `FMTSrModel::isPeriodBounded` (`Source/FMTSrModel.cpp:92` à `96`) n'incrémente `totaledges` que dans la branche
+      où la variable est bornée (`upper == lower`) : `boundededges == totaledges` est toujours vrai, et la fonction rend
+      vrai dès que le graphe a la période. Sa documentation (`Include/FMTSrModel.h:148`) dit vrai si les superficies de
+      la période sont bornées.
+    - A/B sur le même modèle résolu de `LP` : A, après `boundSolution(1)`, `isPeriodBounded(1)` rend vrai ; B, sans
+      `boundSolution`, il rend aussi vrai, pour les périodes 0 à 6, alors qu'aucune variable des périodes 1 à 5 n'est
+      fixée. Après `unboundSolution`, il rend encore vrai.
+    - Origine : `80c556d3` (2019-11-01, « Added period delete… »), qui l'introduit pour `erasePeriod`.
+    - Portée : son seul appel, `FMTLpModel::erasePeriod`, lève `FMTfunctionfailed` dès son entrée (« This function is
+      need to be rewrite… ») ; ni Python ni R ne l'exposent. Aucun résultat n'en dépend aujourd'hui.
+    - Cas : `Integration.FMTSrModel.GivenAnOptimizedModelWhenIsPeriodBoundedThenReturnsFalse`, à côté du cas vert
+      `GivenBoundSolutionsWhenIsPeriodBoundedThenReturnsTrue`.
+
 ## 3. Lacunes classées par criticité
 
 Critère : une étape que tout modèle traverse passe avant une fonction de niche ; une erreur
@@ -888,8 +926,8 @@ Critère : une étape que tout modèle traverse passe avant une fonction de nich
 | 3 | **Erreurs de lecture** : levée des `FMTexc`, `setErrorsToWarnings` | Aucun test négatif : une erreur de modèle qui n'est plus signalée, ou signalée par le mauvais code, passe. |
 | 4 | **Objets du cœur** : `FMTDevelopment::grow`, `operable`, `operate` (`Include/FMTDevelopment.h:209-274`), `FMTMask::isSubsetOf`, `FMTTheme::validate`, `FMTYields::get` (`Include/FMTYields.h:230`), lifespan et `_DEATH` par défaut | Aucune vérification unitaire de l'opérabilité (bornes d'âge, de yield, de période, `_LOCK`), des transitions (proportions, cibles) ni du vieillissement ; seulement des objectifs. |
 | 5 | **Présolve et postsolve** : `FMTModel::preSolve` / `postSolve` (`Include/FMTModel.h:279-285`) | Le test métamorphique ne couvre qu'un scénario (NOT_MASK) ; les outputs après postsolve ne sont pas comparés. |
-| 6 | **Graphe et matrice** : `FMTSrModel::buildPeriod` (`Include/FMTSrModel.h:261`), `FMTGraph::build` (`Include/FMTGraph.hpp:462`), `FMTLpModel::setObjective` / `setConstraint` | Les statistiques du graphe (`FMTGraphStats` : sommets, arcs, lignes, colonnes) ne sont jamais vérifiées. |
-| 7 | **Résultats et rejeu** : `getSolution`, `setSolution` / `boundSolution` (`Include/FMTSrModel.h:173,329`), `doPlanning(false, cédules)` | Le rejeu d'une cédule optimale n'est pas comparé à l'optimisation ; `SetSolution` n'a que des tests BFEC. |
+| 6 | **Graphe et matrice** : `FMTSrModel::buildPeriod` (`Include/FMTSrModel.h:261`), `FMTGraph::build` (`Include/FMTGraph.hpp:462`), `FMTLpModel::setObjective` / `setConstraint` | ~~Les statistiques du graphe (`FMTGraphStats` : sommets, arcs, lignes, colonnes) ne sont jamais vérifiées.~~ Couverte : `STATS` (lot 4) pour la matrice entière, `IntegrationModels` période par période (section 5.14). |
+| 7 | **Résultats et rejeu** : `getSolution`, `setSolution` / `boundSolution` (`Include/FMTSrModel.h:173,329`), `doPlanning(false, cédules)` | ~~Le rejeu d'une cédule optimale n'est pas comparé à l'optimisation ; `SetSolution` n'a que des tests BFEC.~~ Couverte : `REPLAY` (lot 4), puis `setSolution`, `setSolutionByLp` et `boundSolution` période par période dans `IntegrationModels` (section 5.14) ; `unboundSolution` et `isPeriodBounded` ont un cas désactivé (défauts 19 et 20). |
 | 8 | **Écriture et relecture** : `FMTModelParser::write` (`Source/FMTModelParser.cpp:467`), `writeToProject` (`Include/FMTModelParser.h:118`), `FMTScheduleParser` | ~~Pas d'idempotence (écrire, relire, réécrire) ni d'aller-retour de cédule ; `WriteAndReadProject` n'a aucune vérification.~~ Couverte au lot 5 (voir ci-dessous) ; restent les sections que cinq défauts empêchent de relire à l'identique (section 2.7, défauts 6 à 10). |
 
 L'optimisation elle-même (objectifs) est l'étape la mieux protégée : 26 objectifs vérifiés.
@@ -910,6 +948,15 @@ et sur un scénario ajouté, et une cédule l'est par écriture simple et par aj
 désactivés, sur #347 et sur les défauts 6 à 10 de la section 2.7 (#379 à #383). Au niveau système,
 `WriteAndReadProject`, `SolveAndWriteSchedules`, `UpdateNonSpatialModel` et `CreateModel` vérifient ce
 qu'ils écrivent. Détail en section 5.7.
+
+**État au 2026-10-26** (section 5.14) : les lacunes 6 et 7 sont couvertes au niveau intégration (`IntegrationModels`,
+suite `FMTSrModel`, décision de Gabriel du 2026-10-26). `buildPeriod` est vérifié période par période sur `LP`,
+`division`, `equation` et `harvestfromperiod3`, dont la récolte n'entre dans la matrice qu'à la période 3, et la
+construction période par période donne le graphe de `doPlanning`. La cédule optimale de `LP`, reposée période par
+période par `setSolution` ou `setSolutionByLp`, redonne les outputs de l'optimisation, et `boundSolution` son optimum ;
+une cédule de trop de superficie ou d'une action non opérable est refusée. Deux défauts sont révélés : `unboundSolution`
+(19) et `isPeriodBounded` (20), section 2.7. L'aller-retour d'écriture des contraintes spatiales a son cas dans
+`IntegrationParser` (#397).
 
 ### 3.2 Ce que chaque lacune veut dire
 
@@ -1068,7 +1115,9 @@ Le reste de la marche à suivre :
 | Opérabilité, transitions, vieillissement (lacune 4) | **fait au lot 3** | racine pour les 5 actions et le `_DEATH` ; `transitions` pour les proportions 60/40, l'`_AGE` et le `_LOCK` de cible, et deux sources conditionnées par `@AGE` et `@YLD` |
 | Fonctions de yield qu'aucun scénario n'utilise | **fait au lot 3** sauf `_ENDPOINT` et `_DELTA` (sémantique à clarifier) | `yieldoperatorsalone` (`_SHIFT`, `_MAX`, `_MIN`, `_YTP`, `_DISTANCE`, `_MAI`, `_CAI`) ; `timeyields` pour un yield de temps et `_DISCOUNTFACTOR` (section 2.7) |
 | `*PARTIAL`, `*STRATA`, `_SEQ`, `_INVLOCK` | texte seul, à confirmer | liste heuristique : vérifier d'abord dans les parseurs que ces mots-clés existent |
-| Rejeu `SetSolution` (lacune 7) | texte seul | `LP` a une cédule, mais le test exige un output `OVOLTOTREC` codé en dur : scénario bidon qui définit `OVOLTOTREC`, ou nom d'output en argument (il optimise déjà en MOSEK) |
+| Rejeu `SetSolution` (lacune 7) | **fait** (section 5.14), sans `SetSolution` | `IntegrationModels` repose la cédule optimale de `LP`, tirée de l'optimisation : aucun output codé en dur ni scénario nouveau. `SetSolution` garde ses lignes BFEC |
+| Structure qui change d'une période à l'autre (lacune 6) | **fait** (section 5.14) | `harvestfromperiod3` : les actions de la racine, `COUPEtotale` opérable à partir de la période 3 (`_CP >= 3`) |
+| Contraintes `_SIZE`, `_ADJACENCY` et `_GROUP` écrites et relues (#397) | **fait** (section 5.14) | `spatialconstraints` : les contraintes de `Spatial` et une `_GROUP(coupetotale,_TH1,2)`, qu'aucun autre scénario n'a |
 | SES, rastérisation | carte existante | aucune |
 | Recuit simulé | à évaluer | scénario `Spatial` et rasters existants ; `SolveWithSimulatedAnnealing` lit aussi `STANLOCK.tif`, absent |
 | Ordonnanceur d'UA | carte synthétique probable | yield `YOUVERT` utilisé par une action, CSV de paramètres, thème d'UA en argument (codé 14 dans `RunOpAreaSchedulerTask`), plus de polygones |
@@ -1969,7 +2018,7 @@ désactivés.
   ans, 130 à 8 ans) ; index du scénario `AVERAGEP` ; `std::to_string` écrit six décimales (`16.360000`).
 
 **Étape 2, `FMTParser::bounds` sur `<` et `>`** : démontré, défaut 18 (section 2.7), deux cas désactivés et une issue
-à ouvrir. A/B avec l'exécutable officiel `ReadScenario` (`OPERABLE`), d'abord sur une copie de TWD_land dans le
+(#393, ouverte par Gabriel le 2026-10-22). A/B avec l'exécutable officiel `ReadScenario` (`OPERABLE`), d'abord sur une copie de TWD_land dans le
 scratchpad, dont le scénario `strictbounds` avait en plus `volumetotal > 100`, `_CP > 2` et `_CP >= 3`, puis sur le
 scénario du dépôt ; origine dans `2e3dc129` ; refus de Woodstock dans les messages 142 et 143 de `Wk.msg`.
 
@@ -2049,8 +2098,8 @@ inchangé depuis `f4252745`) :
   resté identique à `HEAD` après le passage ;
 - non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par la passe
   `/W4` hors dépôt d'avant le build (aucun dans les sources de tests) ;
-- reste l'issue du défaut 18, à ouvrir par Gabriel (texte dans le rapport du lot 7c) : son numéro ira dans la section
-  2.7, dans les commentaires des deux cas désactivés, dans `CoreTestCoverage.csv` et dans le changelog. Le lot n'ajoute
+- l'issue du défaut 18, #393, a été ouverte par Gabriel le 2026-10-22 ; son numéro est reporté dans la section 2.7,
+  dans les commentaires des deux cas désactivés, dans `CoreTestCoverage.csv` et dans le changelog (2026-10-26). Le lot n'ajoute
   que des tests et deux scénarios qu'eux seuls lisent : la suite BFEC n'est pas relancée.
 
 ### 5.12 Session à part : correction de #394 (2026-10-23)
@@ -2135,10 +2184,112 @@ redirigée dans le processus pour la colonne de droite. Les deux cas de #394 res
 
 **À valider après le build** : `RunTests.bat integration` (quatre cas de `FMTAreaParser`, verts), `all-public`.
 
+**Validé par le passage de Gabriel du 2026-10-26** (section 6.1) : installation, 724 tests, 0 échec, les quatre cas de
+`FMTAreaParser` verts ; suite privée, 94 réussis. Commité par Gabriel en `025d3493`.
+
+### 5.14 Lacunes 6 et 7 : statistiques et `setSolution` période par période, aller-retour spatial (2026-10-26)
+
+**Décision de Gabriel (2026-10-26)** : niveau intégration, un nouvel exécutable GoogleTest `IntegrationModels`
+(`Tests/Integration/Models`, étiquettes `integration;models`, fixture `ExamplesModels`), suite `FMTSrModel`, la classe
+de `buildPeriod`, `setSolution`, `setSolutionByLp`, `boundSolution`, `unboundSolution` et `isPeriodBounded`. Les
+requêtes `STATS` et `REPLAY` de `PlanScenario` restent telles quelles.
+
+**Ajouts.**
+- `Tests/Integration/Models/CMakeLists.txt` et `FMTSrModel.cpp` (15 cas, dont 2 désactivés), inclus par
+  `Tests/Integration/CMakeLists.txt`. MOSEK si FMT est compilé avec, CLP sinon (règle 6) ; sans OSI, `GTEST_SKIP`.
+- Un cas dans `Tests/Integration/Parser/FMTModelParser.cpp`, sur le scénario nouveau `spatialconstraints`.
+- Deux scénarios de TWD_land, chacun d'un seul fichier commenté en tête : `harvestfromperiod3` (`_act` de la racine,
+  `COUPEtotale` opérable à partir de la période 3) et `spatialconstraints` (`_opt` de `Spatial` et une ligne
+  `_GROUP(coupetotale,_TH1,2) >= 1 1.._LENGTH`). Aucun scénario existant n'est modifié.
+
+**Cas de `FMTSrModel`** (5 périodes ; les modèles des statistiques sont présolvés d'abord, comme `doPlanning` le fait) :
+
+| Cas | Scénario | Vérifie | État |
+|---|---|---|---|
+| `GivenAMaxMinHarvestWhenBuildPeriodThenEachPeriodAddsTheKnownGraphAndMatrix` | `LP` | `sommets\|arcs\|lignes\|colonnes` après chaque `buildPeriod` | vert |
+| `GivenAConstraintOnARatioOfOutputsWhenBuildPeriod…` | `division` | idem | vert |
+| `GivenAnObjectiveOnAnEquationYieldWhenBuildPeriod…` | `equation` | idem | vert |
+| `GivenAHarvestOperableFromThePeriodThreeWhenBuildPeriodThenTheHarvestEntersTheMatrixAtThePeriodThree` | `harvestfromperiod3` | idem | vert |
+| `GivenAMaxMinHarvestWhenBuildPeriodOneByOneThenBuildsTheGraphOfDoPlanning` | `LP` | sommets, arcs et lignes de transfert de la dernière période = ceux de `doPlanning(false)` | vert |
+| `GivenTheOptimalSchedulesWhenSetSolutionPeriodByPeriodThenGivesTheOptimizedOutputs` | `LP` | graphe partiel, `setSolution` vrai à chaque période, tous les outputs de toutes les périodes | vert |
+| `GivenTheOptimalSchedulesSetInTheWholeMatrixWhenBoundSolutionThenResolvesToTheOptimum` | `LP` | matrice entière, `setSolution` puis `boundSolution` à chaque période : vrai, optimal, même optimum | vert |
+| `GivenTheOptimalSchedulesWhenSetSolutionByLpThenGivesTheOutputsOfSetSolution` | `LP` | `setSolutionByLp` vrai à chaque période, mêmes outputs que `setSolution` | vert |
+| `GivenMoreAreaThanItsDevelopmentWhenSetSolutionWithoutThrowingThenReturnsFalse` | `LP` | 503,28 ha coupés sur le peuplement de 403,28 ha, `SETSOLUTION_THROW` à faux : rend faux | vert |
+| `GivenMoreAreaThanItsDevelopmentWhenSetSolutionThenRaisesAnInvalidNumber` | `LP` | idem, par défaut : `FMTinvalid_number` | vert |
+| `GivenAnActionNotOperableOnItsDevelopmentWhenSetSolutionWithoutThrowingThenReturnsFalse` | `LP` | `aCaribou` sur `UNITE3 PEUPLEMENT3 UTR3` de 8 ans (hors de `UC`) : rend faux | vert |
+| `GivenAnActionNotOperableOnItsDevelopmentWhenSetSolutionThenRaisesAnInvalidNumber` | `LP` | idem, par défaut : `FMTinvalid_number` | vert |
+| `GivenBoundSolutionsWhenUnboundSolutionThenResolvesToTheModelBefore` | `LP` | bornes inférieures d'avant, `resolve` optimal, même optimum | désactivé : défaut 19 |
+| `GivenBoundSolutionsWhenIsPeriodBoundedThenReturnsTrue` | `LP` | vrai après `boundSolution(1)` | vert |
+| `GivenAnOptimizedModelWhenIsPeriodBoundedThenReturnsFalse` | `LP` | faux sans `boundSolution` | désactivé : défaut 20 |
+
+Le cas d'`IntegrationParser`, `GivenSizeAdjacencyAndGroupConstraintsWhenWriteThenRereadsTheSameConstraints`, écrit,
+relit et réécrit `spatialconstraints` : types des contraintes spatiales relues (deux `_SIZE`, une `_ADJACENCY`, une
+`_GROUP`), contraintes égales, `.opt` identiques. Il est vert sur `new_test`, qui n'a pas `ff9850f1` ; son commentaire
+dit qu'il protège la prochaine fusion de `master` (#397).
+
+**Ce que la cédule optimale ne garantit pas** : `setSolution` laisse de côté une superficie d'action `_LOCKEXEMPT` sous sa
+tolérance (en CLP, une plantation de 0,007 ha à la période 3) ; les outputs se comparent donc à la tolérance de
+`PlanScenario` (1 % de la valeur, ou 0,01 sous 1). `boundSolution` résout à chaque période : les périodes pas encore
+bornées peuvent prendre une autre solution optimale (en MOSEK, 5,7 ha de plantation passent de la période 4 à la
+période 5) ; seul l'optimum, unique, est comparé (règle 7).
+
+**Valeurs attendues des statistiques**, lues sur le build puis justifiées :
+- **Période 1, comptée à la main** sur les matrices écrites par `writeLp` (noms de lignes et de colonnes). Matrice de
+  type II : un sommet qui n'a qu'un arc entrant et sa croissance n'a pas de ligne de transfert, et sa croissance prend la
+  colonne de l'arc entrant. Racine (`division`, `equation`, `LP` sans présolve) : 62 sommets = 8 de la période 0, 8
+  début de période 1, 8 brûlés, 6 d'âge 0 avec ligne (récupération et mort), 6 d'âge 0 sans ligne (coupe seule), 6
+  verrouillés par `aCaribou` et 20 débuts de période 2 (la croissance des verrouillés rejoint celle de leur source) ; 69
+  arcs = 8 + 29 (feu, coupe, caribou et croissance des 8 débuts de période, sauf la coupe à 7 ans de `UNITE3` et le
+  caribou hors de `UC`) + 14 (récupération et mort des brûlés, sans récupération pour `UNITE3`) + 6 + 6 + 6 ; 22 lignes
+  (8 + 8 + 6) ; 57 colonnes (69 moins les 12 croissances sans ligne). `LP` présolvé : `Burnedarea = 0` retire le feu, la
+  récupération et la mort des brûlés ; 44 sommets, 42 arcs, 7 lignes (le début de période de `UNITE3` à 7 ans, sans
+  coupe, n'en a plus), 28 colonnes. `harvestfromperiod3` : **prédit avant la mesure** à 50|56|22|50 (la racine sans
+  ses 7 coupes, ni les 6 âges 0 qu'elles seules créent, ni leurs 6 débuts de période 2), mesuré identique.
+- **Période 5** : les sommets et les arcs sont ceux des lignes `STATS` du lot 4 (`LP` 296|395, `division` et `equation`
+  426|730), mesurés indépendamment ; leurs lignes ajoutent aux lignes de transfert (156 et 294) celles des contraintes
+  (10 et 5).
+- **Périodes 2 à 4** : lues sur le build, non comptées à la main. Elles croissent d'une période à l'autre, et le cas
+  `…BuildsTheGraphOfDoPlanning` vérifie que la construction période par période donne le graphe de `doPlanning`.
+- `division` et `equation` donnent les mêmes nombres : ils ont les actions, les transitions et l'inventaire de la
+  racine, et rien ne fixe une action à 0. Le présolve ne les change pas.
+- `harvestfromperiod3` contre `division` : 12 sommets de moins à la période 1 ; la période 2 ajoute 46 sommets, moins
+  que la période 1 (50), puis la récolte fait ajouter 70, 88 et 106.
+
+**Vérifications avant le build** (FMTlib du build de `new_test` du 2026-10-26, sources compilées par `cl` hors du dépôt,
+`/W4 /permissive-`, aucun avertissement dans les nouvelles sources, lancées depuis `build/release/bin/Release`) :
+- MOSEK et CLP : 13 cas actifs verts ; les 2 cas désactivés échouent pour leur raison (avec
+  `GTEST_ALSO_RUN_DISABLED_TESTS`). Le cas spatial est vert. La copie en CLP a fait voir la plantation de 0,007 ha
+  ci-dessus, d'où la tolérance du cas de `setSolution`.
+- Configuration rejouée dans le scratchpad (options de `CMakeFMTVS2022vcpkg_GL.bat`, paquets vcpkg de `build/release`) :
+  la cible `IntegrationModels` est créée, ctest y découvre les 15 cas, dont 2 désactivés, étiquettes `integration;models`,
+  fixture `ExamplesModels` ; un seul avertissement, préexistant (CMP0167 de Boost).
+
+**Vus rouges** (règle 1), copies faussées hors du dépôt, rien de commité :
+- entrée faussée par cas : les 13 cas actifs échouent (scénarios des statistiques échangés, `doPlanning` sur `division`,
+  cédules réduites de moitié par `getNewSchedule(0.5)` pour `setSolution`, `boundSolution` et `setSolutionByLp`, 103,28
+  ha au lieu de 503,28, `aCaribou` sur un peuplement de `UC`, `isPeriodBounded` d'une période hors du graphe) ;
+- assertions inversées (un en-tête inclus après `<gtest/gtest.h>`, assertions fatales rendues non fatales) : chaque
+  assertion des 13 cas actifs échoue au moins une fois ; celles des 2 cas désactivés échouent sans inversion ;
+- cas spatial : le `.opt` réécrit comme l'écrit `ff9850f1` (`_SIZE(_SIZE(COUPETOTALE,4))`,
+  `_ADJACENCY(_ADJACENCY(COUPETOTALE,1))`, `_GROUP(COUPETOTALE,_TH1,2))`) fait lever `FMTexc(12)` à la relecture, et le
+  cas échoue ; ses trois assertions échouent une fois inversées.
+- Le dossier de sortie du cas spatial créé sous `build/release/tests/IntegrationParser` a été effacé ; ctest n'a pas été
+  lancé.
+
+**Observation laissée ouverte** : l'écriture d'une contrainte `= 0` donne `BURNEDAREA = -0.000000`, qui se relit à
+l'identique.
+
+**À valider après le build de Gabriel** : reconfigurer (dossier et scénarios nouveaux), puis `RunTests.bat all-public`
+(attendu : 724 + 16 = 740 tests, integration 21 + 14 = 35 verts et 9 + 2 = 11 désactivés), et l'installation.
+
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
 
+- **Lacunes 6 et 7 livrées le 2026-10-26, à compiler et à commiter** (section 5.14) : `IntegrationModels` (15 cas de
+  `FMTSrModel`, dont 2 désactivés, défauts 19 et 20 de la section 2.7, issues à ouvrir), un cas d'aller-retour des
+  contraintes spatiales dans `IntegrationParser` (#397), deux scénarios nouveaux. Après le build : reconfigurer, puis
+  `RunTests.bat all-public` et l'installation.
 - **Fusion de `master` du 2026-10-23 (`eea7fea2`)**, après la v1.4.0 : #379 corrigé (`83e2309e`, défaut 6 de la
   section 2.7), `MAX_RET` des paramètres de l'ordonnanceur (`9f2c58ca`), le test de `WriteModel` (`9b9ade0b`), et le
   test `GetGCBMTransitions` (#369). Elle retirait aussi, par erreur (« Merge conflict in rebase fix », `45ac2df5`,
@@ -2146,11 +2297,26 @@ redirigée dans le processus pour la colonne de droite. Les deux cas de #394 res
   `loggerlifetime` de `SolveWithEachSolver.cpp`, alors que sa ligne restait dans `basetests.csv`. Les deux sont
   rétablis le 2026-10-23, à l'identique. `9b9ade0b` codait aussi dans `WriteModel.cpp` des chemins de la machine
   de gcyr (`D:/FMT/...`), dont le dossier de sortie de chaque ligne : ils redeviennent relatifs le même jour. Le changelog, dont la fusion avait rangé sous la v1.4.0 des entrées que
-  cette version ne contient pas, est remis en ordre le même jour. **Rien de la fusion n'est encore compilé ni testé** :
-  la suite publique et la suite BFEC sont à relancer.
+  cette version ne contient pas, est remis en ordre le même jour. **Compilé et testé par Gabriel le 2026-10-26**, avec
+  les correctifs de #394 (`44aee1fe`) et de #396 (`025d3493`) : `FMTlib.dll` de 9 h 19, `IntegrationParser.exe` de
+  9 h 21. Trace copiée dans le scratchpad de la session des lacunes 6 et 7 avant tout appel de ctest
+  (`InstallTests.xml`, `InstallTests.json`, `LastTestsDisabled.log`, `LastTest.log`) :
+  - installation (`INSTALL_TEST_SUITE=public`, 9 h 24) : 724 tests, **0 échec**, 693 exécutés et 31 désactivés, 24 s ;
+    unit 410 et 10 désactivés, integration 21 et 9 désactivés, system 237 et 12 désactivés, performance 23, les deux
+    fixtures. Par rapport au lot 7c (719 tests, 686 et 33), les écarts s'expliquent tous : les quatre cas de
+    `FMTAreaParser` (#394, #396), `GetGCBMTransitions` (#369, de la fusion), et deux cas de #379 réactivés (le cas
+    unitaire, `31f696a2`, et `GivenAPenaltyObjectiveWithoutSign…`). Le cas unitaire de #382
+    (`GivenARandomActionConstraintWhenConvertedToStringThenWritesRandom`) reste désactivé : `new_test` n'a pas
+    `ff9850f1` ;
+  - suite privée (`LastTest.log`, 9 h 29 à 9 h 50) : 94 tests réussis, 0 échec (92 en `T:/` et les deux fixtures),
+    dont `GetOperatingAreaNeighbors`, `ScheduleOperatingAreas` et `RunOpAreaSchedulerTask`.
+  
+  Issues ouvertes par Gabriel : #393 (défaut 18, 2026-10-22) et #397 (2026-10-26), l'écriture des contraintes
+  `_SIZE`, `_ADJACENCY` et `_GROUP` par `ff9850f1`, le correctif de #382, qui n'est que sur `master` : le cas
+  d'aller-retour spatial des lacunes 6 et 7 la protège avant la prochaine fusion.
 - **Lot 7c livré, commité (`5956123b`, `1754fe30`) et validé le 2026-10-22** (section 5.11) : 119 cas unitaires des
   masques, des thèmes et des développements, et 5 cas d'intégration, dont 3 désactivés (le défaut 18, nouveau, et
-  #387). Suite publique : 719 tests, 686 verts et 33 désactivés. L'issue du défaut 18 est à ouvrir. **Le lot 7 est
+  #387). Suite publique : 719 tests, 686 verts et 33 désactivés. L'issue du défaut 18 est #393. **Le lot 7 est
   terminé** ; le lot 8 suit (section 6.3.5).
 - **Lot 7b livré, commité (`355b2edb`, `1bd707f6`) et validé le 2026-10-22** (section 5.10) : 153 cas unitaires des
   bornes, des spécifications, des contraintes, des sorties et des yields, dont 7 désactivés (#379, #382, #383, et les
@@ -2433,6 +2599,11 @@ prend pas, puis la priorité 2, puis la 3. Ce que cela change :
 
 #### 6.3.7 Compléments des lacunes 6 et 7 — effort `medium` à `high`
 
+**Fait le 2026-10-26 (section 5.14)**, avec ces écarts au plan ci-dessous : au niveau intégration (`IntegrationModels`,
+décision de Gabriel) et non par une requête `STATS|<longueur>|<période>` de `PlanScenario` ; `setSolutionByLp` et
+les cédules faussées en plus ; un aller-retour des contraintes spatiales dans `IntegrationParser` (#397). Défauts 19
+et 20 révélés (section 2.7).
+
 Les statistiques par période tiennent dans une requête de plus, d'où `medium` ; `setSolution` demande de lire l'API du rejeu, d'où `high`.
 
 - **Statistiques période par période.** Aujourd'hui `STATS` fige la matrice entière ; les mêmes
@@ -2688,6 +2859,11 @@ abandonne.
   lancer depuis `build/release/bin/Release`, comme ctest, puis effacer les dossiers qu'elle a créés.
 - **Carte de TWD_land** : ses unités ne se touchent qu'en un morceau. Un test de géométries en plusieurs morceaux
   écrit sa propre carte (section 5.12).
+- **`setSolution` et sa tolérance** (section 5.14) : une superficie d'action `_LOCKEXEMPT` sous la tolérance n'est pas
+  posée ; une cédule optimale rejouée ne redonne ses outputs qu'à la tolérance près. `boundSolution` résout à chaque
+  appel : les périodes pas encore bornées changent de solution optimale, seul l'optimum se compare.
+- **Sortie d'`IntegrationModels`** : le journal de MOSEK (ou de CLP) s'écrit dans la console de chaque cas ; lire le
+  résultat dans les lignes `[  FAILED  ]` et `[       OK ]`, ou dans le résumé de `RunTests.bat`.
 - Plusieurs tests lèvent avec un nom de méthode copié d'un autre test (`"presolvetest"` dans
   `DoPlanning`) : lire le numéro de ligne plutôt que le nom.
 
@@ -2713,6 +2889,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-21 (lot 7a, `0c35c546`) | 441 `all-public` (300 + 141 cas `Unit.`) ; résumé : unit 144 verts et 4 désactivés sur 148, integration 13 verts et 7 désactivés sur 20, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 15,5 s réelles | — | 13 | 2 | 0 | 23 | —
 | 2026-10-22 (lot 7b, `355b2edb`) | 595 `all-public` (441 + 153 cas `Unit.` + 1 cas `Integration.`) ; résumé : unit 290 verts et 11 désactivés sur 301, integration 14 verts et 7 désactivés sur 21, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 16,5 s réelles | — | 13 | 2 | 0 | 30 | —
 | 2026-10-22 (lot 7c, `5956123b`) | 719 `all-public` (595 + 119 cas `Unit.` + 5 cas `Integration.`) ; résumé : unit 409 verts et 11 désactivés sur 420, integration 16 verts et 10 désactivés sur 26, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 20,1 s réelles | — | 13 | 2 | 0 | 33 | —
+| 2026-10-26 (fusion de `master`, #394 et #396 ; installation de Gabriel) | 724 (installation, `public`) ; unit 410 verts et 10 désactivés, integration 21 verts et 9 désactivés, system 237 verts et 12 désactivés, performance 23, fixtures 2 | 24 s (installation) | — | 13 | 2 | 0 | 31 | — |
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).

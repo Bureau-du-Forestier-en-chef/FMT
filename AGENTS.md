@@ -23,7 +23,7 @@ lives in exactly one document, and changes to it belong in that document only.
 | `Excel/` | Excel integration. |
 | `Examples/Models/` | Woodstock models used by the tests. |
 | `Tests/` | Test registration and the tests by level: see [Testing](#testing). |
-| `Tests/Unit/Core/`, `Tests/Integration/` | GoogleTest tests: the unit tests of FMTlib, one source per class, built into `UnitCore`; the integration tests, one folder per component, `Parser/` for the parsers of FMTlib with the Woodstock files they write and read back, and the vector maps that `FMTAreaParser` reads, built into `IntegrationParser`. |
+| `Tests/Unit/Core/`, `Tests/Integration/` | GoogleTest tests: the unit tests of FMTlib, one source per class, built into `UnitCore`; the integration tests, one folder per component, `Parser/` for the parsers of FMTlib with the Woodstock files they write and read back, and the vector maps that `FMTAreaParser` reads, built into `IntegrationParser`, and `Models/` for the planning models with their solver, built into `IntegrationModels`. |
 | `Tests/System/Cpp/` | C++ system tests: each `.cpp` becomes a test executable, which the rows of the CSV files of the folder run; `FMTWrapperCore/` and `Excel/` hold those of the wrapper core and of Excel. |
 | `Tests/System/Python/`, `Tests/System/R/` | pytest and testthat suites, one system test per file, run by ctest. |
 | `Tests/Performance/` | Performance and allocation benchmarks: `FMTPerformanceTests`, its harness and `performance.csv`. |
@@ -94,7 +94,8 @@ GoogleTest executable and registers each of its cases. `Tests/System/Cpp/CMakeLi
 `registercsvtests` for its CSV files and `registersystemtest` for the Excel test,
 `Tests/System/Python/CMakeLists.txt` and `Tests/System/R/CMakeLists.txt` call `registersystemtest` for
 their tests, `Tests/Unit/Core/CMakeLists.txt` calls `registergoogletests` for `UnitCore`, and
-`Tests/Integration/Parser/CMakeLists.txt` for `IntegrationParser`.
+`Tests/Integration/Parser/CMakeLists.txt` for `IntegrationParser` and
+`Tests/Integration/Models/CMakeLists.txt` for `IntegrationModels`.
 
 Each test carries one level label (`unit` for the GoogleTest tests of `Tests/Unit`, `integration` for
 those of `Tests/Integration`, `system` for every C++, Python and R system test, `performance` for the

@@ -63,7 +63,7 @@ count. *None with a check* says that no such test was found.
 61 classes: 50 of priority 1, 1 of priority 2, 10 of priority 3,
 0 without a priority. 19 have unit tests.
 
-Suites that name no class of `Core`: `FMTActionParser` (Integration, cases: 4), `FMTModelParser` (Integration, cases: 18), `FMTScheduleParser` (Integration, cases: 2), `FMTTransitionParser` (Integration, cases: 1), `FMTYieldParser` (Integration, cases: 1). They exercise `Core` only through other classes.
+Suites that name no class of `Core`: `FMTSrModel` (Integration, cases: 15), `FMTActionParser` (Integration, cases: 4), `FMTAreaParser` (Integration, cases: 4), `FMTModelParser` (Integration, cases: 19), `FMTScheduleParser` (Integration, cases: 2), `FMTTransitionParser` (Integration, cases: 1), `FMTYieldParser` (Integration, cases: 1). They exercise `Core` only through other classes.
 
 ## Changes since the previous generation
 
@@ -75,7 +75,7 @@ None: the classes are those of the previous generation.
 
 | Header | Class | Known issues | Status |
 | --- | --- | --- | --- |
-| `FMTAction.h` | `FMTAction` | An operability condition written with `>` or `<`, which `FMTParser::bounds` reads without its bound, so that the action is operable at every age (defect 18, issue to open) | Lot 8 |
+| `FMTAction.h` | `FMTAction` | An operability condition written with `>` or `<`, which `FMTParser::bounds` reads without its bound, so that the action is operable at every age (#393) | Lot 8 |
 | `FMTAction.h` | `FMTActionComparator` | None known | Lot 8 |
 | `FMTActualDevelopment.h` | `FMTActualDevelopment` | None known | Lot 8 |
 | `FMTActualDevelopment.h` | `FMTActualDevelopmentComparator` | None known | Lot 8 |
@@ -117,7 +117,7 @@ is the lot that plans its unit tests (section 6.3 of the ETAT).
 
 | Priority | Header | Class | Unit | Integration | System tests with a check | Known issues | Remarks | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | `FMTAction.h` | `FMTAction` | 0 | 0; indirectly: `IntegrationParser` (`operator==` after a write and a reread, operability of the actions of `strictbounds`) | `ReadScenario` (`ACTION`, `ACTIONS`, `OPERABLE`), `CreateModel` (actions built in code, optimum) | An operability condition written with `>` or `<`, which `FMTParser::bounds` reads without its bound, so that the action is operable at every age (defect 18, issue to open) | Base `FMTList<FMTSpec>`. | Lot 8 |
+| 1 | `FMTAction.h` | `FMTAction` | 0 | 0; indirectly: `IntegrationParser` (`operator==` after a write and a reread, operability of the actions of `strictbounds`) | `ReadScenario` (`ACTION`, `ACTIONS`, `OPERABLE`), `CreateModel` (actions built in code, optimum) | An operability condition written with `>` or `<`, which `FMTParser::bounds` reads without its bound, so that the action is operable at every age (#393) | Base `FMTList<FMTSpec>`. | Lot 8 |
 | 1 | `FMTAction.h` | `FMTActionComparator` | 0 | 0 | None with a check | None known |  | Lot 8 |
 | 1 | `FMTActualDevelopment.h` | `FMTActualDevelopment` | 0 | 0; indirectly: `IntegrationParser` (`operator==` on the area after a reread) | `ReadScenario` (`AREA`, `DEVELOPMENTS`) | None known |  | Lot 8 |
 | 1 | `FMTActualDevelopment.h` | `FMTActualDevelopmentComparator` | 0 | 0 | None with a check | None known |  | Lot 8 |
@@ -126,7 +126,7 @@ is the lot that plans its unit tests (section 6.3 of the ETAT).
 | 1 | `FMTBounds.hpp` | `FMTBounds` | 14 | 0 | Through its derived classes | #358 (known behaviour, with `FMTSpec`) | Template, defined in its header. Debt row of Architecture.md: exported only through its derived classes. | Lot 7b (step 3), done |
 | 1 | `FMTComplexYieldHandler.h` | `FMTComplexYieldHandler` | 45 (2 disabled) | 0; indirectly: `IntegrationParser` (yield values after a reread) | `ReadScenario` (`YIELD` of complex yields, scenarios `yieldoperators` and `yieldoperatorsalone`), `WrapperCoreGetYield` | #347 (known behaviour, `indexes`), `_MAX` of negative yields (#389, `_getMax`), and `_ENDPOINT` outside its bounds (#392, `_getEndPoint`) | Debt row of Architecture.md: evaluated through `FMTYields::get`. | Lot 7a (step 2) and lot 7b, done |
 | 1 | `FMTConstants.h` | `FMTConstants` | 0 | 0 | `ConvertStringsToConstants` (3 cases), `ReadScenario` (`YIELD` of a rate given by a constant) | None known |  | Lot 8 |
-| 1 | `FMTConstraint.h` | `FMTConstraint` | 36 (1 disabled) | 0; indirectly: `IntegrationParser` (`operator==` after a write and a reread) | `ReadScenario` (`CONSTRAINT`, `CONSTRAINTS`: type, bounds, periods), `UpdateNonSpatialModel` (shifted constraints read back) | #382 (`_RANDOM`), and #379 (`_PENALTY` without sign) fixed by `83e2309e` |  | Lot 7b (step 4), done |
+| 1 | `FMTConstraint.h` | `FMTConstraint` | 36 (1 disabled) | 0; indirectly: `IntegrationParser` (`operator==` after a write and a reread, spatial constraints `_SIZE`, `_ADJACENCY` and `_GROUP` of `spatialconstraints`) | `ReadScenario` (`CONSTRAINT`, `CONSTRAINTS`: type, bounds, periods), `UpdateNonSpatialModel` (shifted constraints read back) | #382 (`_RANDOM`), #397 (spatial constraints written malformed by `ff9850f1`, on `master` only), and #379 (`_PENALTY` without sign) fixed by `83e2309e` |  | Lot 7b (step 4), done |
 | 1 | `FMTData.h` | `FMTData` | 22 | 0 | Through `FMTComplexYieldHandler` and `FMTTimeYieldHandler` (`ReadScenario`, `YIELD`) | #347 (known behaviour, `toExpression`) |  | Lot 7a (step 2), done |
 | 1 | `FMTDevelopment.h` | `FMTDevelopment` | 42 | 0; indirectly: `IntegrationParser` (`operable` on the actions of `strictbounds`, yields of `timeyieldcolumns` by period) | `ReadScenario` (`OPERABLE`, `OPERATE`, `GROW`, `YIELD`) | None known | Age, lock and period are stored on 8 bits: 256 becomes 0 without error. | Lot 7c (step 5), done |
 | 1 | `FMTDevelopmentPath.h` | `FMTDevelopmentPath` | 0 | 0 | `ReadScenario` (`OPERATE`: target and proportion of each path) | None known |  | Lot 8 |
@@ -152,7 +152,7 @@ is the lot that plans its unit tests (section 6.3 of the ETAT).
 | 1 | `FMTOutputSource.h` | `FMTOutputSource` | 0 | 0 | Through `FMTOutput`, `CreateModel` | None known |  | Lot 8 |
 | 1 | `FMTOutputSource.h` | `FMTOutputSourceComparator` | 0 | 0 | None with a check | None known |  | Lot 8 |
 | 1 | `FMTPerBounds.h` | `FMTPerBounds` | 6 | 0 | `UpdateNonSpatialModel` (constraints shifted in time, read back) | None known |  | Lot 7b (step 3), done |
-| 1 | `FMTSchedule.h` | `FMTSchedule` | 0 | 0; indirectly: `IntegrationParser` (suite `FMTScheduleParser`: schedules written and read back) | `ReplayScheduleOutputs`, `PlanScenario` (`REPLAY`), `SolveAndWriteSchedules` (schedule written and read back), `SumAndAverageOutputs` | None known |  | Lot 8 |
+| 1 | `FMTSchedule.h` | `FMTSchedule` | 0 | 0; indirectly: `IntegrationParser` (suite `FMTScheduleParser`: schedules written and read back), `IntegrationModels` (suite `FMTSrModel`: optimal schedules set again by `setSolution` and `setSolutionByLp`, schedules with too much area or a non-operable action refused) | `ReplayScheduleOutputs`, `PlanScenario` (`REPLAY`), `SolveAndWriteSchedules` (schedule written and read back), `SumAndAverageOutputs` | None known |  | Lot 8 |
 | 1 | `FMTSpec.h` | `FMTSpec` | 19 | 0 | `ReadScenario` (`OPERABLE`), `CreateModel` | #358 (known behaviour: the transition source whose condition `FMTParser::_setSpec` drops has an empty spec, characterized by `IntegrationParser`) |  | Lot 7b (step 3), done |
 | 1 | `FMTTheme.h` | `FMTTheme` | 34 | 0; indirectly: `IntegrationParser` (`operator==` after a write and a reread) | `ReadScenario` (`THEMES`, `THEMENAME`, `ATTRIBUTES`, `AGGREGATE`), `CreateModel` | None known | `isAttribute` also accepts the aggregates, which `isValid` relies on. | Lot 7c (step 5), done |
 | 1 | `FMTTheme.h` | `FMTThemeComparator` | 0 | 0 | None with a check | None known |  | Lot 8 |

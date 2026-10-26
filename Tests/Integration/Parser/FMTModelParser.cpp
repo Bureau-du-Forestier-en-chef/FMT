@@ -185,6 +185,35 @@ TEST(FMTModelParser, GivenAPenaltyObjectiveWithoutSignWhenWriteThenRereadsTheSam
     EXPECT_EQ(Testing::getFirstDifference(roundTrip.firstFiles.at(".opt"), roundTrip.secondFiles.at(".opt")), "");
 }
 
+// The scenario spatialconstraints takes the yields of the root (#347): this case compares its constraints only. It
+// guards the next merge of master: there, ff9850f1, the fix of #382, writes _SIZE(_SIZE(...)),
+// _ADJACENCY(_ADJACENCY(...)) and _GROUP(...)), which the reread refuses (#397).
+TEST(FMTModelParser, GivenSizeAdjacencyAndGroupConstraintsWhenWriteThenRereadsTheSameConstraints)
+{
+    // Arrange
+    const Models::FMTModel model = Testing::readScenario("spatialconstraints");
+    const std::filesystem::path folder = Testing::getCaseFolder();
+    const std::vector<Core::FMTconstrainttype> SPATIAL_TYPES = { Core::FMTconstrainttype::FMTspatialsize,
+        Core::FMTconstrainttype::FMTspatialsize, Core::FMTconstrainttype::FMTspatialadjacency,
+        Core::FMTconstrainttype::FMTSpatialGroup };
+
+    // Act
+    const Testing::ModelRoundTrip roundTrip = Testing::writeRereadAndRewrite(model, folder);
+
+    // Assert
+    std::vector<Core::FMTconstrainttype> rereadSpatialTypes;
+    for (const Core::FMTConstraint& constraint : roundTrip.reread.getConstraints())
+    {
+        if (constraint.isSpatial())
+        {
+            rereadSpatialTypes.push_back(constraint.getConstraintType());
+        }
+    }
+    EXPECT_EQ(rereadSpatialTypes, SPATIAL_TYPES);
+    EXPECT_TRUE(model.getConstraints() == roundTrip.reread.getConstraints());
+    EXPECT_EQ(Testing::getFirstDifference(roundTrip.firstFiles.at(".opt"), roundTrip.secondFiles.at(".opt")), "");
+}
+
 // The scenario ForLoops takes the yields of the root (#347): this case compares its outputs only.
 TEST(FMTModelParser, GivenOutputsBuiltByForLoopsWhenWriteThenRereadsTheSameOutputs)
 {
