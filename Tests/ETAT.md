@@ -1001,7 +1001,8 @@ valeur mesurée une fois puis vue rouge.
 - Regroupement d'UA : `ClusterOperatingAreas` (une solution existe) ; prédicteurs :
   `GetCarbonPredictors` (rien) ; `GetRotations`, `GetYieldsFromGraph`, `ReadDatabaseSections`,
   `SolveTwentyPeriods`, `SetSolutionByLp` (BFEC).
-- Géométries : `UnitTestFMTAreaParser` à restaurer si son API existe encore.
+- Géométries : `UnitTestFMTAreaParser` à restaurer si son API existe encore. Depuis #394 et #396, `getSchemeNeighbors`
+  a quatre cas d'intégration sur des cartes synthétiques, avec ou sans Z (sections 5.12 et 5.13) ; `getClusters` n'a que `ClusterOperatingAreas`.
 
 ## 4. Scénarios bidons (TWD_land)
 
@@ -2052,6 +2053,88 @@ inchangé depuis `f4252745`) :
   2.7, dans les commentaires des deux cas désactivés, dans `CoreTestCoverage.csv` et dans le changelog. Le lot n'ajoute
   que des tests et deux scénarios qu'eux seuls lisent : la suite BFEC n'est pas relancée.
 
+### 5.12 Session à part : correction de #394 (2026-10-23)
+
+**Défaut.** `FMTAreaParser::_GetGeometryArea` n'avait pas de `break` à la fin du cas des multipolygones et des
+collections : l'exécution continuait dans `default`, qui remettait l'aire à 0. `_getNeighborsFromPolygons` écartait
+donc tout voisin dont l'intersection avec la zone tampon forme plusieurs morceaux. Démonstration et origine dans
+l'issue #394 (A/B sur le test privé `GetOperatingAreaNeighbors` : 192 voisins, 240 avec le seul `break`).
+
+**Correction** (`Source/FMTAreaParser.cpp`) : le `break`, et dans `_getClustersFromPolygons`, l'intersection mesurée
+n'est plus convertie par `dynamic_cast<OGRPolygon*>`, qui rend `nullptr` pour un multipolygone : son aire valait 0
+et elle n'était jamais détruite. Démontré par une sonde sur le `FMTlib.dll` de `966b668c` : l'intersection d'un
+carré et d'un U est un multipolygone d'aire 400 pour GDAL, `nullptr` après la conversion.
+
+**Test** : `Tests/Integration/Parser/FMTAreaParser.cpp`, deux cas de `getSchemeNeighbors` dans `IntegrationParser`,
+sur une carte GeoJSON que chaque cas écrit dans son dossier de sortie (champs `THEME1`, `AGE` et `SUPERFICIE`, un
+thème construit en code, une zone tampon de 10) :
+
+| Cas | Carte | Avant la correction | Après |
+|---|---|---|---|
+| `GivenTwoUnitsSharingASide…ThenTheyAreNeighbors` | deux carrés côte à côte (témoin) | vert | vert |
+| `GivenTwoUnitsTouchingInTwoSeparatePlaces…ThenTheyAreNeighbors` | un U renversé posé sur un carré | rouge, aucun voisin | vert |
+
+Vus avant le build : le test compilé par `cl` hors du dépôt contre le `FMTlib.lib` de `build/release` (`/W4
+/permissive-` : aucun avertissement dans ses sources), lancé depuis `bin/Release` ; pour « après »,
+`_GetGeometryArea` est redirigée, dans le processus seulement, vers la fonction corrigée. Sans GDAL ou OSI, les deux
+cas finissent en `GTEST_SKIP`.
+
+**Pourquoi pas TWD_land** : sur sa carte, toutes les intersections sont des polygones en un morceau. Une sonde A/B de
+`getSchemeNeighbors` (thèmes 1, 2 et 3 et leurs combinaisons, zones tampons de 1, 10 et 100) et de l'appel de
+`ClusterOperatingAreas` donne les mêmes voisins et les mêmes groupes, sans aucun multipolygone : `ClusterOperatingAreas`
+ne change pas.
+
+**Suite BFEC** : l'attendu de `GetOperatingAreaNeighbors` passe de 192 à 240 dans le `BFECtests.csv` de
+ce worktree, et son nom ctest change avec lui (empreinte de ses arguments) ; les autres copies du CSV sont à mettre à
+jour de la même façon. `ScheduleOperatingAreas` et `RunOpAreaSchedulerTask` ne comparent pas à une valeur fixe
+(l'heuristique contre le rejeu de sa solution), mais leurs voisins changent : ils sont à relancer.
+
+**Démontré, hors de ce correctif** : une géométrie avec Z (`POLYGON Z`, de type 2,5D) vaut aussi 0 dans
+`_GetGeometryArea` (sonde : GDAL 100, FMT 0), car le `switch` ne retire pas le drapeau Z (`wkbFlatten`). Avant
+`2dc1ad55`, le `dynamic_cast<OGRSurface*>` la mesurait. Sur des shapefiles de deux carrés côte à côte, avec le
+correctif de #394, `getSchemeNeighbors` trouve 2 voisins en `Polygon` et en `PolygonM`, 0 en `PolygonZ` et en
+`PolygonZM` ; 2 partout avec `wkbFlatten`. Issue #396, ouverte par Gabriel le 2026-10-23, corrigée en section
+5.13.
+
+**Validation après le build de Gabriel** (2026-10-23, sources de `966b668c` et le correctif, non commité) :
+
+- passage de l'installation (`INSTALL_TEST_SUITE=public`) : 722 tests, 0 échec, 31 désactivés ; les deux cas de
+  `FMTAreaParser` verts ;
+- suite privée, lancée par Gabriel : 94 tests réussis, 0 échec, dont `GetOperatingAreaNeighbors` avec l'attendu 240,
+  `ScheduleOperatingAreas` et `RunOpAreaSchedulerTask` ;
+- `RunTests.bat all-public`, relancé ensuite : « 0 tests failed out of 691 », 21,7 s réelles ; unit 410 verts et 10
+  désactivés sur 420, integration 19 verts et 9 désactivés sur 28, system 237 verts et 12 désactivés sur 249,
+  performance 23, other 2 ; Total 691 verts et 31 désactivés sur 722. La fixture `ExamplesModelsUnchanged` est verte,
+  et l'arbre de travail est resté le même après le passage.
+
+Commité par Gabriel en `44aee1fe`.
+
+### 5.13 Session à part : correction de #396 (2026-10-26)
+
+**Défaut.** `_GetGeometryArea` comparait le type de GDAL tel quel : un polygone avec Z est un `wkbPolygon25D`, qui
+tombait dans `default` et valait 0. Sur une carte en Z, `getSchemeNeighbors` ne trouvait aucun voisin. Démonstration
+en section 5.12 et dans l'issue.
+
+**Correction** (`Source/FMTAreaParser.cpp`) : `wkbFlatten` retire les drapeaux Z et M avant le `switch`. La
+documentation de `_GetGeometryArea` (`Include/FMTAreaParser.h`) le dit.
+
+**Test** : deux cas de plus dans `Tests/Integration/Parser/FMTAreaParser.cpp`, sur les cartes des deux cas de #394,
+avec un Z de 5 à chaque sommet. Les deux cartes sont devenues des fonctions partagées (`getSquaresSideBySide`,
+`getArchOnASquare`), et `writeMap` prend un `p_withZ`.
+
+| Cas | Intersections | Build de `44aee1fe` | Avec `wkbFlatten` |
+|---|---|---|---|
+| `GivenTwoUnitsSharingASideWithZCoordinates…ThenTheyAreNeighbors` | polygones avec Z | rouge, aucun voisin | vert |
+| `GivenTwoUnitsWithZCoordinatesTouchingInTwoSeparatePlaces…ThenTheyAreNeighbors` | multipolygones avec Z | rouge, aucun voisin | vert |
+
+Vus avant le build comme en section 5.12 : compilés par `cl` hors du dépôt contre le `FMTlib.lib` de `build/release`
+(`/W4 /permissive-` : aucun avertissement dans les sources du test), lancés depuis `bin/Release`, la fonction
+redirigée dans le processus pour la colonne de droite. Les deux cas de #394 restent verts des deux côtés.
+
+**Portée** : les 22 cartes des modèles de test BFEC sont en `Polygon` 2D ; la suite privée ne devrait pas changer.
+
+**À valider après le build** : `RunTests.bat integration` (quatre cas de `FMTAreaParser`, verts), `all-public`.
+
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
@@ -2599,6 +2682,12 @@ abandonne.
   exécutable placé hors de `bin/Release` charge `C:\Windows\System32\onnxruntime.dll`, trop
   ancienne (« version [16] is not supported »). Copier `onnxruntime.dll` à côté de
   l'exécutable de sonde.
+- **Chemin de sortie d'un cas d'intégration** : `Testing::getCaseFolder` crée `../../tests/IntegrationParser/<cas>`
+  depuis le dossier de travail, et le nom d'un cas dépasse souvent 80 caractères. Lancée depuis le scratchpad, une
+  sonde dépasse 260 caractères : `create_directories` échoue, ou FMT lève `FMTexc(53)` en ouvrant le fichier. La
+  lancer depuis `build/release/bin/Release`, comme ctest, puis effacer les dossiers qu'elle a créés.
+- **Carte de TWD_land** : ses unités ne se touchent qu'en un morceau. Un test de géométries en plusieurs morceaux
+  écrit sa propre carte (section 5.12).
 - Plusieurs tests lèvent avec un nom de méthode copié d'un autre test (`"presolvetest"` dans
   `DoPlanning`) : lire le numéro de ligne plutôt que le nom.
 

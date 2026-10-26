@@ -628,7 +628,8 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 				const std::string& p_VectorsMap) const;
 			// DocString: FMTareaparser::_GetGeometryArea
 			/**
-			 * @brief Calculates the surface area of a given geometry if it is a polygon or multipolygon.
+			 * @brief Calculates the surface area of a given geometry if it is a polygon or multipolygon, with or
+			 *        without Z or M: the area of a geometry with Z is its area in 2D.
 			 * @param[in] p_geometry Pointer to the OGRGeometry object to evaluate. Can be nullptr.
 			 * @return The calculated area as a double; returns 0.0 if the geometry is invalid,
 			 *         nullptr, or not a polygonal type.

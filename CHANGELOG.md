@@ -1,4 +1,4 @@
-## [Unreleased] - 2026-10-23 (eea7fea2)
+## [Unreleased]
 
 ### Added
 
@@ -13,13 +13,22 @@
   - #391 [BUG] `FMTYields::getFromFactor` ne multiplie aucun yield quand on n'en nomme aucun, alors que sa documentation dit tous
   - #392 [BUG] `_ENDPOINT` provoque une violation d'accès dès que sa source sort de ses bornes
 - Added unit tests of the masks, themes and developments of the Core, built in code without a model: `FMTMask`, `FMTTheme` and `FMTDevelopment`, with operability and `operate` through actions and transitions built in code, and integration tests of `FMTActionParser` and `FMTYieldParser` on two new scenarios of `TWD_land`, `strictbounds` and `timeyieldcolumns` (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). They keep #387 as a disabled case, and revealed one defect, kept as disabled cases until it is fixed:
-  - [BUG] Une condition d'opérabilité écrite avec `>` ou `<` est lue sans sa borne : l'action est opérable à tout âge (issue to open)
+  - #393 [BUG] Une condition d’opérabilité écrite avec > ou < est lue sans sa borne : l’action est opérable à tout âge
+
+### Changed
+
+- `FMTTaskHandler::onDemandRun` waits for one of its workers to finish, at most 10 ms, between two checks of its workers, instead of checking them without pause, which kept a processor busy.
+- `FMTModel::preSolve` raises an `FMTmissingdevelopment` error that names the model when its area is empty.
 
 ### Fixed
 
 - Restored the fix of the lifetime of the logger of `FMTLpSolver`, which v1.4.0 lost in the resolution of a merge conflict: each solver holds its own copy of the logger again, and the `loggerlifetime` case of `SolveWithEachSolver`, whose row was still registered, again copies a solved model 2000 times.
 - An objective `_PENALTY` without sign is written without a sign again, instead of `y_PENALTY` (#379 [BUG] Un objectif `_PENALTY` sans signe est réécrit `y_PENALTY`).
 - The `MAX_RET` column of the operating-area scheduler parameters is read only when it holds a number, and the margin between the minimal and maximal return times is no longer computed backwards.
+- `FMTAreaParser::getSchemeNeighbors` and `getClusters` keep the operating areas whose intersection with the buffer of another one is in several pieces: the area of a multipolygon or of a geometry collection was 0, so such a neighbor was dropped, and the operating-area scheduler applied its adjacency and green-up constraints to fewer pairs of areas. `getClusters` also measures the intersections it compares on all their pieces, and destroys those in several pieces, which it leaked (#394 [BUG] `_GetGeometryArea` vaut 0 pour tout multipolygone : l'ordonnanceur des unités d'aménagement perd des voisins).
+- `FMTAreaParser::getSchemeNeighbors` and `getClusters` measure the geometries with Z, read for example from a PolygonZ shapefile: their area was 0, so on a map with Z no operating area had a neighbor (#396 [BUG] _GetGeometryArea vaut 0 pour une géométrie avec Z : sur une carte en Z, les unités d'aménagement n'ont aucun voisin).
+- The Excel add-in finds again the `FMTExcelCache` methods renamed in camelCase: `NOMACTIONS`, `NOMAGGREGATES`, `NOMOUTPUTS`, `NOMCOURBES` and `TROUVECONTRAINTES` failed with "Cannot find ... method in class Wrapper.FMTExcelCache", and `NOMTHEMES` calls `getThemes` instead of `getyields`.
+- A `_RANDOM(<output>)` constraint is written with its `_RANDOM`, so that a written model reads it back as the same constraint, and the round-trip case of `FMTModelParser` on `COMPLEX_NSS`, disabled until now, is enabled (#382 [BUG] Une contrainte `_RANDOM(<output>)` est réécrite sans `_RANDOM`).
 
 ## [v1.4.0] - 2026-10-21 (1cf2b516)
 
@@ -190,75 +199,6 @@
 - Fixed update-period handling (#331 Update Period Handling).
 - Fixed issues related to patch rules, escaping, multithreading, and user interfaces.
 - Fixed compilation when Mosek support is disabled.
-
-- Fixed several warning-handling and exception-management compatibility issues.
-- Reduced memory consumption during presolve operations (#204 Too Much Memory Used for Presolve).
-- Fixed a minor documentation coverage rendering issue.
-- Fixed numerous dependency, installation, documentation, and build-system issues.
-
-### Removed
-- Removed the `magic_enum` dependency.
-- Removed an obsolete UI cache component, simplifying the internal implementation.
-- Removed obsolete headers, legacy file variants, and deprecated API artifacts following API normalization.
-- Removed outdated build scripts and redundant compilation configurations.
-
-## [v1.2.0] - 2026-08-20 (26e42c7a)
-
-### Added
-- Added support for the `_SHIFT` keyword for model and scenario definitions, including dedicated examples.
-- Added **Parquet** file support through an updated GDAL integration.
-- Added **GLPK** solver support and related functionality, together with dedicated tests.
-- Exposed available solvers through public interfaces and added new solver-management capabilities.
-- Exposed `FMTmask::decompose` through the Python interface.
-- Exposed static themes through the R interface.
-- Added new exception-management capabilities, including `FMTExceptionHandler::getErrorsToIgnore`.
-- Added logger and exception-handler recovery mechanisms in the UI layer, allowing crash recovery while preserving existing log files and configuration.
-- Added explicit UTF-8 to system string conversion in the R interface (`_convertToSystemString`), improving support for accented and international characters.
-- Added new C++, Python, and R examples, including *Map to Area*, output exploration, yield categorization workflows, and scenarios demonstrating SQL query integration, SQLite-backed yield definitions, and constant substitution.
-- Restored **FMTExcel** support.
-
-
-### Changed
-- **Breaking:** major standardization of class, source, and header names (`FMTAction`, `FMTModel`, `FMTAreaParser`, etc.), accompanied by a significant public API reorganization.
-- Refactored the R API and wrapper layers with `camelCase` standardization, naming cleanup, and improved consistency.
-- Significantly improved exception handling with better encapsulation, richer abstractions, and enhanced error propagation.
-- Refactored the wrapper logging and exception-handling infrastructure to improve reliability, recovery after failures, and log preservation.
-- Introduced and matured a batch and mini-batch optimization workflow.
-- Improved Simulated Annealing optimization behavior, including annealing-rate handling and optimization performance.
-- Improved compatibility with older GDAL/PROJ versions for spatial operations, including OGR layer handling, projection management, and rasterization workflows.
-- Optimized `FMTSemodel::postSolve`, graph traversal routines, and internal caching mechanisms to improve performance on large spatial models.
-
-- Enhanced the parsing engine:
-  - improved handling of constants used in SQL queries;
-  - more robust support for `FOREACH` and `*INCLUDE`;
-  - improved case-insensitive processing of constants, directives, and variables;
-  - improved schedule file parsing with constant resolution support;
-  - improved recursive dependency detection in complex yield evaluation.
-- Updated Python/R auto-generated documentation, UI/Excel documentation, examples, README files, test coverage, and changelog content.
-- Modernized build and distribution infrastructure:
-  - improved compatibility with R 4.5, MSVC, and vcpkg;
-  - integrated **mimalloc** into MSVC builds;
-  - simplified and cleaned up build and release tooling.
-- Improved changelog generation, exposure, and packaging in released artifacts.
-
-### Fixed
-- Fixed multiple build and integration issues affecting R, Python, Excel, and Windows environments.
-- Resolved several wrapper hangs, lost log messages, and silent crash scenarios related to logging, logger destruction, and exception propagation (#313 Adaptation Log and Exception Handler in FMTWrapper).
-- Fixed a user interface logger pointer crash.
-- Fixed spatially explicit optimization when no cache is available (#317 Spatially Explicit Optimization Not Functional Without Cache).
-- Fixed and optimized `FMTSemodel::postSolve`, improving both stability and performance of spatial scheduling workflows.
-- Fixed neighborhood and adjacency handling in spatial scheduling and optimization workflows.
-- Fixed replanning optimization behavior.
-- Fixed decision-tree yield model issues.
-- Fixed loading of empty GCBM transitions (#311 Reading an Empty GCBM Transition).
-- Fixed rasterization failures caused by invalid themes (#326 Invalid Theme Missing Mask During Rasterization).
-- Fixed **#201 Unable to Rasterize**, improving GDAL/OGR projection handling during rasterization and reprojection workflows.
-- Fixed replacement mechanisms and new modeling syntax support (#323 New Syntax, #322 rxreplace, #321 _replace, #316 SQL Constant Regex Adaptation).
-- Fixed constant parsing used inside SQL queries and resolved **#338 SQL Query**, restoring correct SQL variable and constant resolution behavior.
-- Fixed update-period handling (#331 Update Period Handling).
-- Fixed issues related to patch rules, escaping, multithreading, and user interfaces.
-- Fixed compilation when Mosek support is disabled.
-
 - Fixed several warning-handling and exception-management compatibility issues.
 - Reduced memory consumption during presolve operations (#204 Too Much Memory Used for Presolve).
 - Fixed a minor documentation coverage rendering issue.
