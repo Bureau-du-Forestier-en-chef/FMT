@@ -539,6 +539,9 @@ comportement actuel : `Integration.FMTTransitionParser.GivenASourceConditionInTh
 lit le scénario `INVALID_sourcecondition` et donne la fourche de `arecup` (`_AGE >= 10`) à un développement de 5 ans.
 Il contredit la ligne désactivée `ReadInvalidScenario` de `knownbugs.csv`, qui attend le refus (`FMTexc(31)`) : la
 revue commune gardera l'un des deux, comme pour #346.
+Le lot 8a (section 5.15) fixe aussi, au niveau unitaire, ce que `FMTTransition::getFork` fait d'une fourche sans condition :
+il la rend à tout âge (`Unit.FMTTransition.GivenASourceWithoutConditionWhenGetForkThenGivesTheForkAtEveryAge`) ; rien n'est à
+corriger dans `FMTTransition`.
 Démonstrations refaites le
 2026-09-17 avec les exécutables du build de `new_test`, sur des copies de TWD_land hors dépôt.
 
@@ -873,6 +876,10 @@ commentaires des cas, dans `CoreTestCoverage.csv` et dans le changelog. Il n'est
       et `Integration.FMTActionParser.GivenAMaximumAgeWrittenWithLessThanWhenReadThenTheActionIsOperableBelowThatAgeOnly`,
       à côté des cas verts `GivenAMinimumAgeWrittenWithGreaterOrEqual…` et `GivenAMaximumAgeWrittenWithLessOrEqual…`
       du même scénario.
+    - Cas unitaire du lot 8a (section 5.15), vert :
+      `Unit.FMTAction.GivenAMinimumAgeWrittenWithGreaterThanAsTheParserReadsItWhenUpdateThenTheActionAcceptsEveryAge` construit
+      l'action avec les bornes que `FMTParser::bounds` rend pour `>` : elle accepte tout âge et s'écrit sans condition. La
+      correction est dans le parseur : ce cas ne l'exige pas.
 
 **Défauts révélés par les lacunes 6 et 7 (2026-10-26, section 5.14).** Démontrés comme les précédents : cause dans le
 code, A/B où une seule chose change, origine git. Aucun exécutable officiel ne les appelle : ni FMT, ni le wrapper, ni
@@ -911,6 +918,43 @@ dans les commentaires des cas et dans le changelog (`FMTSrModel` n'est pas une c
       need to be rewrite… ») ; ni Python ni R ne l'exposent. Aucun résultat n'en dépend aujourd'hui.
     - Cas : `Integration.FMTSrModel.GivenAnOptimizedModelWhenIsPeriodBoundedThenReturnsFalse`, à côté du cas vert
       `GivenBoundSolutionsWhenIsPeriodBoundedThenReturnsTrue`.
+
+**Défaut révélé par le lot 8a (2026-10-27).** L'observation de `FMTTransitionMask::setMask` de la section 5.15, démontrée à la
+demande de Gabriel le même jour : cause dans le code, A/B où une seule chose change, origine git. Aucun exécutable officiel ne passe
+par ce chemin (portée ci-dessous) : la démonstration passe donc, comme pour les défauts 19 et 20, par une sonde compilée hors du
+dépôt contre le `FMTlib.dll` du build de `new_test` (FMTlib du 2026-10-26), sur une copie de TWD_land dans le scratchpad. Il a un
+cas `DISABLED_` dans `UnitCore`. Son issue est à ouvrir par Gabriel (règle 3). Il n'est pas corrigé dans ce chantier. Les autres
+écarts du lot (l'ordre d'`FMTActualDevelopment`, `reduceLockToDeath`, `FMTFork::getMax`, `FMTList::push_back` d'une liste) restent
+des observations (section 5.15).
+
+21. **`FMTTransitionMask::setMask` ne refait pas la sélection de la cible** (`FMTTransitionMask`, issue à ouvrir).
+    - `setMask` (`Source/FMTTransitionMask.cpp:142`) change le masque sans appeler `build` : la sélection (`selection`,
+      `flippedselection`) que `trans` combine avec le masque du développement reste celle du masque de construction.
+      `FMTModel::pushTheme` (`Source/FMTModel.cpp:481`), qu'appelle `FMTModel::buildAction`, passe ainsi les cibles des transitions
+      au masque du nouveau thème : sur un développement des quatre thèmes, `trans` combine une sélection de 10 bits avec un masque
+      de 12, perd le nouveau thème, et le masque obtenu n'a aucun attribut pour lui (`FMTundefined_attribute`, 19).
+    - A/B unitaire (cas ci-dessous) : la cible `? FEU ? ?` construite avec les quatre thèmes donne `UNITE1 FEU UTR1 VPOST` pour
+      `UNITE1 PEUPLEMENT1 UTR1 VPOST` ; la cible `? FEU ?` des trois thèmes passée par `setMask` lève `FMTexc(53)` puis
+      `FMTexc(19)`.
+    - A/B sur un modèle : `buildAction("ABUILT", "VOLUMETOTAL")` sur la racine, `FMTLpModel` en CLP, `doPlanning(false)` sur 2
+      périodes. A, le modèle bâti, en mémoire, sans presolve (`PRESOLVE_ITERATIONS` à 0) : `FMTexc(19)` en opérant `AFIRE` sur
+      `UNITE1 PEUPLEMENT1 UTR1 PRE`. B, le même modèle écrit par `writeToProject` puis relu, sans presolve : 126 sommets, 173 arcs,
+      69 lignes et 156 colonnes. Le modèle bâti avec le presolve (10 passes) donne les mêmes nombres, car
+      `FMTTransitionMask::preSolveRef` refait la sélection, et la racine seule aussi. Opérer `COUPETOTALE` sur
+      `UNITE1 PEUPLEMENT1 UTR1 PRE` à 20 ans : `FMTexc(19)` en mémoire, `UNITE1 PEUPLEMENT1 UTR1 PRE` à 0 an une fois relu.
+    - Origine : `setmask` est ajouté, sans appelant, par `adc38e0d` (2022-07-28, « Fix #82 ») ; son premier appelant est
+      `pushtheme`, ajouté par `e86e9a86` (2024-07-17, « Action builder for TBE done »).
+    - Portée : seul un modèle de `buildAction` gardé en mémoire et construit sans presolve est touché. `BuildAction` et
+      `WrapperCoreBuildAction`, tests privés, écrivent le modèle bâti, qu'on relit ; `BuildActionOnMap` n'en lit que les thèmes et
+      les superficies ; `buildSchedule` n'opère pas les transitions ; ni Python ni R n'exposent `buildAction`. Le wrapper garde le
+      modèle bâti dans `ModelCache`, mais ses planifications passent par `doPlanning`, qui présolve par défaut (il ne touche pas à
+      `PRESOLVE_ITERATIONS`). La simulation non spatiale d'une replanification (`FMTNssModel`) faite sur un tel modèle : non vérifiée.
+    - Cas : `Unit.FMTTransitionMask.GivenAMaskOfANewThemeWhenSetMaskThenTransAppliesTheNewMask`, à côté du cas vert
+      `GivenATargetBuiltWithANewThemeWhenTransThenKeepsTheAttributeOfTheNewTheme`.
+    - Hors de ce défaut, relevé par la même sonde sur 5 périodes : le modèle bâti, relu ou présolvé, échoue à la période 3 en
+      opérant `ARECUP` sur `UNITE2 FEU UTR1 POST` (aucun `VOLUMETOTAL` pour ce développement, `FMTexc(42)` ; après le presolve, une
+      violation d'accès, `FMTexc(85)`). Non analysé : `VOLUMETOTAL` n'est peut-être pas un yield que `buildAction` peut prendre
+      pour cible sur TWD_land.
 
 ## 3. Lacunes classées par criticité
 
@@ -2294,10 +2338,163 @@ du 2026-10-26 à 17 h 45) :
   integration 35 verts et 11 désactivés sur 46, les autres niveaux comme à l'installation. Les comptes sont ceux
   attendus avant le build.
 
+### 5.15 Lot 8a : actions, transitions, développements, cédules et listes (2026-10-27)
+
+**Statut** : livré le 2026-10-27, à compiler et à commiter par Gabriel ; validation après son build (fin de cette section).
+Premier tiers du lot 8 (section 6.3.5) : les 15 classes de priorité 1 dont le statut était `Lot 8` et qui construisent et font
+évoluer le modèle. Point de départ : le passage validé du 2026-10-27 (`50b67582`, section 5.14), arbre de travail propre.
+
+**Ajouts** (`Tests/Unit/Core`, cp1252, CRLF, en-tête de licence) : une source par classe, une suite au nom de la classe, cas
+Given…When…Then en Arrange / Act / Assert ; 182 cas nouveaux, dont 1 désactivé (défaut 21, ajouté avec un cas vert après la
+validation, à la demande de Gabriel). `Tests/Unit/Core/CMakeLists.txt` prend les sources par un glob : inchangé.
+
+| Source | Cas | Ce qu'ils couvrent |
+|---|---|---|
+| `FMTAction.cpp` | 31 | construction (nom, verrou, remise à zéro de l'âge ; nom seul : `_LOCKEXEMPT`, sans remise à zéro), bornes d'âge et de période d'`update` (plusieurs spécifications, spécification sans âge, action vide : bornes inversées), #393, égalité, ordre, hachage, chaînes (`*ACTION`, `*OPERABLE`, `_LOCKEXEMPT`, `*PARTIAL`), `partial`, `useYield`, agrégats (`isPartOf`, `setAggregates`), `operator+=` comme `FMTModel::aggregateActions` (drapeaux de la première action, partiels perdus avec un avertissement, `_LOCKEXEMPT` transmis, action mise à jour : `FMTinvalid_action`, puis `unShrink`), `notUse`, `split`, presolve, GCBM (`~GCBM:<id>:<nom>` ; absent : `FMTfunctionfailed`), séries (`setSeries`, `isInSeries`, `isAllowedInSerie`, `getSerie`, `getLargestSerieSize`) |
+| `FMTActionComparator.cpp` | 5 | nom, agrégat avec et sans vérification, `find_if`, `getAllAggregates` (qui regarde toujours les agrégats), `getAllAggregatesSet` |
+| `FMTTransition.cpp` | 22 | construction, nom, copie, égalité (nom et fourches), ordre, chaînes (`*CASE`, `*SOURCE` et sa condition, `*TARGET`), `getFork` (première source qui contient le développement, condition d'âge, de yield, #358, aucune source), `isLeaking`, `single`, `ageAfter` (moyenne entière), `mainTarget`, `attributeTargets`, `getStaticThemes`, `canProduce`, `operator+=` (et `FMTinvalid_action` après `update`), presolve |
+| `FMTTransitionComparator.cpp` | 2 | nom, `find_if` |
+| `FMTTransitionMask.cpp` | 19, dont 1 désactivé | construction, proportion (`setProportion` limite à 100, le constructeur non), `trans` (un attribut, `?`, tous les thèmes, agrégat), `disturb` (remise à zéro, âge, verrou, période et proportion gardés, `_AGE`, `_LOCK`, yield cible), égalité, chaînes, `get`, construction depuis une autre cible, presolve, cible d'un nouveau thème (construite ; par `setMask`, désactivé : défaut 21) |
+| `FMTFork.cpp` | 15 | `add`, `clear`, `sumProp`, `getPaths` (une et deux cibles ; cibles identiques : `FMTsame_transitiontargets` et, en avertissement, proportions additionnées ; cible qui ne change rien : `FMTsourcetotarget_transition` et, en avertissement, un niveau de verrou de plus ; remise à zéro à l'âge 0), `single`, `getMax`, égalité, chaîne, presolve |
+| `FMTActualDevelopment.cpp` | 20 | constructions, copie, clone, déplacement, égalité (aire comprise), ordre, chaînes (`*A`, `_lock`), `setArea`, `getArea` par la classe de base, `reduceLockToDeath` (sans verrou, verrou qui finit à la durée de vie, après : `FMTdeathwithlock` ; en avertissement : verrou réduit, ou gardé un an après la durée de vie ; sans durée de vie), presolve |
+| `FMTActualDevelopmentComparator.cpp` | 3 | mêmes valeurs, aire ignorée, `find_if` dans la section des superficies |
+| `FMTFuturDevelopment.cpp` | 7 | construction, défaut, aire nulle (aussi par la classe de base, et depuis un développement réel), copie, clone, déplacement, égalité |
+| `FMTDevelopmentPath.cpp` | 5 | défaut, construction, `setProportion`, développement modifié par référence, copie |
+| `FMTSchedule.cpp` | 24 | construction, `addEvent` (aires additionnées, niveau de verrou du développement déverrouillé, cédule avec verrou), `operated`, `+=` et `+`, construction depuis des cédules et depuis des aires par verrou, égalité (totaux par développement), chaînes (avec et sans verrou), `clean`, `sort`, `getNewSchedule`, `setPeriod`, `getOperabilities`, action absente (`actionArea`, `find` ; `at` : `std::out_of_range`), action de même nom, `operator[]`, `isFuturConstraints`, presolve, postsolve |
+| `FMTLifespans.cpp` | 8 | ordre, chaîne, `findSets`, copie, égalité, `swap`, presolve (avec et sans durée de vie) |
+| `FMTList.cpp` | 15 | à travers `FMTLifespans` (`FMTList<int>`) et `FMTAction` (`FMTList<FMTSpec>`) : liste vide, `push_front`, `insert`, `erase`, `pop_back`, `findSets` avant et après `update` (et deux fois), `filterMask`, `unShrink`, copie, `+=` (et `FMTinvalid_action` sur une liste réduite), égalité (ordre compris), `clear`, `getUnion`, `push_back` d'une liste |
+| `FMTMaskComparator.cpp` | 3 | bits égaux, nom ignoré, `find_if` |
+| `FMTThemeComparator.cpp` | 3 | thème égal, thème présolvé (avec et sans l'option), `find_if` |
+
+- Niveau unitaire : aucun modèle sur disque. Thèmes de TWD_land comme au lot 7c (`FMTTheme.cpp`) ; actions et transitions de
+  TWD_land construites comme `FMTActionParser`, `FMTTransitionParser` et `FMTModel` (une spécification ou une fourche par masque,
+  puis `update`) ; agrégation comme `FMTModel::aggregateActions` (une action du nom de l'agrégat, puis `+=` d'actions défaites par
+  `unShrink`) ; durées de vie de TWD_land (`? feu ? 0`, `? ? ? 80`) ; presolve de `FMTMask.cpp` et postsolve de
+  `FMTModel::getPostSolveFilter`. `FMTList` est un modèle de classe : il est testé à travers ses deux instanciations exportées les
+  plus simples. Aucun cas ne contourne le code : aucune ligne de dette.
+- Erreurs converties en avertissements (`FMTsame_transitiontargets`, `FMTsourcetotarget_transition`, `FMTdeathwithlock`, que
+  `FMTExceptionHandler::getErrorsToIgnore` liste) : le gestionnaire d'exceptions d'`FMTObject` est statique, partagé par tous les
+  objets du processus ; une garde (`ErrorsAsWarnings`, dans `FMTFork.cpp` et `FMTActualDevelopment.cpp`) lui rend sa liste vide à
+  la fin du cas (section 7).
+- Valeurs calculées à la main avant la première exécution, depuis la documentation ou le code : bornes de `_setBounds` (la plus
+  petite et la plus grande des spécifications ; 0 à l'infini pour une spécification sans âge ; sans spécification, la borne basse
+  au-dessus de la haute), chaînes (`std::to_string` à six décimales, `toString` des bornes), `ageAfter` (10 + 21) / 2 = 15 en
+  entier, `reduceLockToDeath` 10 - (75 + 10 - 80) + 1 = 6, `VOLUMETOTAL` 150 à 10 ans pour la cible de yield (l'âge de base le plus
+  proche sous l'âge du développement). Un seul attendu s'est révélé faux à la première exécution, corrigé après relecture du code
+  et non recopié : `FMTempty_action` est un avertissement (`FMTEmptyAction` dérive de `FMTWarning`), si bien que
+  `getGCBMActionId` sans agrégat GCBM lève `FMTfunctionfailed` en lisant la définition vide.
+
+**#358 et #393, à l'endroit où ils agissent** (cas verts, sans défaut nouveau, section 2.7) :
+- #393 : `FMTAction.GivenAMinimumAgeWrittenWithGreaterThanAsTheParserReadsItWhenUpdateThenTheActionAcceptsEveryAge` construit
+  l'action avec les bornes que `FMTParser::bounds` rend pour `_AGE > 10` (du plus petit au plus grand entier) : `update` lui donne
+  ces bornes, elle accepte l'âge 5 et s'écrit sans condition (`? PROD ?  `), comme la sonde du lot 7c l'avait vu à l'écriture. La
+  correction est dans le parseur, que les deux cas désactivés d'`IntegrationParser` attendent ; aucun cas de `FMTAction` ne l'exige.
+- #358 : `FMTTransition.GivenASourceWithoutConditionWhenGetForkThenGivesTheForkAtEveryAge` : une fourche sans condition, ce que
+  `FMTParser::_setSpec` laisse d'une condition écrite comme dans la section des actions, est rendue par `getFork` à 5 comme à 15
+  ans ; à côté, `GivenASourceAgeConditionWhenGetForkThenGivesNoForkOutsideItsAges` (`@AGE(10.._MAXAGE)`) n'en rend aucune à 5 ans.
+
+**Défaut nouveau** : le défaut 21 (section 2.7), démontré après la validation, à la demande de Gabriel : l'observation de
+`setMask` ci-dessous.
+
+**Observations, sans défaut annoncé** (rien de ce que FMT exécute n'en dépend, ou ce n'est pas démontré par un exécutable officiel) :
+- **`FMTTransitionMask::setMask` ne refait pas la sélection** (`build`), devenu le défaut 21 (section 2.7) : `trans` garde celle
+  du masque de construction.
+  `FMTModel::pushTheme`, qu'appelle `FMTModel::buildAction`, passe ainsi les cibles des transitions au masque du nouveau thème.
+  Sonde A/B hors du dépôt (FMTlib du build du 2026-10-26), thèmes de TWD_land plus un thème `VPRE`, `VPOST` ajouté comme le fait
+  `pushTheme` : la cible `? FEU ? ?` construite avec les quatre thèmes donne `UNITE1 FEU UTR1 VPOST` pour `UNITE1 PEUPLEMENT1 UTR1
+  VPOST` ; la cible `? FEU ?` des trois thèmes passée par `setMask` lève `FMTexc(53)` puis `FMTexc(19)` (`FMTundefined_attribute`).
+  Non démontré sur un exécutable officiel : le presolve refait la sélection (`FMTTransitionMask::preSolveRef` appelle `build`), et
+  `BuildAction`, test privé, écrit le modèle bâti et le relit avant de s'en servir (son `doPlanning` est en commentaire). À
+  démontrer, si Gabriel le souhaite, sur un modèle bâti par `buildAction` puis construit sans presolve ni relecture : fait le
+  2026-10-27 (section 2.7, défaut 21).
+- **`FMTActualDevelopment::operator<` n'est pas un ordre faible strict** : il demande un développement et une aire plus petits,
+  si bien que deux développements différents peuvent n'être ni avant ni après l'autre (cas vert commenté). `FMTSrModel::getArea`
+  les trie pourtant par `std::sort` (depuis `22f2e94e`, 2021-04-16 ; l'opérateur date de `b6acf940`, 2019-07-22). Effet sur un
+  résultat : non démontré.
+- **`FMTActualDevelopment::reduceLockToDeath`** lève dès que l'âge plus le verrou dépasse la durée de vie, mais le verrou qu'il
+  donne en avertissement vaut les années restantes plus un : à 71 ans avec un verrou de 10 et une durée de vie de 80 ans, l'erreur
+  est levée, et l'avertissement « réduit » le verrou à 10 (cas vert commenté ; trouvé par l'entrée faussée du vu rouge, ci-dessous).
+  À l'âge de la durée de vie, le verrou devient 0, au-delà 1 (variable `fix`) : rien ne dit ce que fait Woodstock, d'où un test
+  manquant.
+- **`FMTFork::getMax`** ne met jamais à jour la plus grande proportion vue : il rend le développement de la dernière cible de
+  proportion positive (cas vert commenté). Aucun appelant dans FMT ; ni Python ni R ne l'exposent.
+- **`FMTList::push_back` d'une liste** remplace les éléments au lieu de les ajouter (cas vert commenté) ; son seul appelant,
+  `FMTModel::push_back`, jette le résultat (il finit par `*this = rhs`, les affectations sont en commentaire). `clear` garde le
+  filtre : une liste réduite puis vidée ne s'additionne plus (cas vert). `erase`, `insert`, `push_front` et `pop_back` ne vident pas
+  le cache de `findSets` (lu dans le code, non vérifié).
+- **`FMTSchedule::clean` et `sort`** déplacent les aires dans le vecteur des niveaux de verrou : la position n'est plus le niveau
+  (cas verts commentés). `FMTSrModel::setSolution` répartit les aires d'une action `_LOCKEXEMPT` sur les développements verrouillés
+  du graphe, quelle que soit leur position : sans effet démontré. Une cédule sans verrou s'écrit sans le niveau de chaque ligne.
+- **Documentation des en-têtes contredite par le code** (cas verts commentés) : `FMTAction::operator<` (« la longueur puis le nom » :
+  le nom seul), `FMTAction::operator==` et `FMTTransition::operator==` (« le nom » : aussi les spécifications, les drapeaux et les
+  partiels, ou les fourches), `FMTAction::operator+=` (« une exception si les remises à zéro diffèrent » : un avertissement, et les
+  partiels perdus), `FMTTransition::isLeaking` (« différente de 1 » : de 100), `FMTList::push_back` d'une liste (« à la fin »).
+- `FMTActionComparator::getAllAggregates` regarde les agrégats même quand le comparateur ne les vérifie pas, et un `FMTAction`
+  construit avec son seul nom est `_LOCKEXEMPT`, ce dont part `FMTModel::aggregateActions` (cas verts).
+
+**Non couvert, et pourquoi** : le presolve avec compression des masques (`_compressMasks`, des actions, des transitions et des
+durées de vie) ; `FMTAction::getSeriesNames` (aucun appelant) ;
+`FMTList::findSetsWithFiltered`, `reserve`, `apiPushBack` ; le verrou que `reduceLockToDeath` donne à l'âge de la durée de vie et
+au-delà ; la sérialisation (lot 9).
+
+**Vus rouges** (règle 1), rien de commité : deux copies faussées des 15 sources, hors du dépôt, compilées par `cl` contre le
+`FMTlib.lib` de `build/release` :
+- **entrée faussée** : une substitution par cas, dans son Arrange ou son Act, jamais dans son Assert (une table du script qui écrit
+  la copie ; il refuse une substitution introuvable, ambiguë ou placée dans l'Assert, et un cas sans substitution) : les 180 cas
+  échouent, aucun par une exception. Un premier passage a laissé un cas vert, `…GivenALockThatEndsAtTheLifespan…`, dont l'entrée
+  faussée (71 ans au lieu de 70) donnait le même verrou : c'est l'observation de `reduceLockToDeath` ci-dessus. Son entrée faussée
+  est passée à 72 ans, et un cas commenté fixe le comportement à 71 ans ;
+- **assertions inversées** (un en-tête inclus après `<gtest/gtest.h>`, assertions fatales rendues non fatales ; le script refuse
+  toute autre macro que les dix employées) : les 180 cas échouent, aucun par une exception, et les 490 assertions échouent chacune
+  une fois (490 messages ; GoogleTest situe les 11 assertions écrites sur deux lignes à leur dernière ligne) ;
+- aucun cas désactivé dans ce lot ; les 10 cas désactivés d'avant, lancés avec `GTEST_ALSO_RUN_DISABLED_TESTS=1`, échouent toujours.
+
+**Vu vert avant le build de Gabriel** : les 34 sources du dépôt, compilées par `cl` avec les options de `UnitCore` (son
+`CL.command.1.tlog`), `/Fo` et `/Fd` dans le scratchpad, liées au `FMTlib.lib` de `build/release` (FMTlib du 2026-10-26 à 17 h 45,
+sources de FMTlib inchangées depuis `025d3493`), lancées depuis le scratchpad avec `bin/Release` dans le `PATH` et
+`onnxruntime.dll` copiée à côté (section 7) : 590 cas verts (410 d'avant et 180 nouveaux), 10 désactivés ; mêmes résultats dans un
+ordre mélangé (`GTEST_SHUFFLE`, graines 4242 à 4244, 3 répétitions). En `/W4 /permissive-`, aucun avertissement ne vient des 15
+sources nouvelles : les 635 viennent des en-têtes de FMTlib. ctest n'a pas été lancé ; rien n'a été écrit dans `build/release` ni
+sous `Examples/Models`.
+
+**Documents** : `CoreTestCoverage.csv` (statut `Lot 8a, done` des 15 classes, #358 et #393, remarques des observations, tests
+manquants), `CoreTestCoverage.md` régénéré (34 classes avec des tests unitaires, 16 de priorité 1 sans test propre au lieu de 31 :
+celles du lot 8b ; deux générations identiques), sections 2.7, 6.1, 6.3.5 et 7, changelogs (section non publiée, anglais et
+français).
+
+**Validation après le build de Gabriel** (2026-10-27, sur les 180 premiers cas, avant ceux du défaut 21 ; sources du lot non commitées ; FMTlib inchangé, `FMTlib.dll` du 2026-10-26
+à 17 h 45) :
+- `UnitCore.exe` du build date de 10 h 08, après la dernière modification des sources du lot (9 h 51) ;
+- installation (`INSTALL_TEST_SUITE=public`, 10 h 09) : 920 tests, 0 échec, 887 exécutés et 33 désactivés, 30 s ; unit 590 verts
+  et 10 désactivés, integration 35 verts et 11 désactivés, system 237 verts et 12 désactivés, performance 23, other 2 ; aucun test
+  en `T:/`. `InstallTests.xml`, `InstallTests.json`, `LastTest.log` et `LastTestsDisabled.log` copiés dans le scratchpad de la
+  session avant tout appel de ctest ;
+- `RunTests.bat all-public` : « 0 tests failed out of 887 », 27,3 s réelles ; unit 590 verts et 10 désactivés sur 600,
+  integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 ; Total 887
+  verts et 33 désactivés sur 920. Par rapport au passage du 2026-10-27 (section 5.14), seul le niveau unit change, des 180 cas
+  ajoutés, tous verts : les comptes attendus avant le build. La fixture `ExamplesModelsUnchanged` et les tests Python sont verts,
+  et l'arbre de travail est resté le même après le passage ;
+- non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par la passe `/W4` hors dépôt
+  d'avant le build. Le lot n'ajoute que des tests unitaires : la suite BFEC n'est pas relancée.
+
+**Défaut 21, après la validation** (2026-10-27, à la demande de Gabriel) : deux cas de plus dans `FMTTransitionMask.cpp`, le cas
+vert d'une cible construite avec un nouveau thème et le cas désactivé de `setMask` (section 2.7). Vérifiés hors du dépôt comme le
+reste du lot : `UnitCore`, 591 verts et 11 désactivés ; mêmes résultats dans un ordre mélangé (graines 4242 à 4244, 3 répétitions) ;
+le cas désactivé, lancé avec `GTEST_ALSO_RUN_DISABLED_TESTS=1`, échoue pour sa raison (`trans` lève, le masque n'est pas
+`UNITE1 FEU UTR1 VPOST`) ; entrée faussée, 181 cas actifs sur 181 en échec ; assertions inversées, 181 en échec et chacune des 491
+assertions actives une fois ; en `/W4 /permissive-`, aucun avertissement de la source. **À valider après le prochain build** :
+`all-public` sans échec, 922 tests, 888 verts et 34 désactivés ; unit 591 verts et 11 désactivés sur 602.
+
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
 
+- **Lot 8a livré et validé le 2026-10-27** (section 5.15), à commiter par Gabriel : 180 cas unitaires des actions, des
+  transitions, des développements, des cédules et des listes (15 classes) ; #358 et #393 fixés à l'endroit où ils agissent.
+  Installation et `all-public` : 920 tests, 0 échec, 887 verts et 33 désactivés. Puis, à la demande de Gabriel, l'observation de
+  `FMTTransitionMask::setMask` démontrée : défaut 21 (section 2.7), aucun exécutable officiel ne passant par ce chemin ; deux cas de
+  plus, dont 1 désactivé, à valider au prochain build (922 tests, 888 verts, 34 désactivés) ; issue à ouvrir. Les lots 8b et 8c
+  suivent (section 6.3.5).
 - **Lacunes 6 et 7 commitées (`50b67582`) et validées le 2026-10-27** (section 5.14) : `IntegrationModels` (15 cas
   de `FMTSrModel`, dont 2 désactivés, défauts 19 et 20 de la section 2.7, #399 et #400), un cas d'aller-retour des
   contraintes spatiales dans `IntegrationParser` (#397), deux scénarios nouveaux. Installation et `all-public` : 740
@@ -2592,6 +2789,20 @@ prend pas, puis la priorité 2, puis la 3. Ce que cela change :
   (`Spatial`, `Graph`) : l'inventaire ne les liste pas. Ils restent au lot 8 parce que le jalon 7 de
   #350 les nomme.
 
+**Découpage en trois sessions (2026-10-27).**
+- **8a** : les 15 classes de priorité 1 qui construisent et font évoluer le modèle : `FMTAction`, `FMTActionComparator`,
+  `FMTTransition`, `FMTTransitionComparator`, `FMTTransitionMask`, `FMTFork`, `FMTLifespans`, `FMTActualDevelopment`,
+  `FMTActualDevelopmentComparator`, `FMTFuturDevelopment`, `FMTDevelopmentPath`, `FMTSchedule`, `FMTList`, `FMTMaskComparator` et
+  `FMTThemeComparator`. **Fait le 2026-10-27** (section 5.15) : 182 cas, dont 1 désactivé, et le défaut 21 (section 2.7).
+- **8b** : les 16 autres classes de priorité 1 : les rendements (`FMTYieldHandler`, `FMTYieldRequest`, `FMTYieldsCache`,
+  `FMTYieldDevelopment`, `cmpYieldString`), les outputs (`FMTOutputSource`, `FMTOutputSourceComparator`, `FMTOutputNode`,
+  `FMTOutputNodeHasher`, `FMTOutputNodeOriginComparator`, `FMTOutputNodeValueComparator`, `FMTOutputComparator`), `FMTMaskFilter`,
+  `FMTLookup`, `FMTConstants` et `FMTObject`. À venir ; c'est la section *Priority 1 classes without a test of their own* de
+  `CoreTestCoverage.md`.
+- **8c** : le reste du lot 8 : la priorité 2 (`FMTGCBMTransition`), la priorité 3 (les modèles de rendement,
+  `FMTModelYieldHandler`, `FMTSerie`), et `FMTEvent`, `FMTGraphStats` et les types spatiaux, hors de `Core`, que le jalon 7 de
+  #350 nomme. À venir.
+
 #### 6.3.6 Lot 9 : exigences transverses de #350 — effort `xhigh`
 
 - **Sérialisation** : aller-retour sur les types sérialisables, et compatibilité avec des
@@ -2876,6 +3087,13 @@ abandonne.
   appel : les périodes pas encore bornées changent de solution optimale, seul l'optimum se compare.
 - **Sortie d'`IntegrationModels`** : le journal de MOSEK (ou de CLP) s'écrit dans la console de chaque cas ; lire le
   résultat dans les lignes `[  FAILED  ]` et `[       OK ]`, ou dans le résumé de `RunTests.bat`.
+- **Erreurs converties en avertissements dans un test unitaire** (lot 8a) : `setErrorsToWarnings` agit sur le gestionnaire
+  statique d'`FMTObject`, partagé par tous les objets du processus. Un cas qui s'en sert rend la liste vide à la fin (garde
+  `ErrorsAsWarnings` de `Tests/Unit/Core/FMTFork.cpp`), sans quoi les cas suivants ne lèvent plus.
+- **`FMTempty_action` est un avertissement** (`FMTEmptyAction` dérive de `FMTWarning`) : il ne lève pas, c'est l'erreur qui suit
+  qui lève (lot 8a, `getGCBMActionId`). Vérifier le niveau d'une exception avant d'en attendre le code.
+- **Compilation hors du dépôt depuis Git Bash** (lot 8a) : MSYS convertit `/W4` en chemin (`C:/Logiciels/Git/W4`). Passer
+  `MSYS_NO_PATHCONV=1`, et alors des chemins Windows.
 - Plusieurs tests lèvent avec un nom de méthode copié d'un autre test (`"presolvetest"` dans
   `DoPlanning`) : lire le numéro de ligne plutôt que le nom.
 
@@ -2903,6 +3121,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-22 (lot 7c, `5956123b`) | 719 `all-public` (595 + 119 cas `Unit.` + 5 cas `Integration.`) ; résumé : unit 409 verts et 11 désactivés sur 420, integration 16 verts et 10 désactivés sur 26, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 20,1 s réelles | — | 13 | 2 | 0 | 33 | —
 | 2026-10-26 (fusion de `master`, #394 et #396 ; installation de Gabriel) | 724 (installation, `public`) ; unit 410 verts et 10 désactivés, integration 21 verts et 9 désactivés, system 237 verts et 12 désactivés, performance 23, fixtures 2 | 24 s (installation) | — | 13 | 2 | 0 | 31 | — |
 | 2026-10-27 (lacunes 6 et 7, `50b67582`) | 740 `all-public` (724 + 15 cas `Integration.FMTSrModel` + 1 cas `Integration.FMTModelParser`) ; résumé : unit 410 verts et 10 désactivés sur 420, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 19 s réelles | — | 13 | 2 | 0 | 33 | — |
+| 2026-10-27 (lot 8a, non commité) | 920 `all-public` (740 + 180 cas `Unit.`) ; résumé : unit 590 verts et 10 désactivés sur 600, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 27,3 s réelles | — | 13 | 2 | 0 | 33 | — |
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
