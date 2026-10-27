@@ -923,11 +923,12 @@ dans les commentaires des cas et dans le changelog (`FMTSrModel` n'est pas une c
 demande de Gabriel le même jour : cause dans le code, A/B où une seule chose change, origine git. Aucun exécutable officiel ne passe
 par ce chemin (portée ci-dessous) : la démonstration passe donc, comme pour les défauts 19 et 20, par une sonde compilée hors du
 dépôt contre le `FMTlib.dll` du build de `new_test` (FMTlib du 2026-10-26), sur une copie de TWD_land dans le scratchpad. Il a un
-cas `DISABLED_` dans `UnitCore`. Son issue est à ouvrir par Gabriel (règle 3). Il n'est pas corrigé dans ce chantier. Les autres
+cas `DISABLED_` dans `UnitCore`. Son issue, #402, a été ouverte par Gabriel le 2026-10-27 (règle 3) ; son numéro est aussi dans le
+commentaire du cas désactivé, dans `CoreTestCoverage.csv` et dans le changelog. Il n'est pas corrigé dans ce chantier. Les autres
 écarts du lot (l'ordre d'`FMTActualDevelopment`, `reduceLockToDeath`, `FMTFork::getMax`, `FMTList::push_back` d'une liste) restent
 des observations (section 5.15).
 
-21. **`FMTTransitionMask::setMask` ne refait pas la sélection de la cible** (`FMTTransitionMask`, issue à ouvrir).
+21. **`FMTTransitionMask::setMask` ne refait pas la sélection de la cible** (`FMTTransitionMask`, issue #402).
     - `setMask` (`Source/FMTTransitionMask.cpp:142`) change le masque sans appeler `build` : la sélection (`selection`,
       `flippedselection`) que `trans` combine avec le masque du développement reste celle du masque de construction.
       `FMTModel::pushTheme` (`Source/FMTModel.cpp:481`), qu'appelle `FMTModel::buildAction`, passe ainsi les cibles des transitions
@@ -2340,7 +2341,8 @@ du 2026-10-26 à 17 h 45) :
 
 ### 5.15 Lot 8a : actions, transitions, développements, cédules et listes (2026-10-27)
 
-**Statut** : livré le 2026-10-27, à compiler et à commiter par Gabriel ; validation après son build (fin de cette section).
+**Statut** : livré le 2026-10-27, commité par Gabriel le même jour (`2ca9a023`), **validé** le 2026-10-27 sur ses 180 premiers
+cas (fin de cette section) ; les 2 cas du défaut 21 (#402) sont à valider au prochain build.
 Premier tiers du lot 8 (section 6.3.5) : les 15 classes de priorité 1 dont le statut était `Lot 8` et qui construisent et font
 évoluer le modèle. Point de départ : le passage validé du 2026-10-27 (`50b67582`, section 5.14), arbre de travail propre.
 
@@ -2393,7 +2395,7 @@ validation, à la demande de Gabriel). `Tests/Unit/Core/CMakeLists.txt` prend le
   `FMTParser::_setSpec` laisse d'une condition écrite comme dans la section des actions, est rendue par `getFork` à 5 comme à 15
   ans ; à côté, `GivenASourceAgeConditionWhenGetForkThenGivesNoForkOutsideItsAges` (`@AGE(10.._MAXAGE)`) n'en rend aucune à 5 ans.
 
-**Défaut nouveau** : le défaut 21 (section 2.7), démontré après la validation, à la demande de Gabriel : l'observation de
+**Défaut nouveau** : le défaut 21 (section 2.7, #402), démontré après la validation, à la demande de Gabriel : l'observation de
 `setMask` ci-dessous.
 
 **Observations, sans défaut annoncé** (rien de ce que FMT exécute n'en dépend, ou ce n'est pas démontré par un exécutable officiel) :
@@ -2489,11 +2491,11 @@ assertions actives une fois ; en `/W4 /permissive-`, aucun avertissement de la s
 
 ### 6.1 État au 2026-10-19
 
-- **Lot 8a livré et validé le 2026-10-27** (section 5.15), à commiter par Gabriel : 180 cas unitaires des actions, des
+- **Lot 8a livré et validé le 2026-10-27** (section 5.15), commité par Gabriel (`2ca9a023`) : 180 cas unitaires des actions, des
   transitions, des développements, des cédules et des listes (15 classes) ; #358 et #393 fixés à l'endroit où ils agissent.
   Installation et `all-public` : 920 tests, 0 échec, 887 verts et 33 désactivés. Puis, à la demande de Gabriel, l'observation de
   `FMTTransitionMask::setMask` démontrée : défaut 21 (section 2.7), aucun exécutable officiel ne passant par ce chemin ; deux cas de
-  plus, dont 1 désactivé, à valider au prochain build (922 tests, 888 verts, 34 désactivés) ; issue à ouvrir. Les lots 8b et 8c
+  plus, dont 1 désactivé, à valider au prochain build (922 tests, 888 verts, 34 désactivés) ; issue #402, ouverte par Gabriel. Les lots 8b et 8c
   suivent (section 6.3.5).
 - **Lacunes 6 et 7 commitées (`50b67582`) et validées le 2026-10-27** (section 5.14) : `IntegrationModels` (15 cas
   de `FMTSrModel`, dont 2 désactivés, défauts 19 et 20 de la section 2.7, #399 et #400), un cas d'aller-retour des

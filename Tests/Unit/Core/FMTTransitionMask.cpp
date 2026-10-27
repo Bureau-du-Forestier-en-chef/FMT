@@ -384,7 +384,7 @@ TEST(FMTTransitionMask, GivenATargetBuiltWithANewThemeWhenTransThenKeepsTheAttri
     EXPECT_TRUE(transformed == Core::FMTMask("UNITE1 FEU UTR1 VPOST", themes));
 }
 
-// Defect 21 (Tests/ETAT.md, section 2.7): setMask changes the mask without rebuilding the selection of the target, so
+// Defect 21 (#402, Tests/ETAT.md, section 2.7): setMask changes the mask without rebuilding the selection of the target, so
 // that trans still works on the mask the target was built with, of 10 bits, and loses the fourth theme. FMTModel::pushTheme,
 // which FMTModel::buildAction calls, moves the targets of the transitions to a new theme so.
 TEST(FMTTransitionMask, DISABLED_GivenAMaskOfANewThemeWhenSetMaskThenTransAppliesTheNewMask)
