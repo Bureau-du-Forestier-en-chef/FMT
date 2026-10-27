@@ -2279,17 +2279,29 @@ période 5) ; seul l'optimum, unique, est comparé (règle 7).
 **Observation laissée ouverte** : l'écriture d'une contrainte `= 0` donne `BURNEDAREA = -0.000000`, qui se relit à
 l'identique.
 
-**À valider après le build de Gabriel** : reconfigurer (dossier et scénarios nouveaux), puis `RunTests.bat all-public`
-(attendu : 724 + 16 = 740 tests, integration 21 + 14 = 35 verts et 9 + 2 = 11 désactivés), et l'installation.
+**Validation après le build de Gabriel** (2026-10-27, commit `50b67582` de Gabriel, build reconfiguré ; FMTlib.dll
+du 2026-10-26 à 17 h 45) :
+- l'arbre de travail est identique à `HEAD`, et le commit contient les 13 fichiers du lot (`git show --stat`) ;
+  `IntegrationModels.exe` du build date de 17 h 50, `IntegrationParser.exe` de 17 h 51 ;
+- installation (`INSTALL_TEST_SUITE=public`, 2026-10-26 à 17 h 56) : 740 tests, 0 échec, 707 exécutés et 33
+  désactivés, 25 s ; unit 410 verts et 10 désactivés, integration 35 verts et 11 désactivés, system 237 verts et 12
+  désactivés, performance 23, other 2. Comparée au passage du point 0 (724 tests, section 6.1), elle n'ajoute que les
+  16 cas du lot (14 verts, les 2 désactivés des défauts 19 et 20) ; aucun cas n'est retiré ni ne change d'état ;
+- suite privée de Gabriel (2026-10-27, 8 h 41 à 8 h 57) : 94 réussis, 0 échec ;
+- `InstallTests.xml`, `InstallTests.json`, `LastTest.log` et `LastTestsDisabled.log` copiés dans le scratchpad de la
+  session avant tout appel de ctest ;
+- `RunTests.bat all-public` (2026-10-27, 9 h 02) : 740 tests, 0 échec, 707 verts et 33 désactivés, 19 s réelles ;
+  integration 35 verts et 11 désactivés sur 46, les autres niveaux comme à l'installation. Les comptes sont ceux
+  attendus avant le build.
 
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
 
-- **Lacunes 6 et 7 livrées le 2026-10-26, à compiler et à commiter** (section 5.14) : `IntegrationModels` (15 cas de
-  `FMTSrModel`, dont 2 désactivés, défauts 19 et 20 de la section 2.7, issues à ouvrir), un cas d'aller-retour des
-  contraintes spatiales dans `IntegrationParser` (#397), deux scénarios nouveaux. Après le build : reconfigurer, puis
-  `RunTests.bat all-public` et l'installation.
+- **Lacunes 6 et 7 commitées (`50b67582`) et validées le 2026-10-27** (section 5.14) : `IntegrationModels` (15 cas
+  de `FMTSrModel`, dont 2 désactivés, défauts 19 et 20 de la section 2.7, issues à ouvrir), un cas d'aller-retour des
+  contraintes spatiales dans `IntegrationParser` (#397), deux scénarios nouveaux. Installation et `all-public` : 740
+  tests, 0 échec, 33 désactivés ; suite privée : 94 réussis.
 - **Fusion de `master` du 2026-10-23 (`eea7fea2`)**, après la v1.4.0 : #379 corrigé (`83e2309e`, défaut 6 de la
   section 2.7), `MAX_RET` des paramètres de l'ordonnanceur (`9f2c58ca`), le test de `WriteModel` (`9b9ade0b`), et le
   test `GetGCBMTransitions` (#369). Elle retirait aussi, par erreur (« Merge conflict in rebase fix », `45ac2df5`,
@@ -2890,6 +2902,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-22 (lot 7b, `355b2edb`) | 595 `all-public` (441 + 153 cas `Unit.` + 1 cas `Integration.`) ; résumé : unit 290 verts et 11 désactivés sur 301, integration 14 verts et 7 désactivés sur 21, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 16,5 s réelles | — | 13 | 2 | 0 | 30 | —
 | 2026-10-22 (lot 7c, `5956123b`) | 719 `all-public` (595 + 119 cas `Unit.` + 5 cas `Integration.`) ; résumé : unit 409 verts et 11 désactivés sur 420, integration 16 verts et 10 désactivés sur 26, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 20,1 s réelles | — | 13 | 2 | 0 | 33 | —
 | 2026-10-26 (fusion de `master`, #394 et #396 ; installation de Gabriel) | 724 (installation, `public`) ; unit 410 verts et 10 désactivés, integration 21 verts et 9 désactivés, system 237 verts et 12 désactivés, performance 23, fixtures 2 | 24 s (installation) | — | 13 | 2 | 0 | 31 | — |
+| 2026-10-27 (lacunes 6 et 7, `50b67582`) | 740 `all-public` (724 + 15 cas `Integration.FMTSrModel` + 1 cas `Integration.FMTModelParser`) ; résumé : unit 410 verts et 10 désactivés sur 420, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 19 s réelles | — | 13 | 2 | 0 | 33 | — |
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
