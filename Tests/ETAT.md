@@ -957,6 +957,52 @@ des observations (section 5.15).
       violation d'accès, `FMTexc(85)`). Non analysé : `VOLUMETOTAL` n'est peut-être pas un yield que `buildAction` peut prendre
       pour cible sur TWD_land.
 
+**Défauts révélés par le lot 8b (2026-10-27).** Deux défauts de FMTlib, démontrés comme les précédents : cause dans le code,
+A/B où une seule chose change, exécutable officiel (`FMT.pyd` du build de `new_test`, FMTlib du 2026-10-26, lancé par des scripts
+du scratchpad qui lisent le dépôt sans l'écrire), origine git. Chacun a un cas `DISABLED_` dans `UnitCore`. Leurs issues sont à
+ouvrir par Gabriel (règle 3), textes rédigés à la livraison du lot (section 5.16). Ils ne sont pas corrigés dans ce chantier.
+
+22. **Le cache des yields complexes sert à un modèle la valeur calculée pour un autre** (`FMTYieldsCache`, issue à ouvrir).
+    - `FMTYieldsCache` garde ses valeurs dans une seule table statique (`Source/FMTYieldsCache.cpp:23`), partagée par tous les
+      gestionnaires complexes du processus, que rien ne vide hors d'un manque de mémoire (`_clearIfTooBig`). Sa clé
+      (`FMTYieldDevelopment`) ne retient que l'âge, la période, le masque résumé du développement et le nom du yield : ni le modèle,
+      ni ses rendements. `FMTComplexYieldHandler::get` (`Source/FMTComplexYieldHandler.cpp:769`) cherche le yield dans le cache
+      avant de le calculer, et y met un yield dont le calcul a pris plus de 0,05 ms (lignes 870 à 872). Deux modèles de mêmes
+      thèmes et de mêmes masques de rendements donnent le même masque résumé : le second reçoit le yield complexe de même nom du
+      premier, quelle que soit sa définition.
+    - A/B avec `FMT.pyd`, sur une copie des fichiers de la racine de TWD_land dans le scratchpad, avec deux scénarios qui ajoutent
+      au `.yld` de la racine un bloc `*YC ? ? ?` sans nombre (hors du mécanisme de #347) : `SLOWYIELD
+      _EQUATION(VOLUMETOTAL+...+VOLUMETOTAL)`, de 300 termes dans `SLOWA` et de 600 dans `SLOWB`, et `FASTYIELD`, 2 et 3 fois
+      `VOLUMETOTAL`. Premier développement de la superficie, `UNITE1 PEUPLEMENT1 UTR1` à 12 ans (`VOLUMETOTAL` = 170). Lu seul dans
+      son processus, `SLOWB` donne `SLOWYIELD` = 102 000 (600 x 170, calculé en 0,65 ms) ; lu après `SLOWA` dans le même processus,
+      51 000 (300 x 170, la valeur de `SLOWA`), servi en 0,009 ms. Dans l'ordre inverse, `SLOWA` reçoit 102 000. `FASTYIELD`,
+      calculé en moins de 0,05 ms, n'est pas mis en cache et reste juste : 340 et 510.
+    - Cas unitaire : un premier `FMTYields` calcule `_MULTIPLY(VOLUME,2)` (400 à 20 ans), mis en cache comme FMT le fait après un
+      calcul lent ; un second, de mêmes masques, où le même yield vaut `_MULTIPLY(VOLUME,3)`, rend 400 au lieu de 600.
+    - Origine : `b65a8f1b` (2024-08-09, « Fix #238 »), qui ajoute la table statique, alors clée par le développement entier et le
+      nom du yield ; `bd104949` (2024-08-16, « less memory ») passe au masque résumé et ajoute le seuil de 0,05 ms.
+    - Portée : tout processus qui calcule les yields complexes de deux modèles de mêmes thèmes où un yield complexe de même nom
+      diffère, quand son calcul dépasse 0,05 ms (l'effet dépend donc de la machine) : des scénarios qui redéfinissent un yield
+      complexe, lus dans le même processus (Python, R, l'interface et son `ModelCache`, une tâche qui planifie plusieurs
+      scénarios), ou les yields que rend `getFromFactor`, dont les yields complexes calculés avant le facteur seraient servis
+      après. Non vérifié : `FMTPlanningTask`, les modèles BFEC et les tests publics qui lisent plusieurs scénarios.
+    - La correction aura aussi à dire quand le cache se vide : la ligne de dette d'`Architecture.md` (section 5.16).
+    - Cas : `Unit.FMTYieldsCache.GivenAComplexYieldCachedForOneSectionOfYieldsWhenAnotherSectionDefinesItOtherwiseThenComputesItFromItsOwnDefinition`,
+      à côté du cas vert `GivenAComplexYieldCachedWithItsValueWhenYieldsGetItAgainThenServesTheSameValue`.
+23. **`FMTConstantParser::write` écrit les valeurs d'une constante sans séparateur** (`FMTConstants`, issue à ouvrir).
+    - `FMTConstants::operator std::string` (`Source/FMTConstants.cpp:104`) ajoute chaque valeur par `std::to_string`, sans espace
+      entre elles, et `FMTConstantParser::write` écrit cette chaîne comme section des constantes.
+    - A/B avec `FMT.pyd` : le `._con` du scénario `LEVEL1` (`CorCour 2`, `Creguc 100 200 300 400 500 600 700`), lu par
+      `FMTconstantparser.read`, écrit dans le scratchpad par `write` : `CORCOUR 2.000000` et
+      `CREGUC 100.000000200.000000300.000000400.000000500.000000600.000000700.000000`. Relu, puis réécrit : `CORCOUR 2.000000` et
+      `CREGUC 100.000000`. La constante d'une valeur fait l'aller-retour ; celle de sept valeurs n'en garde qu'une.
+    - Origine : `2e3dc129` (2019-06-07, le premier commit).
+    - Portée : rien dans FMT n'appelle `FMTConstantParser::write`, et `FMTModelParser::write` n'écrit pas de constantes (un modèle
+      n'en garde pas). Python et R l'exposent (`FMTconstantparser.write`) ; leurs tests `testParser` vérifient seulement que la
+      classe existe.
+    - Cas : `Unit.FMTConstants.GivenAConstantOfSeveralValuesWhenConvertedToStringThenWritesEachValueAsAWord`, à côté du cas vert
+      `GivenAConstantOfOneValueWhenConvertedToStringThenWritesALineOfItsNameAndItsValue`.
+
 ## 3. Lacunes classées par criticité
 
 Critère : une étape que tout modèle traverse passe avant une fonction de niche ; une erreur
@@ -2494,10 +2540,150 @@ aucun test en `T:/`. Le cas vert de la cible au nouveau thème passe, celui de `
 Relu dans `InstallTests.xml`, `LastTest.log` et `LastTestsDisabled.log`, copiés dans le scratchpad de la session ; ctest n'a
 pas été relancé.
 
+### 5.16 Lot 8b : rendements, outputs et classes de service (2026-10-27)
+
+**Statut** : livré le 2026-10-27, **à compiler et à valider par Gabriel** ; rien n'est commité. Deuxième tiers du lot 8 (section
+6.3.5) : les 16 classes de priorité 1 dont le statut était `Lot 8`. Point de départ : le passage validé du 2026-10-27 à 11 h 03
+(`2ca9a023`, `3e6be3e6`, section 5.15), arbre de travail propre. Une première session s'est arrêtée à la lecture, sans rien
+écrire ; celle-ci a fait le lot.
+
+**Ajouts** (`Tests/Unit/Core`, cp1252, CRLF, en-tête de licence) : une source par classe, une suite au nom de la classe, cas
+Given...When...Then en Arrange / Act / Assert ; 143 cas nouveaux, dont 2 désactivés (défauts 22 et 23).
+`Tests/Unit/Core/CMakeLists.txt` prend les sources par un glob : inchangé.
+
+| Source | Cas | Ce qu'ils couvrent |
+|---|---|---|
+| `FMTYieldRequest.cpp` | 11 | construction (adresse du développement, ni sommet ni gestionnaire), masque résumé (le masque du développement par le filtre des rendements ; deux développements qui ne diffèrent que par des thèmes qu'aucun masque ne nomme), gestionnaires qui sélectionnent le développement dans leur ordre, `getFirstSeen` (premier gestionnaire du yield, fin des rendements), âge du développement relu à chaque appel, gestionnaires gardés quand le masque change (ligne de dette), requête construite depuis une autre (même masque ; autre masque : `FMTfunctionfailed`), copie, développement qu'aucun gestionnaire ne sélectionne |
+| `FMTYieldDevelopment.cpp` | 6 | période, égalité et hachage, une valeur qui diffère (âge, période, masque, masque plus long, yield de même longueur, yield plus long), âge et période sur 8 bits (256 vaut 0, 300 vaut 44, -1 vaut 255), ensemble haché |
+| `FMTYieldsCache.cpp` | 10, dont 1 désactivé | `set`, puis `tryToGet`, `get` et `inCache` ; clé absente (`get` vaut 0) ; clé de l'âge et de la période, pas du verrou ; requête non préparée (clé sans masque) ; masque résumé partagé ; `set` qui garde la première valeur ; deux caches qui partagent leurs valeurs ; yield complexe servi par le cache, même valeur ; valeur du cache servie au lieu de la définition ; désactivé : défaut 22 |
+| `FMTYieldHandler.cpp` | 8 | méthodes des dérivées sur la base (`FMTfunctionfailed`), masque, âges de base (`pushBase` rend faux), `getLinearValue` sur des valeurs données, `operator==` par la base (#383), `compare`, indice de surcharge, tabous et index de la base et d'un gestionnaire d'âge, presolve |
+| `cmpYieldString.cpp` | 5 | la longueur d'abord, puis les caractères depuis le dernier, nom égal, tri, ordre des yields d'un gestionnaire (`getDataElements`) |
+| `FMTOutputSource.cpp` | 29 | constante (valeur de la période, la première avant, la dernière après), yield de temps (sans valeur, 1), source par défaut (`std::out_of_range`), sources d'action et d'inventaire (période suivante), niveaux, `use` (masque et spécification), `getCoef` (yield d'inventaire, superficie, constante de la période, yield de temps, constante fois yield de temps, yield que récolte une action), `targets` et `targetsSet` (agrégats), `isNull`, `resetValues`, égalité sans le yield ni les valeurs, hachage, ordre cohérent avec l'égalité, chaînes, `trimDouble`, `isSubsetOf` (sans et avec les actions), `isSameButDifferentAction`, presolve, `getConstantValue` (deux cas), accesseurs |
+| `FMTOutputSourceComparator.cpp` | 3 | première source variable, première constante (ni un niveau, ni un yield de temps), aucune |
+| `FMTOutputComparator.cpp` | 3 | nom, autre casse et nom absent, premier de deux outputs de même nom |
+| `FMTOutputNode.cpp` | 25 | constructions (dont le nœud général de l'ordonnanceur), `isNull` (facteur ou constante nuls ; nœud par défaut : `std::out_of_range`), une ou plusieurs périodes, période passée, `setPeriod`, `setToGraph` (sans période, inventaire de la période suivante, une période, période précédente et période 0, plusieurs périodes jusqu'à la dernière du graphe, somme, moyenne, moyenne de trois périodes, moyenne à la période 0), égalité, ordre et hachage par la source, yield de la source, chaîne, masque de hachage, `isSubsetOf`, `allowCashDeduction`, `getOutputId`, `fillUpEquation`, copie |
+| `FMTOutputNodeHasher.cpp` | 3 | même hachage pour les mêmes valeurs, hachages qui diffèrent, ensemble non ordonné avec le comparateur de valeurs |
+| `FMTOutputNodeValueComparator.cpp` | 2 | mêmes valeurs (et le nœud avec lui-même), une valeur qui diffère (constante, facteur, yield, moyenne) |
+| `FMTOutputNodeOriginComparator.cpp` | 2 | tri par output d'origine, même origine, nœud sans origine (-1) |
+| `FMTMaskFilter.cpp` | 12 | filtre par défaut, filtre des masques d'une liste (bits communs forcés, nom du développement gardé), propriété de `findSets`, masques qui ont tous tous les bits, sélection, sélection et tampon, `getSelectedThemes`, `canPreSolve`, presolve du filtre, `swap`, copie et hachage, hachage d'un filtre dont le tampon est la sélection |
+| `FMTLookup.cpp` | 7 | par `FMTLookup<descripteur de sommet, FMTDevelopment>`, comme `FMTGraph::getDevsSet` et `containsDevelopment` : recherche dans un ensemble haché, développement absent, égalité et ordre des développements, hachage, adresse gardée, recherche sans développement ; spécialisation `FMTLookup<std::vector<size_t>, std::string>` |
+| `FMTConstants.cpp` | 8, dont 1 désactivé | `isConstant` et `length` (avec le `#` seulement), `set` qui remplace, copie, aucune constante, chaîne d'une constante d'une valeur et de deux constantes ; désactivé : défaut 23 |
+| `FMTObject.cpp` | 9 | gestionnaire et journal partagés, erreur levée sans être journalisée, erreur convertie en avertissement (journalisée « Ignoring », sans exception), liste vidée, nombre d'avertissements avant le silence, exceptions sans imbrication, journal passé à tous les objets, mémoire disponible, emplacement de FMTlib |
+
+- Niveau unitaire : aucun modèle sur disque. Thèmes de TWD_land comme au lot 8a ; rendements construits comme `FMTYieldParser` les
+  construit (gestionnaires d'âge, de temps et complexe de `FMTYields.cpp`) ; sources d'output comme `FMTOutputParser` ; presolve de
+  `FMTMask.cpp`. `FMTLookup` est un modèle de classe : il est testé par son instanciation dans le graphe, `FMTLookup<std::size_t,
+  FMTDevelopment>` (le descripteur de sommet du `boost::adjacency_list<vecS, vecS, bidirectionalS>` de `FMTGraph`), et par la
+  spécialisation de hachage que déclare `FMTLookup.h`, qu'aucun code n'emploie. `FMTYieldHandler` n'est pas abstraite : ses cas
+  portent sur la base elle-même et sur ce qu'un gestionnaire d'âge en hérite, sans refaire ceux des lots 7a et 7b.
+- **Deux lignes de dette** dans `Architecture.md` :
+  - la table statique de `FMTYieldsCache`, qu'un test ne peut ni vider ni garder pour lui : chaque cas prend des noms de yields
+    qu'aucun autre cas d'`UnitCore` n'emploie, et aucun n'attend l'absence d'une clé qu'un cas a posée, si bien que les cas gardent
+    leurs résultats dans tout ordre et répétés ;
+  - `FMTConstants::get` et `getAll`, membres modèles instanciés dans `Source/FMTConstants.cpp`, que la DLL n'exporte pas (LNK2019
+    au premier lien hors du dépôt, `dumpbin /exports` le confirme) : les cas lisent les valeurs par `operator std::string`, et la
+    lecture et la conversion des constantes restent couvertes par les parseurs et `ConvertStringsToConstants`.
+- Gestionnaire et journal d'`FMTObject` : statiques. Les cas qui les changent passent par une garde (`KeptLog`, dans
+  `FMTObject.cpp`) qui installe un gestionnaire par défaut neuf, dont les comptes d'avertissements partent de zéro, et un journal
+  qui garde ce que FMT écrit (dérivé de `FMTLogger`, `_cout` redéfini), puis rend un gestionnaire et un journal par défaut à la fin
+  du cas (section 7).
+- Valeurs calculées à la main avant la première exécution, depuis la documentation ou le code : masques résumés (les bits que tous
+  les masques de la liste ont, plus ceux du développement hors de ces bits : `1111111001` pour `UNITE1 PEUPLEMENT1 UTR1` avec les
+  masques `UNITE1 ? ?`, `? ? ?` et `UNITE2 ? ?`), valeurs d'âge (2 000 à 20 ans), `VOLUMETOTAL` 120 à 7 ans (de 100 à 5 ans à 150
+  à 10 ans), `_MULTIPLY(VOLUME,2)` 400 et `_MULTIPLY(VOLUME,3)` 600, périodes de `setToGraph`, constantes de moyenne 2 / 4 = 0,5 et
+  3 / 3 = 1, valeurs d'inventaire 10 x 120 = 1 200 et (10 + 5) x 120 = 1 800, chaînes (`std::to_string` à six décimales,
+  `trimDouble`), messages du gestionnaire (`FMTexc(42)`, « Ignoring: », « has reached the maximum number of times it can be
+  raised. »), avertissements journalisés 3 fois sur 6 pour un maximum de 2 (`_updateWarningCount`). Deux attendus se sont révélés
+  faux à la première exécution, corrigés après relecture du code et non recopiés : la chaîne d'une copie de `FMTConstants` (l'ordre
+  d'une `boost::unordered_map` change d'une copie à l'autre : les cas comparent les lignes triées) ; le filtre de masques qui ont
+  tous tous les bits, qui devait garder tous les bits du développement (observation ci-dessous). `FMTAgeYieldHandler::getYieldNames`
+  trie ses noms par ordre alphabétique : le cas de `cmpYieldString` lit l'ordre par `FMTComplexYieldHandler::getDataElements`
+  (relevé dans le code avant sa première exécution).
+
+**#383, à l'endroit où il agit** (cas vert, sans défaut nouveau) :
+`FMTYieldHandler.GivenTwoAgeHandlersThatDifferByTheirValuesOnlyWhenComparedThroughTheBaseClassThenTheyAreEqual`.
+`FMTAgeYieldHandler` déclare son propre `operator==(const FMTAgeYieldHandler&)` au lieu de redéfinir celui de la base, qui ne
+compare que le masque et les âges de base : comparés par la base, deux gestionnaires d'âge de valeurs différentes sont égaux. Une
+correction de #383 qui comparerait les gestionnaires de `FMTYields` par `FMTYieldHandler::operator==` les prendrait pour égaux.
+#346, #347, #381 et #389 à #392 n'agissent dans aucune classe du lot.
+
+**Défauts nouveaux** : 22 et 23 (section 2.7), démontrés avec `FMT.pyd`.
+
+**Observations, sans défaut annoncé** (rien de ce que FMT exécute n'en dépend, ou ce n'est pas démontré) :
+- **`FMTMaskFilter(masks)`, quand tous les masques ont tous les bits** : la sélection devait les garder tous, mais
+  `boost::dynamic_bitset<uint8_t>(taille, true)` (`Source/FMTMaskFilter.cpp:83`) lit `true` comme l'entier 1 : la sélection est le
+  seul bit 0, et le masque résumé ne garde que `UNITE1` (cas vert commenté). `FMTList::findSets` reste juste, puisque chaque masque
+  d'une telle liste sélectionne chaque développement, et les rendements de deux développements dont la clé se confond sont les
+  mêmes. Depuis `ba3ccf51` (2021-08-30). Effet sur un résultat : aucun trouvé.
+- **`FMTOutputSource::getConstantValue`** lit `(use && sans action) || opérable à l'action` (`Source/FMTOutputSource.cpp:347`) : une
+  source d'action compte tout développement opérable à l'action, hors de son masque (cas vert commenté, 1 800 au lieu de 1 200).
+  Ni elle ni `canBeDeducedToConstant` n'ont d'appelant dans FMT.
+- `FMTOutputSource::operator==` ignore le yield et les valeurs (section 5.10), que le hachage lit : deux constantes égales de valeurs
+  différentes ont des hachages différents (cas vert commenté). FMT ne hache les sources que par `FMTOutputNode::hashForValue`, qui
+  compare aussi les valeurs.
+- `FMTOutputSource::trimDouble` retire aussi les zéros d'un entier écrit sans point (`100` devient `1`) ; FMT ne lui passe que des
+  nombres écrits par `std::to_string`.
+- Une source sans valeur (`FMTOutputSource()`) et le facteur d'un nœud par défaut : `getValue` et `isNull` lèvent `std::out_of_range`.
+- `FMTOutputNode::setToGraph` : à la période 0, une moyenne sans période ne vise aucune période, et sa constante devient infinie
+  (1 / 0) ; le nœud n'apporte aucun développement, la valeur reste 0.
+- `FMTOutputNodeValueComparator` est une égalité, pas l'ordre que dit sa documentation ; ni lui ni `FMTOutputNodeHasher` n'ont
+  d'utilisateur dans FMT.
+- `FMTMaskFilter::hash` combine la sélection et le tampon par un ou exclusif : 0 quand ils sont égaux, comme dans
+  `FMTModel::getPreSolveFilter` ; rien dans FMT ne hache un filtre.
+- `FMTLookup` : une recherche sans développement (pointeur nul) précède toute recherche, elle-même comprise, si bien que l'ordre
+  n'est pas strict sur elle ; FMT construit toujours ses recherches depuis un développement.
+- `FMTYieldsCache::set` garde une valeur déjà présente (`insert` d'une `concurrent_flat_map`) : une valeur du cache ne se corrige pas.
+- `FMTYieldHandler::pushBase` rend toujours faux, alors que sa documentation dit vrai quand l'âge est poussé.
+- `FMTObject::setMaxWarningsBeforeSilenced(n)` : un avertissement est journalisé n + 1 fois, puis une ligne dit qu'il a atteint son
+  maximum (cas vert commenté) ; la documentation parle du nombre d'avertissements levés avant le silence.
+- `FMTConstants` : `length` et `getAll` demandent le `#` du nom, `get` non (lu dans le code ; `get` et `getAll` ne se lient pas) ; la
+  chaîne écrit les constantes dans l'ordre d'une table non ordonnée.
+- `FMTLookup.h` ne se compile pas seul : il emploie `std::string` et `std::vector` sans les inclure (section 7).
+
+**Non couvert, et pourquoi** : les requêtes de rendement d'un sommet du graphe (`FMTGraphVertexToYield`) et
+`FMTYieldsCache::reserve`, qui en demande une ; `_clearIfTooBig` (10 000 valeurs et moins de 10 Go libres) ; la requête par défaut
+(pointeurs non initialisés) et `getFirstSeen` avant une première utilisation ; `FMTYieldHandler::postSolve` d'un masque à agrégat ;
+`FMTConstants::get` et `getAll` (non exportés) ; `FMTObject::redirectLogToFile` (écrit un fichier), les autres gestionnaires et
+journaux, `setTerminateStack`, `setAbortStack` et `checkSignals` ; `FMTOutput::getNodes` (les nœuds d'un output d'outputs) ; la
+concurrence (lot 9).
+
+**Vus rouges** (règle 1), rien de commité : deux copies faussées des 16 sources, hors du dépôt, compilées par `cl` contre le
+`FMTlib.lib` de `build/release` :
+- **entrée faussée** : une substitution par cas actif, dans son Arrange ou son Act, jamais dans son Assert (une table du script qui
+  écrit la copie ; il refuse une substitution introuvable, ambiguë ou placée dans l'Assert, et un cas actif sans substitution ; une
+  inclusion ajoutée hors des cas, dans la copie de `FMTYieldHandler.cpp`) : les 141 cas actifs échouent, aucun par une exception ;
+- **assertions inversées** (l'en-tête du lot 8a, inclus après `<gtest/gtest.h>`, avec `EXPECT_GT` en plus des dix macros) : les 141
+  cas échouent, aucun par une exception, et les 426 assertions actives échouent chacune une fois (GoogleTest situe l'assertion
+  écrite sur trois lignes à sa dernière ligne) ;
+- les 13 cas désactivés, lancés avec `GTEST_ALSO_RUN_DISABLED_TESTS=1`, échouent tous ; les 2 nouveaux pour leur raison :
+  `CACHEOTHERSECTION` vaut 400 au lieu de 600, et la ligne de `CREGUC` n'a que 2 mots au lieu de 4.
+
+**Vu vert avant le build de Gabriel** : les 50 sources du dépôt, compilées par `cl` avec les options de `UnitCore` (son
+`CL.command.1.tlog`), `/Fo` et `/Fd` dans le scratchpad, liées au `FMTlib.lib` de `build/release` (FMTlib du 2026-10-26 à 17 h 45,
+sources de FMTlib inchangées depuis `025d3493`), lancées depuis le scratchpad avec `bin/Release` dans le `PATH` et
+`onnxruntime.dll` copiée à côté (section 7) : 732 cas verts (591 d'avant et 141 nouveaux), 13 désactivés ; mêmes résultats dans un
+ordre mélangé (`GTEST_SHUFFLE`, graines 4242 à 4244, 3 répétitions). En `/W4 /permissive-`, aucun avertissement ne vient des 16
+sources nouvelles : les 609 viennent des en-têtes de FMTlib. ctest n'a pas été lancé ; rien n'a été écrit dans `build/release` ni
+sous `Examples/Models` (les démonstrations lisent le dépôt et écrivent dans le scratchpad).
+
+**Documents** : `CoreTestCoverage.csv` (statut `Lot 8b, done` des 16 classes, défauts 22 et 23, #383, remarques des observations,
+tests manquants), `CoreTestCoverage.md` régénéré (50 classes avec des tests unitaires, aucune de priorité 1 sans test propre ; deux
+générations identiques), deux lignes de dette d'`Architecture.md`, sections 2.7, 6.1, 6.3.5 et 7, changelogs (section non publiée,
+anglais et français, issues à numéroter quand Gabriel les aura ouvertes).
+
+**Validation après le build de Gabriel** : à faire (`RunTests.bat all-public`, puis l'installation). Comptes attendus par rapport au
+passage du 2026-10-27 à 11 h 03 : unit 732 verts et 13 désactivés sur 745 (591 et 11 avant), le reste inchangé, soit 1 065 tests,
+1 029 verts et 36 désactivés.
+
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
 
+- **Lot 8b livré le 2026-10-27, à compiler et à valider par Gabriel** (section 5.16) : 143 cas unitaires des rendements, des
+  outputs et des classes de service (16 classes), dont 2 désactivés, les défauts 22 et 23 (section 2.7), démontrés avec `FMT.pyd`,
+  issues à ouvrir ; #383 fixé à l'endroit où il agit ; deux lignes de dette d'`Architecture.md`. Plus aucune classe de priorité 1
+  sans test propre dans `CoreTestCoverage.md`. Vu vert hors du dépôt : `UnitCore`, 732 verts et 13 désactivés. Le lot 8c suit
+  (section 6.3.5).
 - **Lot 8a livré et validé le 2026-10-27** (section 5.15), commité par Gabriel (`2ca9a023`) : 180 cas unitaires des actions, des
   transitions, des développements, des cédules et des listes (15 classes) ; #358 et #393 fixés à l'endroit où ils agissent.
   Installation et `all-public` : 920 tests, 0 échec, 887 verts et 33 désactivés. Puis, à la demande de Gabriel, l'observation de
@@ -2806,8 +2992,8 @@ prend pas, puis la priorité 2, puis la 3. Ce que cela change :
 - **8b** : les 16 autres classes de priorité 1 : les rendements (`FMTYieldHandler`, `FMTYieldRequest`, `FMTYieldsCache`,
   `FMTYieldDevelopment`, `cmpYieldString`), les outputs (`FMTOutputSource`, `FMTOutputSourceComparator`, `FMTOutputNode`,
   `FMTOutputNodeHasher`, `FMTOutputNodeOriginComparator`, `FMTOutputNodeValueComparator`, `FMTOutputComparator`), `FMTMaskFilter`,
-  `FMTLookup`, `FMTConstants` et `FMTObject`. À venir ; c'est la section *Priority 1 classes without a test of their own* de
-  `CoreTestCoverage.md`.
+  `FMTLookup`, `FMTConstants` et `FMTObject`. **Fait le 2026-10-27** (section 5.16) : 143 cas, dont 2 désactivés, et les défauts
+  22 et 23 (section 2.7) ; la section *Priority 1 classes without a test of their own* de `CoreTestCoverage.md` est vide.
 - **8c** : le reste du lot 8 : la priorité 2 (`FMTGCBMTransition`), la priorité 3 (les modèles de rendement,
   `FMTModelYieldHandler`, `FMTSerie`), et `FMTEvent`, `FMTGraphStats` et les types spatiaux, hors de `Core`, que le jalon 7 de
   #350 nomme. À venir.
@@ -3103,6 +3289,19 @@ abandonne.
   qui lève (lot 8a, `getGCBMActionId`). Vérifier le niveau d'une exception avant d'en attendre le code.
 - **Compilation hors du dépôt depuis Git Bash** (lot 8a) : MSYS convertit `/W4` en chemin (`C:/Logiciels/Git/W4`). Passer
   `MSYS_NO_PATHCONV=1`, et alors des chemins Windows.
+- **`FMTLookup.h` ne se compile pas seul** (lot 8b) : il emploie `std::string` et `std::vector` sans les inclure. Inclure
+  `<string>` et `<vector>` avant lui.
+- **Membres modèles non exportés** (lot 8b) : `FMTConstants::get` et `getAll`, instanciés explicitement dans
+  `Source/FMTConstants.cpp`, ne sont pas dans les exports de `FMTlib.dll` (LNK2019), bien que la classe soit exportée (ligne de
+  dette d'`Architecture.md`). Vérifier un export par `dumpbin /exports` avant d'écrire un cas.
+- **Cache statique des yields complexes** (lot 8b) : `FMTYieldsCache` garde ses valeurs pour tout le processus. Un cas qui pose une
+  valeur prend un nom de yield qu'aucun autre cas n'emploie, et aucun cas n'attend l'absence d'une clé qu'un autre a posée (défaut
+  22, ligne de dette).
+- **Gestionnaire d'exceptions et journal d'`FMTObject` dans un test** (lot 8b) : un cas qui les change rend un gestionnaire et un
+  journal par défaut à la fin (garde `KeptLog` de `Tests/Unit/Core/FMTObject.cpp`). Les comptes d'avertissements sont dans le
+  gestionnaire : un avertissement levé plus de dix fois dans le processus n'est plus journalisé, d'où un gestionnaire neuf.
+- **Ordre d'une `boost::unordered_map`** (lot 8b) : `FMTConstants` écrit ses constantes dans l'ordre de sa table, qui change d'une
+  copie à l'autre. Comparer des lignes triées.
 - Plusieurs tests lèvent avec un nom de méthode copié d'un autre test (`"presolvetest"` dans
   `DoPlanning`) : lire le numéro de ligne plutôt que le nom.
 
