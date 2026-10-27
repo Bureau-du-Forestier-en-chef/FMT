@@ -520,8 +520,8 @@ TEST(FMTSrModel, GivenAnActionNotOperableOnItsDevelopmentWhenSetSolutionThenRais
 }
 
 // Disabled: unboundSolution gives the variables of the period the bounds -max and +max of a double, not the bounds
-// they had (0 and infinity), so that the areas may be negative and the matrix is no longer optimal (defect 19 of
-// section 2.7 of Tests/ETAT.md).
+// they had (0 and infinity), so that the areas may be negative and the matrix is no longer optimal (#399, defect 19
+// of section 2.7 of Tests/ETAT.md).
 TEST(FMTSrModel, DISABLED_GivenBoundSolutionsWhenUnboundSolutionThenResolvesToTheModelBefore)
 {
 #ifdef FMTWITHOSI
@@ -569,7 +569,7 @@ TEST(FMTSrModel, GivenBoundSolutionsWhenIsPeriodBoundedThenReturnsTrue)
 }
 
 // Disabled: isPeriodBounded counts only the bounded variables of the period, among all and among the bounded ones,
-// so that it returns true for any period of the graph (defect 20 of section 2.7 of Tests/ETAT.md).
+// so that it returns true for any period of the graph (#400, defect 20 of section 2.7 of Tests/ETAT.md).
 TEST(FMTSrModel, DISABLED_GivenAnOptimizedModelWhenIsPeriodBoundedThenReturnsFalse)
 {
 #ifdef FMTWITHOSI

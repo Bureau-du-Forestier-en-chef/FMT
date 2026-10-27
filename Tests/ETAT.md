@@ -878,11 +878,11 @@ commentaires des cas, dans `CoreTestCoverage.csv` et dans le changelog. Il n'est
 code, A/B où une seule chose change, origine git. Aucun exécutable officiel ne les appelle : ni FMT, ni le wrapper, ni
 Python, ni R (`unboundSolution` et `isPeriodBounded` ne sont pas exposés) ; la démonstration passe donc par les cas
 d'`IntegrationModels`, compilés hors du dépôt contre le `FMTlib.dll` du build de `new_test` du 2026-10-26. Chacun a
-son cas `DISABLED_`. Issues à ouvrir par Gabriel (règle 3) : textes dans le rapport du lot ; leurs numéros iront ici,
-dans les commentaires des cas, dans `CoreTestCoverage.csv` s'il le faut et dans le changelog. Ils ne sont pas corrigés
-dans ce chantier.
+son cas `DISABLED_`. Issues ouvertes par Gabriel le 2026-10-26 (règle 3) : #399 et #400 ; leurs numéros sont aussi
+dans les commentaires des cas et dans le changelog (`FMTSrModel` n'est pas une classe de Core : rien dans
+`CoreTestCoverage.csv`). Ils ne sont pas corrigés dans ce chantier.
 
-19. **`unboundSolution` ne rend pas les bornes d'avant `boundSolution`** (`FMTSrModel`, issue à ouvrir).
+19. **`unboundSolution` ne rend pas les bornes d'avant `boundSolution`** (`FMTSrModel`, issue #399).
     - `FMTSrModel::unboundSolution` (`Source/FMTSrModel.cpp:130` et `131`) donne aux variables de la période les bornes
       `-std::numeric_limits<double>::max()` et `max()`, et non celles qu'elles avaient : 0 et l'infini (`updateMatrix`,
       lignes 1160 et 1161). Une superficie peut alors être négative, et la matrice n'a plus d'optimum.
@@ -898,7 +898,7 @@ dans ce chantier.
     - Cas : `Integration.FMTSrModel.GivenBoundSolutionsWhenUnboundSolutionThenResolvesToTheModelBefore` (bornes
       inférieures d'avant, `resolve` optimal, même optimum), à côté du cas vert
       `GivenTheOptimalSchedulesSetInTheWholeMatrixWhenBoundSolutionThenResolvesToTheOptimum`.
-20. **`isPeriodBounded` rend vrai pour toute période du graphe** (`FMTSrModel`, issue à ouvrir).
+20. **`isPeriodBounded` rend vrai pour toute période du graphe** (`FMTSrModel`, issue #400).
     - `FMTSrModel::isPeriodBounded` (`Source/FMTSrModel.cpp:92` à `96`) n'incrémente `totaledges` que dans la branche
       où la variable est bornée (`upper == lower`) : `boundededges == totaledges` est toujours vrai, et la fonction rend
       vrai dès que le graphe a la période. Sa documentation (`Include/FMTSrModel.h:148`) dit vrai si les superficies de
@@ -927,7 +927,7 @@ Critère : une étape que tout modèle traverse passe avant une fonction de nich
 | 4 | **Objets du cœur** : `FMTDevelopment::grow`, `operable`, `operate` (`Include/FMTDevelopment.h:209-274`), `FMTMask::isSubsetOf`, `FMTTheme::validate`, `FMTYields::get` (`Include/FMTYields.h:230`), lifespan et `_DEATH` par défaut | Aucune vérification unitaire de l'opérabilité (bornes d'âge, de yield, de période, `_LOCK`), des transitions (proportions, cibles) ni du vieillissement ; seulement des objectifs. |
 | 5 | **Présolve et postsolve** : `FMTModel::preSolve` / `postSolve` (`Include/FMTModel.h:279-285`) | Le test métamorphique ne couvre qu'un scénario (NOT_MASK) ; les outputs après postsolve ne sont pas comparés. |
 | 6 | **Graphe et matrice** : `FMTSrModel::buildPeriod` (`Include/FMTSrModel.h:261`), `FMTGraph::build` (`Include/FMTGraph.hpp:462`), `FMTLpModel::setObjective` / `setConstraint` | ~~Les statistiques du graphe (`FMTGraphStats` : sommets, arcs, lignes, colonnes) ne sont jamais vérifiées.~~ Couverte : `STATS` (lot 4) pour la matrice entière, `IntegrationModels` période par période (section 5.14). |
-| 7 | **Résultats et rejeu** : `getSolution`, `setSolution` / `boundSolution` (`Include/FMTSrModel.h:173,329`), `doPlanning(false, cédules)` | ~~Le rejeu d'une cédule optimale n'est pas comparé à l'optimisation ; `SetSolution` n'a que des tests BFEC.~~ Couverte : `REPLAY` (lot 4), puis `setSolution`, `setSolutionByLp` et `boundSolution` période par période dans `IntegrationModels` (section 5.14) ; `unboundSolution` et `isPeriodBounded` ont un cas désactivé (défauts 19 et 20). |
+| 7 | **Résultats et rejeu** : `getSolution`, `setSolution` / `boundSolution` (`Include/FMTSrModel.h:173,329`), `doPlanning(false, cédules)` | ~~Le rejeu d'une cédule optimale n'est pas comparé à l'optimisation ; `SetSolution` n'a que des tests BFEC.~~ Couverte : `REPLAY` (lot 4), puis `setSolution`, `setSolutionByLp` et `boundSolution` période par période dans `IntegrationModels` (section 5.14) ; `unboundSolution` et `isPeriodBounded` ont un cas désactivé (défauts 19 et 20, #399 et #400). |
 | 8 | **Écriture et relecture** : `FMTModelParser::write` (`Source/FMTModelParser.cpp:467`), `writeToProject` (`Include/FMTModelParser.h:118`), `FMTScheduleParser` | ~~Pas d'idempotence (écrire, relire, réécrire) ni d'aller-retour de cédule ; `WriteAndReadProject` n'a aucune vérification.~~ Couverte au lot 5 (voir ci-dessous) ; restent les sections que cinq défauts empêchent de relire à l'identique (section 2.7, défauts 6 à 10). |
 
 L'optimisation elle-même (objectifs) est l'étape la mieux protégée : 26 objectifs vérifiés.
@@ -2218,9 +2218,9 @@ requêtes `STATS` et `REPLAY` de `PlanScenario` restent telles quelles.
 | `GivenMoreAreaThanItsDevelopmentWhenSetSolutionThenRaisesAnInvalidNumber` | `LP` | idem, par défaut : `FMTinvalid_number` | vert |
 | `GivenAnActionNotOperableOnItsDevelopmentWhenSetSolutionWithoutThrowingThenReturnsFalse` | `LP` | `aCaribou` sur `UNITE3 PEUPLEMENT3 UTR3` de 8 ans (hors de `UC`) : rend faux | vert |
 | `GivenAnActionNotOperableOnItsDevelopmentWhenSetSolutionThenRaisesAnInvalidNumber` | `LP` | idem, par défaut : `FMTinvalid_number` | vert |
-| `GivenBoundSolutionsWhenUnboundSolutionThenResolvesToTheModelBefore` | `LP` | bornes inférieures d'avant, `resolve` optimal, même optimum | désactivé : défaut 19 |
+| `GivenBoundSolutionsWhenUnboundSolutionThenResolvesToTheModelBefore` | `LP` | bornes inférieures d'avant, `resolve` optimal, même optimum | désactivé : défaut 19 (#399) |
 | `GivenBoundSolutionsWhenIsPeriodBoundedThenReturnsTrue` | `LP` | vrai après `boundSolution(1)` | vert |
-| `GivenAnOptimizedModelWhenIsPeriodBoundedThenReturnsFalse` | `LP` | faux sans `boundSolution` | désactivé : défaut 20 |
+| `GivenAnOptimizedModelWhenIsPeriodBoundedThenReturnsFalse` | `LP` | faux sans `boundSolution` | désactivé : défaut 20 (#400) |
 
 Le cas d'`IntegrationParser`, `GivenSizeAdjacencyAndGroupConstraintsWhenWriteThenRereadsTheSameConstraints`, écrit,
 relit et réécrit `spatialconstraints` : types des contraintes spatiales relues (deux `_SIZE`, une `_ADJACENCY`, une
@@ -2299,7 +2299,7 @@ du 2026-10-26 à 17 h 45) :
 ### 6.1 État au 2026-10-19
 
 - **Lacunes 6 et 7 commitées (`50b67582`) et validées le 2026-10-27** (section 5.14) : `IntegrationModels` (15 cas
-  de `FMTSrModel`, dont 2 désactivés, défauts 19 et 20 de la section 2.7, issues à ouvrir), un cas d'aller-retour des
+  de `FMTSrModel`, dont 2 désactivés, défauts 19 et 20 de la section 2.7, #399 et #400), un cas d'aller-retour des
   contraintes spatiales dans `IntegrationParser` (#397), deux scénarios nouveaux. Installation et `all-public` : 740
   tests, 0 échec, 33 désactivés ; suite privée : 94 réussis.
 - **Fusion de `master` du 2026-10-23 (`eea7fea2`)**, après la v1.4.0 : #379 corrigé (`83e2309e`, défaut 6 de la
