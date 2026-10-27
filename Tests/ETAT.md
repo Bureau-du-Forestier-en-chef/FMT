@@ -2484,8 +2484,15 @@ vert d'une cible construite avec un nouveau thème et le cas désactivé de `set
 reste du lot : `UnitCore`, 591 verts et 11 désactivés ; mêmes résultats dans un ordre mélangé (graines 4242 à 4244, 3 répétitions) ;
 le cas désactivé, lancé avec `GTEST_ALSO_RUN_DISABLED_TESTS=1`, échoue pour sa raison (`trans` lève, le masque n'est pas
 `UNITE1 FEU UTR1 VPOST`) ; entrée faussée, 181 cas actifs sur 181 en échec ; assertions inversées, 181 en échec et chacune des 491
-assertions actives une fois ; en `/W4 /permissive-`, aucun avertissement de la source. **À valider après le prochain build** :
-`all-public` sans échec, 922 tests, 888 verts et 34 désactivés ; unit 591 verts et 11 désactivés sur 602.
+assertions actives une fois ; en `/W4 /permissive-`, aucun avertissement de la source.
+
+**Validation des cas du défaut 21 après le build de Gabriel** (2026-10-27, commits `2ca9a023` et `3e6be3e6`, arbre de travail
+propre ; FMTlib inchangé) : `UnitCore.exe` du build date de 11 h 02, après la dernière modification de `FMTTransitionMask.cpp`
+(10 h 42) ; installation (`INSTALL_TEST_SUITE=public`, 11 h 03) : 922 tests, 0 échec, 888 exécutés et 34 désactivés, 25 s ; unit
+591 verts et 11 désactivés, integration 35 verts et 11 désactivés, system 237 verts et 12 désactivés, performance 23, other 2 ;
+aucun test en `T:/`. Le cas vert de la cible au nouveau thème passe, celui de `setMask` est désactivé : les comptes attendus.
+Relu dans `InstallTests.xml`, `LastTest.log` et `LastTestsDisabled.log`, copiés dans le scratchpad de la session ; ctest n'a
+pas été relancé.
 
 ## 6. Prochain lot
 
@@ -2495,7 +2502,7 @@ assertions actives une fois ; en `/W4 /permissive-`, aucun avertissement de la s
   transitions, des développements, des cédules et des listes (15 classes) ; #358 et #393 fixés à l'endroit où ils agissent.
   Installation et `all-public` : 920 tests, 0 échec, 887 verts et 33 désactivés. Puis, à la demande de Gabriel, l'observation de
   `FMTTransitionMask::setMask` démontrée : défaut 21 (section 2.7), aucun exécutable officiel ne passant par ce chemin ; deux cas de
-  plus, dont 1 désactivé, à valider au prochain build (922 tests, 888 verts, 34 désactivés) ; issue #402, ouverte par Gabriel. Les lots 8b et 8c
+  plus, dont 1 désactivé, validés par l'installation de 11 h 03 (922 tests, 0 échec, 888 verts, 34 désactivés) ; issue #402, ouverte par Gabriel. Les lots 8b et 8c
   suivent (section 6.3.5).
 - **Lacunes 6 et 7 commitées (`50b67582`) et validées le 2026-10-27** (section 5.14) : `IntegrationModels` (15 cas
   de `FMTSrModel`, dont 2 désactivés, défauts 19 et 20 de la section 2.7, #399 et #400), un cas d'aller-retour des
@@ -3123,7 +3130,8 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-22 (lot 7c, `5956123b`) | 719 `all-public` (595 + 119 cas `Unit.` + 5 cas `Integration.`) ; résumé : unit 409 verts et 11 désactivés sur 420, integration 16 verts et 10 désactivés sur 26, system 236 verts et 12 désactivés sur 248, performance 23, other 2 | 20,1 s réelles | — | 13 | 2 | 0 | 33 | —
 | 2026-10-26 (fusion de `master`, #394 et #396 ; installation de Gabriel) | 724 (installation, `public`) ; unit 410 verts et 10 désactivés, integration 21 verts et 9 désactivés, system 237 verts et 12 désactivés, performance 23, fixtures 2 | 24 s (installation) | — | 13 | 2 | 0 | 31 | — |
 | 2026-10-27 (lacunes 6 et 7, `50b67582`) | 740 `all-public` (724 + 15 cas `Integration.FMTSrModel` + 1 cas `Integration.FMTModelParser`) ; résumé : unit 410 verts et 10 désactivés sur 420, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 19 s réelles | — | 13 | 2 | 0 | 33 | — |
-| 2026-10-27 (lot 8a, non commité) | 920 `all-public` (740 + 180 cas `Unit.`) ; résumé : unit 590 verts et 10 désactivés sur 600, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 27,3 s réelles | — | 13 | 2 | 0 | 33 | — |
+| 2026-10-27 (lot 8a, avant `2ca9a023`) | 920 `all-public` (740 + 180 cas `Unit.`) ; résumé : unit 590 verts et 10 désactivés sur 600, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 27,3 s réelles | — | 13 | 2 | 0 | 33 | — |
+| 2026-10-27 (défaut 21, `3e6be3e6` ; installation de Gabriel) | 922 (installation, `public`) ; unit 591 verts et 11 désactivés, integration 35 verts et 11 désactivés, system 237 verts et 12 désactivés, performance 23, fixtures 2 | 25 s (installation) | — | 13 | 2 | 0 | 34 | — |
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
