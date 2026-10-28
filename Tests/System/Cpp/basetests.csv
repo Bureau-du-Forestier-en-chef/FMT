@@ -228,3 +228,5 @@ Presolve;../../../../Examples/Models/TWD_land/TWD_land.pri;equation;2;AnObjectiv
 Presolve;../../../../Examples/Models/TWD_land/TWD_land.pri;COS;5;AnOperabilityFromAPredictedYield;FindsTheSameOptimumAsWithoutPresolve
 Presolve;../../../../Examples/Models/TWD_land/TWD_land.pri;Shift;5;AnObjectiveOnAShiftedYield;FindsTheSameOptimumAsWithoutPresolve
 Presolve;../../../../Examples/Models/TWD_land/TWD_land.pri;TSLA;5;AnOperabilityOnTheTimeSinceTheLastAction;FindsTheSameOptimumAsWithoutPresolve
+ReportSesFailures;../../../../Examples/Models/TWD_land/TWD_land.pri|SES_failingoutput|constraint;;;AYieldMissingForAConstraintOfTheSes;DescribesTheGraphsInItsError
+ReportSesFailures;../../../../Examples/Models/TWD_land/TWD_land.pri|SES_failingoutput|output;;;AYieldMissingForAnOutputOfTheSes;DescribesTheGraphsInItsError

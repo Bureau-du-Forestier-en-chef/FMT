@@ -1533,6 +1533,9 @@ void FMTSpatialSchedule::postSolve(const Core::FMTMaskFilter& p_Filter,
 								const std::vector<Core::FMTAction>& p_PresolveActions,
 								Spatial::FMTSpatialGraphs& p_Graphs)
 	{
+	//The cell in postSolve, for the catch
+	size_t cellIndex = 0;
+	std::map<FMTCoordinate, FMTVirtualLineGraph>::iterator cellIt = m_mapping.end();
 	try {
 		assert(m_mapping.size() == _getNonSpatialCellsCount());
 		m_Tracker = p_Graphs.getBaseSolution();
@@ -1547,9 +1550,12 @@ void FMTSpatialSchedule::postSolve(const Core::FMTMaskFilter& p_Filter,
 	
 		for (std::map<FMTCoordinate, FMTVirtualLineGraph>::iterator graphit = m_mapping.begin(); graphit != m_mapping.end(); ++graphit)
 			{
+			cellIt = graphit;
 			graphit->second = graphit->second.postSolve(p_Filter, actionmapping,
 								p_Graphs, m_Tracker);
+			++cellIndex;
 			}
+		cellIt = m_mapping.end();
 		FMTEventContainer newevents;
 		for (FMTEventContainer::iterator eventit= m_events.begin(); eventit!=m_events.end();eventit++)
 			{
@@ -1561,7 +1567,18 @@ void FMTSpatialSchedule::postSolve(const Core::FMTMaskFilter& p_Filter,
 		assert(m_mapping.size() == _getNonSpatialCellsCount());
 	}catch (...)
 		{
-		_exhandler->raiseFromCatch("", "FMTSpatialSchedule::postSolve", __LINE__, __FILE__);
+		std::string message;
+		if (cellIt != m_mapping.end())
+			{
+			//The graph of the cell before its postSolve, the postsolved graph is reported by FMTSpatialGraphs
+			const Graph::FMTLineGraph& PRESOLVED = cellIt->second.getLineGraph();
+			message = "For cell " + std::to_string(cellIndex) + " of " + std::to_string(m_mapping.size()) +
+				" at x " + std::to_string(cellIt->first.getX()) + " y " + std::to_string(cellIt->first.getY()) +
+				" of presolved family " + std::to_string(cellIt->second.getGraphFamily()) +
+				" presolved base (" + PRESOLVED.getBaseDiagnostic() + ") presolved graph " +
+				PRESOLVED.getDiagnosticString();
+			}
+		_exhandler->raiseFromCatch(message, "FMTSpatialSchedule::postSolve", __LINE__, __FILE__);
 		}
 	}
 

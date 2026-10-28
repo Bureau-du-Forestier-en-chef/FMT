@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include <memory>
 #include "FMTGraphValues.h"
+#include "FMTutility.h"
 
 namespace Spatial
 	{
@@ -31,7 +32,7 @@ namespace Spatial
 			@brief Construct a FMTGraphInfo from a graph id.
 			@param[in] Id the graph id.
 			*/
-			FMTGraphInfo(size_t Id);
+			FMTEXPORT FMTGraphInfo(size_t Id);
 			// DocString: FMTGraphInfo::getValues
 			/**
 			@brief Return the values of a constraint for the graph.

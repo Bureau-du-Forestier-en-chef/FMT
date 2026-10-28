@@ -1663,6 +1663,171 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			m_selectedVertices.reserve(m_reserve);
 		}
 
+		// DocString: FMTGraph::getIncoherences
+		/**
+		@brief Check the invariants of the layout of the graph, it never throws.
+		@return the broken invariants, empty if the graph is coherent.
+		*/
+		std::string getIncoherences() const
+		{
+			std::string incoherences;
+			try {
+				const size_t NUMBER_OF_VERTICES = boost::num_vertices(data);
+				if (developments.size() < 2)
+				{
+					incoherences += " fewer than 2 periods;";
+				}
+				FMTvertex_iterator vertex, vend;
+				int lastPeriod = 0;
+				size_t unsorted = 0;
+				size_t index = 0;
+				for (boost::tie(vertex, vend) = boost::vertices(data); vertex != vend; ++vertex, ++index)
+				{
+					const int PERIOD = data[*vertex].get().getPeriod();
+					if (index > 0 && PERIOD < lastPeriod)
+					{
+						++unsorted;
+					}
+					lastPeriod = PERIOD;
+				}
+				if (unsorted > 0)
+				{
+					incoherences += " " + std::to_string(unsorted) + " vertices of a lower period than the vertex before;";
+				}
+				if (NUMBER_OF_VERTICES > 0 && lastPeriod + 1 != static_cast<int>(developments.size()))
+				{
+					incoherences += " last vertex at period " + std::to_string(lastPeriod) +
+						" for " + std::to_string(developments.size()) + " periods;";
+				}
+				size_t inDevelopments = 0;
+				size_t outOfBounds = 0;
+				for (const FMTvertex_pair& PERIOD_VERTICES : developments)
+				{
+					const size_t FIRST = static_cast<size_t>(*PERIOD_VERTICES.first);
+					const size_t LAST = static_cast<size_t>(*PERIOD_VERTICES.second);
+					if (FIRST > LAST || LAST > NUMBER_OF_VERTICES)
+					{
+						++outOfBounds;
+					}else {
+						inDevelopments += (LAST - FIRST);
+					}
+				}
+				if (outOfBounds > 0)
+				{
+					incoherences += " " + std::to_string(outOfBounds) + " periods out of the vertices;";
+				}
+				if (inDevelopments != NUMBER_OF_VERTICES)
+				{
+					incoherences += " " + std::to_string(inDevelopments) + " vertices in the periods for " +
+						std::to_string(NUMBER_OF_VERTICES) + " vertices;";
+				}
+				if (m_selectedVertices.size() > NUMBER_OF_VERTICES)
+				{
+					incoherences += " " + std::to_string(m_selectedVertices.size()) + " selected vertices;";
+				}
+			}
+			catch (...)
+			{
+				incoherences += " (check failed);";
+			}
+			return incoherences;
+		}
+
+		// DocString: FMTGraph::getBaseDiagnostic
+		/**
+		@brief Return the development of the first vertex to diagnose a failure, it never throws.
+		@return the development of the first vertex, or no vertex for an empty graph.
+		*/
+		std::string getBaseDiagnostic() const
+		{
+			try {
+				if (boost::num_vertices(data) > 0)
+				{
+					return std::string(data[boost::vertex(0, data)].get());
+				}
+			}
+			catch (...)
+			{
+				return "(base failed)";
+			}
+			return "no vertex";
+		}
+
+		// DocString: FMTGraph::getDiagnosticString
+		/**
+		@brief Return the layout of the graph to diagnose a failure, it never throws.
+		@return the layout of the graph on one line.
+		*/
+		std::string getDiagnosticString() const
+		{
+			std::string details;
+			try {
+				const size_t NUMBER_OF_VERTICES = boost::num_vertices(data);
+				const size_t MAXIMUM_LISTED = 64;
+				details += "size() " + std::to_string(developments.size()) +
+					" vertices " + std::to_string(NUMBER_OF_VERTICES) +
+					" edges " + std::to_string(boost::num_edges(data)) +
+					" nodescache " + std::to_string(nodescache.size()) +
+					" selected vertices " + std::to_string(m_selectedVertices.size()) +
+					"/" + std::to_string(m_selectedVertices.capacity()) +
+					" reserve " + std::to_string(m_reserve);
+				//The periods of the vertices in storage order, as runs of period x count
+				details += " periods";
+				FMTvertex_iterator vertex, vend;
+				int runPeriod = 0;
+				size_t runCount = 0;
+				size_t runs = 0;
+				for (boost::tie(vertex, vend) = boost::vertices(data); vertex != vend; ++vertex)
+				{
+					const int PERIOD = data[*vertex].get().getPeriod();
+					if (runCount > 0 && PERIOD != runPeriod)
+					{
+						if (runs < MAXIMUM_LISTED)
+						{
+							details += " " + std::to_string(runPeriod) + "x" + std::to_string(runCount);
+						}
+						++runs;
+						runCount = 0;
+					}
+					runPeriod = PERIOD;
+					++runCount;
+				}
+				if (runCount > 0 && runs < MAXIMUM_LISTED)
+				{
+					details += " " + std::to_string(runPeriod) + "x" + std::to_string(runCount);
+				}
+				if (runs >= MAXIMUM_LISTED)
+				{
+					details += " ... " + std::to_string(runs + 1) + " runs";
+				}
+				details += " developments";
+				for (size_t period = 0; period < developments.size() && period < MAXIMUM_LISTED; ++period)
+				{
+					details += " [" + std::to_string(static_cast<size_t>(*developments.at(period).first)) +
+						"," + std::to_string(static_cast<size_t>(*developments.at(period).second)) + ")";
+				}
+				if (developments.size() > MAXIMUM_LISTED)
+				{
+					details += " ...";
+				}
+				if (NUMBER_OF_VERTICES > 0)
+				{
+					details += " first vertex " + _getVertexDiagnostic(boost::vertex(0, data)) +
+						" last vertex " + _getVertexDiagnostic(boost::vertex(NUMBER_OF_VERTICES - 1, data));
+				}
+				const std::string INCOHERENCES = getIncoherences();
+				if (!INCOHERENCES.empty())
+				{
+					details += " incoherences:" + INCOHERENCES;
+				}
+			}
+			catch (...)
+			{
+				details += " (details incomplete)";
+			}
+			return details;
+		}
+
 		// DocString: FMTGraph::getNode
 		/**
 		@brief Return the vertices matching an output node for a period.
@@ -2416,7 +2581,8 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			}
 			catch (...)
 			{
-				_exhandler->raiseFromCatch("For node: " + std::string(node), "FMTGraph::getSource", __LINE__, __FILE__);
+				_exhandler->raiseFromCatch("For node: " + std::string(node) + " at period " + std::to_string(period) +
+					" in graph " + getDiagnosticString(), "FMTGraph::getSource", __LINE__, __FILE__);
 			}
 			return std::map<std::string, double>();
 		}
@@ -3518,6 +3684,24 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			ar& BOOST_SERIALIZATION_NVP(m_reserve);
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
+
+		// DocString: FMTGraph::_getVertexDiagnostic
+		/**
+		@brief Return a vertex and the actions of its out edges to diagnose a failure.
+		@param[in] p_vertex the vertex.
+		@return the vertex on one line.
+		*/
+		std::string _getVertexDiagnostic(FMTvertex_descriptor p_vertex) const
+		{
+			std::string details = "(" + std::string(data[p_vertex].get()) + ") out edges";
+			FMToutedge_pair edge_pair;
+			for (edge_pair = boost::out_edges(p_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
+			{
+				details += " action " + std::to_string(data[*edge_pair.first].getActionID()) +
+					" to " + std::to_string(static_cast<size_t>(boost::target(*edge_pair.first, data)));
+			}
+			return details;
+		}
 
 		// DocString: FMTGraph::_generateDevelopments
 		/**
