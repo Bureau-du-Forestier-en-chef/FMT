@@ -2771,7 +2771,8 @@ du 2026-10-26 à 17 h 45) :
 
 ### 5.18 Lot 8c : priorités 2 et 3, `FMTGraphStats` et types spatiaux (2026-10-28)
 
-**Statut** : livré le 2026-10-28, **à compiler et à valider par Gabriel** ; rien n'est commité. Dernier tiers du lot 8 (section
+**Statut** : livré le 2026-10-28, commité par Gabriel le même jour (`73ccbfd8`), **validé** le 2026-10-28 (fin de cette section).
+Dernier tiers du lot 8 (section
 6.3.5). Point de départ : l'installation de Gabriel du 2026-10-27 à 15 h 52 (`12d46d92`, section 5.16 ; 1 065 tests, 0 échec,
 1 029 verts et 36 désactivés), arbre de travail propre (`4ee11f75`).
 
@@ -2936,21 +2937,36 @@ dans `build/release` ni sous `Examples/Models`.
 #383, remarques des observations, tests manquants), `CoreTestCoverage.md` régénéré (57 classes avec des tests unitaires, aucune de
 priorité 1 sans test propre ; les suites hors de `Core` sont dans sa liste des suites qui ne nomment aucune classe de `Core` ; deux
 générations identiques), deux lignes de dette d'`Architecture.md`, sections 2.7, 6.1, 6.3.5 et 7, changelogs (section non publiée,
-anglais et français). La section 8 attend la validation.
+anglais et français), section 8 après la validation.
+
+**Validation après le build de Gabriel** (2026-10-28, commit `73ccbfd8`, 20 fichiers, arbre de travail propre ; FMTlib inchangé,
+`FMTlib.dll` du 2026-10-26 à 17 h 45) :
+- `UnitCore.exe` du build date de 14 h 51, après la dernière modification des sources du lot (14 h 31) ;
+- installation (`INSTALL_TEST_SUITE=public`, 14 h 52) : 1 202 tests, 0 échec, 1 166 exécutés et 36 désactivés, 35 s ; unit 869
+  verts et 13 désactivés, integration 35 verts et 11 désactivés, system 237 verts et 12 désactivés, performance 23, other 2 ;
+  aucun test en `T:/` ; les 137 cas nouveaux sont tous exécutés et verts. `InstallTests.xml`, `InstallTests.json`, `LastTest.log`
+  et `LastTestsDisabled.log` copiés dans le scratchpad de la session avant tout appel de ctest ;
+- `RunTests.bat all-public` : « 0 tests failed out of 1166 », 33,2 s réelles ; unit 869 verts et 13 désactivés sur 882,
+  integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 ; Total 1 166
+  verts et 36 désactivés sur 1 202. Par rapport au passage du 2026-10-27 à 15 h 52 (section 5.16), seul le niveau unit change,
+  des 137 cas ajoutés, tous verts : ce sont les comptes attendus avant le build. La fixture `ExamplesModelsUnchanged` et les
+  7 tests Python sont verts, et l'arbre de travail est resté le même après le passage ;
+- non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par la passe `/W4` hors dépôt
+  d'avant le build. Le lot n'ajoute que des tests unitaires : la suite BFEC n'est pas relancée.
 
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-28
 
-- **Lot 8c livré le 2026-10-28, à compiler et à valider par Gabriel** (section 5.18) : 137 cas unitaires de 13 classes, tous actifs :
+- **Lot 8c livré, commité par Gabriel (`73ccbfd8`) et validé le 2026-10-28** (section 5.18) : 137 cas unitaires de 13 classes, tous actifs :
   la priorité 2 (`FMTGCBMTransition`), la priorité 3 exportée (`FMTYieldModel`, `FMTYieldModelRandom`, `FMTYieldModelTsla`,
   `FMTYieldModelUnitCoverage`, `FMTModelYieldHandler`, `FMTSerie`), `Graph::FMTGraphStats` et les types spatiaux `FMTCoordinate`,
   `FMTLayer`, `FMTForest`, `FMTEvent` et `FMTEventContainer`. Aucun défaut nouveau ; #383 fixé à l'endroit où il agit ; deux lignes de
   dette d'`Architecture.md` (modèles membres `within` non exportés ; `FMTEventRelation` et `FMTBindingSpatialAction` sans
   `FMTEXPORT`, que ce lot n'exporte pas). Décisions de Gabriel du 2026-10-28 : les quatre modèles de rendement non exportés restent
   hors du lot ; les tests de `Spatial` et de `Graph` vont dans `UnitCore` ; `FMTSpatialSchedule` et les graphes spatiaux passent à un
-  lot d'intégration. Attendu après le build : 1 202 tests, 1 166 verts et 36 désactivés ; unit 869 verts et 13 désactivés sur 882,
-  les autres niveaux inchangés. À la validation, **le lot 8 est terminé** (section 6.3.5).
+  lot d'intégration. Installation et `all-public` : 1 202 tests, 0 échec, 1 166 verts et 36 désactivés ; unit 869 verts et 13
+  désactivés sur 882, les autres niveaux inchangés. **Le lot 8 est terminé** ; le lot 9 suit (section 6.3.6).
 - **Issues #401 et #405, ouvertes par d'autres, vérifiées le 2026-10-28** (section 2.8) : #405 exacte et démontrée sur le cas
   public de `DoSpatiallyExplicitPlanning` (outputs de la période 0 faux après le postSolve d'un SES ; gravité et urgence
   moyennes) ; #401, mécanisme exact mais cause non établie ni reproduite (gravité élevée, diagnostic urgent). #403 et #404
@@ -3277,7 +3293,7 @@ prend pas, puis la priorité 2, puis la 3. Ce que cela change :
   de dette, sans export ni test ; hors de `Core`, la liste proposée après la lecture des en-têtes (`FMTGraphStats`, `FMTCoordinate`,
   `FMTLayer`, `FMTForest`, `FMTEvent`, `FMTEventContainer`) ; leurs tests vont dans `Tests/Unit/Core` (`UnitCore`) ; `FMTSpatialSchedule`
   et les graphes spatiaux relèvent d'un cas d'intégration (`IntegrationModels`, scénario `Spatial`), dans un lot à part, où le test
-  public de #405 aurait sa place. **Le lot 8 est terminé** à la validation de 8c ; le lot 9 suit (section 6.3.6).
+  public de #405 aurait sa place. **Le lot 8 est terminé** (8c validé le 2026-10-28, `73ccbfd8`) ; le lot 9 suit (section 6.3.6).
 
 #### 6.3.6 Lot 9 : exigences transverses de #350 — effort `xhigh`
 
@@ -3628,6 +3644,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-27 (lot 8a, avant `2ca9a023`) | 920 `all-public` (740 + 180 cas `Unit.`) ; résumé : unit 590 verts et 10 désactivés sur 600, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 27,3 s réelles | — | 13 | 2 | 0 | 33 | — |
 | 2026-10-27 (défaut 21, `3e6be3e6` ; installation de Gabriel) | 922 (installation, `public`) ; unit 591 verts et 11 désactivés, integration 35 verts et 11 désactivés, system 237 verts et 12 désactivés, performance 23, fixtures 2 | 25 s (installation) | — | 13 | 2 | 0 | 34 | — |
 | 2026-10-27 (lot 8b, `12d46d92`) | 1 065 `all-public` (922 + 143 cas `Unit.`) ; résumé : unit 732 verts et 13 désactivés sur 745, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 28,3 s réelles | — | 13 | 2 | 0 | 36 | — |
+| 2026-10-28 (lot 8c, `73ccbfd8`) | 1 202 `all-public` (1 065 + 137 cas `Unit.`) ; résumé : unit 869 verts et 13 désactivés sur 882, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 33,2 s réelles | — | 13 | 2 | 0 | 36 | — |
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
