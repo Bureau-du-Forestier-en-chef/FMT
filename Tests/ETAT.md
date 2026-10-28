@@ -1004,6 +1004,9 @@ corrigés dans ce chantier.
     - Cas : `Unit.FMTConstants.GivenAConstantOfSeveralValuesWhenConvertedToStringThenWritesEachValueAsAWord`, à côté du cas vert
       `GivenAConstantOfOneValueWhenConvertedToStringThenWritesALineOfItsNameAndItsValue`.
 
+**Lot 8c (2026-10-28) : aucun défaut nouveau.** Les écarts relevés dans les classes du lot (section 5.18) restent des observations :
+rien de ce que FMT exécute n'en dépend, ou ce n'est pas démontré. Le prochain défaut prendra le numéro 24.
+
 ### 2.8 Issues signalées par d'autres, vérifiées
 
 Issues ouvertes hors de ce chantier, que Gabriel a demandé de vérifier le 2026-10-28 : ce que leur texte dit de juste, ce qu'il
@@ -2766,10 +2769,188 @@ du 2026-10-26 à 17 h 45) :
   comparaison avec `FMT.pyd`). Rien n'a été écrit sous `Examples/Models` ; l'arbre de travail est resté le même pendant les
   démonstrations.
 
+### 5.18 Lot 8c : priorités 2 et 3, `FMTGraphStats` et types spatiaux (2026-10-28)
+
+**Statut** : livré le 2026-10-28, **à compiler et à valider par Gabriel** ; rien n'est commité. Dernier tiers du lot 8 (section
+6.3.5). Point de départ : l'installation de Gabriel du 2026-10-27 à 15 h 52 (`12d46d92`, section 5.16 ; 1 065 tests, 0 échec,
+1 029 verts et 36 désactivés), arbre de travail propre (`4ee11f75`).
+
+**Décisions de Gabriel (2026-10-28)** :
+- `FMTYieldModelNn`, `FMTYieldModelNep`, `FMTYieldModelPools` et `FMTYieldModelDecisionTree` restent hors du lot, sur leur ligne de
+  dette d'`Architecture.md` : ni exportés, ni testés ; leur statut dans `CoreTestCoverage.csv` le dit ;
+- hors de `Core`, la liste proposée après la lecture des en-têtes : `Graph::FMTGraphStats`, `FMTCoordinate`, `FMTLayer` par ses
+  instanciations, `FMTForest`, `FMTEvent`, `FMTEventContainer` sans `getDispersion` (il lit les graphes spatiaux d'un modèle) et avec
+  la seule liaison du constructeur par défaut ; `FMTEventRelation`, sans membre exporté, documentée comme inatteignable ;
+- emplacement : `Tests/Unit/Core`, dans `UnitCore` : `AGENTS.md` et `Tests/Unit/CMakeLists.txt` font de `Core/` les tests unitaires
+  de FMTlib (étiquette `core`), et `CodingStandards.md` ne prévoit pas de dossier par espace de noms. Aucun changement de CMake ;
+- `FMTSpatialSchedule` et les graphes spatiaux demandent un modèle entier : ils relèvent d'un cas d'intégration
+  (`IntegrationModels`, scénario `Spatial` de TWD_land et sa carte, comme `DoSpatiallyExplicitPlanning`), dans un lot à part, hors
+  du lot 8c ; le test public de #405 y aurait sa place (section 2.8).
+
+**Ajouts** (`Tests/Unit/Core`, cp1252, CRLF, en-tête de licence) : une source par classe, une suite au nom de la classe, cas
+Given...When...Then en Arrange / Act / Assert ; 137 cas nouveaux, tous actifs, et un en-tête commun, `GivenYieldModel.h`.
+`Tests/Unit/Core/CMakeLists.txt` prend les sources par un glob : inchangé.
+
+| Source | Cas | Ce qu'ils couvrent |
+|---|---|---|
+| `FMTGCBMTransition.cpp` | 6 | construction par défaut et avec ses valeurs, copie indépendante, affectation (et sur soi), égalité, une valeur qui diffère (âge, nom, attribut, nom de thème, thème de plus) |
+| `FMTModelYieldHandler.cpp` | 19 | défaut, masque, modèles et yields (ordre de `cmpYieldString`, `size` qui compte les yields, `getModelsNameByIndex`), `get` dans `FMTYields` (position de chaque yield dans son modèle, deux modèles), yield au-delà des prédictions et yield absent (`FMTunhandlederror`), copie (modèles clonés), clone, affectation à un gestionnaire vide, affectation à un gestionnaire qui a un modèle (observation), égalité par la base (#383), `setModel` et cache d'un modèle aléatoire, `toTimeHandler` (valeurs périodiques ; un modèle sans), chaînes (`*YM`, `*YT`, `_TSLA` qui n'écrit rien), presolve qui garde le masque (observation) |
+| `FMTYieldModel.cpp` | 6 | par ses dérivées : chaîne `_PRED` du dossier du fichier et des sources, copie (fichier, sources, modèle), `setModel`, presolve et postsolve par défaut (clones), aucune valeur périodique, aucun modèle affectable par copie |
+| `FMTYieldModelRandom.cpp` | 8 | construction depuis les propriétés de son JSON, tirage de l'indice du seul yield non nul, valeur absolue d'un yield négatif, source absente (`FMTmissingyield`), cache par période et `clearRandomYieldsCache`, sans cache, clone qui tire avec le même modèle, presolve et postsolve |
+| `FMTYieldModelTsla.cpp` | 5 | modèle `_TSLA` sans source, chaîne vide, clone, presolve et postsolve, requête sans graphe (`FMTrangeerror`), `_TSLA` des yields par défaut hors d'un graphe |
+| `FMTYieldModelUnitCoverage.cpp` | 3 | construction, `predict` sans modèle (« No available model »), clone, presolve et postsolve |
+| `FMTSerie.cpp` | 10 | défaut, série vide (`getSerie` lève, ALAP), actions et longueur, drapeaux `_ASAP` et `_ALAP` du parseur (les deux : `_ALAP`), chaînes, constructeur d'une chaîne (observation), égalité, ordre (`std::set`), `isAllowedInSerie` (permis, non permis) |
+| `FMTGraphStats.cpp` | 6 | défaut, copie et affectation, `+=` et `-=`, `+` et `-` qui changent leur opérande gauche (observation), égalité champ par champ, chaîne |
+| `FMTCoordinate.cpp` | 14 | défaut, construction, copie, chaîne, voisins 0 à 15 (`at`), voisins hors du raster (65 535), distance, ordre (la ligne, puis la colonne) et égalité, hachage, enveloppe (`upEnveloppe`, hauteur, largeur, centre), territoire (bord du raster), coordonnée spatiale (géotransformation de GDAL), `closest` (et liste vide), `getNeighbors` (carré, diagonale : observation ; bord ; cercle) |
+| `FMTLayer.cpp` | 13 | par `FMTLayer<std::string>`, `<int>` et `<double>` : défaut, étendue, carte et ordre des cellules, coordonnée hors de la couche (`at` lève, `find` rend la fin), opérateur `[]`, aire, attributs, copie et affectation, déplacement, `swap`, `copyExtent` et `setExtentFrom`, `+=` (chaînes jointes, autres types inchangés), `replace` |
+| `FMTForest.cpp` | 12 | défaut, construction depuis une couche, copie et affectation, `getArea` (aires additionnées par développement), `grow`, `getAge`, `getLock`, `getThemes`, `setPeriod`, `getCopy`, `setLastThemeWithArea` (et `FMTinvalid_theme`), presolve puis postsolve |
+| `FMTEvent.cpp` | 18 | construction, défaut, `insert`, `erase`, `merge`, `midPosition`, périmètre (trou compris), enveloppe, hauteur, largeur et centre, statistiques, égalité (famille ignorée, cellules), ordre, hachage, distance et cellules les plus proches, bordures, paires de bordure extérieure, territoire, `willSplitEvent`, `splitEvent`, `ignit`, `spread` |
+| `FMTEventContainer.cpp` | 17 | défaut, ordre (période, position médiane, action), `find`, `erase`, `clear`, copie, égalité, `swap`, `merge`, `getBounds`, `getEvents` (action, actions, actions employées, cellule, entre deux coordonnées, territoire), `getMultipleEvents`, `getEventsOf`, `find` d'une cellule (observation), `getContainer`, `addAction`, `addActions` et `getEventsToAdd` avec la liaison par défaut, `eraseCoordinate` (découpage, bout, cellule seule, action non visée), `getEventsToErase` puis `addUpdate` (les événements d'`eraseCoordinate`), `minimalDistance`, `evaluateDistance`, `evaluateSize` |
+
+- Niveau unitaire : aucun modèle sur disque, aucun fichier lu. Les propriétés des JSON de `Templates/YieldPredModels` (`RANDOM`,
+  `UNIT_COVERAGE`) sont construites dans un arbre de propriétés, avec les mêmes clés ; le nom du fichier s'y écrit avec des barres
+  obliques, que toute plateforme lit comme des séparateurs (les JSON ont des barres obliques inverses : observation ci-dessous).
+- `FMTYieldModel` est abstraite, faite pour être implémentée : ses cas passent par les trois modèles exportés et par le modèle de
+  rendement des tests, `Tests/Unit/Core/GivenYieldModel.h`, qui rend les prédictions et les valeurs périodiques qu'on lui donne (un
+  double de test, pas un contournement du code). Il sert aussi aux cas de `FMTModelYieldHandler`.
+- Le modèle aléatoire tire avec le générateur d'un `Models::FMTModel` construit par défaut, seul collaborateur hors de `Core`.
+  L'algorithme de `std::discrete_distribution` n'est pas fixé par la norme : les cas tirent dans des distributions où un seul yield
+  n'est pas nul, dont l'indice est le seul tirage possible. Les requêtes sont préparées par `FMTYields::get` avant `predict`, comme
+  FMT le fait. Ce que calculent `_TSLA` (le temps depuis la dernière action, dans le graphe) et `UNIT_COVERAGE` (des outputs d'un
+  modèle à graphe) reste couvert par `DoPlanning`, `Presolve` et `SimulateNonSpatially`.
+- Types spatiaux : coordonnées, formes, enveloppes et distances calculées à la main. `FMTLayer` est un modèle de classe : il est
+  testé par ses instanciations dans FMT, `FMTLayer<std::string>` (`FMTForest::getThemes`, `getLock`), `<int>` (`getAge`) et `<double>`
+  (`getSpatialOutput`) ; `FMTLayer<Core::FMTDevelopment>`, la base de `FMTForest`, exportée avec elle, est dans la suite de
+  `FMTForest`. Une sonde hors du dépôt a vérifié qu'un exécutable qui l'emploie seule dans une source et avec `FMTForest` dans une
+  autre se lie et passe : pas le piège de `FMTBounds<int>` (section 7). `FMTLayer<FMTVirtualLineGraph>`, la base de
+  `FMTSpatialSchedule`, relève de l'intégration.
+- **Deux lignes de dette** dans `Architecture.md`, chacune vérifiée par `dumpbin /exports` sur le `FMTlib.dll` de `build/release` et
+  par une sonde de liaison (7 symboles non résolus, LNK2019) :
+  - `FMTCoordinate::within` et les deux `FMTEvent::within`, modèles membres instanciés dans leurs sources, non exportés comme
+    `FMTConstants::get` : les cas les atteignent par `FMTEventContainer::minimalDistance` et `evaluateDistance` ;
+  - `FMTEventRelation` et `FMTBindingSpatialAction`, sans `FMTEXPORT` : un test n'obtient une relation que de
+    `FMTEvent::getRelation`, sans pouvoir la comparer ni la hacher, et ne construit que la liaison du constructeur par défaut, défini
+    dans l'en-tête, dont les valeurs sont 0 : `addAction` fait alors un événement de chaque cellule. Les exporter demande `FMTEXPORT`
+    sur les deux classes, et `#include "FMTutility.h"` dans `FMTBindingSpatialAction.h`, qui ne voit pas la macro (`FMTEventRelation.h`
+    la voit par `FMTCoordinate.h`). Rien n'est exporté dans ce lot.
+- Valeurs calculées à la main avant la première exécution, depuis la documentation ou le code : voisins de `at` (tables `x_n` et
+  `y_n`, un tour de plus tous les 8), enveloppe de 2 3 à 8 7 (hauteur 5, largeur 7, centre 5 5), territoire à 2 et à 5 cellules,
+  centre de la cellule 2 3 (1 050 et 4 930 pour une origine de 1 000 et 5 000 et des cellules de 20), distances (5 de 0 0 à 3 4,
+  carré 5 de 3 3 à 2 1), voisinages (9 cellules autour de 5 7, 6 autour de 5 5, 13 dans le cercle de rayon 2), périmètres (4, 6, 8, et
+  16 pour l'anneau de 3 sur 3), statistiques du L (5 12 3 3), aires (2 x 14,44 ha), chaînes (`std::to_string` sans zéros de fin,
+  « X3 Y5 », « Columns: 1 Rows: 2... »), tirages (indice du seul yield non nul), pénalités (6 - 5 = 1, 5 - 4 = 1 ; 3 - 1 = 2 et
+  3 - 2 = 1 pour les tailles). Un seul attendu s'est révélé faux à la première exécution, corrigé après relecture du code et non
+  recopié : la chaîne d'un gestionnaire de modèles a une ligne vide après chaque ligne de modèle, puisque la chaîne du modèle finit
+  par son propre saut de ligne (`FMTYieldParser::read` saute les lignes vides). Un cas de `FMTYieldModelUnitCoverage` passait d'abord
+  au postsolve le filtre du presolve, ce que FMT ne fait pas : `FMTMask::postSolve` lisait hors du masque (`std::out_of_range` de
+  `dynamic_bitset`) ; il prend désormais le filtre de `FMTModel::getPostSolveFilter`, comme `Tests/Unit/Core/FMTMask.cpp`.
+
+**#383, à l'endroit où il agit** (cas vert, sans défaut nouveau) :
+`FMTModelYieldHandler.GivenTwoHandlersOfTheSameMaskWithOtherModelsWhenComparedThenTheyAreEqual`. `FMTModelYieldHandler::operator==`
+ne compare que ce que compare la base, le masque et les âges de base (vides pour un gestionnaire de modèles) : deux gestionnaires
+de même masque sont égaux, quels que soient leurs modèles. Comme pour les gestionnaires d'âge (section 5.16), une correction de #383
+qui comparerait les gestionnaires par leur `operator==` les prendrait pour égaux. #346, #347, #358, #381, #389 à #393, #394, #396,
+#397 et #401 n'agissent dans aucune classe du lot ; #405 agit dans `FMTVirtualLineGraph::postSolve`, hors du lot (intégration, décision
+ci-dessus).
+
+**Défauts nouveaux** : aucun.
+
+**Observations, sans défaut annoncé** (rien de ce que FMT exécute n'en dépend, ou ce n'est pas démontré) :
+- **`FMTCoordinate::getNeighbors`** veut laisser de côté la coordonnée elle-même, mais compare sa colonne à sa ligne
+  (`lx == m_x && lx == m_y`) : hors de la diagonale, la coordonnée reste dans son voisinage ; sur la diagonale, toute sa colonne en
+  sort (cas vert commenté). Depuis `2e3dc129` (2019-06-07, le premier commit). Aucun appelant dans FMT ; ni Python ni R ne
+  l'exposent.
+- **`FMTEventRelation::operator==`** compare la cellule du premier événement à celle du second de l'autre relation
+  (`m_fromcoord == rhs.m_tocoord`), et ignore la cellule du second ; son hachage lit les deux cellules, mais pas la période du
+  second. Une relation n'est donc pas égale à elle-même dès que ses deux événements ont des positions médianes différentes, et ce que
+  retrouve un `boost::unordered_set` dépend de ses alvéoles : `evaluateDistance` compterait une paire deux fois (lu dans le code ; un
+  cas en dépendrait, non écrit). Depuis `c8a0aba7` (2020-12-08). Son seul utilisateur, `FMTEventContainer::evaluateDistance`, n'a pas
+  d'appelant ; `FMTSpatialSchedule::getAdjacencyConflictCoordinates` déclare un ensemble de relations qu'il n'emploie pas.
+- **`FMTEventContainer::find` d'une période et d'une cellule** ne rend le premier événement qui tient la cellule que si plus d'un la
+  tient (`eventsfound.size() > 1`) ; pour un seul, la fin (cas vert commenté). Depuis `095e38d8` (2020-08-24). Aucun appelant.
+- **Le trieur `FMTEventIteratorSorter`**, privé, écrit les deux distances dans la même variable (`approx1`) : il rend toujours faux,
+  et `nthElements` ne trie rien (lu dans le code). Depuis `030ad113` (2020-11-13). `nthElements` n'a pas d'appelant.
+- **`FMTLayer::replace`** compare la cellule trouvée à la fin de la plage donnée, et non à sa propre fin : pour une cellule qu'il n'a
+  pas, il écrit par la fin de sa table (lu dans le code, non testé). Présent avant le passage de `FMTLayer.h` à `.hpp` (`45230dc8`,
+  2021-11-10). Aucun appelant.
+- **`FMTModelYieldHandler::operator=`** ajoute les modèles de l'autre gestionnaire après les siens au lieu de les remplacer, et prend
+  les positions de ses yields : un gestionnaire qui avait un modèle lit les yields de l'autre dans son ancien modèle (cas vert
+  commenté). Depuis `2cbb45a6` (2021-10-29). Aucun appelant : les yields clonent leurs gestionnaires.
+- **`FMTModelYieldHandler::preSolve`** présolve les modèles, mais pas le masque du gestionnaire, contrairement à
+  `FMTYieldHandler::preSolve` (cas vert commenté). Depuis `2bac20df` (2023-09-29, « Fix #168 »). `FMTYields` choisit ses gestionnaires
+  par les masques de sa liste, que `FMTYields::preSolve` présolve : les valeurs ne changent pas ; seuls la chaîne du gestionnaire et
+  `toTimeHandler` lisent ce masque. Aucun exécutable de FMT n'écrit un modèle présolvé ; Python expose `basepresolve` et l'écriture
+  des modèles : l'écriture d'un modèle présolvé qui a une section `*YM` n'est pas vérifiée. Le postsolve des gestionnaires n'est
+  jamais appelé : `FMTModel::postSolve` reprend le modèle d'origine.
+- **`FMTYieldModelUnitCoverage::postSolve`** jette le masque postsolvé (`m_mask.postSolve(...)` sans affectation) (lu dans le code ; le
+  masque est privé). Depuis `76a68749` (2024-03-28, « Fix #210 »). Jamais appelé, pour la raison ci-dessus.
+- **`FMTYieldParser::read`** prend `FMTModelYieldHandler::size()`, le nombre de yields, pour l'indice du modèle suivant d'une section
+  `*YM` : un second modèle après un premier de deux yields ou plus pointerait ses yields au-delà des modèles (lu dans le code, hors
+  des classes du lot, non démontré ; à démontrer si Gabriel le souhaite). Depuis `2cbb45a6` (2021-10-29). Aucune section `*YM`
+  d'`Examples/Models` n'a deux modèles.
+- **`FMTSerie(chaîne, longueur)`** découpe la chaîne sur chaque caractère du séparateur « -> » (`boost::is_any_of`) : chaque
+  séparateur donne trois actions vides (cas vert commenté). Depuis `d18e0bb6` (2026-01-14). Aucun appelant : le parseur découpe la
+  ligne lui-même. `getSerie` d'une série vide lève `std::out_of_range` (cas vert) ; toute série de FMT a deux actions ou plus.
+- **`FMTGraphStats::operator+` et `operator-`** ajoutent à leur opérande gauche et en rendent une copie (cas vert commenté). Au moins
+  depuis `9bccce7f` (2020-06-17). Leur seul emploi, le retour de `FMTGraph::naturalGrowth`, soustrait d'une copie faite pour lui.
+- **Aucun modèle de rendement n'est affectable par copie** : la base tient un membre constant, la clé du nom dans le JSON
+  (`m_JSON_PROP_MODEL_NAME`, ligne de `a459f526`, 2026-07-22, d'après `git blame` ; origine non remontée plus loin), si bien que
+  l'affectation que `FMTYieldModelTsla` déclare `= default` est supprimée (cas vert). Rien dans FMT n'affecte un modèle.
+- Documentation des en-têtes contredite par le code : `FMTEvent::splitEvent` (« retire les éléments de l'événement » : il le laisse
+  tel quel, cas vert commenté), `FMTYieldModelRandom::setModel` (« change la graine » : non, lu dans le code).
+- Les JSON de `Templates/YieldPredModels` écrivent le nom du fichier avec des barres obliques inverses, que `FMTYieldModel::operator
+  std::string` découpe par `boost::filesystem` : hors de Windows, le dossier du nom serait vide dans `_PRED(...)` (lu dans le code et
+  la documentation de `boost::filesystem`, non vérifié hors de Windows).
+- `FMTEvent()` laisse l'action, la période et la famille non initialisées ; la position médiane, l'enveloppe et le hachage d'un
+  événement vide, et `firstPeriod` et `lastPeriod` d'un conteneur vide, lisent le début d'un ensemble vide : non testé.
+
+**Non couvert, et pourquoi** : ce que calculent `_TSLA` (graphe), `UNIT_COVERAGE` avec un modèle (outputs d'un modèle à graphe) et un
+tirage aléatoire parmi plusieurs yields non nuls ; `FMTModelYieldHandler::postSolve` et `FMTYieldModel::clearRandomYieldsCache` de la
+base (jamais appelé ; ne fait rien) ; `within` de `FMTCoordinate` et de `FMTEvent` directement (non exportés) ; `FMTEventRelation`
+(non exportée ; le compte des relations d'`evaluateDistance` dépend des alvéoles) ; `getDispersion` et `getDispersionConflicts`
+(graphes spatiaux), `addAction` avec un voisinage (liaison non exportée) ; les accesseurs d'un événement ou d'un conteneur vides et
+`replace` d'une cellule absente (comportement indéfini) ; `FMTLayer<FMTVirtualLineGraph>`, `FMTSpatialSchedule` et les graphes
+spatiaux (intégration, décision ci-dessus) ; les quatre modèles non exportés (décision ci-dessus) ; la sérialisation et la
+concurrence (lot 9).
+
+**Vus rouges** (règle 1), rien de commité : deux copies faussées des 13 sources, hors du dépôt, compilées par `cl` contre le
+`FMTlib.lib` de `build/release` :
+- **entrée faussée** : une substitution par cas, dans son Arrange ou son Act, jamais dans son Assert (une table du script qui écrit
+  la copie ; il refuse une substitution introuvable, ambiguë dans son cas ou placée après le marqueur de l'Assert, et un cas actif
+  sans substitution) : les 137 cas échouent, aucun par une exception ;
+- **assertions inversées** (un en-tête inclus après `<gtest/gtest.h>`, qui inverse les dix macros employées et rend les fatales non
+  fatales ; le script refuse toute autre macro) : les 137 cas échouent, aucun par une exception, et chacune des 440 assertions échoue
+  au moins une fois ; 459 messages, puisque les 5 assertions d'une aide de `FMTLayer.cpp` servent à deux cas et que deux boucles sur
+  trois copies (`FMTYieldModelTsla.cpp`, `FMTYieldModelUnitCoverage.cpp`) répètent les leurs ;
+- aucun cas désactivé dans ce lot ; les 13 cas désactivés d'avant, lancés avec `GTEST_ALSO_RUN_DISABLED_TESTS=1`, échouent toujours.
+
+**Vu vert avant le build de Gabriel** : les 63 sources du dépôt, compilées par `cl` avec les options de `UnitCore` (son
+`CL.command.1.tlog`), `/Fo` et `/Fd` dans le scratchpad, liées au `FMTlib.lib` de `build/release` (FMTlib du 2026-10-26 à 17 h 45,
+sources de FMTlib inchangées depuis `025d3493`), lancées depuis le scratchpad avec `bin/Release` dans le `PATH` et
+`onnxruntime.dll` copiée à côté (section 7) : 869 cas verts (732 d'avant et 137 nouveaux), 13 désactivés ; mêmes résultats dans un
+ordre mélangé (`GTEST_SHUFFLE`, graines 4242 à 4244, 3 répétitions). En `/W4 /permissive-`, aucun avertissement ne vient des 13
+sources nouvelles ni de `GivenYieldModel.h` : les 457 viennent des en-têtes de FMTlib. ctest n'a pas été lancé ; rien n'a été écrit
+dans `build/release` ni sous `Examples/Models`.
+
+**Documents** : `CoreTestCoverage.csv` (statut `Lot 8c, done` des 7 classes de `Core`, et la raison pour les quatre modèles laissés,
+#383, remarques des observations, tests manquants), `CoreTestCoverage.md` régénéré (57 classes avec des tests unitaires, aucune de
+priorité 1 sans test propre ; les suites hors de `Core` sont dans sa liste des suites qui ne nomment aucune classe de `Core` ; deux
+générations identiques), deux lignes de dette d'`Architecture.md`, sections 2.7, 6.1, 6.3.5 et 7, changelogs (section non publiée,
+anglais et français). La section 8 attend la validation.
+
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-28
 
+- **Lot 8c livré le 2026-10-28, à compiler et à valider par Gabriel** (section 5.18) : 137 cas unitaires de 13 classes, tous actifs :
+  la priorité 2 (`FMTGCBMTransition`), la priorité 3 exportée (`FMTYieldModel`, `FMTYieldModelRandom`, `FMTYieldModelTsla`,
+  `FMTYieldModelUnitCoverage`, `FMTModelYieldHandler`, `FMTSerie`), `Graph::FMTGraphStats` et les types spatiaux `FMTCoordinate`,
+  `FMTLayer`, `FMTForest`, `FMTEvent` et `FMTEventContainer`. Aucun défaut nouveau ; #383 fixé à l'endroit où il agit ; deux lignes de
+  dette d'`Architecture.md` (modèles membres `within` non exportés ; `FMTEventRelation` et `FMTBindingSpatialAction` sans
+  `FMTEXPORT`, que ce lot n'exporte pas). Décisions de Gabriel du 2026-10-28 : les quatre modèles de rendement non exportés restent
+  hors du lot ; les tests de `Spatial` et de `Graph` vont dans `UnitCore` ; `FMTSpatialSchedule` et les graphes spatiaux passent à un
+  lot d'intégration. Attendu après le build : 1 202 tests, 1 166 verts et 36 désactivés ; unit 869 verts et 13 désactivés sur 882,
+  les autres niveaux inchangés. À la validation, **le lot 8 est terminé** (section 6.3.5).
 - **Issues #401 et #405, ouvertes par d'autres, vérifiées le 2026-10-28** (section 2.8) : #405 exacte et démontrée sur le cas
   public de `DoSpatiallyExplicitPlanning` (outputs de la période 0 faux après le postSolve d'un SES ; gravité et urgence
   moyennes) ; #401, mécanisme exact mais cause non établie ni reproduite (gravité élevée, diagnostic urgent). #403 et #404
@@ -3091,7 +3272,12 @@ prend pas, puis la priorité 2, puis la 3. Ce que cela change :
   22 et 23 (section 2.7) ; la section *Priority 1 classes without a test of their own* de `CoreTestCoverage.md` est vide.
 - **8c** : le reste du lot 8 : la priorité 2 (`FMTGCBMTransition`), la priorité 3 (les modèles de rendement,
   `FMTModelYieldHandler`, `FMTSerie`), et `FMTEvent`, `FMTGraphStats` et les types spatiaux, hors de `Core`, que le jalon 7 de
-  #350 nomme. À venir.
+  #350 nomme. **Fait le 2026-10-28** (section 5.18) : 137 cas, aucun désactivé, aucun défaut nouveau. Décisions de Gabriel du même
+  jour : `FMTYieldModelNn`, `FMTYieldModelNep`, `FMTYieldModelPools` et `FMTYieldModelDecisionTree` restent hors du lot, sur leur ligne
+  de dette, sans export ni test ; hors de `Core`, la liste proposée après la lecture des en-têtes (`FMTGraphStats`, `FMTCoordinate`,
+  `FMTLayer`, `FMTForest`, `FMTEvent`, `FMTEventContainer`) ; leurs tests vont dans `Tests/Unit/Core` (`UnitCore`) ; `FMTSpatialSchedule`
+  et les graphes spatiaux relèvent d'un cas d'intégration (`IntegrationModels`, scénario `Spatial`), dans un lot à part, où le test
+  public de #405 aurait sa place. **Le lot 8 est terminé** à la validation de 8c ; le lot 9 suit (section 6.3.6).
 
 #### 6.3.6 Lot 9 : exigences transverses de #350 — effort `xhigh`
 
@@ -3397,6 +3583,21 @@ abandonne.
   gestionnaire : un avertissement levé plus de dix fois dans le processus n'est plus journalisé, d'où un gestionnaire neuf.
 - **Ordre d'une `boost::unordered_map`** (lot 8b) : `FMTConstants` écrit ses constantes dans l'ordre de sa table, qui change d'une
   copie à l'autre. Comparer des lignes triées.
+- **`within` de `FMTCoordinate` et de `FMTEvent`** (lot 8c) : modèles membres instanciés dans leurs sources, non exportés (LNK2019),
+  comme `FMTConstants::get`. `FMTEventRelation` et `FMTBindingSpatialAction` n'ont pas `FMTEXPORT` : seuls se lient les membres définis
+  dans leur en-tête, dont le constructeur par défaut de la liaison (valeurs à 0). Lignes de dette d'`Architecture.md`.
+- **`FMTEvent` construit par défaut** (lot 8c) : le constructeur `= default` laisse l'action, la période et la famille non
+  initialisées ; une constante demande des accolades (C2737), et un événement vide n'a ni position médiane, ni enveloppe, ni hachage
+  (lecture du début d'un ensemble vide).
+- **`FMTSerie({ "A", "B" }, n)` est ambigu** (lot 8c) : deux chaînes entre accolades se lisent aussi comme les deux itérateurs d'un
+  `std::string` (C2668). Écrire `std::vector<std::string>({ ... })`.
+- **Postsolve d'un masque dans un test** (lot 8c) : il prend le filtre de `FMTModel::getPostSolveFilter` (la sélection des attributs
+  présolvés et les bits du développement dans les thèmes retirés), pas celui du presolve, avec lequel `FMTMask::postSolve` lit hors
+  du masque (`std::out_of_range` de `dynamic_bitset`).
+- **`boost::unordered_set<FMTEventRelation>`** (lot 8c) : son égalité ne s'accorde pas avec son hachage (section 5.18) ; ce que
+  l'ensemble retrouve dépend de ses alvéoles : aucun cas n'en attend une taille.
+- **Modèle aléatoire dans un test** (lot 8c) : l'algorithme de `std::discrete_distribution` n'est pas fixé par la norme ; seule une
+  distribution où un seul yield n'est pas nul a un tirage calculable à la main.
 - Plusieurs tests lèvent avec un nom de méthode copié d'un autre test (`"presolvetest"` dans
   `DoPlanning`) : lire le numéro de ligne plutôt que le nom.
 
