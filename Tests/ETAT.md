@@ -959,10 +959,11 @@ des observations (section 5.15).
 
 **Défauts révélés par le lot 8b (2026-10-27).** Deux défauts de FMTlib, démontrés comme les précédents : cause dans le code,
 A/B où une seule chose change, exécutable officiel (`FMT.pyd` du build de `new_test`, FMTlib du 2026-10-26, lancé par des scripts
-du scratchpad qui lisent le dépôt sans l'écrire), origine git. Chacun a un cas `DISABLED_` dans `UnitCore`. Leurs issues sont à
-ouvrir par Gabriel (règle 3), textes rédigés à la livraison du lot (section 5.16). Ils ne sont pas corrigés dans ce chantier.
+du scratchpad qui lisent le dépôt sans l'écrire), origine git. Chacun a un cas `DISABLED_` dans `UnitCore`. Gabriel a ouvert
+leurs issues le 2026-10-27 (#403 et #404), à partir des textes rédigés à la livraison du lot (section 5.16). Ils ne sont pas
+corrigés dans ce chantier.
 
-22. **Le cache des yields complexes sert à un modèle la valeur calculée pour un autre** (`FMTYieldsCache`, issue à ouvrir).
+22. **Le cache des yields complexes sert à un modèle la valeur calculée pour un autre** (`FMTYieldsCache`, issue #403).
     - `FMTYieldsCache` garde ses valeurs dans une seule table statique (`Source/FMTYieldsCache.cpp:23`), partagée par tous les
       gestionnaires complexes du processus, que rien ne vide hors d'un manque de mémoire (`_clearIfTooBig`). Sa clé
       (`FMTYieldDevelopment`) ne retient que l'âge, la période, le masque résumé du développement et le nom du yield : ni le modèle,
@@ -989,7 +990,7 @@ ouvrir par Gabriel (règle 3), textes rédigés à la livraison du lot (section 
     - La correction aura aussi à dire quand le cache se vide : la ligne de dette d'`Architecture.md` (section 5.16).
     - Cas : `Unit.FMTYieldsCache.GivenAComplexYieldCachedForOneSectionOfYieldsWhenAnotherSectionDefinesItOtherwiseThenComputesItFromItsOwnDefinition`,
       à côté du cas vert `GivenAComplexYieldCachedWithItsValueWhenYieldsGetItAgainThenServesTheSameValue`.
-23. **`FMTConstantParser::write` écrit les valeurs d'une constante sans séparateur** (`FMTConstants`, issue à ouvrir).
+23. **`FMTConstantParser::write` écrit les valeurs d'une constante sans séparateur** (`FMTConstants`, issue #404).
     - `FMTConstants::operator std::string` (`Source/FMTConstants.cpp:104`) ajoute chaque valeur par `std::to_string`, sans espace
       entre elles, et `FMTConstantParser::write` écrit cette chaîne comme section des constantes.
     - A/B avec `FMT.pyd` : le `._con` du scénario `LEVEL1` (`CorCour 2`, `Creguc 100 200 300 400 500 600 700`), lu par
@@ -1002,6 +1003,72 @@ ouvrir par Gabriel (règle 3), textes rédigés à la livraison du lot (section 
       classe existe.
     - Cas : `Unit.FMTConstants.GivenAConstantOfSeveralValuesWhenConvertedToStringThenWritesEachValueAsAWord`, à côté du cas vert
       `GivenAConstantOfOneValueWhenConvertedToStringThenWritesALineOfItsNameAndItsValue`.
+
+### 2.8 Issues signalées par d'autres, vérifiées
+
+Issues ouvertes hors de ce chantier, que Gabriel a demandé de vérifier le 2026-10-28 : ce que leur texte dit de juste, ce qu'il
+faut nuancer, ce qui reste à établir, et la gravité et l'urgence selon moi. Elles ne reçoivent pas de numéro de défaut : elles ont
+déjà leur issue, et aucun cas désactivé ne les porte. Vérifiées sur `new_test` (`ea14278a`), dont les fichiers en cause sont ceux
+de `master` (`dfa71460`), avec FMTlib du 2026-10-26 ; démonstrations par des outils du scratchpad de la session, qui lisent le
+dépôt sans l'écrire (section 5.17).
+
+1. **#405 : le postSolve du SES décrémente le mauvais graphe** (`FMTVirtualLineGraph::postSolve`). **Exacte, démontrée.**
+   - Code, comme l'écrit l'issue (`Source/FMTVirtualLineGraph.cpp:79-81`, `Source/FMTSpatialGraphs.cpp:141`,
+     `Source/FMTSolutionTracker.cpp:152`) : une famille regroupe les développements de la superficie qui ont les mêmes attributs
+     dans les thèmes que les transitions ne changent pas (`_buildGraphs`, `_getUseFullBits`). Chacun a son graphe de base, sur
+     lequel la solution de base compte ses cellules. Pour chaque cellule, le postSolve retire une cellule du graphe de base d'id
+     minimal de la famille (`getBaseIterator`), et non de celui de la cellule ; rien ne vérifie le compte, un `size_t`.
+   - A/B sur le cas public de `DoSpatiallyExplicitPlanning` (TWD_land, scénario `Spatial`, carte vectorielle à 380 m, 121
+     cellules, 10 périodes, 10 itérations) ; seul `POSTSOLVE` change, vrai par défaut comme dans le test (`PRESOLVE_ITERATIONS`
+     vaut 10 par défaut). Une sonde hors du dépôt, liée au `FMTlib.lib` du build, lit les comptes du tracker après `doPlanning`.
+     Avec le postSolve, la famille `UNITE2 ? UTR2` (âges 16, 19 et 22 ; 16, 16 et 12 cellules) donne -28 cellules au graphe de
+     base de l'âge 16 (16 - 44) et garde 16 et 12 cellules aux deux autres ; la famille `UNITE3 ? UTR3` (âges 7 et 8 ; 12 et 16
+     cellules) donne -16 et 16. Les familles d'un seul développement finissent à 0. Sans le postSolve, `deleteNonCompleteGraphs` a
+     retiré les graphes de base. Dans les deux cas, la somme des comptes reste 121 modulo 2^64.
+   - Effet sur les résultats, même A/B avec `FMT.pyd` : à la période 0, `totalarea` (`? ? ? _INVENT _AREA`) vaut 5,33 x 10^20 au
+     lieu de 1 747,24, et `volinvent` 6,79 x 10^22 au lieu de 278 389 (les comptes de 2^64 - 28 et 2^64 - 16 cellules de
+     14,44 ha). Aux périodes 1 à 10, `totalarea`, `volinvent` et `oSupRec` sont les mêmes avec et sans le postSolve : un graphe de
+     base n'a que les périodes 0 et 1, et la sonde montre qu'une cellule posée sur lui ne donne rien à ces outputs dès la
+     période 1.
+   - À nuancer dans l'issue : les cédules (`getSchedules`) ne lisent pas les graphes de base, puisque leur boucle des périodes 1 à
+     `getPeriod() - 1` est vide pour eux ; les outputs touchés sont ceux de la période 0 et, par lecture du code seulement, ceux
+     dont une source décalée vers le passé retombe sur la période 0 ; l'effet sur les contraintes suivies n'est pas vérifié. Le
+     test proposé doit vérifier qu'aucun compte ne dépasse le nombre de cellules : la somme, conservée modulo 2^64, ne voit pas le
+     défaut. Un test public plus simple : sur le cas de `DoSpatiallyExplicitPlanning`, `totalarea` de la période 0 égale la
+     superficie de la carte.
+   - D'accord avec l'issue : ce défaut ne mène pas au « vector too long » de #401 (les graphes de base ont 2 périodes).
+   - Origine : `33193d88` (2026-08-28, « Fix for FMTSemodel Postsolve and optimization for speed »), qui ajoute le retrait ; avant,
+     le postSolve ne retirait rien. Dans v1.3.0 et v1.4.0.
+   - Même motif, à vérifier, non démontré : `FMTVirtualLineGraph::setBaseGraph` (par `getBaseSchedule`) met chaque cellule sur le
+     graphe d'id minimal de sa famille, et `setNaturalGrowthIterator` bâtit la croissance naturelle depuis le premier graphe de la
+     famille. Les deux servent au recuit simulé (`FMTSaModel`, `setGrow`), pas au SES.
+   - **Gravité moyenne, urgence moyenne.** Les résultats des périodes 1 et plus sont justes, et les valeurs fausses de la période 0
+     sont absurdes plutôt que plausibles : elles passeront difficilement inaperçues. Mais tout SES présolvé, le réglage par défaut,
+     les produit dès qu'une famille a deux développements de base, et le tracker reste faux pour ce qui le lirait ensuite. La
+     correction est petite et locale (retirer la cellule du graphe de base de son propre développement, ou partir d'un tracker
+     vide) ; avec le garde-fou de `removeFromSolution` et le test public ci-dessus, elle a sa place dans la prochaine version.
+
+2. **#401 : « vector too long » à la fin d'un SES carbone** (`FMTGraph::getNode`). **Mécanisme exact ; cause non établie, non
+   reproduite.**
+   - Exact : `FMTexc(56)` est `FMTunhandlederror`, une exception standard attrapée par le `catch (...)` de `getNode`, et « vector
+     too long » est le message de `std::length_error` de la bibliothèque de MSVC quand un `reserve` dépasse `max_size()`.
+     `targetedperiods.reserve(size() - 2)` (`Include/FMTGraph.hpp:1685`) déborde dès que le graphe a moins de 2 périodes. Les
+     autres `reserve` de `getNode` et du cache de nœuds (`FMTOutputNodeCache`, sans `catch`) prennent `m_reserve`, qui vaut 0 pour
+     les graphes linéaires du SES (seul `FMTSrModel` appelle `setNodeSize`) ou `size()` après `copyToPeriod`, ou des tailles de
+     vecteurs ; les fonctions appelées qui ont leur propre `catch` auraient ajouté leur niveau à la pile. Cette ligne est donc la
+     seule candidate, comme l'écrit l'issue. Le même `size() - 2` est aux lignes 1687, 2095, 2100 et 3202.
+   - Exact : `_generateDevelopments` dimensionne `developments` par la période du dernier sommet, plus un, et le laisse vide quand
+     le graphe n'a aucun sommet. `size()` vaut donc moins de 2 pour un graphe vide, ou dont le dernier sommet est de la période 0.
+   - Non établi : comment un graphe de moins de 2 périodes reçoit des cellules. Sur les chemins du SES lus (`initialize`, la
+     construction période par période, la copie, `copyToPeriod`, `postSolve`), les sommets restent triés par période, et un graphe
+     de base en a deux ; sur le cas public de #405, avec ou sans postSolve, aucun graphe n'a moins de 2 périodes. Le modèle de
+     production qui plante n'est pas public, et sa copie de référence a changé depuis le plantage, selon l'issue.
+   - **Gravité élevée ; urgence élevée pour le diagnostic.** Le plantage arrête une simulation de production sans résultats, et
+     tout output d'un graphe trop court plante de la même façon. La cause ne se corrige pas avant d'être trouvée : le journal
+     proposé par l'issue (le développement de base, la taille, la période de chaque sommet, le nœud et la période demandés) est
+     l'étape suivante, et il coûte peu. Je le ferais suivre d'une erreur FMT claire plutôt que d'un nœud vide : protéger le
+     `reserve` sans lever cacherait la cause et fausserait les outputs sans le dire. Le test proposé, qui vérifie les graphes après
+     chaque étape du greedy et du postSolve, demande un modèle qui reproduit le cas.
 
 ## 3. Lacunes classées par criticité
 
@@ -2669,7 +2736,7 @@ sous `Examples/Models` (les démonstrations lisent le dépôt et écrivent dans 
 **Documents** : `CoreTestCoverage.csv` (statut `Lot 8b, done` des 16 classes, défauts 22 et 23, #383, remarques des observations,
 tests manquants), `CoreTestCoverage.md` régénéré (50 classes avec des tests unitaires, aucune de priorité 1 sans test propre ; deux
 générations identiques), deux lignes de dette d'`Architecture.md`, sections 2.7, 6.1, 6.3.5 et 7, changelogs (section non publiée,
-anglais et français, issues à numéroter quand Gabriel les aura ouvertes).
+anglais et français ; issues #403 et #404, ouvertes par Gabriel le 2026-10-27, numéros reportés le lendemain, section 5.17).
 
 **Validation après le build de Gabriel** (2026-10-27, commit `12d46d92`, arbre de travail propre ; FMTlib inchangé, `FMTlib.dll`
 du 2026-10-26 à 17 h 45) :
@@ -2686,13 +2753,30 @@ du 2026-10-26 à 17 h 45) :
 - non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par la passe `/W4` hors dépôt
   d'avant le build. Le lot n'ajoute que des tests unitaires : la suite BFEC n'est pas relancée.
 
+### 5.17 Session à part : issues #403 et #404, vérification de #401 et #405 (2026-10-28)
+
+- Gabriel a ouvert le 2026-10-27 les issues des défauts 22 (#403) et 23 (#404) : numéros reportés dans la section 2.7, les
+  commentaires des deux cas désactivés, `CoreTestCoverage.csv` (puis `CoreTestCoverage.md` régénéré), la ligne de dette du cache
+  d'`Architecture.md` et les deux changelogs.
+- À sa demande, vérification des deux issues que d'autres ont ouvertes, #401 et #405 : analyse, démonstration et gravité dans la
+  section 2.8. Aucune correction de FMTlib.
+- Outils, hors du dépôt : `build/probe.py` (une sonde d'un seul source, compilée avec les options de `UnitCore` et liée au
+  `FMTlib.lib` de `build/release`, sans GoogleTest), `demo/probe405/Probe405.cpp` (les comptes du tracker par graphe et les
+  outputs, par des instanciations explicites qui lisent les membres privés), `demo/scripts/ses_postsolve_demo.py` (la même
+  comparaison avec `FMT.pyd`). Rien n'a été écrit sous `Examples/Models` ; l'arbre de travail est resté le même pendant les
+  démonstrations.
+
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
 
+- **Issues #401 et #405, ouvertes par d'autres, vérifiées le 2026-10-28** (section 2.8) : #405 exacte et démontrée sur le cas
+  public de `DoSpatiallyExplicitPlanning` (outputs de la période 0 faux après le postSolve d'un SES ; gravité et urgence
+  moyennes) ; #401, mécanisme exact mais cause non établie ni reproduite (gravité élevée, diagnostic urgent). #403 et #404
+  ouvertes pour les défauts 22 et 23, numéros reportés (section 5.17).
 - **Lot 8b livré et validé le 2026-10-27** (section 5.16), commité par Gabriel (`12d46d92`) : 143 cas unitaires des rendements, des
   outputs et des classes de service (16 classes), dont 2 désactivés, les défauts 22 et 23 (section 2.7), démontrés avec `FMT.pyd`,
-  issues à ouvrir ; #383 fixé à l'endroit où il agit ; deux lignes de dette d'`Architecture.md`. Plus aucune classe de priorité 1
+  issues #403 et #404 ; #383 fixé à l'endroit où il agit ; deux lignes de dette d'`Architecture.md`. Plus aucune classe de priorité 1
   sans test propre dans `CoreTestCoverage.md`. Installation et `all-public` : 1 065 tests, 0 échec, 1 029 verts et 36
   désactivés. Le lot 8c suit (section 6.3.5).
 - **Lot 8a livré et validé le 2026-10-27** (section 5.15), commité par Gabriel (`2ca9a023`) : 180 cas unitaires des actions, des

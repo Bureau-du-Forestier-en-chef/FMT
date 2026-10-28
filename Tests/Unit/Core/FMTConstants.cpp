@@ -165,9 +165,9 @@ TEST(FMTConstants, GivenTwoConstantsWhenConvertedToStringThenWritesALinePerConst
     EXPECT_EQ(text.back(), '\n');
 }
 
-// Defect 23 (Tests/ETAT.md, section 2.7): operator std::string, which FMTConstantParser::write writes as the constants
-// section, writes the values of a constant one after the other, without a separator (CREGUC 100.000000200.000000...),
-// which the parser cannot read back. The case expects the name, then one word per value.
+// Defect 23 (#404, Tests/ETAT.md, section 2.7): operator std::string, which FMTConstantParser::write writes as the
+// constants section, writes the values of a constant one after the other, without a separator
+// (CREGUC 100.000000200.000000...), which the parser cannot read back. The case expects the name, then one word per value.
 TEST(FMTConstants, DISABLED_GivenAConstantOfSeveralValuesWhenConvertedToStringThenWritesEachValueAsAWord)
 {
     // Arrange

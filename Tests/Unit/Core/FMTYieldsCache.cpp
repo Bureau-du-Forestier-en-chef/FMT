@@ -248,10 +248,10 @@ TEST(FMTYieldsCache, GivenAValueInTheCacheForAComplexYieldWhenYieldsGetThenServe
     EXPECT_DOUBLE_EQ(value, 999.0);
 }
 
-// Defect 22 (Tests/ETAT.md, section 2.7): the cache serves a complex yield computed for another section of yields of the
-// same masks, such as the yields of another scenario or those that getFromFactor returns. The first section is cached
-// with the value it computes (400), as FMTComplexYieldHandler caches a calculation of more than 0.05 ms; the second one
-// defines the yield as _MULTIPLY(VOLUME,3), 3 x 200.
+// Defect 22 (#403, Tests/ETAT.md, section 2.7): the cache serves a complex yield computed for another section of yields
+// of the same masks, such as the yields of another scenario or those that getFromFactor returns. The first section is
+// cached with the value it computes (400), as FMTComplexYieldHandler caches a calculation of more than 0.05 ms; the
+// second one defines the yield as _MULTIPLY(VOLUME,3), 3 x 200.
 TEST(FMTYieldsCache, DISABLED_GivenAComplexYieldCachedForOneSectionOfYieldsWhenAnotherSectionDefinesItOtherwiseThenComputesItFromItsOwnDefinition)
 {
     // Arrange
