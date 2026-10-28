@@ -687,7 +687,7 @@ des cas. Aucun n'est corrigé dans ce chantier.
    **Corrigé** par `83e2309e` (« fix(penalty) », sur `master`, entré dans `new_test` par la fusion `eea7fea2`
    du 2026-10-23) : un opérateur vide n'écrit plus de signe. La fusion a réactivé le cas d'intégration ; le cas
    unitaire `GivenAMinimizationOfPenaltiesWithoutSignWhenConvertedToStringThenWritesThemWithoutSign` (lot 7b) l'est
-   depuis le 2026-10-23, à valider au prochain build.
+   depuis le 2026-10-23, validé par l'installation de Gabriel du 2026-10-26 (section 6.1).
 7. **`_DISCOUNTFACTOR` réécrit en série temporelle de ses paramètres (issue #380)** (`DISCOUNTFULL 1 0.04 5`),
    silencieux : relu, `DISCOUNTFULL` vaut 0,04 à la période 1 et 5 à la période 2. Et l'écriture
    lève (« invalid vector subscript ») quand le bloc `*YT` n'a pas de base, comme dans
@@ -2455,7 +2455,7 @@ du 2026-10-26 à 17 h 45) :
 ### 5.15 Lot 8a : actions, transitions, développements, cédules et listes (2026-10-27)
 
 **Statut** : livré le 2026-10-27, commité par Gabriel le même jour (`2ca9a023`), **validé** le 2026-10-27 sur ses 180 premiers
-cas (fin de cette section) ; les 2 cas du défaut 21 (#402) sont à valider au prochain build.
+cas (fin de cette section) ; les 2 cas du défaut 21 (#402) sont validés par l'installation de 11 h 03 (922 tests).
 Premier tiers du lot 8 (section 6.3.5) : les 15 classes de priorité 1 dont le statut était `Lot 8` et qui construisent et font
 évoluer le modèle. Point de départ : le passage validé du 2026-10-27 (`50b67582`, section 5.14), arbre de travail propre.
 
@@ -2768,7 +2768,7 @@ du 2026-10-26 à 17 h 45) :
 
 ## 6. Prochain lot
 
-### 6.1 État au 2026-10-19
+### 6.1 État au 2026-10-28
 
 - **Issues #401 et #405, ouvertes par d'autres, vérifiées le 2026-10-28** (section 2.8) : #405 exacte et démontrée sur le cas
   public de `DoSpatiallyExplicitPlanning` (outputs de la période 0 faux après le postSolve d'un SES ; gravité et urgence
