@@ -2671,19 +2671,30 @@ tests manquants), `CoreTestCoverage.md` régénéré (50 classes avec des tests 
 générations identiques), deux lignes de dette d'`Architecture.md`, sections 2.7, 6.1, 6.3.5 et 7, changelogs (section non publiée,
 anglais et français, issues à numéroter quand Gabriel les aura ouvertes).
 
-**Validation après le build de Gabriel** : à faire (`RunTests.bat all-public`, puis l'installation). Comptes attendus par rapport au
-passage du 2026-10-27 à 11 h 03 : unit 732 verts et 13 désactivés sur 745 (591 et 11 avant), le reste inchangé, soit 1 065 tests,
-1 029 verts et 36 désactivés.
+**Validation après le build de Gabriel** (2026-10-27, commit `12d46d92`, arbre de travail propre ; FMTlib inchangé, `FMTlib.dll`
+du 2026-10-26 à 17 h 45) :
+- `UnitCore.exe` du build date de 15 h 50, après la dernière modification des sources du lot (14 h 36) ;
+- installation (`INSTALL_TEST_SUITE=public`, 15 h 52) : 1 065 tests, 0 échec, 1 029 exécutés et 36 désactivés, 32 s ; unit 732
+  verts et 13 désactivés, integration 35 verts et 11 désactivés, system 237 verts et 12 désactivés, performance 23, other 2 ;
+  aucun test en `T:/`. `InstallTests.xml`, `InstallTests.json`, `LastTest.log` et `LastTestsDisabled.log` copiés dans le
+  scratchpad de la session avant tout appel de ctest ;
+- `RunTests.bat all-public` : « 0 tests failed out of 1029 », 28,3 s réelles ; unit 732 verts et 13 désactivés sur 745,
+  integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 ; Total 1 029
+  verts et 36 désactivés sur 1 065. Par rapport au passage du 2026-10-27 à 11 h 03 (section 5.15), seul le niveau unit change,
+  des 143 cas ajoutés : 141 verts, et les 2 cas des défauts 22 et 23 désactivés. Ce sont les comptes attendus avant le build. La
+  fixture `ExamplesModelsUnchanged` et les tests Python sont verts, et l'arbre de travail est resté le même après le passage ;
+- non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par la passe `/W4` hors dépôt
+  d'avant le build. Le lot n'ajoute que des tests unitaires : la suite BFEC n'est pas relancée.
 
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-19
 
-- **Lot 8b livré le 2026-10-27, à compiler et à valider par Gabriel** (section 5.16) : 143 cas unitaires des rendements, des
+- **Lot 8b livré et validé le 2026-10-27** (section 5.16), commité par Gabriel (`12d46d92`) : 143 cas unitaires des rendements, des
   outputs et des classes de service (16 classes), dont 2 désactivés, les défauts 22 et 23 (section 2.7), démontrés avec `FMT.pyd`,
   issues à ouvrir ; #383 fixé à l'endroit où il agit ; deux lignes de dette d'`Architecture.md`. Plus aucune classe de priorité 1
-  sans test propre dans `CoreTestCoverage.md`. Vu vert hors du dépôt : `UnitCore`, 732 verts et 13 désactivés. Le lot 8c suit
-  (section 6.3.5).
+  sans test propre dans `CoreTestCoverage.md`. Installation et `all-public` : 1 065 tests, 0 échec, 1 029 verts et 36
+  désactivés. Le lot 8c suit (section 6.3.5).
 - **Lot 8a livré et validé le 2026-10-27** (section 5.15), commité par Gabriel (`2ca9a023`) : 180 cas unitaires des actions, des
   transitions, des développements, des cédules et des listes (15 classes) ; #358 et #393 fixés à l'endroit où ils agissent.
   Installation et `all-public` : 920 tests, 0 échec, 887 verts et 33 désactivés. Puis, à la demande de Gabriel, l'observation de
@@ -3331,6 +3342,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-27 (lacunes 6 et 7, `50b67582`) | 740 `all-public` (724 + 15 cas `Integration.FMTSrModel` + 1 cas `Integration.FMTModelParser`) ; résumé : unit 410 verts et 10 désactivés sur 420, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 19 s réelles | — | 13 | 2 | 0 | 33 | — |
 | 2026-10-27 (lot 8a, avant `2ca9a023`) | 920 `all-public` (740 + 180 cas `Unit.`) ; résumé : unit 590 verts et 10 désactivés sur 600, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 27,3 s réelles | — | 13 | 2 | 0 | 33 | — |
 | 2026-10-27 (défaut 21, `3e6be3e6` ; installation de Gabriel) | 922 (installation, `public`) ; unit 591 verts et 11 désactivés, integration 35 verts et 11 désactivés, system 237 verts et 12 désactivés, performance 23, fixtures 2 | 25 s (installation) | — | 13 | 2 | 0 | 34 | — |
+| 2026-10-27 (lot 8b, `12d46d92`) | 1 065 `all-public` (922 + 143 cas `Unit.`) ; résumé : unit 732 verts et 13 désactivés sur 745, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 28,3 s réelles | — | 13 | 2 | 0 | 36 | — |
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
