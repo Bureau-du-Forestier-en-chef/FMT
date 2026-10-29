@@ -2954,10 +2954,208 @@ anglais et français), section 8 après la validation.
 - non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par la passe `/W4` hors dépôt
   d'avant le build. Le lot n'ajoute que des tests unitaires : la suite BFEC n'est pas relancée.
 
+### 5.19 Lot 9a : mesure de la couverture (2026-10-29)
+
+**Statut** : mesuré le 2026-10-29 sur `6ab22b0a` (sources de FMTlib et des tests identiques à `73ccbfd8`), livré sans commit. Premier
+quart du lot 9 (section 6.3.6), découpé par Gabriel en 9a (la couverture), 9b (la sérialisation), 9c (les allocations et la
+concurrence) et 9d (la portabilité, qui attend sa décision). Le lot mesure et liste : aucune correction de FMTlib, aucun test
+nouveau. Point de départ : l'installation du 2026-10-28 à 14 h 52 (section 5.18 ; 1 202 tests, 0 échec, 1 166 verts et 36
+désactivés).
+
+**Décision de Gabriel (2026-10-28)** : la mesure se fait avec l'outil de Visual Studio, `Microsoft.CodeCoverage.Console`
+(Visual Studio 18 Professional, version 18.11.0-preview.26421.2), et non avec OpenCppCoverage, que la section 6.3.6 prévoyait et
+qui n'est pas installé. Rien n'a été téléchargé. L'outil ne produit pas de HTML (formats `coverage`, `xml` et `cobertura`) :
+les rapports sont en Cobertura, lus par un script Python jetable. gcov et lcov sous MSYS2 restent à Gabriel, s'il juge la
+mesure utile hors de MSVC.
+
+**Configuration à part, `build/coverage`** (compilée et installée par Gabriel le 2026-10-29) : `build/release` n'a pas de PDB à
+jour (`GenerateDebugInformation` à `false`, `FMTlib.pdb` du 2026-10-15 pour une DLL du 2026-10-26) et n'a pas été touché. Mêmes
+options que `tools/build/CMakeFMTVS2022vcpkg_GL.bat`, avec ces écarts :
+- `BUILD_TYPE=Release`, et non `RelWithDebInfo` : `CMakeLists.txt` (`BUILD_TYPE MATCHES Release`) et `Modules/FindGEOS.cmake`
+  (`STREQUAL "Release"`) ne trouvent leurs DLL qu'en `Release` ;
+- `CMAKE_CXX_FLAGS_RELEASE=/Od /Ob0 /Zi /DNDEBUG`, et `/INCREMENTAL:NO /DEBUG:FULL /PROFILE` au lien des DLL et des
+  exécutables : sans `/PROFILE`, `instrument` refuse le binaire (« Impossible d'obtenir les informations de débogage. Établissez
+  une liaison à l'aide du commutateur /PROFILE ») ; sans optimisation, chaque ligne garde son code ;
+- les paquets vcpkg de `build/release` en lecture seule (`-DVCPKG_MANIFEST_INSTALL=OFF`,
+  `-DVCPKG_INSTALLED_DIR=<dépôt>/build/release/vcpkg_installed`) ; `-DINSTALL_TEST_SUITE=none` ;
+- **pas de `WITHOUT_PYTHONLIB`** : sous MSVC, cette option fait sauter les dossiers de sortie de `SetBinaryLocation`
+  (`cmake/ConfigFunctions.cmake`), si bien que `FMTlib` n'a plus de `LIBRARY_OUTPUT_DIRECTORY` et que `Excel/`, `UI/` et
+  `FMTWrapperCore/` se lient à `FMTliblocation-NOTFOUND\Release\FMTlib.lib` (LNK1181, vu au premier build de Gabriel ; la
+  configuration seule ne le montre pas). Défaut latent du build, hors de FMTlib, non corrigé dans ce lot ;
+- en contrepartie, la configuration écrit `bin/Release/setup.py`, et `cmake --install` installerait alors la roue `/Od` par pip
+  dans le Python de `build/release/vcpkg_installed` : Gabriel a supprimé `setup.py` entre la compilation et l'installation,
+  seul déclencheur de `BaseInstallPython.cmake`. La roue de `build/release` est restée celle du 2026-10-28.
+
+La configuration a d'abord été validée dans le scratchpad de la session (même cache, puis `-UWITHOUT_PYTHONLIB` : dossiers de
+sortie, chemin de `FMTlib.lib`, `/Od` et `/PROFILE` dans les `.vcxproj`), et l'outil sur un projet jetable (une DLL, un
+exécutable, deux tests ctest). `collect` seul, avec `EnableStaticNativeInstrumentation`, ne mesure rien (« Profiler n'a pas été
+initialisé ») : il faut instrumenter d'abord, avec le même identifiant de session.
+
+**Commande exacte** (Git Bash ; `TOOL` est `Microsoft.CodeCoverage.Console.exe` de Visual Studio 18, `DOTNET_COVERAGE_TELEMETRY_OPTOUT=1`
+et `DOTNET_COVERAGE_NOLOGO=1` ; réglages, rapports et journaux dans le scratchpad, rien dans le dépôt) :
+
+```bash
+# coverage.config : ModulePath .*\\build\\coverage\\bin\\Release\\[^\\]*\.(dll|exe)$ ; Source .*\\new_test\\(Source|Include)\\.* ;
+# CollectFromChildProcesses, EnableStaticNativeInstrumentation à True, EnableDynamicNativeInstrumentation à False
+cd build/coverage/bin/Release
+for m in FMTlib.dll FMTWrapperCore.dll UnitCore.exe IntegrationParser.exe IntegrationModels.exe <les 54 exécutables system C++>; do
+  "$TOOL" instrument "$m" -s coverage.config --session-id <guid>
+done
+"$TOOL" collect --session-id <guid> -s coverage.config -f coverage -o unit.coverage \
+  ctest --test-dir build/coverage -C Release -E "T:/" -j 8 --output-on-failure -L "^unit$"
+# de même : integration (-L "^integration$"), system (-L "^system$" -LE "^(python|r)$")
+"$TOOL" merge unit.coverage -f cobertura -o unit.cobertura.xml        # et integration, system
+"$TOOL" merge unit.coverage integration.coverage system.coverage -f cobertura -o total.cobertura.xml
+for m in <les modules qui ont un .orig>; do "$TOOL" uninstrument "$m"; done
+```
+
+- `instrument` ne réécrit que les modules qui contiennent du code de `Source/` ou d'`Include/` : 7 des 59 (`FMTlib.dll`, 74 s ;
+  `FMTWrapperCore.dll`, `UnitCore.exe`, `AddYieldHandlers.exe`, `CreateModel.exe`, `GetGCBMTransitions.exe`,
+  `SumAndAverageOutputs.exe`) ; il garde `<module>.orig` et `<nom>.instr.pdb`, et copie `static_covrun64.dll` à côté. Après la
+  mesure, `uninstrument` a rendu les 7 binaires d'origine (tailles et dates de la compilation retrouvées) ;
+  `static_covrun64.dll` reste dans `build/coverage/bin/Release`, sans effet ;
+- passages sous l'outil, en `-j 8` (ctest garde ses `RESOURCE_LOCK`, l'outil suit les processus enfants), tous verts : unit 869 verts (13 désactivés), integration 35 verts
+  et les 2 fixtures (11 désactivés), system 230 verts et les 2 fixtures (12 désactivés) : les comptes de la section 5.18 sans les
+  7 tests Python. `build/coverage` n'avait pas de `LastTest.log` avant le premier appel de ctest ; la trace de `build/release`
+  (14 h 52 et 14 h 56) avait été copiée dans le scratchpad avant tout appel. Un premier passage écrivait les trois niveaux dans le
+  même fichier (barre oblique inverse du nom de sortie perdue) : arrêté pendant le niveau system, refait en entier ;
+- la fusion compte une ligne une fois, par fichier et numéro, couverte si un module l'a exécutée, et une fonction par fichier,
+  classe, nom et première ligne : le total de l'outil (23 106 lignes sur 38 421) compte deux fois le code d'un en-tête compilé
+  dans deux modules ;
+- `git status` est resté propre après les passages ; aucun chemin `T:/`.
+
+**Limites de la mesure** : seules comptent les fonctions qu'un module contient. Un modèle jamais instancié ou une fonction
+`inline` jamais appelée n'apparaissent pas : le dénominateur est celui du code compilé, pas celui du code écrit. Ne sont pas
+mesurés : les 7 tests Python (le code de `FMTWITHPYTHON` est dans `FMT.pyd`), R, Excel, la suite privée, les 23 tests de
+performance, les 36 cas désactivés, et le code de `FMTWITHR`. Une ligne couverte a été exécutée, pas vérifiée : la couverture
+dit ce qu'aucun test n'atteint, pas ce qui est testé.
+
+**Chiffres** (lignes et fonctions de `Source/` et d'`Include/`, couvertes sur mesurées) :
+
+| Niveau | Lignes | Fonctions |
+|---|---|---|
+| unit | 8 109 / 35 386 (22,9 %) | 1 494 / 3 854 (38,8 %) |
+| integration | 10 467 / 35 339 (29,6 %) | 1 386 / 3 820 (36,3 %) |
+| system (C++) | 19 068 / 35 364 (53,9 %) | 2 336 / 3 824 (61,1 %) |
+| **total** | **21 723 / 35 411 (61,3 %)** | **2 705 / 3 858 (70,1 %)** |
+
+Par espace de noms (celui de la fonction, lu dans le rapport ; « autres » : fonctions libres et singletons de
+`boost::serialization`) :
+
+| Espace de noms | unit | integration | system | Total, lignes | Total, fonctions |
+|---|---|---|---|---|---|
+| `Core` | 67,0 % | 45,6 % | 63,4 % | 7 858 / 9 587 (82,0 %) | 1 164 / 1 359 (85,7 %) |
+| `Parser` | 1,1 % | 46,2 % | 72,1 % | 4 715 / 6 495 (72,6 %) | 277 / 335 (82,7 %) |
+| `Models` | 0,6 % | 22,4 % | 41,7 % | 3 155 / 7 236 (43,6 %) | 290 / 557 (52,1 %) |
+| `Graph` | 1,7 % | 30,6 % | 52,2 % | 1 673 / 3 163 (52,9 %) | 201 / 369 (54,5 %) |
+| `Spatial` | 27,6 % | 0,1 % | 41,3 % | 2 180 / 3 788 (57,6 %) | 328 / 502 (65,3 %) |
+| `Heuristics` | 0,0 % | 1,3 % | 20,3 % | 496 / 2 392 (20,7 %) | 74 / 227 (32,6 %) |
+| `Parallel` | 0,9 % | 0,9 % | 52,3 % | 672 / 1 286 (52,3 %) | 75 / 124 (60,5 %) |
+| `Exception` | 29,1 % | 24,9 % | 64,6 % | 625 / 945 (66,1 %) | 145 / 198 (73,2 %) |
+| `Logging` | 18,3 % | 38,3 % | 59,0 % | 171 / 290 (59,0 %) | 43 / 75 (57,3 %) |
+| `Version` | 0,0 % | 25,9 % | 50,6 % | 43 / 85 (50,6 %) | 10 / 12 (83,3 %) |
+| autres | 91,7 % | 85,7 % | 88,1 % | 135 / 144 (93,8 %) | 98 / 100 (98,0 %) |
+
+**Classes de `Core` du CSV : méthodes publiques qu'aucun test n'atteint**, comparées à la colonne `MissingTests` (méthodes
+publiques lues dans les en-têtes par un analyseur jetable ; une méthode est atteinte si l'une de ses surcharges ou
+instanciations l'est) :
+- **jamais atteintes, absentes de `MissingTests`** (la colonne est complétée) : `FMTAgeYieldHandler` (`getLastValue`,
+  `operator[]`, `clearCache`) ; `FMTComplexYieldHandler` (`at`, `size`, `empty`, `getLastBase`, `getPeak`, `operator[]`,
+  `clearCache`) ; `FMTTimeYieldHandler` (`getLastValue`, `at`, `size`, `clearCache`) ; `FMTYieldHandler`, onze méthodes de la
+  base (`getAge`, `getEndPoint`, `getFromFactor`, `getPeak`, `getLastValue`, `getYieldLinearValue`, `isNullYield`, `operator[]`,
+  `pushData`, `getAllYieldsData`, `clearCache`) ; `FMTConstraint` (`getFromReplicate`, appelée par `FMTReplanningTask` ;
+  `turnToYieldsBasedOnTransition`, appelée par le presolve de `FMTModel` ; `getWeight`, `hasHasOutput`, `getThemeTarget`) ;
+  `FMTOutput` (`getTargetPeriod`, `setPeriod`, `isSinglePeriod`, `hasAverage`, `getVariableIntersect`, `removeRHSvalue`,
+  `setOperators`) ; `FMTOutputNode::fillHashMaskSpec` ; `FMTOutputSource` (`fillHashSpec`, `getLevel`) ; `FMTYields`
+  (`preSolveRef`, `setActionsMappingToModelHandlers`, `clearCache`) ; `FMTList::clearCache` ; `FMTMask::reserve` ;
+  `FMTModelYieldHandler::clearCache` ; `FMTDevelopment::getMaskCopy` (Python et R seulement) ; le constructeur de copie et
+  l'`operator=` par défaut de `FMTYieldsCache` ; `FMTObject::serialize` (lot 9b) ; `FMTTransitionMask::setMask`, dont le cas est
+  désactivé (défaut 21, #402) ;
+- **nommées par `MissingTests`, mais atteintes** (la colonne est précisée, pas contredite : atteint n'est pas vérifié) :
+  `FMTList::_compressMasks`, `findSetsWithFiltered` et `reserve`, par le presolve des niveaux integration et system ;
+  `FMTOutput::boundTo`, `getNodes` et `preSolve` (integration et system), `intersectWithMask`, `getDecomposition`,
+  `_toWsFormat` et `_operatorFormat` (system seulement) ; `FMTConstraint::canBeTurnedToYields` et `turnToYieldsAndActions`
+  (integration et system), les mots-clés gardés en bornes de yields (`setFrom`, `isSetFrom`, `isReIgnore` : system
+  seulement) ; `FMTYields::preSolve` (integration et system) ; `FMTMask::binarizedAppend` (par les cas unitaires d'autres
+  classes, jamais avec `signed char`) ; `FMTObject::setTerminateStack` et `setAbortStack` (system seulement) ; les quatre
+  modèles de rendement non exportés (system seulement ; `FMTYieldModelDecisionTree::postSolve` jamais) ;
+- **nommées et jamais atteintes** (accord) : `FMTAction::getSeriesNames`, `FMTAgeYieldHandler` et `FMTTimeYieldHandler`
+  `getAllYieldsData`, `FMTConstraint::preSolve`, `FMTList::apiPushBack`, `FMTMask::filter`, `FMTModelYieldHandler::postSolve`,
+  `FMTOutput::getStaticThemes`, `FMTYields::getAllYields`, `FMTYieldsCache::reserve`, `FMTYieldHandler::postSolve`,
+  `FMTObject::redirectLogToFile` et les gestionnaires et journaux silencieux, de débogage, libres et de tâche ;
+- les autres mentions de `MissingTests` portent sur un cas précis d'une méthode atteinte (`reduceLockToDeath` au-delà de la
+  durée de vie, `getLinearValue` sans âge de base, `getFirstSeen` avant un premier usage, `_clearIfTooBig`, `predict` de
+  `FMTYieldModelUnitCoverage` avec un modèle, `getYieldRequest`, `operable` et `is` avec un sommet de graphe) : la mesure
+  par fonction ne les tranche pas, la colonne reste telle quelle ;
+- sans code mesuré : les opérateurs et destructeurs `= default` ou purs, `FMTConstants::getAll` (modèle non instancié), les
+  data frames de `FMTTheme` (`FMTWITHR`).
+
+Au total, par fichier de `Core` : 82,0 % des lignes ; les plus bas sont `FMTYieldHandler.cpp` (48,9 %, ses méthodes de base),
+`FMTObject.cpp` (50,2 %), `FMTYields.cpp` (69,2 %), `FMTAgeYieldHandler.cpp` (70,3 %), `FMTTimeYieldHandler.cpp` (74,1 %),
+`FMTComplexYieldHandler.cpp` (77,4 %), `FMTConstraint.cpp` (77,7 %), `FMTList.hpp` (78,4 %) et `FMTOutput.cpp` (79,8 %).
+
+**Hors de `Core` : les plus gros manques, par criticité** (lignes non couvertes ; la chaîne de construction des modèles d'abord,
+section 0.1) :
+1. **Construction du modèle** : `FMTModel.cpp`, 1 390 lignes non couvertes (33,4 %) : jamais atteints `isValid` (45 lignes),
+   l'agrégation et le découpage (`aggregateOutputs`, `aggregateActions`, `aggregateTransitions`, `aggregateSchedules`,
+   `aggregateAllActions`, `splitActions`, `splitSchedules`), `buildAction`, `buildSchedule`, `push_back` et `pushTheme` (la
+   construction en code), `getStaticPreSolveThemes`, `basePreSolve`, `goalConstraints`, `getModelStats` ; `preSolve` est
+   couvert à 93 % (192 lignes sur 206). Puis `FMTGraph.hpp`, 976 lignes (54,0 %) : `setNodeByStaticMask`, `erasePeriod`,
+   `getAllSeries`, `updateMatrixIndex`, `threadedStaticSearch`, `getRotations`, `getLastDisturbance`, `copyToPeriod`,
+   `fillNextPeriod` ; aucun cas unitaire n'y entre (0 % au niveau unit) ;
+2. **Lecture** : `FMTAreaParser.cpp`, 489 lignes (65,9 %) : `readOaSchedulerParameters`, `writeOaSchedulerParameters`,
+   `_getGCBMtransitions` ; `FMTParser.cpp`, 394 lignes (70,5 %) ; `FMTYieldParser.cpp`, 165 (`_setOveridedYlds`) ;
+   `FMTOptimizationParser.cpp`, 141 (`_getEachLines`) ; `FMTModelParser.cpp` et `FMTOutputParser.cpp`, 122 chacun (`addOutputs`) ;
+   `FMTLandscapeParser.cpp`, 97 (`readVectors`, `readRasters`) ; `FMTTransitionParser.cpp`, 85 lignes dans des fonctions
+   toutes atteintes ;
+3. **Résolution** : `FMTLpModel.cpp`, 463 (64,2 % : `updateGeneralConstraintsNaming`, `erasePeriod`, `getGoals`,
+   `getAreaVariabilities`, `writeLp`, `writeMps`) ; `FMTLpSolver.cpp`, 421 (40,9 % : les réglages de MIP, `writeLp`, `getCol`,
+   le cache des lignes) ; `FMTSrModel.cpp`, 237 (74,6 % : `unboundSolution`, `getPotentialArea`) ; `FMTMatrixBuild.cpp`, 68
+   (`getColsToSynchronize`, `getRowsToSynchronize`) ; `FMTNssModel.cpp`, 68 (`getFirstOperable`) ; `FMTSerializableMatrix.cpp`
+   et `.h`, 0 % (sérialisation, lot 9b) ; `FMTModelStats.cpp`, 0 % ;
+4. **Spatial** (niveau 2) : `FMTSpatialSchedule.cpp`, 879 (42,8 %) ; `FMTSeModel.cpp`, 230 (25,8 %) ; `FMTLineGraph.cpp`, 333
+   (33,1 %) ; `FMTSpatialGraphs.cpp`, 164 ; `FMTEventContainer.cpp`, 169 ; `FMTPatchRules.cpp` et `FMTSaSchedule.cpp`, 0 % ;
+5. **Tâches** : `FMTOpAreaSchedulerTask.cpp`, 298 (1,3 %) ; `FMTTask.cpp`, 69 ; `FMTReplanningTask.cpp`, 84 ;
+6. **Heuristiques** (niveau 3) : `FMTOperatingAreaScheme.cpp`, 770 (1,3 %), `FMTOperatingAreaScheduler.cpp`, 724 (0,1 %),
+   `FMTSaModel.cpp`, 731 (0,1 %), `FMTOperatingAreaClusterer.cpp`, 145, `FMTLpHeuristicMtHandler.cpp`, 0 % : l'ordonnanceur
+   d'aires d'opération et le recuit simulé ne sont exercés que par la suite privée (section 3.5) ;
+7. **Service** : `FMTExceptionHandler.cpp`, 132 (56,6 %) ; `FMTExcelExceptionHandler.cpp`, 0 % (Excel).
+
+**Pour le lot 9b (sérialisation)** : 122 fonctions `serialize` instanciées (47 classes ; archives binaires en lecture et en
+écriture, et une archive texte en lecture) ; **une seule est atteinte**, `FMTGCBMTransition::serialize` en lecture d'archive texte, par le niveau
+system. Aucune des autres, ni de `Core` (24 classes, dont `FMTMask`, `FMTTheme`, `FMTAction`, `FMTTransition`, `FMTYields`,
+`FMTConstraint`, `FMTOutput`, `FMTSpec`, `FMTBounds`, `FMTList`), ni de `Graph` (`FMTGraph`, `FMTLineGraph`, propriétés des
+sommets et des arêtes, `FMTGraphStats`), ni de `Models` (`FMTModel`, `FMTLpSolver`, `FMTSrModel`, `FMTNssModel`, `FMTSeModel`,
+`FMTSaModel`, `FMTModelParameters`, `FMTSerializableMatrix`), ni de `Heuristics` (aires d'opération).
+
+**Pour le lot 9c (chemins chauds de #350)**, lignes couvertes par niveau (unit / integration / system / total) :
+- rendements complexes, `FMTComplexYieldHandler` : 76,2 / 31,8 / 65,0 / 77,5 % ; `FMTYields` : 53,9 / 47,5 / 55,1 / 67,8 % ;
+  `FMTYieldsCache` : 61,5 / 46,2 / 46,2 / 61,5 % ; `FMTYieldHandler` : 48,6 / 31,3 / 32,9 / 48,9 % ;
+- comparaison de masques, `FMTMask` : 97,1 / 57,1 / 68,8 / 97,1 % ; `FMTMaskComparator` : 100 % au niveau unit, jamais
+  atteint ailleurs ;
+- évaluation d'expression, `FMTExpression` : 97,0 / 82,3 / 82,3 / 98,2 % ; `FMTOperator` : 96,9 / 69,1 / 77,3 / 96,9 % ;
+  `FMTFunctionCall` : 100 / 64,5 / 64,5 / 100 % ;
+- traversée de graphe, `FMTGraph` : 0 / 37,8 / 53,8 / 53,9 % ; `FMTLineGraph` : 0 / 0 / 32,9 / 32,9 %.
+Les trois premiers chemins ont donc des cas unitaires qui les atteignent presque entiers, où une mesure d'allocations peut se
+greffer ; la traversée de graphe n'est atteinte que par l'intégration et le système, avec un modèle entier.
+
+**Script de mesure** : proposé à Gabriel, non ajouté (section 6.3.6).
+
+**Documents** : `CoreTestCoverage.csv`, colonne `MissingTests` de 20 classes (là où la mesure contredit ou précise ; mention
+« lot 9a ») ; `CoreTestCoverage.md` régénéré (61 classes, 57 avec des tests unitaires, aucune de priorité 1 sans test propre ;
+deux générations identiques) ; sections 6.1 et 6.3.6. Aucun rapport dans `Documentation/Testing/` (décision du 2026-09-25) ;
+aucun changelog, puisque seule la documentation de suivi change.
+
 ## 6. Prochain lot
 
-### 6.1 État au 2026-10-28
+### 6.1 État au 2026-10-29
 
+- **Lot 9a mesuré le 2026-10-29** (section 5.19), sans commit : couverture de la suite publique C++ avec l'outil de Visual Studio
+  (décision de Gabriel du 2026-10-28), sur une configuration à part, `build/coverage` (`/Od`, PDB, `/PROFILE`), compilée par
+  Gabriel. 61,3 % des lignes et 70,1 % des fonctions de FMTlib ; unit 22,9 %, integration 29,6 %, system 53,9 % des lignes ;
+  `Core` 82,0 %, `Parser` 72,6 %, `Models` 43,6 %, `Graph` 52,9 %, `Heuristics` 20,7 %. Une seule fonction `serialize` atteinte
+  sur 122. La colonne `MissingTests` de `CoreTestCoverage.csv` complétée pour 20 classes. Défaut latent du build relevé :
+  `WITHOUT_PYTHONLIB` sous MSVC rompt le lien des wrappers. Le lot 9b suit (section 6.3.6).
 - **Lot 8c livré, commité par Gabriel (`73ccbfd8`) et validé le 2026-10-28** (section 5.18) : 137 cas unitaires de 13 classes, tous actifs :
   la priorité 2 (`FMTGCBMTransition`), la priorité 3 exportée (`FMTYieldModel`, `FMTYieldModelRandom`, `FMTYieldModelTsla`,
   `FMTYieldModelUnitCoverage`, `FMTModelYieldHandler`, `FMTSerie`), `Graph::FMTGraphStats` et les types spatiaux `FMTCoordinate`,
@@ -3297,6 +3495,22 @@ prend pas, puis la priorité 2, puis la 3. Ce que cela change :
 
 #### 6.3.6 Lot 9 : exigences transverses de #350 — effort `xhigh`
 
+**Découpage (Gabriel, 2026-10-28)** : 9a la couverture, 9b la sérialisation, 9c les allocations et la concurrence, 9d la
+portabilité, qui attend sa décision (section 6.2).
+
+- **9a, fait le 2026-10-29 (section 5.19)**, avec l'outil de Visual Studio et non OpenCppCoverage (décision de Gabriel du
+  2026-10-28), sur la configuration à part `build/coverage` : 61,3 % des lignes et 70,1 % des fonctions de FMTlib atteintes
+  par la suite publique C++, 82,0 % des lignes de `Core` ; la colonne `MissingTests` de `CoreTestCoverage.csv` complétée pour
+  20 classes. gcov et lcov sous MSYS2 restent à Gabriel. Un script de mesure à garder est proposé, pas ajouté.
+- **Ce que 9b doit prendre** : une seule des 122 fonctions `serialize` est atteinte par la suite publique
+  (`FMTGCBMTransition`, archive texte en lecture) ; tout aller-retour binaire est à écrire, d'abord pour les classes que
+  traverse un modèle sauvegardé (`FMTModel` et ses membres de `Core`, `FMTGraph` et ses propriétés, `FMTLpSolver`,
+  `FMTSerializableMatrix`, à 0 %), puis les autres (liste en section 5.19).
+- **Ce que 9c doit prendre** : les rendements complexes, la comparaison de masques et l'évaluation d'expression sont atteints
+  presque entiers par des cas unitaires (`FMTMask` 97 %, `FMTExpression` 98 %, `FMTComplexYieldHandler` 77 %), où une mesure
+  d'allocations peut se greffer sans modèle ; la traversée de graphe (`FMTGraph`, 54 %) ne l'est que par l'intégration et le
+  système, et `threadedStaticSearch` n'est jamais atteinte : la concurrence de la traversée n'a aucun test qui l'exécute.
+
 - **Sérialisation** : aller-retour sur les types sérialisables, et compatibilité avec des
   archives existantes si on en garde.
 - **Allocations** : vérifier qu'aucune allocation n'a lieu après préparation sur les chemins
@@ -3307,7 +3521,8 @@ prend pas, puis la priorité 2, puis la 3. Ce que cela change :
 - **Portabilité** : le dépôt n'a pas d'intégration continue visible. Il faudra soit en ajouter
   une, soit documenter une exécution Linux et Clang faite à la main, sans quoi cette demande de
   #350 reste ouverte.
-- **Couverture** : OpenCppCoverage sous MSVC, gcov et lcov ailleurs. Elle arrive ici, en dernier,
+- **Couverture** : l'outil de Visual Studio sous MSVC (décision du 2026-10-28, à la place
+  d'OpenCppCoverage), gcov et lcov ailleurs. Elle arrive ici, en dernier,
   et sert à lister les fichiers et les méthodes publiques encore sans test. Mesure informative à
   la fin d'un lot ; le rapport n'est consigné dans `Documentation/Testing/` qu'au moment des
   versions (décision du 2026-09-25).
