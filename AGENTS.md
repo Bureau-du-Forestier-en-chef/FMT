@@ -140,6 +140,17 @@ rest. The private campaign runs apart, before a release: `ctest --preset system-
 `tools\tests\RunPrivateTests.bat [ctest options...]`, which checks that `T:\` is reachable, then
 runs `RunTests.bat system-private` and its summary.
 
+`tools\tests\MeasureCoverage.bat [-Levels unit,integration,system] [-Output <folder>]` measures the line
+and function coverage of `Source/` and `Include/` by the public C++ tests, level by level, with
+`Microsoft.CodeCoverage.Console` of Visual Studio Enterprise or Professional. It needs a build of its own,
+`build/coverage`, never `build/release`: Release without optimization (`/Od /Ob0 /Zi`), linked with
+`/DEBUG:FULL /PROFILE`, without `WITHOUT_PYTHONLIB`, and installed after deleting
+`build/coverage/bin/Release/setup.py`; the help of `Measure-Coverage.ps1` gives the commands. The script
+instruments the binaries, runs each level under the tool, gives the binaries back as they were, and writes
+the Cobertura reports and `summary.txt` in `coverage-reports` beside the repository. Coverage is
+informative: it lists what no test reaches, and a report goes into `Documentation/Testing/` only at a
+release.
+
 ### Adding a unit or integration test
 
 A unit or integration test is a GoogleTest case, `TEST(<Class>, Given<...>When<...>Then<...>)`, written

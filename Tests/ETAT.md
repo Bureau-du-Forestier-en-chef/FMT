@@ -2956,7 +2956,7 @@ anglais et français), section 8 après la validation.
 
 ### 5.19 Lot 9a : mesure de la couverture (2026-10-29)
 
-**Statut** : mesuré le 2026-10-29 sur `6ab22b0a` (sources de FMTlib et des tests identiques à `73ccbfd8`), livré sans commit. Premier
+**Statut** : mesuré le 2026-10-29 sur `6ab22b0a` (sources de FMTlib et des tests identiques à `73ccbfd8`), commité par Gabriel le même jour (`f8ef1dda`) ; script de mesure ajouté ensuite (fin de cette section). Premier
 quart du lot 9 (section 6.3.6), découpé par Gabriel en 9a (la couverture), 9b (la sérialisation), 9c (les allocations et la
 concurrence) et 9d (la portabilité, qui attend sa décision). Le lot mesure et liste : aucune correction de FMTlib, aucun test
 nouveau. Point de départ : l'installation du 2026-10-28 à 14 h 52 (section 5.18 ; 1 202 tests, 0 échec, 1 166 verts et 36
@@ -3139,7 +3139,20 @@ sommets et des arêtes, `FMTGraphStats`), ni de `Models` (`FMTModel`, `FMTLpSolv
 Les trois premiers chemins ont donc des cas unitaires qui les atteignent presque entiers, où une mesure d'allocations peut se
 greffer ; la traversée de graphe n'est atteinte que par l'intégration et le système, avec un modèle entier.
 
-**Script de mesure** : proposé à Gabriel, non ajouté (section 6.3.6).
+**Script de mesure** (ajouté le 2026-10-29 à la demande de Gabriel, après `f8ef1dda`) : `tools\tests\MeasureCoverage.bat`
+lance `tools\tests\Measure-Coverage.ps1` (ASCII, Windows PowerShell 5.1), qui refait la mesure ci-dessus sans rien à écrire à la
+main : il trouve l'outil et ctest par `vswhere`, liste les exécutables de chaque niveau par `ctest --show-only=json-v1`, écrit
+les réglages, instrumente, lance chaque niveau sous l'outil, fusionne, puis désinstrumente toujours, même après un échec (et,
+au départ, rend les binaires qu'un passage interrompu a laissés instrumentés). Il écrit les rapports Cobertura, les journaux et
+`summary.txt` (lignes et fonctions par niveau, puis par espace de noms, avec la même fusion que ci-dessus) dans
+`coverage-reports\<date>_<commit>[-modified]_coverage`, à côté du dépôt, ou dans `-Output`. Options : `-Levels unit,integration`
+(liste séparée par des virgules, que `powershell -File` passe en une chaîne), `-Jobs`, `-BuildDir`, `-Tool`. Sa propre aide
+donne la configuration de `build/coverage` ; `AGENTS.md` (section Testing) le présente, et les changelogs l'annoncent.
+Vérifié par deux passages complets lancés par le `.bat` depuis `cmd` sur `build/coverage` : le premier a mesuré les trois
+niveaux et rendu les binaires, mais son résumé a échoué (les virgules de `-f` lues comme des arguments de `List.Add`, corrigé
+par des parenthèses) ; le second (`-Levels unit,integration,system`, code de sortie 0) redonne exactement les chiffres
+ci-dessus (21 723 lignes sur 35 411, 2 705 fonctions sur 3 858, mêmes comptes par niveau et par espace de noms), tous les tests
+verts (869, 35 et 2 fixtures, 230 et 2 fixtures), aucun `.orig` ni `.instr.pdb` laissé dans `build/coverage/bin/Release`.
 
 **Documents** : `CoreTestCoverage.csv`, colonne `MissingTests` de 20 classes (là où la mesure contredit ou précise ; mention
 « lot 9a ») ; `CoreTestCoverage.md` régénéré (61 classes, 57 avec des tests unitaires, aucune de priorité 1 sans test propre ;
@@ -3150,7 +3163,8 @@ aucun changelog, puisque seule la documentation de suivi change.
 
 ### 6.1 État au 2026-10-29
 
-- **Lot 9a mesuré le 2026-10-29** (section 5.19), sans commit : couverture de la suite publique C++ avec l'outil de Visual Studio
+- **Lot 9a mesuré le 2026-10-29** (section 5.19), commité par Gabriel (`f8ef1dda`), puis le script
+  `tools\tests\MeasureCoverage.bat` ajouté à sa demande : couverture de la suite publique C++ avec l'outil de Visual Studio
   (décision de Gabriel du 2026-10-28), sur une configuration à part, `build/coverage` (`/Od`, PDB, `/PROFILE`), compilée par
   Gabriel. 61,3 % des lignes et 70,1 % des fonctions de FMTlib ; unit 22,9 %, integration 29,6 %, system 53,9 % des lignes ;
   `Core` 82,0 %, `Parser` 72,6 %, `Models` 43,6 %, `Graph` 52,9 %, `Heuristics` 20,7 %. Une seule fonction `serialize` atteinte
@@ -3501,7 +3515,8 @@ portabilité, qui attend sa décision (section 6.2).
 - **9a, fait le 2026-10-29 (section 5.19)**, avec l'outil de Visual Studio et non OpenCppCoverage (décision de Gabriel du
   2026-10-28), sur la configuration à part `build/coverage` : 61,3 % des lignes et 70,1 % des fonctions de FMTlib atteintes
   par la suite publique C++, 82,0 % des lignes de `Core` ; la colonne `MissingTests` de `CoreTestCoverage.csv` complétée pour
-  20 classes. gcov et lcov sous MSYS2 restent à Gabriel. Un script de mesure à garder est proposé, pas ajouté.
+  20 classes. gcov et lcov sous MSYS2 restent à Gabriel. La mesure se refait par `tools\tests\MeasureCoverage.bat`
+  (section 5.19).
 - **Ce que 9b doit prendre** : une seule des 122 fonctions `serialize` est atteinte par la suite publique
   (`FMTGCBMTransition`, archive texte en lecture) ; tout aller-retour binaire est à écrire, d'abord pour les classes que
   traverse un modèle sauvegardé (`FMTModel` et ses membres de `Core`, `FMTGraph` et ses propriétés, `FMTLpSolver`,
