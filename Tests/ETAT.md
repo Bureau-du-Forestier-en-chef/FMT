@@ -3309,8 +3309,8 @@ aucun changelog, puisque seule la documentation de suivi change.
 
 ### 5.20 Lot 9b : sérialisation (2026-10-29)
 
-**Statut** : livré le 2026-10-29, **à reconfigurer, à compiler et à valider par Gabriel** ; rien n'est commité. Deuxième quart du
-lot 9 (section 6.3.6). Point de départ : l'installation du 2026-10-28 à 14 h 52 (section 5.18 ; 1 202 tests, 0 échec, 1 166 verts
+**Statut** : livré le 2026-10-29, commité par Gabriel le même jour (`7f410902`), **validé** le 2026-10-29 (fin de cette
+section). Deuxième quart du lot 9 (section 6.3.6). Point de départ : l'installation du 2026-10-28 à 14 h 52 (section 5.18 ; 1 202 tests, 0 échec, 1 166 verts
 et 36 désactivés), arbre de travail propre (`bccb0fa1`). Aucune correction de FMTlib.
 
 **Relevé, avant d'écrire : les consommateurs réels de la sérialisation.**
@@ -3483,20 +3483,43 @@ sérialisation ne garde pas, `serialize` de `FMTObject` désormais atteint), `Co
 unitaires ; les suites d'`IntegrationSerialization` comptées au niveau intégration ; deux générations identiques) ; deux lignes de
 dette d'`Architecture.md` (la suite de pickle compilée seulement dans `FMT.pyd`, les propriétés d'arêtes non exportées) ; `AGENTS.md`
 (le dossier `Serialization/`, la convention `xfail`) ; `Tests/Integration/CMakeLists.txt` ; sections 1.4 (règle 3), 2.7, 6.1, 6.3.6 et
-7 ; changelogs (section non publiée, anglais et français). La section 8 attend la validation.
+7 ; changelogs (section non publiée, anglais et français) ; section 8 après la validation.
+
+**Validation après le build de Gabriel** (2026-10-29, commit `7f410902`, 35 fichiers, arbre de travail propre ; FMTlib inchangé,
+`FMTlib.dll` du 2026-10-26 à 17 h 45, sources de FMTlib inchangées depuis `025d3493`) :
+- reconfiguré par Gabriel ; `IntegrationParser.exe` du build date de 13 h 13, `IntegrationSerialization.exe` de 13 h 15, `FMT.pyd`
+  de 13 h 13, après la dernière modification des sources du lot (12 h 34) ;
+- installation (`INSTALL_TEST_SUITE=public`, 13 h 17) : 1 251 tests, 0 échec, 1 197 exécutés et 54 désactivés, 36 s ; unit 869
+  verts et 13 désactivés, integration 65 verts et 29 désactivés, system 238 verts et 12 désactivés, performance 23, other 2 ;
+  aucun test en `T:/`. Les 43 cas d'`IntegrationSerialization` (27 exécutés, 16 désactivés), les 5 cas GCBM d'`IntegrationParser`
+  (3 et 2) et `System.Python.Serialization` (17 `xfailed`, avec le `FMT.pyd` du build) y sont. `InstallTests.xml`,
+  `InstallTests.json`, `LastTest.log` et `LastTestsDisabled.log` copiés dans le scratchpad de la session avant tout appel de
+  ctest ;
+- `RunTests.bat all-public` (13 h 19) : « 0 tests failed out of 1197 », 34,1 s réelles ; unit 869 verts et 13 désactivés sur
+  882, integration 65 verts et 29 désactivés sur 94, system 238 verts et 12 désactivés sur 250, performance 23, other 2 ; Total
+  1 197 verts et 54 désactivés sur 1 251. Par rapport au passage du 2026-10-28 à 14 h 52 (section 5.18), seuls les cas ajoutés
+  changent les comptes : integration + 30 verts et + 18 désactivés (43 d'`IntegrationSerialization`, 5 GCBM), system + 1
+  (`System.Python.Serialization`), unit, performance et other inchangés. Ce sont les comptes attendus avant le build. La
+  fixture `ExamplesModelsUnchanged` est verte, et l'arbre de travail est resté le même après le passage ;
+- non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par la passe `/W4` hors dépôt
+  d'avant le build. Le lot n'ajoute que des tests : la suite BFEC n'est pas relancée. La mesure de couverture (combien de
+  fonctions `serialize` sont maintenant atteintes) attend une recompilation de `build/coverage` ;
+- reste à Gabriel : ouvrir les huit issues des défauts 24 à 31 ; leurs numéros seront reportés dans la section 2.7, les
+  commentaires des cas, `CoreTestCoverage.csv` et les changelogs.
 
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-29
 
-- **Lot 9b livré le 2026-10-29, à reconfigurer, à compiler et à valider par Gabriel** (section 5.20) : la sérialisation, par les
+- **Lot 9b livré, commité par Gabriel (`7f410902`) et validé le 2026-10-29** (section 5.20) : la sérialisation, par les
   archives que FMT emploie vraiment, le pickle de Python (binaire, zlib) et le texte des transitions GCBM. Un exécutable neuf,
   `IntegrationSerialization` (43 cas, dont 16 désactivés), 5 cas GCBM dans `IntegrationParser` (dont 2 désactivés) et un test Python,
   `System.Python.Serialization` (17 cas `xfail`). Huit défauts nouveaux, 24 à 31 (section 2.7) : aucun objet de FMT ne se pickle en
   Python, et les listes, les rendements et les modèles ne font pas non plus l'aller-retour en C++. Décisions de Gabriel du
   2026-10-29 : niveau intégration, `xfail` strict pour un cas pytest, compatibilité du pickle non garantie, ordre GCBM, Core, modèles,
-  Python. Reste à Gabriel : reconfigurer (un dossier de tests et un fichier Python nouveaux), compiler, ouvrir les huit issues, puis
-  la validation ; comptes attendus : 1 251 tests, 1 197 verts et 54 désactivés.
+  Python. Installation et `all-public` : 1 251 tests, 0 échec, 1 197 verts et 54 désactivés ; integration 65 verts et 29 désactivés
+  sur 94, system 238 verts et 12 désactivés sur 250, unit inchangé : seuls les cas ajoutés changent les comptes. Reste à Gabriel :
+  ouvrir les huit issues, dont les numéros seront reportés. Le lot 9c suit (section 6.3.6).
 - **Lot 9a mesuré le 2026-10-29** (section 5.19), commité par Gabriel (`f8ef1dda`), puis le script
   `tools\tests\MeasureCoverage.bat` ajouté à sa demande : couverture de la suite publique C++ avec l'outil de Visual Studio
   (décision de Gabriel du 2026-10-28), sur une configuration à part, `build/coverage` (`/Od`, PDB, `/PROFILE`), compilée par
@@ -3851,7 +3874,7 @@ portabilité, qui attend sa décision (section 6.2).
   par la suite publique C++, 82,0 % des lignes de `Core` ; la colonne `MissingTests` de `CoreTestCoverage.csv` complétée pour
   20 classes. gcov et lcov sous MSYS2 restent à Gabriel. La mesure se refait par `tools\tests\MeasureCoverage.bat`
   (section 5.19).
-- **9b, fait le 2026-10-29 (section 5.20)**, au niveau intégration (décision de Gabriel du 2026-10-29) : un exécutable neuf,
+- **9b, fait et validé le 2026-10-29 (section 5.20, `7f410902`)**, au niveau intégration (décision de Gabriel du 2026-10-29) : un exécutable neuf,
   `IntegrationSerialization`, refait le chemin du pickle de Python pour les classes de Core, les solveurs et les modèles de TWD_land ;
   5 cas GCBM dans `IntegrationParser` ; un test Python par classe qui déclare une suite de pickle. Huit défauts (24 à 31, section 2.7) :
   la suite de pickle rend une `str` (aucun pickle en Python), `FMTList` ne relit pas ce qu'il écrit, les gestionnaires de rendements
@@ -4239,6 +4262,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-27 (défaut 21, `3e6be3e6` ; installation de Gabriel) | 922 (installation, `public`) ; unit 591 verts et 11 désactivés, integration 35 verts et 11 désactivés, system 237 verts et 12 désactivés, performance 23, fixtures 2 | 25 s (installation) | — | 13 | 2 | 0 | 34 | — |
 | 2026-10-27 (lot 8b, `12d46d92`) | 1 065 `all-public` (922 + 143 cas `Unit.`) ; résumé : unit 732 verts et 13 désactivés sur 745, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 28,3 s réelles | — | 13 | 2 | 0 | 36 | — |
 | 2026-10-28 (lot 8c, `73ccbfd8`) | 1 202 `all-public` (1 065 + 137 cas `Unit.`) ; résumé : unit 869 verts et 13 désactivés sur 882, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 33,2 s réelles | — | 13 | 2 | 0 | 36 | — |
+| 2026-10-29 (lot 9b, `7f410902`) | 1 251 `all-public` (1 202 + 43 cas `Integration.` d'`IntegrationSerialization` + 5 cas `Integration.FMTTransitionParser` + `System.Python.Serialization`) ; résumé : unit 869 verts et 13 désactivés sur 882, integration 65 verts et 29 désactivés sur 94, system 238 verts et 12 désactivés sur 250, performance 23, other 2 | 34,1 s réelles | — | 13 | 2 | 0 | 54 | — |
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
