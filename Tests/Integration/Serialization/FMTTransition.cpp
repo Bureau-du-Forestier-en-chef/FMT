@@ -18,7 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 // FMTTransition through the archive of the pickle of Python, as Python pickles an FMTtransition. Its forks alone are
 // in Tests/Integration/Serialization/FMTFork.cpp.
 
-// Defect 25 of Tests/ETAT.md (section 2.7): FMTList::save writes its base FMTObject, which FMTList::load does not read.
+// Defect 25 (#408) of Tests/ETAT.md: FMTList::save writes its base FMTObject, which FMTList::load does not read.
 TEST(FMTTransition, DISABLED_GivenTheTransitionsOfTWDLandWhenPickledThenUnpicklesTheSameTransitions)
 {
     // Arrange

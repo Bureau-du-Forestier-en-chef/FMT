@@ -125,7 +125,7 @@ TEST(FMTTransitionParser, GivenAGCBMTransitionWithoutThemeAfterTheFirstWhenWritt
     EXPECT_TRUE(reread.at(3).themes.empty());
 }
 
-// Defect 24 of Tests/ETAT.md (section 2.7): writeGCBM writes nothing for an empty list, a period without any
+// Defect 24 (#407) of Tests/ETAT.md: writeGCBM writes nothing for an empty list, a period without any
 // disturbance, and readGCBM throws on the empty file (input stream error) instead of reading back an empty list.
 TEST(FMTTransitionParser, DISABLED_GivenNoGCBMTransitionWhenWrittenByWriteGCBMThenReadGCBMRereadsAnEmptyList)
 {
@@ -139,7 +139,7 @@ TEST(FMTTransitionParser, DISABLED_GivenNoGCBMTransitionWhenWrittenByWriteGCBMTh
     EXPECT_TRUE(reread.empty());
 }
 
-// Defect 24 of Tests/ETAT.md (section 2.7): writeGCBM always writes the class information of the pair of a theme after
+// Defect 24 (#407) of Tests/ETAT.md: writeGCBM always writes the class information of the pair of a theme after
 // the themes of the first transition; when the first transition has no theme, Boost reads it as the first theme of the
 // next transition, and readGCBM throws (input stream error).
 TEST(FMTTransitionParser, DISABLED_GivenAFirstGCBMTransitionWithoutThemeWhenWrittenByWriteGCBMThenReadGCBMRereadsIt)

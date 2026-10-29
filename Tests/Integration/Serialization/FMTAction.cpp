@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 // FMTAction through the archive of the pickle of Python, as Python pickles an FMTaction.
 
-// Defect 25 of Tests/ETAT.md (section 2.7): FMTList::save writes its base FMTObject, which FMTList::load does not read;
+// Defect 25 (#408) of Tests/ETAT.md: FMTList::save writes its base FMTObject, which FMTList::load does not read;
 // every class derived from FMTList, FMTAction among them, reads the rest of its archive from the wrong place.
 TEST(FMTAction, DISABLED_GivenTheActionsOfTWDLandWhenPickledThenUnpicklesTheSameActions)
 {

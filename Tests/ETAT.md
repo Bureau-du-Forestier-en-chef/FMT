@@ -1013,10 +1013,10 @@ code, A/B où une seule chose change, exécutable officiel quand un chemin y mè
 2026-10-26, lancé par des scripts du scratchpad qui lisent le dépôt sans l'écrire), origine git. Les sondes C++ refont la partie C++
 de `FMT_pickle_suite` (`Tests/Integration/Serialization/PickleArchive.h`) ; pour les défauts que `pickle.dumps` masque, `__setstate__`
 de `FMT.pyd` relit un état écrit par elles, dans un autre module. Chacun a au moins un cas `DISABLED_` (GoogleTest) ou `xfail`
-(pytest). Les textes des issues sont dans la livraison du lot (section 5.20) ; Gabriel les ouvre, leurs numéros seront reportés ici,
-dans les commentaires des cas et dans les changelogs. Aucun n'est corrigé dans ce chantier.
+(pytest). Gabriel a ouvert leurs issues le 2026-10-29 : #407 à #414, dans l'ordre des défauts ; leurs numéros
+sont aussi dans les commentaires des cas, dans `CoreTestCoverage.csv` et dans les changelogs. Aucun n'est corrigé dans ce chantier.
 
-24. **`writeGCBM` écrit à la main une archive que `readGCBM` ne relit pas** (`FMTTransitionParser`).
+24. **`writeGCBM` écrit à la main une archive que `readGCBM` ne relit pas** (`FMTTransitionParser`, issue #407).
     - Cause : `writeGCBM` (`Source/FMTTransitionParser.cpp:358`) écrit à la main l'archive texte de Boost, version 17 de la
       bibliothèque, au lieu de `text_oarchive` (en commentaire). Pour une liste vide, il n'écrit rien (`&& !transitions.empty()`,
       ligne 363) : le fichier est vide, et `text_iarchive` lève à l'ouverture (`input stream error`, sous `FMTexc(56)`). Après le
@@ -1041,7 +1041,7 @@ dans les commentaires des cas et dans les changelogs. Aucun n'est corrigé dans 
     - Cas : `Integration.FMTTransitionParser.GivenNoGCBMTransitionWhenWrittenByWriteGCBMThenReadGCBMRereadsAnEmptyList` et
       `GivenAFirstGCBMTransitionWithoutThemeWhenWrittenByWriteGCBMThenReadGCBMRereadsIt`, à côté du cas vert
       `GivenAGCBMTransitionWithoutThemeAfterTheFirstWhenWrittenByWriteGCBMThenReadGCBMRereadsIt`.
-25. **`FMTList::save` écrit sa base `FMTObject`, que `FMTList::load` ne lit pas** (`FMTList`).
+25. **`FMTList::save` écrit sa base `FMTObject`, que `FMTList::load` ne lit pas** (`FMTList`, issue #408).
     - Cause : `Include/FMTList.hpp`, `save` (ligne 647) écrit `base_object<FMTObject>` avant les données, `load` (ligne 667)
       commence par les données. Dans une archive binaire, la base écrit 5 octets (`FMTObject` est suivi, `track_always`), que
       `load` lit comme le début du vecteur des données : « bad allocation », ou plus loin une version de classe invalide. Une liste
@@ -1060,7 +1060,7 @@ dans les commentaires des cas et dans les changelogs. Aucun n'est corrigé dans 
     - Cas : `Integration.FMTAction.DISABLED_GivenTheActionsOfTWDLand…`, `FMTTransition.…`, les deux cas de `FMTLifespans`,
       `FMTSchedule.…OfAnActionOfTWDLand…` et `FMTModel.…ConstructedByDefault…` ; derrière les défauts 26 à 28, ceux des rendements
       et des modèles.
-26. **Les gestionnaires de rendements ne sont pas exportés à Boost.Serialization** (`FMTYields`).
+26. **Les gestionnaires de rendements ne sont pas exportés à Boost.Serialization** (`FMTYields`, issue #409).
     - Cause : `FMTYields` sérialise ses gestionnaires par `std::unique_ptr<FMTYieldHandler>` (`Include/FMTYields.h:277`, par sa base
       `FMTList`) ; Boost ne sauvegarde un objet dérivé par un pointeur sur sa base que si la classe dérivée est exportée
       (`BOOST_CLASS_EXPORT_KEY` et `BOOST_CLASS_EXPORT_IMPLEMENT`). Aucun de `FMTAgeYieldHandler`, `FMTTimeYieldHandler`,
@@ -1082,7 +1082,7 @@ dans les commentaires des cas et dans les changelogs. Aucun n'est corrigé dans 
       suivantes.
     - Cas : `Integration.FMTYields.DISABLED_GivenTheYieldsOfTWDLand…`, `FMTModel.…RootModel…`, les trois cas de `FMTLpModel`, et les
       cas `FMTyields` et des modèles de `testSerialization.py`.
-27. **`FMTSerializableMatrix` lit un élément d'une matrice vide** (`FMTLpSolver`).
+27. **`FMTSerializableMatrix` lit un élément d'une matrice vide** (`FMTLpSolver`, issue #410).
     - Cause : `FMTSerializableMatrix::getSetMatrixElements` (`Source/FMTSerializableMatrix.cpp:144`) prend
       `maxsize = std::max(1, matrix->getNumElements())` et copie autant d'éléments depuis `getMutableElements()`, nul pour une matrice
       vide : violation d'accès, levée en `FMTexc(85)` sous le `FMTexc(53)` de `FMTLpSolver::save`.
@@ -1095,7 +1095,7 @@ dans les commentaires des cas et dans les changelogs. Aucun n'est corrigé dans 
     - Origine : `8fcf13ab` (2022-05-06, « More forward declarations »), qui lit `maxsize` éléments du tableau de la matrice, repris par
       `0bd1bed0` (2022-05-18) ; dans 0.9.5 et les suivantes.
     - Cas : `Integration.FMTLpSolver.DISABLED_GivenASolverWithoutAnyColumn…`, et `FMTLpModel.…NotBuilt…` derrière le défaut 26.
-28. **`FMTModel::load` passe le journal au solveur d'un `FMTSrModel` avant de le relire** (`FMTModel`, `FMTSrModel`).
+28. **`FMTModel::load` passe le journal au solveur d'un `FMTSrModel` avant de le relire** (`FMTModel`, `FMTSrModel`, issue #411).
     - Cause : `FMTModel::load` (`Include/FMTModel.h:984`) appelle `FMTObject::forceLoad`, qui appelle `setDefaultLogger`, donc
       `passInLogger`, que `FMTSrModel` redéfinit pour passer le journal à son solveur (`Source/FMTSrModel.cpp:1505`). Le solveur n'est
       relu qu'après le modèle, et celui d'un `FMTLpModel` construit sans argument, comme `pickle.loads` le construit, n'a pas
@@ -1111,7 +1111,7 @@ dans les commentaires des cas et dans les changelogs. Aucun n'est corrigé dans 
       `FMTsrmodel` à son solveur, alors que la relecture d'un modèle appelait `setdefaultlogger` depuis `a76d8fd1` (2020-09-17) ;
       dans 0.9.5 et les suivantes.
     - Cas : les trois cas de `FMTLpModel`, derrière le défaut 26.
-29. **Le pickle de Python rend l'état comme une `str`** (`Include/FMTpythonpickle.h`).
+29. **Le pickle de Python rend l'état comme une `str`** (`Include/FMTpythonpickle.h`, issue #412).
     - Cause : `FMT_pickle_suite<T>::getstate` rend `boost::python::make_tuple(compressed.str())`, une `std::string` que Boost.Python
       convertit en `str` en la décodant comme de l'UTF-8 ; l'archive compressée commence par l'en-tête zlib `78 9C`, qui n'en est pas :
       `UnicodeDecodeError` sur l'octet `0x9c` en position 1, pour tout objet. `setstate` extrait sans difficulté une `std::string`
@@ -1127,7 +1127,7 @@ dans les commentaires des cas et dans les changelogs. Aucun n'est corrigé dans 
       `FMTdevelopment`, `FMTsamodel` de `FMTsemodel`, les schémas et clusters d'aires d'opération de `FMToperatingarea`) seraient
       relues comme leur base : l'aire d'un développement réel serait perdue (lu dans le code).
     - Cas : les 10 cas de `testSerialization.py` marqués du défaut 29 (9 classes et `copy.deepcopy`).
-30. **`FMToutput` déclare la suite de pickle de `FMTTransition`** (`Include/PYexportCore.h`).
+30. **`FMToutput` déclare la suite de pickle de `FMTTransition`** (`Include/PYexportCore.h`, issue #413).
     - Cause : `.def_pickle(FMT_pickle_suite<Core::FMTTransition>())` dans la classe `FMToutput` (`Include/PYexportCore.h:442`) ; ses
       fonctions prennent un `FMTTransition`, et Boost.Python refuse un `FMToutput` (`ArgumentError: … __getinitargs__(class
       Core::FMTTransition)`). `FMTconstraint` en hérite.
@@ -1135,7 +1135,7 @@ dans les commentaires des cas et dans les changelogs. Aucun n'est corrigé dans 
       contrainte du scénario `LP`, lève `ArgumentError`.
     - Origine : premier commit (`2e3dc129`, 2019-06-07, `PYexportCore.h`).
     - Cas : le cas `FMToutput` de `testSerialization.py` (`xfail` sur `TypeError`).
-31. **La sérialisation ne garde pas tout l'état** (`FMTOutput`, `FMTSchedule`, `FMTModelParameters`, `FMTLpSolver`).
+31. **La sérialisation ne garde pas tout l'état** (`FMTOutput`, `FMTSchedule`, `FMTModelParameters`, `FMTLpSolver`, issue #414).
     - Cause : `FMTOutput::serialize` n'écrit pas `m_group`, le `*GROUP` que `FMTOutputParser::write` réécrit, et `operator==` ne le
       compare pas ; `FMTSchedule::serialize` n'écrit pas `m_uselock`, qui dit si les aires sont par niveau de verrou ;
       `FMTModelParameters::serialize` n'écrit pas les paramètres textes (`SOLVER_COLD_START`, `SOLVER_WARM_START`, `WORKING_DIRECTORY`) ;
@@ -3504,8 +3504,8 @@ dette d'`Architecture.md` (la suite de pickle compilée seulement dans `FMT.pyd`
 - non relues : les consoles de la configuration et du build. Les avertissements ne sont couverts que par la passe `/W4` hors dépôt
   d'avant le build. Le lot n'ajoute que des tests : la suite BFEC n'est pas relancée. La mesure de couverture (combien de
   fonctions `serialize` sont maintenant atteintes) attend une recompilation de `build/coverage` ;
-- reste à Gabriel : ouvrir les huit issues des défauts 24 à 31 ; leurs numéros seront reportés dans la section 2.7, les
-  commentaires des cas, `CoreTestCoverage.csv` et les changelogs.
+- issues des défauts 24 à 31 ouvertes par Gabriel le 2026-10-29 : #407 à #414, dans l'ordre ; numéros reportés dans la
+  section 2.7, les commentaires des cas, `CoreTestCoverage.csv` et les changelogs.
 
 ## 6. Prochain lot
 
@@ -3518,8 +3518,8 @@ dette d'`Architecture.md` (la suite de pickle compilée seulement dans `FMT.pyd`
   Python, et les listes, les rendements et les modèles ne font pas non plus l'aller-retour en C++. Décisions de Gabriel du
   2026-10-29 : niveau intégration, `xfail` strict pour un cas pytest, compatibilité du pickle non garantie, ordre GCBM, Core, modèles,
   Python. Installation et `all-public` : 1 251 tests, 0 échec, 1 197 verts et 54 désactivés ; integration 65 verts et 29 désactivés
-  sur 94, system 238 verts et 12 désactivés sur 250, unit inchangé : seuls les cas ajoutés changent les comptes. Reste à Gabriel :
-  ouvrir les huit issues, dont les numéros seront reportés. Le lot 9c suit (section 6.3.6).
+  sur 94, system 238 verts et 12 désactivés sur 250, unit inchangé : seuls les cas ajoutés changent les comptes. Issues ouvertes par
+  Gabriel le 2026-10-29 : #407 à #414, numéros reportés. Le lot 9c suit (section 6.3.6).
 - **Lot 9a mesuré le 2026-10-29** (section 5.19), commité par Gabriel (`f8ef1dda`), puis le script
   `tools\tests\MeasureCoverage.bat` ajouté à sa demande : couverture de la suite publique C++ avec l'outil de Visual Studio
   (décision de Gabriel du 2026-10-28), sur une configuration à part, `build/coverage` (`/Od`, PDB, `/PROFILE`), compilée par

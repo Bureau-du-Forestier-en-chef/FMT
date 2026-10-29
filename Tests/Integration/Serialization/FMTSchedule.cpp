@@ -35,7 +35,7 @@ TEST(FMTSchedule, GivenAScheduleWithoutActionWhenPickledThenUnpicklesAnEmptySche
     EXPECT_TRUE(unpickled.empty());
 }
 
-// Defect 25 of Tests/ETAT.md (section 2.7): the actions of a schedule are FMTList, whose load does not read the base
+// Defect 25 (#408) of Tests/ETAT.md: the actions of a schedule are FMTList, whose load does not read the base
 // FMTObject that its save writes.
 TEST(FMTSchedule, DISABLED_GivenAScheduleOfAnActionOfTWDLandWhenPickledThenUnpicklesTheSameAreas)
 {
@@ -56,7 +56,7 @@ TEST(FMTSchedule, DISABLED_GivenAScheduleOfAnActionOfTWDLandWhenPickledThenUnpic
     EXPECT_DOUBLE_EQ(unpickled.actionArea(action), 10.0);
 }
 
-// Defect 31 of Tests/ETAT.md (section 2.7): FMTSchedule::serialize does not save m_uselock, which says whether the
+// Defect 31 (#414) of Tests/ETAT.md: FMTSchedule::serialize does not save m_uselock, which says whether the
 // areas of a schedule are by lock level: an unpickled schedule never uses them.
 TEST(FMTSchedule, DISABLED_GivenAScheduleThatUsesLockLevelsWhenPickledThenUnpicklesAScheduleThatUsesThem)
 {

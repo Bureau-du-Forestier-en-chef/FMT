@@ -34,7 +34,7 @@ TEST(FMTModelParameters, GivenNumericAndBooleanParametersWhenPickledThenUnpickle
     EXPECT_EQ(unpickled.getPeriodCompressTime(2), 3);
 }
 
-// Defect 31 of Tests/ETAT.md (section 2.7): FMTModelParameters::serialize does not save the text parameters, the files
+// Defect 31 (#414) of Tests/ETAT.md: FMTModelParameters::serialize does not save the text parameters, the files
 // of the cold and warm start parameters of the solver and the working directory of the simulated annealing.
 TEST(FMTModelParameters, DISABLED_GivenATextParameterWhenPickledThenUnpicklesTheSameText)
 {

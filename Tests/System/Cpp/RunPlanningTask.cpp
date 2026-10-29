@@ -43,10 +43,10 @@ int main(int argc, char *argv[])
 		length = std::stoi(argv[3]);
 	}else
 	{
-		primlocation = "T:\\Donnees\\02_Courant\\01_CPF\\01_UA\\_2028_2033\\08152\\60_Determination\\64_ModeleWS\\01_Valide\\PC_9947_U08152_2028_MODB01.pri";
-		outputlocation = "D:\\test";
+		primlocation = "C:\\Users\\Admlocal\\Documents\\issues\\09371\\PC_9718_U09371_4_Vg4_2023_v2DESJOB.pri";
+		outputlocation = "C:\\Users\\Admlocal\\Documents\\SCRAP";
 		length = 5;
-		scenario_name = "2001_StratReg_avsp";
+		scenario_name = "6001_Determination_avsp";
 		playback.push_back(true);
 		allscenarios.push_back(scenario_name);
 	}

@@ -33,7 +33,7 @@ namespace
     }
 }
 
-// Defect 25 of Tests/ETAT.md (section 2.7): FMTList::save writes its base FMTObject, which FMTList::load does not read.
+// Defect 25 (#408) of Tests/ETAT.md: FMTList::save writes its base FMTObject, which FMTList::load does not read.
 TEST(FMTLifespans, DISABLED_GivenTheLifespansOfTWDLandWhenPickledThenUnpicklesTheSameLifespans)
 {
     // Arrange
@@ -48,7 +48,7 @@ TEST(FMTLifespans, DISABLED_GivenTheLifespansOfTWDLandWhenPickledThenUnpicklesTh
     EXPECT_EQ(std::string(unpickled), std::string(lifespans));
 }
 
-// Defect 25 of Tests/ETAT.md (section 2.7), as above. The cache of findSets is saved with the lifespans: the unpickled
+// Defect 25 (#408) of Tests/ETAT.md, as above. The cache of findSets is saved with the lifespans: the unpickled
 // lifespans must find the same lifespans for a mask already looked for.
 TEST(FMTLifespans, DISABLED_GivenLifespansWhoseCacheOfFindSetsIsFilledWhenPickledThenFindTheSameLifespans)
 {

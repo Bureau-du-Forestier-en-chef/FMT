@@ -76,7 +76,7 @@ TEST(FMTLpSolver, GivenASolvedProblemWhenPickledThenUnpicklesTheSameProblemAndIt
     EXPECT_NEAR(unpickled.getColSolution()[1], 1.2, TOLERANCE);
 }
 
-// Defect 31 of Tests/ETAT.md (section 2.7): the sense of the objective is not saved; the unpickled problem is loaded in a
+// Defect 31 (#414) of Tests/ETAT.md: the sense of the objective is not saved; the unpickled problem is loaded in a
 // new solver interface, which minimizes: solved again, it gives 0 instead of 2.8.
 TEST(FMTLpSolver, DISABLED_GivenAMaximizedProblemWhenPickledThenSolvingItAgainGivesTheSameOptimum)
 {
@@ -92,7 +92,7 @@ TEST(FMTLpSolver, DISABLED_GivenAMaximizedProblemWhenPickledThenSolvingItAgainGi
     EXPECT_NEAR(unpickled.getObjValue(), 2.8, TOLERANCE);
 }
 
-// Defect 27 of Tests/ETAT.md (section 2.7): FMTSerializableMatrix reads one element of an empty matrix
+// Defect 27 (#410) of Tests/ETAT.md: FMTSerializableMatrix reads one element of an empty matrix
 // (std::max(1, getNumElements())), whose array is null: saving a solver without any column is an access violation.
 TEST(FMTLpSolver, DISABLED_GivenASolverWithoutAnyColumnWhenPickledThenUnpicklesASolverWithoutAnyColumn)
 {

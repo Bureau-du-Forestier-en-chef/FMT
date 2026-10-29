@@ -18,7 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 
 // FMTOutput, its FMTOutputSource and its FMTOperator through the archive of the pickle of Python, which a model and its
-// constraints carry. Python pickles an FMToutput with the suite of FMTTransition (defect 30).
+// constraints carry. Python pickles an FMToutput with the suite of FMTTransition (defect 30, #413).
 
 TEST(FMTOutput, GivenTheOutputsOfTWDLandWhenPickledThenUnpicklesTheSameOutputs)
 {
@@ -57,7 +57,7 @@ TEST(FMTOutput, GivenAnOutputConstructedByDefaultWhenPickledThenUnpicklesAnEmpty
     EXPECT_EQ(unpickled.getName(), "");
 }
 
-// Defect 31 of Tests/ETAT.md (section 2.7): FMTOutput::serialize does not save m_group, the *GROUP of the output section
+// Defect 31 (#414) of Tests/ETAT.md: FMTOutput::serialize does not save m_group, the *GROUP of the output section
 // that FMTOutputParser::write writes back; FMTOutput::operator== does not compare it.
 TEST(FMTOutput, DISABLED_GivenAnOutputOfAGroupWhenPickledThenUnpicklesAnOutputOfTheSameGroup)
 {

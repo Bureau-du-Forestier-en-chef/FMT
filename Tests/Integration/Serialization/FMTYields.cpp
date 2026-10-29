@@ -16,7 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 // the addresses of the handlers (issue #383): the unpickled yields are compared by the values of their yields, in a
 // copy of the model that takes them (Testing::expectSameYieldValues).
 
-// Defect 26 of Tests/ETAT.md (section 2.7): the yields are saved through a pointer to FMTYieldHandler, and no derived
+// Defect 26 (#409) of Tests/ETAT.md: the yields are saved through a pointer to FMTYieldHandler, and no derived
 // handler is exported to Boost.Serialization (BOOST_CLASS_EXPORT): saving throws "unregistered class". Behind it,
 // defect 25: FMTYields is an FMTList.
 TEST(FMTYields, DISABLED_GivenTheYieldsOfTWDLandWhenPickledThenGivesTheSameValues)
