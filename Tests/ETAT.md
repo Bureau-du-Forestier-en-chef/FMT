@@ -268,7 +268,8 @@ Chaque lot s'arrête sur une livraison ; le suivant attend le feu vert de Gabrie
    d'autre que nous ; quiconque compile FMT doit pouvoir constater que le bogue est parti.
 3. **Un bug révélé par un nouveau test ne se corrige pas dans le même lot.** Le test est
    inscrit désactivé — ligne de `knownbugs.csv` pour un test de chaîne, cas préfixé
-   `DISABLED_` pour un test unitaire — et il donne lieu à **une issue documentée et à une tâche
+   `DISABLED_` pour un test GoogleTest, cas pytest marqué `xfail` strict avec l'exception du défaut
+   (décision du 2026-10-29) — et il donne lieu à **une issue documentée et à une tâche
    de correction**, menée dans une session séparée de celle qui écrit les tests (décision du
    2026-09-25). *Pourquoi* : un lot qui ajoute des tests et corrige FMT en même temps devient
    impossible à relire, et la correction revient à qui connaît le code. La ligne désactivée
@@ -1005,7 +1006,154 @@ corrigés dans ce chantier.
       `GivenAConstantOfOneValueWhenConvertedToStringThenWritesALineOfItsNameAndItsValue`.
 
 **Lot 8c (2026-10-28) : aucun défaut nouveau.** Les écarts relevés dans les classes du lot (section 5.18) restent des observations :
-rien de ce que FMT exécute n'en dépend, ou ce n'est pas démontré. Le prochain défaut prendra le numéro 24.
+rien de ce que FMT exécute n'en dépend, ou ce n'est pas démontré.
+
+**Défauts révélés par le lot 9b (2026-10-29).** Huit défauts de la sérialisation, démontrés comme les précédents : cause dans le
+code, A/B où une seule chose change, exécutable officiel quand un chemin y mène (`FMT.pyd` du build de `new_test`, FMTlib du
+2026-10-26, lancé par des scripts du scratchpad qui lisent le dépôt sans l'écrire), origine git. Les sondes C++ refont la partie C++
+de `FMT_pickle_suite` (`Tests/Integration/Serialization/PickleArchive.h`) ; pour les défauts que `pickle.dumps` masque, `__setstate__`
+de `FMT.pyd` relit un état écrit par elles, dans un autre module. Chacun a au moins un cas `DISABLED_` (GoogleTest) ou `xfail`
+(pytest). Les textes des issues sont dans la livraison du lot (section 5.20) ; Gabriel les ouvre, leurs numéros seront reportés ici,
+dans les commentaires des cas et dans les changelogs. Aucun n'est corrigé dans ce chantier.
+
+24. **`writeGCBM` écrit à la main une archive que `readGCBM` ne relit pas** (`FMTTransitionParser`).
+    - Cause : `writeGCBM` (`Source/FMTTransitionParser.cpp:358`) écrit à la main l'archive texte de Boost, version 17 de la
+      bibliothèque, au lieu de `text_oarchive` (en commentaire). Pour une liste vide, il n'écrit rien (`&& !transitions.empty()`,
+      ligne 363) : le fichier est vide, et `text_iarchive` lève à l'ouverture (`input stream error`, sous `FMTexc(56)`). Après le
+      nombre de thèmes de la première transition, il écrit toujours les informations de classe de la paire d'un thème (` 0 0 0 `,
+      ligne 366), que Boost n'écrit qu'avec la première paire : quand la première transition n'a aucun thème, la relecture se décale
+      et lève.
+    - A/B (sonde C++) : une transition, puis aucune ; une transition sans thème en deuxième position, puis en première. Pour les
+      mêmes listes, `text_oarchive` écrit `22 serialization::archive 20 0 0 0 0` (liste vide), et les informations de la paire avec
+      le premier thème de la deuxième transition.
+    - Exécutable officiel : `FMTtransitionparser.readGCBM` de `FMT.pyd` relit les fichiers d'une et de trois transitions, et celui
+      d'une transition sans thème en deuxième position ; il lève `FMTexc(56)` sur le fichier vide et sur celui d'une première
+      transition sans thème.
+    - Portée : le SES du Core du wrapper (`FMTWrapperCore/Source/SES.cpp`) écrit un fichier par période ; une période sans aucune
+      perturbation, ou un modèle sans thème de croissance (`FMTSpatialSchedule::getGCBMtransitions` ne fait de transition que pour
+      des thèmes), donne une liste vide, donc un fichier que `readGCBM` ne relit pas. Une première transition sans thème ne vient que
+      de l'API C++ : FMT donne à chaque transition l'attribut de chaque thème de croissance. Hors de ces cas, l'aller-retour est
+      juste, et le texte reste celui que fige `WriteAndReadGCBMTransitions` ; l'archive de Boost 1.84 ne diffère du texte de
+      `writeGCBM` que par la version (20) et par une espace qui manque entre deux transitions à partir de la troisième, sans effet
+      sur `text_iarchive`.
+    - Origine : `9fbf341e` (2022-09-28, « Fix #96 »), qui remplace `text_oarchive` par le texte écrit à la main ; dans 0.9.5 et les
+      suivantes.
+    - Cas : `Integration.FMTTransitionParser.GivenNoGCBMTransitionWhenWrittenByWriteGCBMThenReadGCBMRereadsAnEmptyList` et
+      `GivenAFirstGCBMTransitionWithoutThemeWhenWrittenByWriteGCBMThenReadGCBMRereadsIt`, à côté du cas vert
+      `GivenAGCBMTransitionWithoutThemeAfterTheFirstWhenWrittenByWriteGCBMThenReadGCBMRereadsIt`.
+25. **`FMTList::save` écrit sa base `FMTObject`, que `FMTList::load` ne lit pas** (`FMTList`).
+    - Cause : `Include/FMTList.hpp`, `save` (ligne 647) écrit `base_object<FMTObject>` avant les données, `load` (ligne 667)
+      commence par les données. Dans une archive binaire, la base écrit 5 octets (`FMTObject` est suivi, `track_always`), que
+      `load` lit comme le début du vecteur des données : « bad allocation », ou plus loin une version de classe invalide. Une liste
+      vide se relit vide par hasard : les 5 octets sont des zéros, lus comme des conteneurs vides, mais ils restent non lus et
+      décalent ce qui suit.
+    - Classes touchées : toutes les dérivées de `FMTList` (`FMTAction`, `FMTTransition`, `FMTLifespans`, `FMTYields`), et ce qui les
+      contient (`FMTSchedule` par ses actions, `FMTModel` et ses dérivées).
+    - A/B (sonde C++, chemin du pickle) : les six actions de TWD_land, relues avec `FMTList.hpp` tel quel (« bad allocation »), puis
+      avec une copie d'`Include` dans le scratchpad où `load` lit d'abord la base, une seule ligne ajoutée : relues, égales
+      (`operator==`).
+    - Exécutable officiel : `pickle.dumps` échoue avant (défaut 29) ; `FMTaction().__setstate__` de `FMT.pyd`, sur l'état d'une action
+      écrit par la partie C++ de la suite, lève `MemoryError` ; par la même voie, l'état d'un masque se relit égal.
+    - Origine : `a76d8fd1` (2020-09-17, « Serialization fix but still not working for abstract classes… »), qui ajoute la base à
+      `save` seulement ; dans le premier commit (`2e3dc129`, 2019-06-07), `save` et `load` étaient symétriques, sans base. Dans 0.9.5
+      et les suivantes.
+    - Cas : `Integration.FMTAction.DISABLED_GivenTheActionsOfTWDLand…`, `FMTTransition.…`, les deux cas de `FMTLifespans`,
+      `FMTSchedule.…OfAnActionOfTWDLand…` et `FMTModel.…ConstructedByDefault…` ; derrière les défauts 26 à 28, ceux des rendements
+      et des modèles.
+26. **Les gestionnaires de rendements ne sont pas exportés à Boost.Serialization** (`FMTYields`).
+    - Cause : `FMTYields` sérialise ses gestionnaires par `std::unique_ptr<FMTYieldHandler>` (`Include/FMTYields.h:277`, par sa base
+      `FMTList`) ; Boost ne sauvegarde un objet dérivé par un pointeur sur sa base que si la classe dérivée est exportée
+      (`BOOST_CLASS_EXPORT_KEY` et `BOOST_CLASS_EXPORT_IMPLEMENT`). Aucun de `FMTAgeYieldHandler`, `FMTTimeYieldHandler`,
+      `FMTComplexYieldHandler` et `FMTModelYieldHandler` ne l'est : « unregistered class - derived class not registered or exported ».
+      Tout modèle lu en a un, puisque les yields `_TSLA` par défaut sont dans un `FMTModelYieldHandler`.
+    - A/B (sonde C++) : les rendements de la racine de TWD_land, sauvegardés tels que FMTlib les déclare (lève), puis avec les quatre
+      gestionnaires exportés dans l'exécutable de la sonde (`BOOST_CLASS_EXPORT_GUID`, seule chose qui change) : sauvegardés (486
+      octets), puis la relecture tombe sur le défaut 25. Exporter les seuls gestionnaires d'âge et complexe ne suffit pas : celui des
+      yields `_TSLA` reste introuvable dans le registre de Boost ; `register_type` sur l'archive ne suffit pas non plus.
+    - Exécutable officiel : `pickle.dumps(model.getyields())`, `pickle.dumps(model)` et le pickle de chacun des modèles lèvent
+      `RuntimeError: unregistered class …` ; sans gestionnaire, `pickle.dumps(FMTyields())` passe la sauvegarde et tombe sur le
+      défaut 29.
+    - Module : la correction doit instancier les sérialiseurs par pointeur de l'archive binaire, donc inclure
+      `boost/archive/binary_*archive.hpp` dans la source de chaque `BOOST_CLASS_EXPORT_IMPLEMENT`, comme `FMTLpSolver.h` le fait
+      déjà pour les sources qui l'incluent ; `boost_serialization` est une DLL, son registre est partagé par `FMTlib.dll`, `FMT.pyd`
+      et les exécutables de test.
+    - Origine : `2cbb45a6` (2021-10-29, « New abstraction level for FMTyieldhandler and support for FMTyieldmodel »), qui passe
+      `FMTyields` de `FMTlist<FMTyieldhandler>`, par valeur, à `FMTlist<std::unique_ptr<FMTyieldhandler>>` ; dans 0.9.5 et les
+      suivantes.
+    - Cas : `Integration.FMTYields.DISABLED_GivenTheYieldsOfTWDLand…`, `FMTModel.…RootModel…`, les trois cas de `FMTLpModel`, et les
+      cas `FMTyields` et des modèles de `testSerialization.py`.
+27. **`FMTSerializableMatrix` lit un élément d'une matrice vide** (`FMTLpSolver`).
+    - Cause : `FMTSerializableMatrix::getSetMatrixElements` (`Source/FMTSerializableMatrix.cpp:144`) prend
+      `maxsize = std::max(1, matrix->getNumElements())` et copie autant d'éléments depuis `getMutableElements()`, nul pour une matrice
+      vide : violation d'accès, levée en `FMTexc(85)` sous le `FMTexc(53)` de `FMTLpSolver::save`.
+    - A/B (sonde C++) : un `FMTLpModel` de la racine sans rendements (pour passer outre le défaut 26), sauvegardé avant de le
+      construire (lève), puis après deux `buildPeriod` (8 353 octets) ; de même un `FMTLpSolver` sans colonne (cas désactivé) et le
+      problème de deux colonnes du cas vert.
+    - Exécutable officiel : `pickle.dumps` du même modèle non construit lève `RuntimeError: FMTexc(53)` ; construit, il passe la
+      sauvegarde et tombe sur le défaut 29.
+    - Portée : un modèle à solveur non construit, ou tout solveur sans élément, ne se sauvegarde pas.
+    - Origine : `8fcf13ab` (2022-05-06, « More forward declarations »), qui lit `maxsize` éléments du tableau de la matrice, repris par
+      `0bd1bed0` (2022-05-18) ; dans 0.9.5 et les suivantes.
+    - Cas : `Integration.FMTLpSolver.DISABLED_GivenASolverWithoutAnyColumn…`, et `FMTLpModel.…NotBuilt…` derrière le défaut 26.
+28. **`FMTModel::load` passe le journal au solveur d'un `FMTSrModel` avant de le relire** (`FMTModel`, `FMTSrModel`).
+    - Cause : `FMTModel::load` (`Include/FMTModel.h:984`) appelle `FMTObject::forceLoad`, qui appelle `setDefaultLogger`, donc
+      `passInLogger`, que `FMTSrModel` redéfinit pour passer le journal à son solveur (`Source/FMTSrModel.cpp:1505`). Le solveur n'est
+      relu qu'après le modèle, et celui d'un `FMTLpModel` construit sans argument, comme `pickle.loads` le construit, n'a pas
+      d'interface (`FMTLpSolver()` la laisse nulle) : `FMTLpSolver::passInMessageHandler` la déréférence, violation d'accès
+      (`FMTexc(85)`).
+    - A/B (sonde C++) : l'état d'un `FMTLpModel` construit sans rendements, relu dans un modèle construit sans argument (lève dans
+      `passInMessageHandler`), puis dans un modèle construit avec un solveur CLP, seule chose qui change : la relecture passe
+      `setDefaultLogger` et tombe plus loin sur le défaut 25.
+    - Exécutable officiel : sur cet état, `FMTlpmodel().__setstate__` de `FMT.pyd` lève `RuntimeError: FMTexc(53)`, et
+      `FMTlpmodel(FMTmodel(), CLP).__setstate__` lève `MemoryError` (défaut 25).
+    - Portée : aucun `FMTSrModel`, `FMTLpModel` ni `FMTNssModel` ne se relit.
+    - Origine : `5d478427` (2021-12-23, « Multiple fix for export, passinloger in FMTsrmodel… »), qui fait passer le journal de
+      `FMTsrmodel` à son solveur, alors que la relecture d'un modèle appelait `setdefaultlogger` depuis `a76d8fd1` (2020-09-17) ;
+      dans 0.9.5 et les suivantes.
+    - Cas : les trois cas de `FMTLpModel`, derrière le défaut 26.
+29. **Le pickle de Python rend l'état comme une `str`** (`Include/FMTpythonpickle.h`).
+    - Cause : `FMT_pickle_suite<T>::getstate` rend `boost::python::make_tuple(compressed.str())`, une `std::string` que Boost.Python
+      convertit en `str` en la décodant comme de l'UTF-8 ; l'archive compressée commence par l'en-tête zlib `78 9C`, qui n'en est pas :
+      `UnicodeDecodeError` sur l'octet `0x9c` en position 1, pour tout objet. `setstate` extrait sans difficulté une `std::string`
+      d'un `bytes`.
+    - A/B (`FMT.pyd`) : `pickle.dumps` d'un masque et `__getstate__()` lèvent ; `FMTmask().__setstate__((état,))`, avec l'état en
+      `bytes` écrit par la partie C++ de la suite, relit un masque égal (`==`, `UNITE1 PEUPLEMENT1 UTR1`). Seule la conversion de
+      `getstate` est en cause.
+    - Portée : `pickle`, `copy.copy` et `copy.deepcopy` échouent pour les 17 classes qui déclarent une suite de pickle et les 6 qui en
+      héritent, donc aussi le multiprocessing qui transporte des objets de FMT ; aucun pickle n'a pu être produit sous Python 3.
+    - Origine : la suite rend l'état compressé par une `std::string` depuis le premier commit (`2e3dc129`, 2019-06-07) ; sous
+      Python 3, Boost.Python convertit une `std::string` en `str`. La date du passage de FMT à Python 3 n'est pas établie.
+    - À corriger avec : les classes qui héritent la suite de leur base (`FMTactualdevelopment` et `FMTfuturdevelopment` de
+      `FMTdevelopment`, `FMTsamodel` de `FMTsemodel`, les schémas et clusters d'aires d'opération de `FMToperatingarea`) seraient
+      relues comme leur base : l'aire d'un développement réel serait perdue (lu dans le code).
+    - Cas : les 10 cas de `testSerialization.py` marqués du défaut 29 (9 classes et `copy.deepcopy`).
+30. **`FMToutput` déclare la suite de pickle de `FMTTransition`** (`Include/PYexportCore.h`).
+    - Cause : `.def_pickle(FMT_pickle_suite<Core::FMTTransition>())` dans la classe `FMToutput` (`Include/PYexportCore.h:442`) ; ses
+      fonctions prennent un `FMTTransition`, et Boost.Python refuse un `FMToutput` (`ArgumentError: … __getinitargs__(class
+      Core::FMTTransition)`). `FMTconstraint` en hérite.
+    - A/B (`FMT.pyd`) : `pickle.dumps` d'une transition passe ce contrôle et tombe sur le défaut 29 ; celui d'un output, ou d'une
+      contrainte du scénario `LP`, lève `ArgumentError`.
+    - Origine : premier commit (`2e3dc129`, 2019-06-07, `PYexportCore.h`).
+    - Cas : le cas `FMToutput` de `testSerialization.py` (`xfail` sur `TypeError`).
+31. **La sérialisation ne garde pas tout l'état** (`FMTOutput`, `FMTSchedule`, `FMTModelParameters`, `FMTLpSolver`).
+    - Cause : `FMTOutput::serialize` n'écrit pas `m_group`, le `*GROUP` que `FMTOutputParser::write` réécrit, et `operator==` ne le
+      compare pas ; `FMTSchedule::serialize` n'écrit pas `m_uselock`, qui dit si les aires sont par niveau de verrou ;
+      `FMTModelParameters::serialize` n'écrit pas les paramètres textes (`SOLVER_COLD_START`, `SOLVER_WARM_START`, `WORKING_DIRECTORY`) ;
+      `FMTSerializableMatrix` n'écrit pas le sens de l'objectif, si bien qu'un solveur relu, dans une interface neuve, minimise.
+      Lu dans le code, sans cas : `FMTAction` n'écrit pas ses séries (`m_series`, `m_InSerie`), `FMTComplexYieldHandler` son
+      `m_overrideindex`, `FMTOutputSource` son `m_levelname` ni son `m_outputorigin`.
+    - A/B (sonde C++, chemin du pickle) : un output du groupe `GROUPE1` relu sans groupe, `operator==` vrai ; une cédule qui utilise
+      les niveaux de verrou relue sans (`doUseLock` faux) ; `WORKING_DIRECTORY` relu vide, et `LENGTH` relu ; le problème maximisé
+      du cas vert de `FMTLpSolver`, résolu de nouveau après la relecture : 0 au lieu de 2,8.
+    - Exécutable officiel : aucun ne l'atteint, comme pour le défaut 21. Python n'expose ni le groupe, ni le verrou, ni les
+      paramètres textes, et ses pickles s'arrêtent avant (défauts 26, 29 et 30).
+    - Origine : `m_uselock`, `95a9185e` (2021-01-22) ; le groupe, `80432f04` (2022-10-05, « Fix #97 ») ; les paramètres textes,
+      `3b758fd3` (2024-05-07, « Fix #219 ») ; le sens de l'objectif n'a jamais été écrit (`FMTserializablematrix`, `2e3dc129`).
+    - Cas : `Integration.FMTOutput.DISABLED_GivenAnOutputOfAGroup…`, `FMTSchedule.…UsesLockLevels…`,
+      `FMTModelParameters.…TextParameter…`, `FMTLpSolver.…MaximizedProblem…`, et `FMTLpModel.…SolvingItAgain…` derrière les défauts
+      26, 28 et 25.
+
+Le prochain défaut prendra le numéro 32.
 
 ### 2.8 Issues signalées par d'autres, vérifiées
 
@@ -3159,10 +3307,196 @@ verts (869, 35 et 2 fixtures, 230 et 2 fixtures), aucun `.orig` ni `.instr.pdb` 
 deux générations identiques) ; sections 6.1 et 6.3.6. Aucun rapport dans `Documentation/Testing/` (décision du 2026-09-25) ;
 aucun changelog, puisque seule la documentation de suivi change.
 
+### 5.20 Lot 9b : sérialisation (2026-10-29)
+
+**Statut** : livré le 2026-10-29, **à reconfigurer, à compiler et à valider par Gabriel** ; rien n'est commité. Deuxième quart du
+lot 9 (section 6.3.6). Point de départ : l'installation du 2026-10-28 à 14 h 52 (section 5.18 ; 1 202 tests, 0 échec, 1 166 verts
+et 36 désactivés), arbre de travail propre (`bccb0fa1`). Aucune correction de FMTlib.
+
+**Relevé, avant d'écrire : les consommateurs réels de la sérialisation.**
+
+| Consommateur | Archive | Classes traversées | Export et version |
+|---|---|---|---|
+| Pickle de Python : `pickle.dumps` et `loads`, mais aussi `copy.copy` et `copy.deepcopy`, qui passent par la même suite ; c'est le transport du multiprocessing | binaire, `make_nvp(typeid(T).name())`, puis zlib (`Python::FMT_pickle_suite`, `Include/FMTpythonpickle.h`), écrite et lue dans `FMT.pyd` (`Source/main.cpp`) | 17 classes par `def_pickle` (`FMTmask`, `FMTdevelopment`, `FMTaction`, `FMTageyieldhandler`, `FMTtimeyieldhandler`, `FMTyields`, `FMTtransition`, `FMToutput`, `FMTtheme`, `FMTschedule`, `FMTmodel`, `FMTsemodel`, `FMTsesmodel`, `FMTsrmodel`, `FMTnssmodel`, `FMTlpmodel`, `FMToperatingarea`), 6 par héritage de leur base (`FMTactualdevelopment`, `FMTfuturdevelopment`, `FMTconstraint`, `FMTsamodel`, `FMToperatingareascheme`, `FMToperatingareaclusterbinary`) ; en profondeur `FMTObject`, `FMTList`, `FMTMaskFilter`, `FMTSpec` et les bornes, `FMTFork`, `FMTTransitionMask`, les gestionnaires de rendements par `std::unique_ptr<FMTYieldHandler>`, `FMTData`, `FMTModelParameters`, `FMTOutputSource`, `FMTOperator`, `FMTConstraint`, `FMTLpSolver` et `FMTSerializableMatrix`, `FMTGraph` (sommets, arêtes, `FMTGraphStats`) | `BOOST_CLASS_EXPORT_KEY` et `IMPLEMENT` sur 48 classes, pas sur les 4 gestionnaires de rendements (défaut 26) ; 3 clés sans `IMPLEMENT` (`FMTOperatingAreaCluster`, `FMTOperatingAreaClusterBinary`, et `FMTLpHeuristicMtHandler` en commentaire) ; aucun `BOOST_CLASS_VERSION` : tout est en version 0, et rien ne lit la version |
+| Transitions GCBM | texte : écrit à la main par `FMTTransitionParser::writeGCBM` (version 17 de la bibliothèque), lu par `text_iarchive` dans `readGCBM`, tous deux dans `FMTlib.dll` | `std::vector<FMTGCBMTransition>`, par valeur | aucun export nécessaire |
+
+Utilisateurs des transitions GCBM : le SES du Core du wrapper (`FMTWrapperCore/Source/SES.cpp`, un fichier par période),
+`FMTtransitionparser.readGCBM` en Python, et les tests système `WriteAndReadGCBMTransitions` et `SimulateSpatially`. Rien d'autre ne
+sérialise : la copie de modèles entre fils passe par `clone()` et les constructeurs de copie (`FMTTaskHandler`, `FMTPlanningTask`) ;
+pas de MPI ; aucune sauvegarde de modèle par Boost, l'écriture est en Woodstock ; rien dans Excel, l'UI ni R (Rcpp n'a pas de pickle).
+
+**Modules.** `boost_serialization` est une DLL (1.84) : son registre des types et la table des sérialiseurs par pointeur de chaque
+archive sont partagés par `FMTlib.dll`, `FMT.pyd` et les exécutables de test. Les sérialiseurs des modèles d'en-tête (`serialize`,
+`save`, `load`) sont instanciés dans chaque module qui les emploie ; les sérialiseurs par pointeur des classes exportées le sont dans
+`FMTlib.dll`, là où la source de l'`IMPLEMENT` voit les archives binaires (`FMTLpSolver.h` les inclut). En vrai, aucune archive n'est
+écrite dans un module et lue dans un autre : le pickle est écrit et lu par `FMT.pyd`, dans un processus ou dans deux, et les
+transitions GCBM par `FMTlib.dll`. `IntegrationSerialization` écrit et relit dans son propre exécutable, comme `FMT.pyd` dans le sien ;
+`testSerialization.py` passe par `FMT.pyd`. Les démonstrations de la section 2.7 ont aussi relu dans `FMT.pyd` des états écrits par
+un exécutable de sonde : un masque s'y relit égal, la lecture d'un module à l'autre n'est donc pas en cause là où elle échoue. Ce qui
+dépend du module : l'export qui corrigera le défaut 26 (section 2.7, « Module »).
+
+**Décisions de Gabriel (2026-10-29)**, sur la proposition faite après le relevé :
+- **niveau** : les allers-retours des classes de Core vont au niveau intégration, comme le veut `CodingStandards.md` (« serialization »
+  est une dépendance réelle de ce niveau), dans un exécutable neuf, `IntegrationSerialization` (`Tests/Integration/Serialization`,
+  étiquettes `integration;serialization`), avec les modèles de TWD_land (`EXAMPLES_MODELS`) ; la proposition de départ les mettait
+  dans `UnitCore` ;
+- **Python** : un cas pytest qui révèle un défaut est marqué `pytest.mark.xfail(strict=True, raises=<exception>)` : il tourne, doit
+  échouer par l'exception du défaut, et passe au rouge le jour de la correction ; `pytest --runxfail` le lance comme un cas ordinaire
+  (règle 3, `AGENTS.md`) ;
+- **compatibilité** : aucune archive figée dans le dépôt ; une note dit que la compatibilité du pickle n'est pas garantie d'une
+  version à l'autre (ci-dessous, changelogs, `PickleArchive.h`) ;
+- **ordre** : GCBM, puis classes de Core, puis modèles, puis Python.
+
+**Ajouts** (sources C++ en cp1252, CRLF, en-tête de licence ; CMake et Python en UTF-8, CRLF) : le dossier
+`Tests/Integration/Serialization` (23 sources, `PickleArchive.h` et `CMakeLists.txt`, inclus par `Tests/Integration/CMakeLists.txt`),
+5 cas dans `Tests/Integration/Parser/FMTTransitionParser.cpp`, et `Tests/System/Python/testSerialization.py`. Une source par classe,
+une suite au nom de la classe, cas Given…When…Then en Arrange / Act / Assert. `PickleArchive.h` refait la partie C++ de
+`FMT_pickle_suite` (archive binaire de l'objet, nommée d'après son type, compressée par zlib), que seul `FMT.pyd` compile : ligne de
+dette d'`Architecture.md`.
+
+| Source | Cas | Ce qu'ils couvrent |
+|---|---|---|
+| `FMTMask.cpp` | 3 | bits et nom d'un masque des thèmes de TWD_land, masque d'un agrégat (`UNITE1 PROD ?`, nom gardé), masque de largeur nulle |
+| `FMTTheme.cpp` | 3 | les trois thèmes de TWD_land (identifiant, début, nom, agrégats, chaîne), table des attributs reconstruite à la relecture (masque d'un agrégat bâti avec les thèmes relus), thème construit par défaut |
+| `FMTDevelopment.cpp` | 2 | masque, âge, verrou et période ; développement construit par défaut |
+| `FMTActualDevelopment.cpp` | 1 | la superficie de TWD_land, aires comprises |
+| `FMTFuturDevelopment.cpp` | 1 | développement du graphe, sans aire |
+| `FMTSpec.cpp` | 2 | bornes de période, d'âge, de verrou et de yield ; spécification vide |
+| `FMTFork.cpp` | 1 | les fourches des transitions de TWD_land, et par elles `FMTTransitionMask` |
+| `FMTAction.cpp` | 1, désactivé | les actions de TWD_land (défaut 25) |
+| `FMTTransition.cpp` | 1, désactivé | les transitions de TWD_land (défaut 25) |
+| `FMTLifespans.cpp` | 2, désactivés | les durées de vie de TWD_land ; durées de vie dont le cache de `findSets` est rempli (défaut 25) |
+| `FMTYields.cpp` | 2, dont 1 désactivé | les rendements de TWD_land, comparés par leurs valeurs (défauts 26 et 25) ; rendements sans gestionnaire (vert, voir les cas limites) |
+| `FMTAgeYieldHandler.cpp` | 2 | valeurs à chaque âge, âges de base, chaîne ; gestionnaire sans données |
+| `FMTTimeYieldHandler.cpp` | 1 | valeurs à chaque période |
+| `FMTComplexYieldHandler.cpp` | 1 | `_MULTIPLY` et `_SUM` calculés par un `FMTYields` bâti en code avec le gestionnaire relu, et par lui `FMTData` |
+| `FMTSchedule.cpp` | 3, dont 2 désactivés | cédule sans action ; cédule d'une action de TWD_land (défaut 25) ; cédule par niveaux de verrou (défaut 31) |
+| `FMTOutput.cpp` | 3, dont 1 désactivé | outputs de TWD_land, et par eux `FMTOutputSource` et `FMTOperator` ; output construit par défaut ; groupe d'un output (défaut 31) |
+| `FMTConstraint.cpp` | 2 | objectif et contraintes du scénario `LP` ; contrainte construite par défaut |
+| `FMTGraphStats.cpp` | 1 | les sept comptes |
+| `FMTOperatingArea.cpp` | 1 | masque, voisins, périmètre et aire |
+| `FMTModelParameters.cpp` | 2, dont 1 désactivé | paramètres entiers, réels, booléens et compression du temps ; paramètre texte (défaut 31) |
+| `FMTModel.cpp` | 2, désactivés | racine de TWD_land, comparée par `Testing::expectSameModel` (défauts 26 et 25) ; modèle construit par défaut (défaut 25) |
+| `FMTLpSolver.cpp` | 3, dont 2 désactivés | problème de deux colonnes résolu : matrice, bornes, objectif et solution relus sans résoudre ; problème maximisé résolu de nouveau (défaut 31) ; solveur sans colonne (défaut 27) |
+| `FMTLpModel.cpp` | 3, désactivés | scénario `LP` non construit ; construit et résolu, puis résolu de nouveau : même optimum et mêmes outputs ; construit et résolu : outputs de la solution relue, sans résoudre (défauts 26, 27, 28, 25 et 31) |
+| `Parser/FMTTransitionParser.cpp` | 5, dont 2 désactivés | transitions GCBM : trois transitions ; noms et attributs avec une espace, nom vide ; transition sans thème après la première ; liste vide et première transition sans thème (défaut 24) |
+| `System/Python/testSerialization.py` | 17, tous `xfail` | `pickle.dumps` puis `pickle.loads` d'un objet de chacune des 16 classes qui déclarent une suite et se construisent en Python (`FMTsrmodel` n'a pas de constructeur), et `copy.deepcopy` d'un masque : défauts 29 (10 cas), 26 (6 cas) et 30 (1 cas) |
+
+`IntegrationSerialization` a 43 cas, 27 verts et 16 désactivés ; `IntegrationParser` gagne 3 cas verts et 2 désactivés ;
+`System.Python.Serialization` est un test ctest de plus. Comptes attendus après le build : 1 251 tests, 1 197 verts et 54
+désactivés ; unit inchangé (869 et 13), integration 65 verts et 29 désactivés sur 94, system 238 verts et 12 désactivés sur 250,
+performance 23, other 2.
+
+**Critère d'égalité.**
+- `operator==` là où les lots 7 et 8 l'ont validé (masque, thème, développements, spécification, fourche, output, contrainte,
+  statistiques, aire d'opération, cédule), doublé de la chaîne écrite et des accesseurs des champs sérialisés : `FMTOutput::operator==`
+  ne compare pas le groupe (défaut 31), le cas le lit.
+- Gestionnaires de rendements et `FMTYields` par les valeurs de leurs yields (#383) ; un yield complexe par un `FMTYields` bâti en code
+  (section 7), avec des noms de yields qu'aucun autre cas du processus n'emploie (défaut 22, #403).
+- Modèles : `Testing::expectSameModel` de `Tests/Integration/Parser/ParserRoundTrip.h` (mêmes thèmes, superficie, actions,
+  transitions, durées de vie, outputs et contraintes, et mêmes valeurs des yields), puis, construits et résolus, le même optimum et
+  les mêmes outputs à la tolérance de `PlanScenario` : 1 % de la valeur, ou de 1 sous 1.
+
+**Sauvegardé après la résolution, ce que fait le code** : `FMTLpSolver::save` synchronise le cache de la matrice, puis
+`FMTSerializableMatrix` écrit la matrice par lignes, les bornes, l'objectif, la solution primale et les duales ; `load` construit une
+interface neuve du même solveur et y charge le tout (`loadProblem`, `setColSolution`, `setRowPrice`). Ni l'état du solveur ni le sens
+de l'objectif ne sont écrits : relu, un solveur n'est pas « prouvé optimal » avant d'être résolu, et, résolu de nouveau, il minimise
+(défaut 31). Le cas vert de `FMTLpSolver` montre la solution relue sans résoudre ; les cas des modèles le vérifieront quand les défauts
+25, 26 et 28 seront corrigés.
+
+**Cas limites.**
+- Objets construits par défaut : masque, thème, développement, spécification, output, contrainte, gestionnaire d'âge sans données et
+  cédule sans action font l'aller-retour ; un modèle construit par défaut, non (défaut 25).
+- Masque de largeur nulle : aller-retour juste.
+- Rendement sans données : `FMTYields` sans gestionnaire se relit vide, mais par hasard : les 5 octets de la base que `FMTList::load`
+  ne lit pas sont des zéros, lus comme des conteneurs vides, et restent non lus à la fin de l'archive (sonde). Ce cas est vert et dit
+  qu'il ne montre pas le défaut 25 ; le modèle construit par défaut le montre.
+- Cache non vide au moment de sauvegarder : `FMTList` écrit le cache de `findSets` (`m_fastpass`) avec ses données. Il se reconstruit
+  à la demande, et `CodingStandards.md` (Serialization) demande de ne pas sauvegarder un cache sans raison : à trancher par la
+  correction du défaut 25 (cas désactivé `FMTLifespans.…CacheOfFindSetsIsFilled…`). `FMTTheme` et `FMTYields` reconstruisent leurs
+  tables à la relecture (cas vert du thème) ; le cache statique des yields complexes, ceux de `FMTComplexYieldHandler` et de `FMTData`,
+  et le cache de nœuds du graphe ne sont pas écrits, ce qui est voulu.
+- Modèle non construit : ne se sauvegarde pas (défaut 27).
+
+**Compatibilité avec des archives existantes** (décision de Gabriel) : le dépôt n'en garde aucune, ni fixture ni fichier sous
+`Examples`, hors du texte GCBM que fige `WriteAndReadGCBMTransitions`. La compatibilité du pickle n'est pas garantie d'une version de
+FMT à l'autre : archive binaire propre à la plateforme (section 6.3.6, 9d), aucun `BOOST_CLASS_VERSION`, donc aucune lecture d'une
+version antérieure, et aucun pickle n'a pu être produit sous Python 3 (défaut 29). Le format des transitions GCBM reste celui que
+`writeGCBM` écrit (texte, version 17 de la bibliothèque) et que le test système fige ; une correction du défaut 24 qui passerait par
+`text_oarchive` changerait la version écrite.
+
+**Défauts nouveaux** : 24 à 31 (section 2.7), démontrés avant d'être annoncés. Textes des issues : dans la livraison du lot, rédigés
+pour Gabriel.
+
+**Observations, sans défaut annoncé** (lu dans le code, ou derrière un défaut qui arrête la relecture avant) :
+- `FMTBaseVertexProperties::serialize` déréférence `m_development`, nul dans un sommet construit par défaut, ce que fait
+  `adjacency_list` à la relecture ; il appelle `_save(area)` en sauvegardant, ce qui remplace le développement de l'objet sauvegardé,
+  et jette l'aire relue. Non atteint : les défauts 25 et 28 arrêtent la relecture d'un modèle avant le graphe, et un test ne peut pas
+  bâtir de graphe (`FMTEdgeProperties` n'est pas exporté, ligne de dette). Un graphe vide fait l'aller-retour (sonde).
+- `FMTModelYieldHandler` ne sérialise pas ses modèles : derrière les défauts 26 et 25.
+- `FMTModel::load` remet le gestionnaire d'exceptions et le journal du processus à leur défaut (`forceLoad` : `setDefaultLogger`,
+  `setDefaultExceptionHandler`, statiques) : relire un modèle annulerait un journal silencieux ou des erreurs converties en
+  avertissements.
+- `FMTGraph::load` appelle `forceSave` au lieu de `forceLoad` (sans effet aujourd'hui) ; `FMTYields::serialize` reconstruit ses
+  positions aussi en sauvegardant (sans effet).
+- `FMTFork` et `FMTSerializableMatrix` sérialisent des membres sans `make_nvp` : sans effet sur les archives binaire et texte, une
+  archive XML ne compilerait pas ; FMT n'en emploie aucune.
+- `writeGCBM` n'écrit pas d'espace entre le nom d'une transition et l'âge de la suivante, à partir de la troisième : `text_iarchive` le
+  relit, ses chaînes étant précédées de leur longueur ; un lecteur qui couperait aux espaces, non.
+- Les classes Python qui héritent la suite de pickle de leur base (section 2.7, défaut 29, « À corriger avec »).
+
+**Non couvert, et pourquoi** : `FMTGraph` et `FMTLineGraph` seuls (un test ne peut pas bâtir de graphe, ligne de dette) ;
+`FMTSeModel`, `FMTSesModel`, `FMTNssModel` et `FMTSaModel` en C++ (`FMTSeModel` ne sérialise que sa base `FMTModel`, couverte par les
+cas de `FMTModel` ; ils ont leurs cas Python) ; les heuristiques d'aires d'opération au-delà de `FMTOperatingArea` (niveau 3) ;
+`FMTConstants` et l'archive binaire de `FMTGCBMTransition` (ni pickle ni autre consommateur) ; les gestionnaires d'exceptions et les
+journaux (`FMTObject` ne les sérialise pas) ; `FMTOutputNodeCache` et `FMTModelStats` (aucun consommateur) ; une lecture d'un module à
+l'autre au-delà des démonstrations ; la comparaison d'archives d'une plateforme à l'autre (lot 9d).
+
+**Vus rouges** (règle 1), rien de commité : des copies faussées des sources du lot, hors du dépôt, compilées par `cl` contre le
+`FMTlib.lib` de `build/release` :
+- **archive tronquée** (la moitié de l'état d'un pickle, la moitié du fichier GCBM, avant la relecture) : les 27 cas verts
+  d'`IntegrationSerialization` et les 3 cas GCBM verts échouent, tous par l'exception de la relecture ;
+- **relecture faussée** (l'objet relu reste tel que construit par défaut ; l'âge après la perturbation de la première
+  transition GCBM relue augmente de 1) : 19 cas sur 27 et les 3 cas GCBM échouent par leurs assertions ; les 8 qui restent verts sont les cas d'objets
+  construits par défaut, déjà rouges avec l'archive tronquée ;
+- **assertions inversées** (un en-tête inclus après `<gtest/gtest.h>`, qui inverse les onze macros employées et rend les fatales non
+  fatales) : les 30 cas verts échouent, aucun par une exception, et chacune des 127 assertions échoue au moins une fois (224 messages,
+  par les boucles) ;
+- **cas désactivés**, lancés avec `GTEST_ALSO_RUN_DISABLED_TESTS=1` : les 16 d'`IntegrationSerialization` et les 11 d'`IntegrationParser`
+  (9 d'avant et 2 nouveaux) échouent, chacun pour la raison que dit son commentaire (« bad allocation », « unregistered class »,
+  `FMTexc(53)` des violations d'accès, valeur perdue) ;
+- **Python** : `testSerialization.py` donne 17 `xfailed`, chacun par l'exception attendue ; avec `--runxfail`, les 17 échouent. Ses
+  assertions ne peuvent pas être vues rouges avant la correction des défauts 26, 29 et 30, qui arrêtent chaque cas à `pickle.dumps`.
+
+**Vu vert avant le build de Gabriel** : `IntegrationSerialization` (23 sources) et `IntegrationParser` (7 sources), compilés par `cl` avec
+les options des exécutables d'intégration (leur `CL.command.1.tlog`), `/Fo` et `/Fd` dans le scratchpad, liés au `FMTlib.lib` de
+`build/release` (FMTlib du 2026-10-26 à 17 h 45, sources de FMTlib inchangées depuis `025d3493`), lancés depuis une racine factice du
+scratchpad (`build\release\bin\Release` vide comme dossier courant, par son nom court, et une copie de TWD_land sous
+`Examples\Models`), avec `bin/Release` dans le `PATH` et `onnxruntime.dll` à côté : `IntegrationSerialization` 27 verts et 16
+désactivés, `IntegrationParser` 25 verts et 11 désactivés ; mêmes résultats dans un ordre mélangé (`GTEST_SHUFFLE`, graines 4242 à
+4244, 3 répétitions). En `/W4 /permissive-`, aucun avertissement ne vient des sources de test : les 2 128 viennent des en-têtes de
+FMTlib. Les 8 fichiers Python, lancés par `runTestFile.py` avec le `FMT.pyd` du build : 15 cas verts dans les 7 d'avant, 17 `xfailed`
+dans `testSerialization.py`. ctest n'a pas été lancé ; rien n'a été écrit dans `build/release` ni sous `Examples/Models`.
+
+**Documents** : `CoreTestCoverage.csv` (colonnes `KnownIssues`, `Remarks` et `MissingTests` de 23 classes : défauts 24 à 31, ce que la
+sérialisation ne garde pas, `serialize` de `FMTObject` désormais atteint), `CoreTestCoverage.md` régénéré (61 classes, 57 avec des tests
+unitaires ; les suites d'`IntegrationSerialization` comptées au niveau intégration ; deux générations identiques) ; deux lignes de
+dette d'`Architecture.md` (la suite de pickle compilée seulement dans `FMT.pyd`, les propriétés d'arêtes non exportées) ; `AGENTS.md`
+(le dossier `Serialization/`, la convention `xfail`) ; `Tests/Integration/CMakeLists.txt` ; sections 1.4 (règle 3), 2.7, 6.1, 6.3.6 et
+7 ; changelogs (section non publiée, anglais et français). La section 8 attend la validation.
+
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-29
 
+- **Lot 9b livré le 2026-10-29, à reconfigurer, à compiler et à valider par Gabriel** (section 5.20) : la sérialisation, par les
+  archives que FMT emploie vraiment, le pickle de Python (binaire, zlib) et le texte des transitions GCBM. Un exécutable neuf,
+  `IntegrationSerialization` (43 cas, dont 16 désactivés), 5 cas GCBM dans `IntegrationParser` (dont 2 désactivés) et un test Python,
+  `System.Python.Serialization` (17 cas `xfail`). Huit défauts nouveaux, 24 à 31 (section 2.7) : aucun objet de FMT ne se pickle en
+  Python, et les listes, les rendements et les modèles ne font pas non plus l'aller-retour en C++. Décisions de Gabriel du
+  2026-10-29 : niveau intégration, `xfail` strict pour un cas pytest, compatibilité du pickle non garantie, ordre GCBM, Core, modèles,
+  Python. Reste à Gabriel : reconfigurer (un dossier de tests et un fichier Python nouveaux), compiler, ouvrir les huit issues, puis
+  la validation ; comptes attendus : 1 251 tests, 1 197 verts et 54 désactivés.
 - **Lot 9a mesuré le 2026-10-29** (section 5.19), commité par Gabriel (`f8ef1dda`), puis le script
   `tools\tests\MeasureCoverage.bat` ajouté à sa demande : couverture de la suite publique C++ avec l'outil de Visual Studio
   (décision de Gabriel du 2026-10-28), sur une configuration à part, `build/coverage` (`/Od`, PDB, `/PROFILE`), compilée par
@@ -3517,14 +3851,25 @@ portabilité, qui attend sa décision (section 6.2).
   par la suite publique C++, 82,0 % des lignes de `Core` ; la colonne `MissingTests` de `CoreTestCoverage.csv` complétée pour
   20 classes. gcov et lcov sous MSYS2 restent à Gabriel. La mesure se refait par `tools\tests\MeasureCoverage.bat`
   (section 5.19).
-- **Ce que 9b doit prendre** : une seule des 122 fonctions `serialize` est atteinte par la suite publique
-  (`FMTGCBMTransition`, archive texte en lecture) ; tout aller-retour binaire est à écrire, d'abord pour les classes que
-  traverse un modèle sauvegardé (`FMTModel` et ses membres de `Core`, `FMTGraph` et ses propriétés, `FMTLpSolver`,
-  `FMTSerializableMatrix`, à 0 %), puis les autres (liste en section 5.19).
+- **9b, fait le 2026-10-29 (section 5.20)**, au niveau intégration (décision de Gabriel du 2026-10-29) : un exécutable neuf,
+  `IntegrationSerialization`, refait le chemin du pickle de Python pour les classes de Core, les solveurs et les modèles de TWD_land ;
+  5 cas GCBM dans `IntegrationParser` ; un test Python par classe qui déclare une suite de pickle. Huit défauts (24 à 31, section 2.7) :
+  la suite de pickle rend une `str` (aucun pickle en Python), `FMTList` ne relit pas ce qu'il écrit, les gestionnaires de rendements
+  ne sont pas exportés, les modèles à solveur ne se sauvegardent pas non construits ni ne se relisent, `FMToutput` porte la suite de
+  `FMTTransition`, et des membres ne sont pas écrits. Compatibilité du pickle non garantie d'une version à l'autre ; aucune archive
+  figée dans le dépôt.
 - **Ce que 9c doit prendre** : les rendements complexes, la comparaison de masques et l'évaluation d'expression sont atteints
   presque entiers par des cas unitaires (`FMTMask` 97 %, `FMTExpression` 98 %, `FMTComplexYieldHandler` 77 %), où une mesure
   d'allocations peut se greffer sans modèle ; la traversée de graphe (`FMTGraph`, 54 %) ne l'est que par l'intégration et le
   système, et `threadedStaticSearch` n'est jamais atteinte : la concurrence de la traversée n'a aucun test qui l'exécute.
+- **Ce que 9c reprend de 9b** : le pickle est le transport du multiprocessing de Python, la seule concurrence entre processus que
+  nomme la documentation de FMT ; il ne marche pas (défaut 29) : rien à mesurer par lui avant sa correction. Le cache statique des yields complexes
+  (défaut 22) et le journal et le gestionnaire d'exceptions que remet à zéro la relecture d'un modèle (section 5.20, observations)
+  sont partagés par les fils d'un processus.
+- **Ce que 9d doit prendre de 9b** : lancer `IntegrationSerialization` et `testSerialization.py` hors de Windows ; ne jamais comparer
+  une archive binaire d'une plateforme à l'autre ; vérifier que le Boost de chaque plateforme (celui du build R de MSYS2 compris) relit
+  le texte GCBM de version 17 que `writeGCBM` écrit à la main ; les noms de `make_nvp` (`typeid(T).name()`) changent d'un compilateur
+  à l'autre, sans effet sur une archive binaire, qui ne les écrit pas.
 
 - **Sérialisation** : aller-retour sur les types sérialisables, et compatibilité avec des
   archives existantes si on en garde.
@@ -3844,6 +4189,25 @@ abandonne.
   l'ensemble retrouve dépend de ses alvéoles : aucun cas n'en attend une taille.
 - **Modèle aléatoire dans un test** (lot 8c) : l'algorithme de `std::discrete_distribution` n'est pas fixé par la norme ; seule une
   distribution où un seul yield n'est pas nul a un tirage calculable à la main.
+- **Copie modifiée d'un en-tête de FMTlib pour un A/B** (lot 9b) : MSVC cherche d'abord un `#include "..."` dans le dossier du
+  fichier qui l'inclut ; un `FMTList.hpp` modifié placé devant `Include` dans le chemin d'inclusion n'est pas pris par `FMTAction.h`.
+  Copier tout `Include` dans le scratchpad, y modifier l'en-tête, et compiler la sonde contre cette copie : seuls les modèles
+  d'en-tête changent, le code de `FMTlib.dll` reste celui du build.
+- **Gestionnaires de rendements et Boost.Serialization** (lot 9b) : tout modèle lu a un `FMTModelYieldHandler` (les yields `_TSLA` par
+  défaut) ; une sonde qui exporte les gestionnaires doit les exporter tous les quatre, et `register_type` sur l'archive ne suffit pas
+  (défaut 26).
+- **Relire dans `FMT.pyd` un état écrit en C++** (lot 9b) : `__setstate__` d'une classe de FMT accepte un tuple d'un `bytes`, l'état
+  de `Testing::getPickleState` écrit dans un fichier ; c'est la voie de l'exécutable officiel pour un défaut de relecture que
+  `pickle.dumps` masque (défaut 29). Une `bad_alloc` y arrive en `MemoryError` sans message.
+- **Cas pytest d'un défaut** (lot 9b, règle 3) : `xfail(strict=True, raises=...)` ; `Boost.Python.ArgumentError` dérive de
+  `TypeError`, une erreur de FMT arrive en `RuntimeError`. Pour lancer un fichier hors de ctest : `runTestFile.py <bin> <fichier>` avec
+  `FMT_SOURCE_DIR`, `PYTHONPATH` et `PYTHONDONTWRITEBYTECODE`, comme le fait ctest.
+- **Lancer un exécutable d'intégration hors de `build/release`** (lot 9b) : PowerShell donne à l'exécutable la forme longue de son
+  dossier courant, si bien que les chemins de cas dépassent 260 caractères même depuis le nom court ; passer par
+  `cmd /c "cd /d <nom court> && <exécutable>"`. Lié depuis Git Bash ou un `.bat` sans CMake, un exécutable GoogleTest dont le `main`
+  vient de `gtest_main` demande `/SUBSYSTEM:CONSOLE` (LNK1561 sinon).
+- **Nom Python avec une coquille** : la méthode du périmètre des voisins d'une aire d'opération s'appelle `getneihgborsperimeter` en
+  Python.
 - Plusieurs tests lèvent avec un nom de méthode copié d'un autre test (`"presolvetest"` dans
   `DoPlanning`) : lire le numéro de ligne plutôt que le nom.
 
