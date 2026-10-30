@@ -4071,6 +4071,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return p_descriptors;
 		}
 
+	protected:
 		// DocString: FMTGraph::_keepForSerie
 		/**
 		@brief Return true if a vertex must be kept while building an action serie.
@@ -4230,6 +4231,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 			return false;
 		}
 
+	private:
 		// DocString: FMTGraph::_setSerieOperabilityNDeath
 		/**
 		@brief Set the operability and the death of the actions of a serie for a vertex.

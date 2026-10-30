@@ -293,6 +293,8 @@ namespace Spatial
 			//boost::unordered_map<Core::FMTDevelopment,std::vector<bool>>cachedactions;
 			//cachedactions.reserve(updatedcoordinate.size());
 			const int8_t DEATH_ID = static_cast<int8_t>(model.actions.size())-1;
+			//The *ACTIONSERIES depend on the history of each cell, not only on its development: out of the cache.
+			const size_t MAX_SERIE_SIZE = model.getSeriesMaxSize();
 			for (const FMTCoordinate& updated : updatedcoordinate)
 				{
 				const Graph::FMTLineGraph& lg = m_mapping.at(updated).getLineGraph();
@@ -330,7 +332,8 @@ namespace Spatial
 						{
 							std::set<Spatial::FMTCoordinate>& settochange = original[actionid];
 							if (cacheit!=cachedactions.end() &&
-								cacheit->second.at(actionid))
+								cacheit->second.at(actionid) &&
+								lg.isAllowedBySeries(actionid, model, MAX_SERIE_SIZE))
 							{
 								settochange.insert(updated);
 							}

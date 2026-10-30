@@ -185,6 +185,29 @@ namespace Graph
 		return active;
 	}
 
+	bool FMTLineGraph::isAllowedBySeries(int p_actionId, const Models::FMTModel& p_model, size_t p_maxSerieSize) const
+	{
+		bool allowed = true;
+		try {
+			if (p_maxSerieSize > 0)
+			{
+				bool onSerie = false;
+				allowed = !_keepForSerie(getActiveVertex(), p_model.actions.cbegin() + p_actionId,
+					p_maxSerieSize, p_model, onSerie);
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raiseFromCatch("", "FMTLineGraph::isAllowedBySeries", __LINE__, __FILE__);
+		}
+		return allowed;
+	}
+
+	bool FMTLineGraph::isAllowedBySeries(int p_actionId, const Models::FMTModel& p_model) const
+	{
+		return isAllowedBySeries(p_actionId, p_model, p_model.getSeriesMaxSize());
+	}
+
 	int FMTLineGraph::getInEdgeActionId(const FMTvertex_descriptor& vdesc)const
 	{
 		std::vector<int> ids;

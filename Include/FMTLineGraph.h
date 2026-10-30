@@ -113,6 +113,25 @@ class FMTEXPORT FMTLineGraph : public FMTGraph<FMTBaseVertexProperties,FMTBaseEd
 		@return the active vertex.
 		*/
 		FMTvertex_descriptor getActiveVertex() const;
+		// DocString: FMTLineGraph::isAllowedBySeries
+		/**
+		@brief Return true if the *ACTIONSERIES of the model allow an action on the active vertex, with the rule of
+		FMTGraph::build: a vertex on a serie only gets the next action of its serie, until that action can no longer
+		be operated before the end of the model.
+		@param[in] p_actionId the id of the action in the model.
+		@param[in] p_model the model.
+		@param[in] p_maxSerieSize the size of the largest serie of the model (FMTModel::getSeriesMaxSize), 0 without serie.
+		@return true if the action is allowed, else false.
+		*/
+		bool isAllowedBySeries(int p_actionId, const Models::FMTModel& p_model, size_t p_maxSerieSize) const;
+		// DocString: FMTLineGraph::isAllowedBySeries
+		/**
+		@brief Return true if the *ACTIONSERIES of the model allow an action on the active vertex.
+		@param[in] p_actionId the id of the action in the model.
+		@param[in] p_model the model.
+		@return true if the action is allowed, else false.
+		*/
+		bool isAllowedBySeries(int p_actionId, const Models::FMTModel& p_model) const;
 		// DocString: FMTLineGraph::getLastActionId
 		/**
 		@brief Return the action id of the last edge of a period.
