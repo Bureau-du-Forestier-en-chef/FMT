@@ -10,7 +10,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 # CMakeLists.txt, included here, calls registergoogletests(Integration<Component> Integration <component> <sources>)
 # of Tests/Support/TestRegistration.cmake, as Unit/Core/CMakeLists.txt does for the unit tests of FMTlib.
 # Parser/ tests the parsers of FMTlib with the files they write and read back; Models/ tests the planning models with
-# their solver; Serialization/ tests the objects that the pickle of Python saves and reads back.
+# their solver; Serialization/ tests the objects that the pickle of Python saves and reads back; Parallel/ tests the
+# tasks that run models on several threads.
 include("${CMAKE_CURRENT_LIST_DIR}/Parser/CMakeLists.txt")
 include("${CMAKE_CURRENT_LIST_DIR}/Models/CMakeLists.txt")
 include("${CMAKE_CURRENT_LIST_DIR}/Serialization/CMakeLists.txt")
+include("${CMAKE_CURRENT_LIST_DIR}/Parallel/CMakeLists.txt")

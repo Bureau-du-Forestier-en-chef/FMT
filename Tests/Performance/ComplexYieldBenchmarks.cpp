@@ -16,13 +16,19 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 // call shows it. The same key asked at every call would switch to the cache for good at the first
 // such slowdown, so that its measure would depend on when that happens: it is not a benchmark.
 //
+// ComplexYield.CachedValue measures the other path of FMTComplexYieldHandler::get: the value served
+// by the yields cache. Its key is put in the cache by prepare, under the period 0, which no other
+// benchmark asks for: the cache keeps the period of its keys on 8 bits.
+//
 // The yield requests are built and their yield data located before the measurement, as the graph
 // of a model does before asking for yields.
 
 #include "ComplexYieldBenchmarks.h"
 
+#include "FMTDevelopment.h"
 #include "FMTYieldRequest.h"
 #include "FMTYields.h"
+#include "FMTYieldsCache.h"
 
 #include "Benchmark.h"
 #include "BenchmarkSuite.h"
@@ -81,6 +87,59 @@ namespace
 		m_nextRequest = (m_nextRequest + 1) % Performance::PerfYields::REQUESTS;
 		return m_perfYields->getYields().get(REQUEST, m_yield);
 	}
+
+	// The yield of ComplexYield.CachedValue: TWICE, _SUM(VOLUMETOTAL,VOLUMETOTAL).
+	const std::string CACHED_YIELD = "TWICE";
+
+	// Reads TWICE, _SUM(VOLUMETOTAL,VOLUMETOTAL), from the yields cache: 240, as ComplexYield.Sum
+	// computes it.
+	class CachedComplexYieldBenchmark final : public Performance::Benchmark
+	{
+	public:
+		explicit CachedComplexYieldBenchmark(std::shared_ptr<Performance::PerfYields> p_perfYields);
+		std::string getName() const override;
+		std::string getDataset() const override;
+		void prepare() override;
+		double run() override;
+
+	private:
+		std::shared_ptr<Performance::PerfYields> m_perfYields;
+		// The development of the request, at period 0: the request points to it.
+		Core::FMTDevelopment m_development;
+		std::unique_ptr<Core::FMTYieldRequest> m_request;
+	};
+
+	CachedComplexYieldBenchmark::CachedComplexYieldBenchmark(std::shared_ptr<Performance::PerfYields> p_perfYields) :
+		m_perfYields(std::move(p_perfYields))
+	{
+	}
+
+	std::string CachedComplexYieldBenchmark::getName() const
+	{
+		return "ComplexYield.CachedValue";
+	}
+
+	std::string CachedComplexYieldBenchmark::getDataset() const
+	{
+		return m_perfYields->getDataset();
+	}
+
+	void CachedComplexYieldBenchmark::prepare()
+	{
+		m_perfYields->prepare();
+		m_development = m_perfYields->getDevelopment(0);
+		m_development.setPeriod(0);
+		m_request = std::make_unique<Core::FMTYieldRequest>(m_development);
+		// The first use of the request locates its yield data; its value then goes to the cache.
+		const double VALUE = m_perfYields->getYields().get(*m_request, CACHED_YIELD);
+		Core::FMTYieldsCache cache;
+		cache.set(VALUE, *m_request, CACHED_YIELD);
+	}
+
+	double CachedComplexYieldBenchmark::run()
+	{
+		return m_perfYields->getYields().get(*m_request, CACHED_YIELD);
+	}
 }
 
 namespace Performance
@@ -101,5 +160,6 @@ namespace Performance
 		{
 			p_suite.add(std::make_unique<ComplexYieldBenchmark>(OPERATION.first, OPERATION.second, PERF_YIELDS));
 		}
+		p_suite.add(std::make_unique<CachedComplexYieldBenchmark>(PERF_YIELDS));
 	}
 }

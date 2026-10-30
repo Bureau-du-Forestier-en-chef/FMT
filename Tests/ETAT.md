@@ -1185,7 +1185,103 @@ pas corrigé dans ce chantier.
       attendu 10), sur le scénario `defaultdeath`. Rouges avec le build de `5d1cbb79` (`UNITE1 !AA UTR1` ; objectif vide,
       `FMTexc(51)`) ; vertes sur une copie du scénario sans son `._trn`, où revient la `_DEATH` de la racine.
 
-Le prochain défaut prendra le numéro 33.
+**Défauts révélés par le lot 9c (2026-10-30).** Cinq défauts de FMTlib, démontrés comme les précédents : cause lue dans le code,
+A/B où une seule chose change, exécutables officiels (`FMTlib.dll` du build de `5d1cbb79`, et `FMTWrapperCore.dll` pour les défauts
+36 et 37, appelés par des sondes du scratchpad qui ne modifient ni FMT ni le dépôt), origine git. Les trois premiers sont des
+allocations après la préparation sur les chemins chauds que nomme #350 : chacun a sa rangée du banc, avec la borne mesurée, et
+chaque allocation est attribuée à sa ligne par les piles d'appel d'une copie de diagnostic du moniteur d'allocations (hors du
+dépôt). Les deux derniers sont des courses de la planification et de la replanification de l'interface, démontrées par une
+reproduction qui les force (rendez-vous de deux fils sur le même objet), et non par un échec rare : chacun a un cas `DISABLED_`
+dans `IntegrationParallel`. Ils ne sont pas corrigés dans ce chantier ; leurs issues sont rédigées à la livraison du lot
+(section 5.22).
+
+33. **`FMTList::findSets` alloue à chaque appel, même quand son cache tient déjà les sections du masque** (`FMTList`,
+    `FMTMaskFilter`).
+    - Cause : `findSets` (`Include/FMTList.hpp:231`) filtre le masque du développement par `FMTMaskFilter::filter`
+      (`Source/FMTMaskFilter.cpp:138`), qui calcule `(masque & sélection) | inversée` : chaque opérateur de
+      `boost::dynamic_bitset` copie son opérande gauche, puis copie le résultat pour le rendre (`return b &= y;`), 4 bitsets ; le
+      `FMTMask` filtré copie le nom du développement (23 caractères, au-delà des 15 d'une chaîne courte) et son bitset, 2 ;
+      `findSetsWithFiltered` rend un vecteur des sections trouvées, 1. Le premier appel d'un masque ajoute le nœud du cache
+      `m_fastpass`, la copie de sa clé et deux vecteurs qui grandissent sans réserve.
+    - Mesure (banc, A/B par la variante) : `Mask.FindSets` 7 allocations par appel, `Mask.FindSets.FirstCall` 19 ; les
+      comparaisons elles-mêmes n'allouent rien (`Mask.IsSubsetOf`, `Mask.Equals`, `Mask.Less`, `Mask.Hash`,
+      `Mask.IsSubsetOfBlocks`, 0).
+    - Portée : chaque développement que le graphe construit, pour chaque action (`FMTDevelopment::operable`,
+      `Source/FMTDevelopment.cpp:193` et 220), chaque transition (ligne 320) et les durées de vie (`FMTActualDevelopment`).
+    - Origine : le filtre par opérateurs de bitsets est dans le premier commit (`2e3dc129`, 2019-06-07), retouché par `2a3b40b1`
+      (2020-02-05).
+    - Rangées : `FMTPerformanceTests.Mask.FindSets` (borne 7) et `.FirstCall` (borne 19).
+34. **`FMTExpression::shuntingYard` convertit de nouveau l'expression à chaque évaluation** (`FMTExpression`, `FMTOperator`).
+    - Cause : `shuntingYard` (`Source/FMTExpression.cpp:254`) remplace les variables par leur valeur en texte
+      (`_replaceVariables`), copie l'infixe et bâtit le postfixe (`_getPostFix`), sans réserve, puis l'évalue (`_evaluatePostFix`) ;
+      ses trois piles reposent sur `std::deque` (bloc de contrôle, carte et blocs à chaque appel) ; et chaque `FMTOperator` construit
+      depuis le texte d'un jeton bâtit la liste des six opérateurs (`Source/FMTOperator.cpp:27`), 11 fois pour 5 jetons. Rien ne se
+      prépare : l'API ne garde aucune forme compilée.
+    - Mesure : `Expression.ShuntingYard`, 31 allocations par appel pour `VOLUMETOTAL + VOLUMETOTAL * 2` ; A/B : les mêmes calculs
+      par `FMTOperator::call` et `FMTFunctionCall::call` déjà construits, 0 (`Expression.Operator`).
+    - Portée : les yields `_EQUATION` (une part des 31 allocations de `ComplexYield.Equation`, sous #348) et les outputs qui
+      combinent leurs sources (`FMTOutput::shuntingYard`, qui passe d'abord chaque valeur en texte, `Source/FMTOutput.cpp:555`, et
+      `fillFromShuntingYard`).
+    - Origine : `shuntingYard` et `_replaceVariables` sont dans le premier commit (`2e3dc129`) ; la liste des opérateurs, sous sa
+      forme d'aujourd'hui, depuis `2a3b40b1` (2020-02-05).
+    - Rangée : `FMTPerformanceTests.Expression.ShuntingYard` (borne 31).
+35. **La traversée du graphe par `getOutput` alloue à chaque appel, et deux fois par sommet** (`FMTGraph`, `FMTOutput`,
+    `FMTOutputNode`).
+    - Cause : une fois le cache des nœuds rempli, `FMTGraph::getOutput` (`Include/FMTGraph.hpp:882`) refait à chaque appel le thème,
+      les résultats, les nœuds de l'output et leur équation (`FMTOutput::getNodes`) ; `getSource` copie le nœud ; `getNode`
+      réserve ses vecteurs et rend une copie des sommets choisis ; `getValues` copie le développement de chaque sommet pour le
+      ramener à la période d'avant (`Include/FMTGraph.hpp:2529`), son nom et son bitset ; pour un output d'action, `getPaths` rend les
+      chemins de chaque arête et deux copies du développement.
+    - Mesure (traversée seule, sans yields) : `Graph.GetOutput.Inventory`, 118 allocations par appel, 30 plus 2 pour chacun des 44
+      sommets de la période 10 ; `Graph.GetOutput.Action`, 43, soit 33 plus 5 pour chacune des 2 arêtes ; le premier appel d'un
+      output, `Graph.GetOutput.Inventory.FirstCall`, 156. La `std::map` rendue alloue par conception ; tout le reste est la
+      traversée.
+    - Portée : chaque output de chaque période, dans les rapports, les contraintes et la replanification ; sur un modèle de
+      production, une période compte des milliers de sommets, autant de fois deux allocations par appel.
+    - Origine : la copie du développement par sommet est dans le premier commit (`2e3dc129`), retouchée par `71869d24` (2022-08-04,
+      « fix #85 »).
+    - Rangées : `FMTPerformanceTests.Graph.GetOutput.Inventory` (118), `.Inventory.FirstCall` (156), `.Action` (43).
+36. **Les fils d'une tâche de planification écrivent dans le même `CoinMessageHandler`, sans verrou** (`FMTPlanningTask`,
+    `FMTLpSolver`).
+    - Cause : `FMTPlanningTask::push_back` (`Source/FMTPlanningTask.cpp:89`) donne à chaque modèle le journal de la tâche où il est
+      poussé ; `split` et `spawn` en font des copies pour les fils, et la copie d'un solveur garde le gestionnaire de messages de
+      l'original (`m_solverLogger`, `Source/FMTLpSolver.cpp:104`, et le clone d'OSI garde le gestionnaire qu'on lui a passé) : les
+      solveurs de tous les fils écrivent dans un seul `CoinMessageHandler`, qui n'a pas de verrou ; `Include/FMTTask.h:118` le dit
+      lui-même (« coinmessagehandler does not support concurency »). La replanification donne à chaque copie le journal de sa tâche
+      (`_copySharedModel`, depuis `7db739e0`) ; la planification, non.
+    - A/B (sonde du scratchpad, `Planning::plan` de `FMTWrapperCore.dll`, l'interface, sur les scénarios `NOT_MASK`, `division`,
+      `ExcludeArea` et `replanification_tactique` de TWD_land, CLP, `CoinMessageHandler::message` observé dans les tables
+      d'imports d'OsiClp, Clp et Osi) : sur 4 fils, un seul gestionnaire reçoit les messages des 4 fils, et 2 fils y sont à la fois
+      dans 11 passes sur 20, sans rien forcer ; sur 1 fil, un seul fil. Forcée (rendez-vous de 50 ms des fils qui entrent pour le
+      même gestionnaire), la course arrête le processus : écriture à l'adresse nulle dans `CoinMessageHandler::printing+0x22`
+      (`mov byte ptr [rax],25h`, `rax` nul), sur un fil de `FMTPlanningTask::work` (`doPlanning`, `FMTLpSolver::initialSolve`,
+      `ClpSimplex::initialSolve`), traduite en exception par FMT, puis fin du processus en `0xC0000409` (pile capturée sous cdb,
+      avec un `FMTlib.dll` rejoué des mêmes sources avec son PDB). Avec MOSEK, aucun message ne passe par le gestionnaire dans les
+      fils (le journal des tâches règle le niveau à 0) : rien n'est partagé.
+    - Origine : `FMTPlanningTask` partage ce gestionnaire depuis sa création (`d901a82d`, 2022-03-17) ; `73031544` (2023-04-03,
+      « fix for planingtask logger ») lui donne le journal de la tâche, toujours partagé par toutes les copies.
+    - Portée : toute planification de plusieurs scénarios sur plusieurs fils avec CLP, dont l'interface (`Planning::plan`) et
+      `WrapperCoreRunPlanning` (2 fils, CLP).
+    - Cas : `Integration.FMTPlanningTask.DISABLED_GivenClpModelsWhenPlannedOnSeveralThreadsThenEachThreadLogsIntoItsOwnMessageHandler`
+      (4 fils sur le même gestionnaire, 1 attendu).
+37. **Les fils d'une replanification copient en même temps la même tâche MOSEK** (`FMTReplanningTask`).
+    - Cause : les copies d'une `FMTReplanningTask` partagent ses modèles global, stochastique et local (`std::shared_ptr`,
+      `Include/FMTReplanningTask.h:192` à 198) ; chaque fil les copie à chaque période (`_copySharedModel`,
+      `Source/FMTReplanningTask.cpp:153`), et la copie du solveur clone l'interface d'OSI du modèle partagé, donc sa tâche MOSEK
+      (`MSK_clonetask`). MOSEK l'interdit : « Sharing a task between threads is safe, as long as it is not accessed from more than
+      one thread at a time » (manuel de l'API C, `capi.pdf` de MOSEK 10.1, Thread safety).
+    - A/B (sonde, `Planning::replan` de `FMTWrapperCore.dll`, MOSEK, `onDemandRun`, 10 réplicats de 5 périodes des scénarios de
+      replanification de TWD_land, `MSK_clonetask` observé dans la table d'imports d'OsiMsk) : sur 5 fils, jusqu'à 3 fils dans
+      `MSK_clonetask` à la fois pour la même tâche, sans rien forcer ; 44 à 56 rencontres forcées par passe avec un rendez-vous de
+      50 ms ; sur 1 fil, jamais plus d'un. Les lignes écrites restent celles d'un fil sur TWD_land, forcées ou non : la violation du
+      contrat de MOSEK est démontrée, aucun effet n'est observé.
+    - Origine : `e7737e41` (2024-05-24, « Major fix for exceptionhandler and logger ») met en commentaire le verrou statique des
+      tâches qui sérialisait cette copie (`boost::lock_guard<boost::recursive_mutex> guard(taskmutex);`).
+    - Portée : toute replanification sur plusieurs fils avec MOSEK, dont l'interface (5 fils en production).
+    - Cas : `Integration.FMTReplanningTask.DISABLED_GivenTheReplanningScenariosWhenReplannedOnSeveralThreadsThenNoTwoThreadsCopyTheSameMosekTaskAtOnce`
+      (rendez-vous de 20 ms : 5 fils à la fois, 1 attendu).
+
+Le prochain défaut prendra le numéro 38.
 
 ### 2.8 Issues signalées par d'autres, vérifiées
 
@@ -3647,10 +3743,121 @@ Commité par Gabriel : la correction en `83eb6eba`, le test, le scénario, la co
 - non relues : les consoles de la configuration et du build. Les avertissements de la correction ne sont couverts que par la
   passe `/W4` hors dépôt d'avant le build. Le modèle 09371 n'est pas relancé avec le build : il l'a été avec la DLL d'essai.
 
+### 5.22 Lot 9c : allocations et concurrence (2026-10-30)
+
+Troisième des exigences transverses du lot 9 (section 6.3.6), sur `new_test` à `7fbca39e`, arbre propre au départ. Aucune
+correction de FMTlib. #350, mot pour mot : « Selected `Core` calculation paths should verify that no dynamic allocation occurs
+after initialization » (complex-yield evaluation, mask comparison, expression evaluation, graph traversal) ; « Components that
+are not thread-safe should document that behavior rather than creating misleading concurrency tests ».
+
+**Décisions de Gabriel du 2026-10-30** (D1 à D6, telles que proposées) :
+- D1 : des rangées nouvelles du banc de #349, étiquette `allocation`, pas de test GoogleTest ; une borne justifiée par chemin,
+  chaque allocation attribuée à sa ligne ; une variante `.FirstCall` là où un cache se remplit au premier appel.
+- D2 : un chemin qui alloue après sa préparation reçoit sa borne mesurée, un défaut numéroté et une issue ; les rendements
+  complexes restent sous #348.
+- D3 : `performance-mingw.csv` reçoit les mêmes rangées, bornes vides, que Gabriel mesure dans le build MSYS2.
+- D4 : tests de la concurrence au niveau intégration, dans un exécutable neuf `IntegrationParallel`.
+- D5 : démontrer les suspects S2 puis S1 dans ce lot.
+- D6 : une note en anglais dans la Doxygen des classes qui ne sont pas utilisables en parallèle, et la colonne `ThreadSafety`.
+
+**Relevé, volet 1** (lu dans le code avant toute mesure, puis attribué par les piles d'appel) :
+
+| Chemin | Avant le lot | Ajouté | Allocations par appel après la préparation |
+|---|---|---|---|
+| Rendements complexes | `ComplexYield.*`, bornes 4 à 31 (#348) | `ComplexYield.CachedValue`, la valeur servie par le cache | 2 : la clé, et sa copie par le type du visiteur de `tryToGet` ; les 7 bornes existantes expliquées une à une (`PerformanceTesting.md`) |
+| Comparaison de masques | `Mask.IsSubsetOf` (0) | `Mask.Equals`, `Mask.Less`, `Mask.Hash`, `Mask.IsSubsetOfBlocks` ; `Mask.FindSets` et `.FirstCall` | 0 pour les comparaisons ; 7 et 19 pour `FMTList::findSets` (défaut 33) |
+| Évaluation d'expression | rien | `Expression.ShuntingYard`, `Expression.Operator` | 31 et 0 (défaut 34) |
+| Traversée de graphe | les `Flow.*`, sans borne d'allocations | `Graph.GetOutput.Inventory`, `.Inventory.FirstCall`, `.Action` | 118 (30 + 2 par sommet), 156, 43 (33 + 5 par arête) (défaut 35) |
+
+Le banc n'a pas d'option « écart connu » : un écart se tient par la borne mesurée, que le texte de `PerformanceTesting.md` explique
+et qui nomme le défaut. Mesure : deux passages courts et un complet (1 000 appels comptés), minimum, médiane et maximum égaux pour
+les 12 rangées, aucune mémoire gardée (borne de mémoire gardée 0 pour les rangées qui allouent). Les fils d'OpenMP, d'OpenBLAS ou
+de MKL n'entrent dans aucune de ces rangées : elles tournent sur le fil qui mesure.
+
+**Relevé, volet 2** : FMT ne lance de fils que dans `FMTTaskHandler` (`conccurentRun`, `onDemandRun` par `FMTWorkerTask`),
+`FMTLpHeuristicMtHandler` et `FMTGraph::threadedStaticSearch` ; aucun dans la construction du graphe, ni d'OpenMP dans le CMake de
+FMTlib (seulement l'OpenBLAS du build MSYS2, #373) ; MOSEK a ses propres fils (`NUMBER_OF_THREADS`, 4,7 Mo par fil, #366).
+
+| Composant | Promis par | Partagé entre les fils | Protection | Classement |
+|---|---|---|---|---|
+| `FMTTaskHandler`, `FMTWorkerTask` | Doxygen, l'interface | signal de fin, compteurs de `FMTTask` | mutex, condition, atomique (`_checkpoint` lit hors verrou, mais n'est appelé nulle part) | promis et protégé ; testé |
+| `FMTParallelWriter` | Doxygen | couches GDAL | `recursive_mutex` | promis et protégé ; testé à travers les tâches |
+| `FMTPlanningTask` | Doxygen, `Planning::plan` | écrivain, journal, cache des yields, gestionnaire de messages du solveur | verrous, `concurrent_flat_map`, rien pour le gestionnaire | promis ; non protégé pour le gestionnaire : défaut 36 |
+| `FMTReplanningTask` | `Planning::replan` (5 fils) | les trois modèles de base, écrivain | aucune pour la copie des modèles | promis ; non protégé : défaut 37 |
+| `FMTLpHeuristicMtHandler`, `FMTOpAreaSchedulerTask` | Doxygen | un objet par fil ; statiques sous `generalmutex` | propriété, mutex | promis et protégé ; aucun scénario public d'aires d'opération : non testé |
+| Fils du solveur (`NUMBER_OF_THREADS`) | `FMTModelParameters.h` | interne à MOSEK | celle de MOSEK | promis ; testé (même optimum) |
+| `FMTGraph::threadedStaticSearch` | Doxygen | un `std::vector<bool>` écrit par 10 fils | aucune | privée, jamais appelée (appel commenté depuis sa création, `e7737e41`) : note Doxygen |
+| Modèles, listes, requêtes, gestionnaires, graphe | rien | caches `mutable` écrits par des méthodes `const` | aucune | non promis : notes Doxygen |
+| Journal et gestionnaire d'exceptions | rien | statiques du processus | appels verrouillés, remplacement non | non promis : note Doxygen (#363) |
+| Cache des yields complexes | rien | table statique | `concurrent_flat_map` | protégé ; clés partagées par les modèles (défaut 22, #403) : note Doxygen |
+| `FMTSpatialSchedule` (statiques) | rien | `m_Movables`, `m_OperabilityCache` | aucune | non promis : note Doxygen |
+
+Hors de portée : le multiprocessing de Python, qui passe par le pickle (défaut 29, #412) ; rien n'est testé par lui.
+
+**Ajouts.**
+- Banc : 12 rangées dans `performance.csv` et `performance-mingw.csv` (bornes vides là, D3) ; `MaskBenchmarks.cpp` (6 rangées,
+  `LandscapeThemes` devient `LandscapeRoot`, qui garde aussi les yields de la racine), `ComplexYieldBenchmarks.cpp` (1),
+  `ExpressionBenchmarks.h/.cpp` (2) et `GraphBenchmarks.h/.cpp` (3), nouveaux ; `ModelSetup.h/.cpp`, nouveau, reçoit de
+  `FlowBenchmarks.cpp` le solveur et la construction d'un modèle avec sa cédule, que partagent les flux et la traversée du graphe ;
+  les deux groupes nouveaux dans `FMTPerformanceTests.cpp` et le `CMakeLists.txt` du banc.
+- `IntegrationParallel` (`Tests/Integration/Parallel/`, 7 cas, dont 2 désactivés) : `FMTPlanningTask` (5 scénarios dont `DoPlanning`
+  connaît l'optimum, une passe sur 1 fil puis 20 sur 2 et 20 sur 4, par `conccurentRun` et par `onDemandRun` : mêmes objectifs,
+  mêmes lignes triées) ; `FMTReplanningTask` (10 réplicats de 5 périodes, une passe sur 1 fil puis 10 sur 2 et 10 sur 5, par les
+  deux voies : mêmes lignes, 100 lignes du modèle local) ; `FMTLpModel` (`NOT_MASK` résolu 10 fois sur 4 fils de MOSEK : l'optimum
+  d'un fil, 90738) ; les deux cas `DISABLED_` des défauts 36 et 37, qui observent les gestionnaires de messages et les copies de
+  tâches MOSEK par la redirection des tables d'imports (`ImportRedirect.h`, technique du moniteur du banc ; ligne de dette
+  d'`Architecture.md`). Chaque modèle résout sur un fil de son solveur : seules les tâches sont parallèles (règle 7). Durée : 11,2 s
+  (2,1, 2,0, 3,4, 3,3 et 0,3 s).
+- Doxygen (en anglais, D6) : `FMTModel`, `FMTList`, `FMTYieldRequest`, `FMTYieldHandler`, `FMTGraph` et `threadedStaticSearch`,
+  `FMTObject`, `FMTSpatialSchedule`, `FMTYieldsCache`.
+- `CoreTestCoverage.csv` : `ThreadSafety` et `AllocationSensitive` remplies pour 21 classes, `CoreTestCoverage.md` régénéré.
+- `PerformanceTesting.md` (fichiers, règle d'une borne expliquée, rangées et détail de leurs allocations, MinGW), `AGENTS.md`
+  (`Parallel/`), `Architecture.md` (ligne de dette), changelogs.
+
+**Vus rouges** (copies faussées hors du dépôt ou options du banc, sans recompiler le banc officiel) :
+- banc : `--expected` + 1 sur les 12 rangées, 12 échecs ; `--max-allocations` sous la mesure sur les 7 qui allouent, 7 échecs ;
+  une allocation ajoutée dans une copie (comparaisons de masques, `Expression.Operator`), 5 échecs « the bound 0 allows none » ; un
+  bloc gardé à chaque appel dans une copie, 6 échecs sur la mémoire gardée ;
+- `IntegrationParallel` : la passe sur 1 fil faussée (une ligne ajoutée, un objectif déplacé de 1, l'optimum d'un fil + 10) : les
+  5 cas actifs échouent ; les 2 cas `DISABLED_`, lancés, échouent (4 fils sur un gestionnaire ; 5 fils à la fois sur une tâche).
+
+**Observations, sans défaut annoncé.**
+- `fullcarbon` (rendements `POOLS_CARBON` prédits par ONNX) dans une tâche : environ 4 s par planification, environ 100 Mo de plus
+  par tâche dans le processus (2 Go après 21 tâches), 14 cœurs occupés en moyenne : laissé hors des cas de planification (cause
+  non établie). Son optimum, 8 287 602,93, n'est pas celui de `DoPlanning` (8 276 831) parce que `DoPlanning` règle aussi
+  `STRICTLY_POSITIVE` et d'autres paramètres.
+- La mémoire « course préexistante sur les caches » des tests intermittents (section 7) n'a pas de fil pour la déclencher dans le
+  code actuel : le piège est corrigé.
+- `FMTPlanningTask` sans fichier primaire n'écrit aucune cédule : les cas n'écrivent que sous `tests/IntegrationParallel`.
+
+**Avant le build de Gabriel** : banc et `IntegrationParallel` compilés par `cl` contre le `FMTlib.lib` de `build/release` (objets,
+PDB et exécutables dans le scratchpad), `/W4` sans avertissement dans les sources du lot ; les 35 rangées du banc, une par
+processus, vertes ; les 5 cas actifs verts, les 2 désactivés rouges ; configuration rejouée dans le scratchpad : 1 273 tests
+publics, 58 désactivés (1 254 et 56 avant, plus 12 rangées et 7 cas, dont 2 désactivés), étiquettes `integration;parallel`,
+`allocation` et `memory` comme prévu.
+
+**Ce que le lot apporte à #350** : l'absence d'allocation est mesurée sur les quatre chemins nommés, à 0 là où elle tient
+(comparaisons, opérateurs, lecture d'un yield d'âge) et avec un défaut là où elle ne tient pas ; la concurrence est testée sur ce
+que FMT promet (tâches, fils du solveur) et documentée ailleurs.
+
+**Reste** : le build de Gabriel, `RunTests.bat all-public` et `performance`, l'installation ; les bornes MinGW des 12 rangées
+(Gabriel) ; les issues des défauts 33 à 37 (Gabriel).
+
 ## 6. Prochain lot
 
-### 6.1 État au 2026-10-29
+### 6.1 État au 2026-10-30
 
+- **Lot 9c livré le 2026-10-30, non commité, à compiler et valider par Gabriel** (section 5.22) : les allocations et la
+  concurrence. 12 rangées du banc (étiquette `allocation`) : 0 allocation pour les comparaisons de masques, les opérateurs et les
+  fonctions ; bornes mesurées et expliquées ligne à ligne pour `FMTList::findSets` (7, défaut 33), `FMTExpression::shuntingYard`
+  (31, défaut 34), la traversée du graphe par `getOutput` (118, 2 par sommet, défaut 35) et la valeur servie par le cache des yields
+  (2, #348). Un exécutable neuf, `IntegrationParallel` (7 cas, dont 2 désactivés) : la planification et la replanification de
+  l'interface sur plusieurs fils donnent les résultats d'un fil, et les fils de MOSEK l'optimum d'un fil. Deux courses démontrées
+  en les forçant : les fils d'une planification écrivent dans le même `CoinMessageHandler` (avec CLP, arrêt du processus forcé :
+  défaut 36) ; ceux d'une replanification copient la même tâche MOSEK à la fois (défaut 37). Notes Doxygen pour ce qui n'est pas
+  utilisable en parallèle, colonnes `ThreadSafety` et `AllocationSensitive` de `CoreTestCoverage.csv`. Décisions de Gabriel du
+  2026-10-30 : D1 à D6 (section 5.22). Attendu après reconfiguration : 1 273 tests, 1 215 verts et 58 désactivés (integration
+  101, performance 35). Issues des défauts 33 à 37 rédigées, à ouvrir par Gabriel. Le lot 9d attend sa décision (section 6.2).
 - **Lot 9b livré, commité par Gabriel (`7f410902`) et validé le 2026-10-29** (section 5.20) : la sérialisation, par les
   archives que FMT emploie vraiment, le pickle de Python (binaire, zlib) et le texte des transitions GCBM. Un exécutable neuf,
   `IntegrationSerialization` (43 cas, dont 16 désactivés), 5 cas GCBM dans `IntegrationParser` (dont 2 désactivés) et un test Python,
@@ -4021,7 +4228,10 @@ portabilité, qui attend sa décision (section 6.2).
   ne sont pas exportés, les modèles à solveur ne se sauvegardent pas non construits ni ne se relisent, `FMToutput` porte la suite de
   `FMTTransition`, et des membres ne sont pas écrits. Compatibilité du pickle non garantie d'une version à l'autre ; aucune archive
   figée dans le dépôt.
-- **Ce que 9c doit prendre** : les rendements complexes, la comparaison de masques et l'évaluation d'expression sont atteints
+- **9c, livré le 2026-10-30 (section 5.22)**, à valider après le build de Gabriel : rangées nouvelles du banc pour les quatre chemins
+  chauds de #350 (D1), `IntegrationParallel` au niveau intégration (D4), défauts 33 à 37 (section 2.7), notes Doxygen (D6). **9d**,
+  la portabilité, attend la décision de Gabriel (section 6.2).
+- **Ce que 9c devait prendre** : les rendements complexes, la comparaison de masques et l'évaluation d'expression sont atteints
   presque entiers par des cas unitaires (`FMTMask` 97 %, `FMTExpression` 98 %, `FMTComplexYieldHandler` 77 %), où une mesure
   d'allocations peut se greffer sans modèle ; la traversée de graphe (`FMTGraph`, 54 %) ne l'est que par l'intégration et le
   système, et `threadedStaticSearch` n'est jamais atteinte : la concurrence de la traversée n'a aucun test qui l'exécute.
@@ -4166,9 +4376,9 @@ abandonne.
   - `LogThroughCallback` et les tests Excel sont entièrement sous `FMTWITHMOSEK`.
 
   Une valeur attendue prise sur un optimum non unique peut changer d'un solveur à l'autre.
-- **Course connue** sur certains modèles privés (caches de yields partagés entre threads) :
-  les nouveaux tests tournent sur un seul thread. Pour distinguer une intermittence d'une
-  régression, relancer l'exécutable sans recompiler.
+- **Échecs intermittents** sur certains modèles privés, attribués à une course sur les caches de yields : les nouveaux tests
+  tournent sur un seul thread. Pour distinguer une intermittence d'une régression, relancer l'exécutable sans recompiler. Le
+  mécanisme n'est pas démontré : le code actuel ne lance aucun fil dans la construction du graphe (lot 9c, section 5.22).
 - **`FMTPlanningTask` qui reçoit le fichier primaire** réécrit
   `Scenarios/<scénario>/<projet>._seq` des scénarios optimisés : travailler sur une copie.
 - **`.gitignore`** exclut `*.lp`, `*.mps` et `*html` : pas de fichier de référence sous ces
@@ -4369,6 +4579,16 @@ abandonne.
   dossier courant, si bien que les chemins de cas dépassent 260 caractères même depuis le nom court ; passer par
   `cmd /c "cd /d <nom court> && <exécutable>"`. Lié depuis Git Bash ou un `.bat` sans CMake, un exécutable GoogleTest dont le `main`
   vient de `gtest_main` demande `/SUBSYSTEM:CONSOLE` (LNK1561 sinon).
+- **Symboles de FMTlib pour un diagnostic** (lot 9c) : le `FMTlib.dll` de `build/release` est relié sans `/DEBUG`, et le
+  `FMTlib.pdb` du dossier est périmé ; dbghelp le charge quand même s'il est dans le dossier courant, et donne des noms faux. Pour
+  une pile exacte, rejouer la compilation et le lien de FMTlib dans le scratchpad avec `/Zi` et `/DEBUG` (commandes des `tlog`), puis
+  mettre la DLL et son PDB à côté de la sonde, avec `GDAL_DATA`, `proj` et `YieldPredModels`.
+- **Dossier d'un cas qui écrit plusieurs passes** (lot 9c) : le nom d'un cas dépasse souvent 100 caractères ; un dossier par passe
+  sous ce nom dépasse 260 caractères depuis la racine factice du scratchpad, et FMT échoue en écrivant. `IntegrationParallel`
+  donne à chaque cas un dossier au nom court (`Testing::getCaseFolder`).
+- **Observer une course sans toucher FMT** (lot 9c) : rediriger, dans la table d'imports du module qui appelle (OsiMsk, OsiClp, Clp),
+  la fonction partagée (`MSK_clonetask`, `CoinMessageHandler::message`), compter les fils par objet, et forcer la rencontre de deux
+  fils par un rendez-vous (`Tests/Integration/Parallel/ImportRedirect.h`). Une course ne se démontre pas par un échec rare.
 - **Nom Python avec une coquille** : la méthode du périmètre des voisins d'une aire d'opération s'appelle `getneihgborsperimeter` en
   Python.
 - Plusieurs tests lèvent avec un nom de méthode copié d'un autre test (`"presolvetest"` dans

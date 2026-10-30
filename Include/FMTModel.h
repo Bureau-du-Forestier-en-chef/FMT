@@ -56,6 +56,10 @@ namespace Models
 	@details FMTModel is the formulation seen in the Woodstock files of a forest planning problem.
 	FMTLpModel / FMTSaModel / FMTSesModel use the FMTModel protected members to generate the
 	problem based on LP/SA or to simply simulate the FMTModel.
+	A model is not safe for concurrent use, not even through its const methods, which fill caches: the lists of
+	masks of its yields, actions and transitions (FMTList), the yields being computed by its yield handlers, the
+	graph of a built model, and its random generator. Each thread works on its own copy (clone), as the tasks of
+	namespace Parallel do.
 	*/
 
 	class FMTEXPORT FMTModel : public Core::FMTObject

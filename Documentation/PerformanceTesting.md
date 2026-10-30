@@ -15,6 +15,9 @@ Tests protect behavior; benchmarks show performance effects. Neither replaces th
 | `Tests/Performance/*Benchmarks.cpp` | The benchmarks, one file per group. |
 | `Tests/Performance/PerfYields.h`, `.cpp` | The `perfyields` scenario and its prepared yield requests, shared by the yield benchmarks. |
 | `Tests/Performance/FlowBenchmarks.h`, `.cpp` | The model flows: optimization, replay of a schedule, outputs, simulation, replanning. |
+| `Tests/Performance/GraphBenchmarks.h`, `.cpp` | The traversal of the graph of a model: one output at one period. |
+| `Tests/Performance/ExpressionBenchmarks.h`, `.cpp` | The evaluation of expressions, operators and functions. |
+| `Tests/Performance/ModelSetup.h`, `.cpp` | The solver of the benchmarks and the build of a model with its schedule, shared by the flows and the traversal of the graph. |
 | `Tests/Performance/DefinedBenchmarks.h`, `.cpp` | The benchmarks defined by a row of an expectations file, such as the private ones. |
 | `Tests/Performance/QuietFmt.h`, `.cpp` | Makes FMT quiet, once per process (see [Adding a benchmark](#adding-a-benchmark)). |
 | `Tests/Performance/performance.csv` | One row per benchmark: its registration with ctest, its expected result and its bounds. |
@@ -232,7 +235,9 @@ The MSYS2 build of the R package compiles the benchmarks with GCC, which allocat
 otherwise than MSVC. There, `Tests/Performance/CMakeLists.txt` registers the benchmarks with
 `performance-mingw.csv`: the same rows and expected results as `performance.csv`, with bounds measured
 in that build by the rule of [Adding a benchmark](#adding-a-benchmark). The configuration warns when the
-two files no longer list the same benchmarks and expected results.
+two files no longer list the same benchmarks and expected results. A row that has no bound there yet, as the
+`ComplexYield.CachedValue`, `Mask.*`, `Expression.*` and `Graph.*` rows added after the bounds of 2026-10-15, checks
+its result only, until its bounds are measured in that build.
 
 In that build, FMTlib links an OpenBLAS built with OpenMP, which commits about 65 MB per OpenMP thread
 when it loads ([#373](https://github.com/Bureau-du-Forestier-en-chef/FMT/issues/373)): the peak of a
@@ -417,7 +422,12 @@ benchmark, such as a private replanning on threads. Like the comparison, it only
    Leave the bounds empty for a first run. Add the same row to `performance-mingw.csv`, whose bounds are
    measured in the MinGW build ([The MinGW build](#the-mingw-build)).
 5. **Measure the bounds**: run the benchmark twice and read the allocations and the retained bytes per
-   call. Write each median as a bound when it changes neither between the runs nor with the machine. For
+   call. Write each median as a bound when it changes neither between the runs nor with the machine,
+   and once you can say what each allocation is: attribute every allocation of a counted call to its line of
+   code, for instance by the call stacks that a copy of the allocation monitor records, and write them under
+   [Current benchmarks](#current-benchmarks). A path that allocates after its preparation where it should not
+   gets its measured bound, not a bound of 0 that fails: the bound protects what it does today, and the text
+   names the defect, until its correction lowers the bound. For
    a flow, run it alone in its process twice in each mode, and write the highest peak with 10 % added.
    A benchmark that computes complex yields bounds its retained memory at the most the yields cache can
    keep (see [What a benchmark does](#what-a-benchmark-does)).
@@ -446,6 +456,7 @@ its benchmarks measure. A changed expected result or bound is justified in the c
 | `ComplexYield.Shift` | `_SHIFT(VOLUMETOTAL,1)` | 130 |
 | `ComplexYield.Equation` | `_EQUATION(VOLUMETOTAL+VOLUMETOTAL)` | 240 |
 | `ComplexYield.RecursiveChain` | five nested `_SUM` | 720 |
+| `ComplexYield.CachedValue` | `_SUM(VOLUMETOTAL,VOLUMETOTAL)`, served by the yields cache | 240 |
 
 The yield requests are built before the measurement, as the graph of a model does. Each call asks for the
 yield of the next of 255 developments that differ by their period only: the same value under 255 keys of
@@ -454,6 +465,23 @@ more than 0.05 ms, which these computations normally do not. A computation slowe
 preemption for instance, puts its key in the cache for the rest of the process. With 255 keys, such an
 event changes one call in 255, and the minimum of the allocations per call shows it; asked under a
 single key, the same yield would switch to the cache for good at the first such event.
+
+`ComplexYield.CachedValue` measures the other path of `FMTComplexYieldHandler::get`, a value that the cache
+holds: `prepare` puts it in the cache under the period 0, which no other benchmark asks for, since the cache
+keeps the period of its keys on 8 bits.
+
+[#348](https://github.com/Bureau-du-Forestier-en-chef/FMT/issues/348) asks that the evaluation of a complex yield
+allocate nothing; these bounds are what it allocates before that refactoring. A call of `ComplexYield.Sum` or
+`ComplexYield.Multiply` allocates 4 times: the key of the cache, which copies the bitset of the summary mask,
+the node of the set of the yields being computed (`m_lookat`), and the two vectors of the sources of the yield and
+of their data (`FMTData::getSources`, `_getData`). `ComplexYield.Divide` and `ComplexYield.Subtract` add the
+vector of the values of the yield (`FMTData::getValues`), 5; `ComplexYield.RecursiveChain` makes the 4 of
+`_SUM` at each of its five levels, 20. `ComplexYield.Shift`, 13, also copies the development, its name and its
+bitset, builds the vector of the values twice, copies the request, its data and its summary mask, and fills a
+`std::map` of the sources, its head and one node. `ComplexYield.Equation`, 31, builds its expression and
+evaluates it as `Expression.ShuntingYard` does. `ComplexYield.CachedValue` allocates 2 times: the key, and a
+copy of the key, because the function that `tryToGet` gives to the table takes a `std::pair` whose key is not
+`const`, while the table holds `std::pair<const FMTYieldDevelopment, double>`.
 
 ### Age yields
 
@@ -471,8 +499,67 @@ On the themes of the root of TWD_land:
 | --- | --- | --- |
 | `Mask.IsSubsetOf` | Tests whether `UNITE1 PEUPLEMENT1 UTR1` belongs to `UC PROD ?` | 1 |
 | `Mask.FromString` | Builds the mask `UC PROD ?` from its text, and counts its bits: 2 + 3 + 3 | 8 |
+| `Mask.Equals` | Compares `UNITE1 PEUPLEMENT1 UTR1` with the same mask built apart, by `==` | 1 |
+| `Mask.Less` | Compares `UNITE1 PEUPLEMENT1 UTR1` and `UC PROD ?` by `<`, both ways: one of two different masks is less | 1 |
+| `Mask.Hash` | Compares the hashes of `UNITE1 PEUPLEMENT1 UTR1` and of the same mask built apart, the hash of the keys of the caches of `FMTList` | 1 |
+| `Mask.IsSubsetOfBlocks` | Tests whether `UNITE1 PEUPLEMENT1 UTR1` belongs to `UC PROD ?` on the blocks of the selection that are not full, as the graph selects the vertices of a static node | 1 |
+| `Mask.FindSets` | Finds the yield sections of the root that hold `UNITE1 PEUPLEMENT1 UTR1` by `FMTList::findSets`, as FMT does for the actions, the transitions and the yields of every development: `? PEUPLEMENT1 ?`, the complex `? ? ?` and the last `? ? ?` of `TWD_land.yld`, and the `? ? ?` of the `_TSLA` yield that `FMTYields::generateDefaultYields` adds to every model read | 4 |
+| `Mask.FindSets.FirstCall` | The same, the cache of the list emptied before each call | 4 |
 
-`Mask.IsSubsetOf` allocates nothing.
+`Mask.IsSubsetOf`, `Mask.Equals`, `Mask.Less`, `Mask.Hash` and `Mask.IsSubsetOfBlocks` allocate nothing.
+
+`Mask.FindSets` allocates 7 times, although the cache of the list holds the sections of the mask: 4 bitsets in
+`FMTMaskFilter::filter`, which computes `(mask & selection) | flipped`, and each operator of
+`boost::dynamic_bitset` copies its left operand, then copies the result to return it (`return b &= y;`); the
+filtered `FMTMask`, which copies the name of the development, 23 characters beyond the 15 of a short string, and
+its bitset, 2; the vector of the sections found, 1. That is defect 33 of `Tests/ETAT.md`. The first call for a
+mask, `Mask.FindSets.FirstCall`, allocates 19 times: the same 6 for the filter; the node of the cache and the
+copy of its key, 3; the vector of the positions and the vector of the sections, which grow without a reserve,
+4 times each; and the table of the cache, its buckets and its groups, 2, which the benchmark empties with the
+whole cache: the first call for a new mask in a cache that is not empty does not make them, unless the table
+grows.
+
+### Expressions
+
+Built in code, without a model:
+
+| Benchmark | Operation | Expected result |
+| --- | --- | --- |
+| `Expression.ShuntingYard` | Evaluates `VOLUMETOTAL + VOLUMETOTAL * 2` by `FMTExpression::shuntingYard`, `VOLUMETOTAL` at 120 | 360 |
+| `Expression.Operator` | `FMTOperator::call` of `*` on 120 and 2, plus `FMTFunctionCall::call` of `LN` on 1 | 240 |
+
+`Expression.Operator` allocates nothing. `FMTExpression` keeps its expression as text and converts it again at
+every evaluation, as the `_EQUATION` yields and the outputs that combine their sources do: it has nothing to
+prepare, and its first call costs as much as the next ones. `Expression.ShuntingYard` allocates 31 times for 5
+tokens: the infix with the values in text, the copy of it that `_getPostFix` makes and the postfix, which grow
+without a reserve, 5 + 1 + 5; an `FMTOperator` built from the text of each token, which builds the list of the six
+operators, 5 to convert and 5 to evaluate, and one more to compare the operators on the stack, 11; and the three
+stacks, on `std::deque`, whose control block, map and blocks are allocated at every call, 9. That is defect 34 of
+`Tests/ETAT.md`.
+
+### Graph traversal
+
+`Graph.GetOutput.<variant>` computes the total of one output at one period through `FMTModel::getOutput`, on the
+schedule of the `LP` scenario of TWD_land, built once over 10 periods without a solver, as for `Flow.Outputs`:
+
+| Benchmark | Output | Expected result |
+| --- | --- | --- |
+| `Graph.GetOutput.Inventory` | `totalarea`, `? ? ? _INVENT _AREA`, at period 10: the 44 vertices of the period, whose area is that of the root | 1814.76 |
+| `Graph.GetOutput.Inventory.FirstCall` | The same, the node cache of the graph emptied before each call (`clearGraphCache`) | 1814.76 |
+| `Graph.GetOutput.Action` | `oSupRec`, `? ? ? coupetotale _AREA`, at period 1: the two `COUPETOTALE` edges of the schedule, 201.64 + 50.107368 ha | 251.747368 |
+
+The result of `getOutput` is a `std::map`, which allocates by design; the rest is the traversal. Once the node
+cache of the graph is filled, `Graph.GetOutput.Inventory` allocates 30 times, plus 2 per vertex of the period: the
+theme of the output, the results and their attributes, the nodes of the output and their equation, which
+`FMTOutput::getNodes` builds again at every call, and the copy of the node in `getSource`; in `getNode`, the
+periods, the actions and the blocks of the mask, then the copy of the selected vertices it returns; in
+`getValues`, the map of the values; and for each vertex, a copy of its development, its name and its bitset
+(`FMTGraph::getValues`, to move it to the period before). 118 calls for 44 vertices. `Graph.GetOutput.Action`
+allocates 33 times, the same and the actions of its source, plus 5 per action edge: the paths of the edge and the
+two copies of the development they hold; 43 for 2 edges. The first call of an output, `.FirstCall`, adds 38
+allocations: the node cache of each period, its node and the vertices, which grow without a reserve. On a
+production model, a period has thousands of vertices, and each call of `getOutput` allocates as many times. That
+is defect 35 of `Tests/ETAT.md`.
 
 ### Project reads
 

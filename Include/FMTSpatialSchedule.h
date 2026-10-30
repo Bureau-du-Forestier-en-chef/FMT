@@ -45,6 +45,9 @@ enum  FMTSpatialScheduletype
 /**
 @brief Map containing a line graph for each cell, representing the stand, the action and the transition at each period for the cell.
 @details It can be built randomly or with a schedule.
+Its movable coordinates and its operability cache are static: the first schedule that needs them fills them,
+without a lock, and every spatial schedule of the process shares them, whatever its map. A spatial schedule is
+not safe for concurrent use.
 */
 class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 {

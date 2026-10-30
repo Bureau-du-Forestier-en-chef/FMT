@@ -37,6 +37,13 @@
 - Added two known-bug rows on a new scenario of `TWD_land`, `defaultdeath`, whose transitions have no `_DEATH` case and whose lifespans are written on a negated aggregate: the default `_DEATH` that FMT builds gives a stand that dies every attribute of the aggregate instead of keeping its own, so that `ReadScenario` finds `!AA` where `PEUPLEMENT1` is expected and `DoPlanning` finds no area of `peuplement1`. They stay disabled until the fix:
   - #415 [BUG] Sans *CASE _DEATH, une durée de vie sur un agrégat donne plusieurs attributs d'un thème aux peuplements morts
 
+- Added allocation benchmarks of the hot paths that #350 names (#350 [FEATURE] Add comprehensive unit tests for the Core namespace): the comparisons and the hash of `FMTMask`, `FMTOperator::call` and `FMTFunctionCall::call`, which allocate nothing; `FMTList::findSets`, `FMTExpression::shuntingYard` and the traversal of the graph by `getOutput`, each with its first call, and the complex yield that the yields cache serves, each bounded at what it allocates today, every allocation attributed to its line in `Documentation/PerformanceTesting.md`. They revealed three defects:
+  - [BUG] `FMTList::findSets` alloue à chaque appel, même quand son cache tient déjà les sections du masque (issue to open)
+  - [BUG] `FMTExpression::shuntingYard` reconvertit l’expression à chaque évaluation : 31 allocations pour 5 jetons (issue to open)
+  - [BUG] La traversée du graphe par `getOutput` alloue à chaque appel, et deux fois par sommet (issue to open)
+- Added integration tests of the parallel tasks, in a new GoogleTest executable, `IntegrationParallel`: the planning and the replanning that `FMTTaskHandler` runs on several threads, by `conccurentRun` and `onDemandRun`, as the interface does, repeated, must find the objectives and write the rows of one thread, and the threads of MOSEK the optimum of one (#350 [FEATURE] Add comprehensive unit tests for the Core namespace). The Doxygen of the classes that are not safe for concurrent use says what they share between threads. Two disabled cases, which observe the solvers through the import tables of COIN-OR, show two races:
+  - [BUG] Les fils d’une tâche de planification écrivent dans le même `CoinMessageHandler` : avec CLP, une écriture à l’adresse nulle arrête le processus (issue to open)
+  - [BUG] Les fils d’une replanification copient en même temps la même tâche MOSEK, ce que MOSEK interdit (issue to open)
 ### Changed
 
 - `FMTTaskHandler::onDemandRun` waits for one of its workers to finish, at most 10 ms, between two checks of its workers, instead of checking them without pause, which kept a processor busy.
