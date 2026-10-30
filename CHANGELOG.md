@@ -34,6 +34,8 @@
   - #412 [BUG] Le pickle de Python rend l’état comme une `str` : `pickle`, `copy.copy` et `copy.deepcopy` échouent pour toute classe de FMT
   - #413 [BUG] `FMToutput` déclare la suite de pickle de `FMTTransition` : un output ou une contrainte ne se pickle pas
   - #414 [BUG] La sérialisation ne garde pas tout l’état : groupe d’un output, verrou d’une cédule, paramètres textes, sens de l’objectif
+- Added two known-bug rows on a new scenario of `TWD_land`, `defaultdeath`, whose transitions have no `_DEATH` case and whose lifespans are written on a negated aggregate: the default `_DEATH` that FMT builds gives a stand that dies every attribute of the aggregate instead of keeping its own, so that `ReadScenario` finds `!AA` where `PEUPLEMENT1` is expected and `DoPlanning` finds no area of `peuplement1`. They stay disabled until the fix:
+  - #415 [BUG] Sans *CASE _DEATH, une durée de vie sur un agrégat donne plusieurs attributs d'un thème aux peuplements morts
 
 ### Changed
 

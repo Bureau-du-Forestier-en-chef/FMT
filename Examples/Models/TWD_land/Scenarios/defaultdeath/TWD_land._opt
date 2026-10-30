@@ -1,0 +1,4 @@
+; Area of peuplement1 at the start of period 2: the stratum of peuplement1 dies
+; in period 1 and, keeping its themes, starts period 2 as peuplement1, 10 ha.
+*OBJECTIVE
+_MAX P1area 2

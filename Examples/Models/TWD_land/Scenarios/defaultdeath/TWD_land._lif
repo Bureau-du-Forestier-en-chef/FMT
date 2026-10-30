@@ -1,0 +1,3 @@
+; Lifespans on a negated aggregate: !AA is peuplement1, peuplement2 and feu.
+? !AA ? 20
+? AA ? 80

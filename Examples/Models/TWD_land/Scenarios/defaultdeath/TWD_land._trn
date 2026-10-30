@@ -1,0 +1,21 @@
+; Root transitions without the _DEATH case: FMT builds the default _DEATH,
+; whose targets are the masks of the lifespans.
+*CASE Coupetotale
+*SOURCE  ? ? ?
+*TARGET  ? ? ?  100.0
+
+*CASE aCaribou
+*SOURCE ? ? ?
+*TARGET ? ? ? 100.00 _LOCK 1
+
+*CASE plantation
+*SOURCE  ? ? ?
+*TARGET  ? peuplement1 ?  100.00
+
+*CASE aFire
+*SOURCE ? ? ?
+*TARGET ? feu ? 100.00
+
+*CASE arecup
+*SOURCE ? feu ?
+*TARGET  ? peuplement1 ?  100.00

@@ -519,7 +519,8 @@ lignes de `knownbugs.csv` échouent aujourd'hui : elles passeront dans `basetest
 correction. Issues GitHub : **#346** (priorité de `^`) et **#347** (bloc `*YC` mélangé, qui
 couvre aussi la constante d'équation), **#357** (`_DISCOUNTFACTOR`) et **#358** (condition
 de source ignorée). **#357 est corrigé depuis le 2026-10-15** (item 3) : ses lignes sont passées
-dans `basetests.csv`, et `knownbugs.csv` ne garde que les 12 lignes de #346, #347 et #358.
+dans `basetests.csv`, et `knownbugs.csv` ne garde que les 12 lignes de #346, #347 et #358, plus,
+depuis le 2026-10-30, les deux lignes de #415 (défaut 32, plus bas).
 
 **Précision de Gabriel (2026-10-08) : seul #357 est un vrai défaut.** Les comportements de #346,
 #347 et #358 sont connus : ce sont des syntaxes ou des cas particuliers « documentés » par la
@@ -1153,7 +1154,38 @@ sont aussi dans les commentaires des cas, dans `CoreTestCoverage.csv` et dans le
       `FMTModelParameters.…TextParameter…`, `FMTLpSolver.…MaximizedProblem…`, et `FMTLpModel.…SolvingItAgain…` derrière les défauts
       26, 28 et 25.
 
-Le prochain défaut prendra le numéro 32.
+**Défaut révélé par la session de la section 5.21 (2026-10-30).** Le défaut de fond derrière le plantage du modèle 09371,
+démontré à la demande de Gabriel le même jour : cause dans le code, A/B où une seule chose change, exécutables officiels
+(`ReadScenario` et `DoPlanning` du build de `5d1cbb79`), origine git. Il a deux lignes dans `knownbugs.csv`. Son issue, #415, a
+été ouverte par Gabriel le 2026-10-30 (règle 3) ; son numéro est aussi dans `CoreTestCoverage.csv` et dans les changelogs. Il n'est
+pas corrigé dans ce chantier.
+
+32. **Sans `*CASE _DEATH`, une durée de vie sur un agrégat donne plusieurs attributs d'un thème aux peuplements morts**
+    (`FMTModel`, `FMTTransitionMask`, issue #415).
+    - `FMTModel::defaultDeathTransition` (`Source/FMTModel.cpp:1462`), que `FMTModelParser` appelle à la lecture d'un modèle sans
+      `*CASE _DEATH` (`Source/FMTModelParser.cpp:772`) et `setDefaultObjects` (`Source/FMTModel.cpp:1153`) quand les transitions
+      changent, prend pour cible de chaque fourche le masque d'une ligne du `.lif`. `FMTTransitionMask::build`
+      (`Source/FMTTransitionMask.cpp:23`) fige chaque thème que `FMTTheme::isAttribute` reconnaît, et `isAttribute`
+      (`Include/FMTTheme.h:124`) reconnaît aussi les agrégats et, depuis `c5bbcd01`, leur négation : la cible donne au peuplement
+      mort tous les attributs de l'agrégat, au lieu de lui laisser le sien.
+    - A/B (section 5.21, sur une copie de TWD_land, strate `peuplement1` de 25 ans morte en période 1) : avec `? ? ? 20` au
+      `.lif`, ou avec le `*CASE _DEATH` de la racine, la mort donne `UNITE1 PEUPLEMENT1 UTR1` et `DoPlanning` trouve 10 ha de
+      `peuplement1` en période 2. Avec `? !AA ? 20`, la mort donne `UNITE1 !AA UTR1` et `DoPlanning` 0, sans erreur ; avec
+      `? prod ? 20`, ou sans `feu` dans l'aire, le postsolve lève `FMTexc(19)`.
+    - Origine : la cible est le masque du `.lif` depuis le premier commit (`2e3dc129`, 2019-06-07), où `build` décidait déjà
+      thème par thème avec `isattribute`, qui ne connaissait alors que les attributs : un agrégat en cible ajoutait au peuplement
+      les attributs hors de l'agrégat (lu dans le code, non exécuté). Le résultat a changé de forme sans jamais garder l'attribut
+      du peuplement.
+    - Portée : tout modèle sans `*CASE _DEATH` dont le `.lif` porte un agrégat ou une négation. Avant `83eb6eba`, aussi tout modèle
+      de décision (`_PRED` d'un modèle `DECISION_TREE`), dont la croissance naturelle perdait la `_DEATH` du modèle : c'est le
+      plantage du modèle 09371 (section 5.21). Non vérifié : un agrégat écrit dans un `*TARGET` du `.trn`.
+    - Lignes : `System.ReadScenario.GivenADefaultDeathOverALifespanOnANegatedAggregateWhenReadScenarioThenKeepsTheThemesOfTheDeadStand`
+      (`OPERATE` de `_DEATH`, attendu `UNITE1 PEUPLEMENT1 UTR1|0|0|100`) et
+      `System.DoPlanning.GivenADefaultDeathOverALifespanOnANegatedAggregateWhenDoPlanningThenFindsTheKnownOptimum` (2 périodes,
+      attendu 10), sur le scénario `defaultdeath`. Rouges avec le build de `5d1cbb79` (`UNITE1 !AA UTR1` ; objectif vide,
+      `FMTexc(51)`) ; vertes sur une copie du scénario sans son `._trn`, où revient la `_DEATH` de la racine.
+
+Le prochain défaut prendra le numéro 33.
 
 ### 2.8 Issues signalées par d'autres, vérifiées
 
@@ -1435,6 +1467,7 @@ Le reste de la marche à suivre :
 | Opérateurs stricts d'une condition d'action, bloc `*YT` en colonnes | **fait au lot 7c** | `strictbounds` (`_AGE` avec `>`, `>=`, `<` et `<=`, défaut 18 de la section 2.7) et `timeyieldcolumns` (`_CP`, défaut 13) : chacun copie une section de la racine et y ajoute ses lignes, commentées en tête |
 | Transitions GCBM d'un SES (issue #369) | **fait** | `GCBMtransitions` : la racine, sauf la plantation de `unite2` qui passe en `UTR1` ; une clé GCBM sur THEME3 finit alors avec deux attributs, dont le majoritaire n'est pas le premier en ordre alphabétique. `GetGCBMTransitions` le lit avec la cédule de `Spatial` |
 | Croissance naturelle d'un modèle de décision, durées de vie sur un agrégat nié | **fait** (section 5.21) | `decisiondeath` : le `.lan` de la racine plus l'agrégat `AA` (`peuplement3`), des durées de vie sur `!AA` et `AA`, trois strates de `unite1` et une `feu` de `unite2`, `COUPEtotale` opérable si `youvert`, le `_PRED(DECISION_COS, ...)` de `unite1`, vaut au moins 1 |
+| `_DEATH` par défaut sur des durées de vie écrites sur un agrégat (défaut 32, #415) | **fait** (section 2.7), désactivé | `defaultdeath` : le `.lan` de la racine plus l'agrégat `AA` (`peuplement3`), les transitions de la racine sans le cas `_DEATH`, des durées de vie sur `!AA` et `AA`, `COUPEtotale` opérable nulle part, l'output `P1area` et l'objectif `_MAX P1area 2` |
 
 **Scénarios existants qu'aucun test C++ n'utilise** : `actionrecurse`, `AVERAGEP`, `peak`,
 `Predeclared_Primary`, `Predeclared_Primary_ref`, `Spatial_8`, `LPwfire`, `Globalex4`,
@@ -3589,8 +3622,9 @@ décidait déjà thème par thème avec `isattribute`. En 2019, `isattribute` ne
 ajoutait alors au peuplement les attributs hors de l'agrégat (lu dans le code de `2e3dc129`, non exécuté). Aujourd'hui,
 `isAttribute` cherche dans `m_attributem_locations`, qui contient aussi les agrégats, et retire le `!` depuis `c5bbcd01`
 (2025-11-13). Le résultat a changé de forme sans jamais garder l'attribut du peuplement. Non vérifié : un agrégat écrit à la main
-dans le `*TARGET` d'un `.trn`, que `build` traiterait de la même façon si le parseur l'accepte. Suite selon la règle 3 : une issue,
-puis une ligne de `knownbugs.csv` sur un scénario de TWD_land, et la correction dans une autre session.
+dans le `*TARGET` d'un `.trn`, que `build` traiterait de la même façon si le parseur l'accepte. Issue #415, ouverte par Gabriel le
+2026-10-30 : défaut 32 de la section 2.7, avec deux lignes de `knownbugs.csv` sur le scénario `defaultdeath` ; la correction se
+fera dans une autre session (règle 3).
 
 Commité par Gabriel : la correction en `83eb6eba`, le test, le scénario, la couverture, les changelogs et cette section en
 `5d1cbb79`.

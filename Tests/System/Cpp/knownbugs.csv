@@ -11,3 +11,5 @@ ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YI
 ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|GROWTH;17.14285714;;AMeanAnnualIncrementBesideANumericEquation;DividesTheYieldByTheAge
 ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|CONSTANT;6;;AnEquationWithAConstant;UsesTheValueOfTheConstant
 ReadInvalidScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_sourcecondition;31;;ATransitionSourceConditionInTheActionForm;RejectsIt
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|defaultdeath|OPERATE|_DEATH|UNITE1 PEUPLEMENT1 UTR1|25;UNITE1 PEUPLEMENT1 UTR1|0|0|100;;ADefaultDeathOverALifespanOnANegatedAggregate;KeepsTheThemesOfTheDeadStand
+DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|defaultdeath;2;10;ADefaultDeathOverALifespanOnANegatedAggregate;FindsTheKnownOptimum
