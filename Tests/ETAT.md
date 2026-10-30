@@ -3840,14 +3840,25 @@ publics, 58 désactivés (1 254 et 56 avant, plus 12 rangées et 7 cas, dont 2 d
 (comparaisons, opérateurs, lecture d'un yield d'âge) et avec un défaut là où elle ne tient pas ; la concurrence est testée sur ce
 que FMT promet (tâches, fils du solveur) et documentée ailleurs.
 
-**Reste** : le build de Gabriel, `RunTests.bat all-public` et `performance`, l'installation ; les bornes MinGW des 12 rangées
-(Gabriel) ; les issues des défauts 33 à 37 (Gabriel).
+**Validation (2026-10-30)**, après le build de Gabriel, reconfiguré, et son commit `292352ac` (37 fichiers, arbre propre,
+`BenchmarkCommit.h` à `292352ac`, `dirty` à 0) ; journaux copiés dans le scratchpad avant tout appel de ctest :
+- installation de Gabriel (`INSTALL_TEST_SUITE=public`, 16 h 26) : 1 273 tests, 0 échec, 58 désactivés, 38 s ;
+- `tools\tests\RunTests.bat all-public` : 1 273 tests, 0 échec, 1 215 verts et 58 désactivés, 33,5 s réelles ; unit 869 et 13
+  sur 882, integration 70 et 31 sur 101, system 239 et 14 sur 253, performance 35, other 2. Par rapport au passage du 2026-10-30
+  (section 5.21, 1 252 tests, 1 198 verts, 54 désactivés), seuls changent les 2 lignes désactivées de `7fbca39e`, les 12 rangées du
+  banc et les 7 cas d'`IntegrationParallel` (5 verts, 2 désactivés) ;
+- `tools\tests\RunTests.bat performance` : 37 verts (35 rangées et les 2 fixtures), 0 échec, 8,7 s réelles ;
+- sous `-j 8`, les cas d'`IntegrationParallel` durent 6,4 et 6,3 s (planification), 10,4 et 14,1 s (replanification), 0,56 s (fils
+  de MOSEK), contre 2 à 3 s seuls : la machine est chargée par les autres tests.
+
+**Reste** : les bornes MinGW des 12 rangées (Gabriel) ; les issues des défauts 33 à 37 (Gabriel), dont les numéros iront dans les
+changelogs, cette section, la section 2.7 et `CoreTestCoverage.csv`.
 
 ## 6. Prochain lot
 
 ### 6.1 État au 2026-10-30
 
-- **Lot 9c livré le 2026-10-30, non commité, à compiler et valider par Gabriel** (section 5.22) : les allocations et la
+- **Lot 9c livré, commité par Gabriel (`292352ac`) et validé le 2026-10-30** (section 5.22) : les allocations et la
   concurrence. 12 rangées du banc (étiquette `allocation`) : 0 allocation pour les comparaisons de masques, les opérateurs et les
   fonctions ; bornes mesurées et expliquées ligne à ligne pour `FMTList::findSets` (7, défaut 33), `FMTExpression::shuntingYard`
   (31, défaut 34), la traversée du graphe par `getOutput` (118, 2 par sommet, défaut 35) et la valeur servie par le cache des yields
@@ -3856,8 +3867,8 @@ que FMT promet (tâches, fils du solveur) et documentée ailleurs.
   en les forçant : les fils d'une planification écrivent dans le même `CoinMessageHandler` (avec CLP, arrêt du processus forcé :
   défaut 36) ; ceux d'une replanification copient la même tâche MOSEK à la fois (défaut 37). Notes Doxygen pour ce qui n'est pas
   utilisable en parallèle, colonnes `ThreadSafety` et `AllocationSensitive` de `CoreTestCoverage.csv`. Décisions de Gabriel du
-  2026-10-30 : D1 à D6 (section 5.22). Attendu après reconfiguration : 1 273 tests, 1 215 verts et 58 désactivés (integration
-  101, performance 35). Issues des défauts 33 à 37 rédigées, à ouvrir par Gabriel. Le lot 9d attend sa décision (section 6.2).
+  2026-10-30 : D1 à D6 (section 5.22). Installation et `all-public` : 1 273 tests, 0 échec, 1 215 verts et 58 désactivés
+  (integration 70 verts et 31 désactivés sur 101, performance 35) ; preset `performance` vert. Issues des défauts 33 à 37 rédigées, à ouvrir par Gabriel. Le lot 9d attend sa décision (section 6.2).
 - **Lot 9b livré, commité par Gabriel (`7f410902`) et validé le 2026-10-29** (section 5.20) : la sérialisation, par les
   archives que FMT emploie vraiment, le pickle de Python (binaire, zlib) et le texte des transitions GCBM. Un exécutable neuf,
   `IntegrationSerialization` (43 cas, dont 16 désactivés), 5 cas GCBM dans `IntegrationParser` (dont 2 désactivés) et un test Python,
@@ -4228,7 +4239,7 @@ portabilité, qui attend sa décision (section 6.2).
   ne sont pas exportés, les modèles à solveur ne se sauvegardent pas non construits ni ne se relisent, `FMToutput` porte la suite de
   `FMTTransition`, et des membres ne sont pas écrits. Compatibilité du pickle non garantie d'une version à l'autre ; aucune archive
   figée dans le dépôt.
-- **9c, livré le 2026-10-30 (section 5.22)**, à valider après le build de Gabriel : rangées nouvelles du banc pour les quatre chemins
+- **9c, fait et validé le 2026-10-30 (section 5.22, `292352ac`)** : rangées nouvelles du banc pour les quatre chemins
   chauds de #350 (D1), `IntegrationParallel` au niveau intégration (D4), défauts 33 à 37 (section 2.7), notes Doxygen (D6). **9d**,
   la portabilité, attend la décision de Gabriel (section 6.2).
 - **Ce que 9c devait prendre** : les rendements complexes, la comparaison de masques et l'évaluation d'expression sont atteints
@@ -4624,6 +4635,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-28 (lot 8c, `73ccbfd8`) | 1 202 `all-public` (1 065 + 137 cas `Unit.`) ; résumé : unit 869 verts et 13 désactivés sur 882, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 33,2 s réelles | — | 13 | 2 | 0 | 36 | — |
 | 2026-10-29 (lot 9b, `7f410902`) | 1 251 `all-public` (1 202 + 43 cas `Integration.` d'`IntegrationSerialization` + 5 cas `Integration.FMTTransitionParser` + `System.Python.Serialization`) ; résumé : unit 869 verts et 13 désactivés sur 882, integration 65 verts et 29 désactivés sur 94, system 238 verts et 12 désactivés sur 250, performance 23, other 2 | 34,1 s réelles | — | 13 | 2 | 0 | 54 | — |
 | 2026-10-30 (`_DEATH` de la croissance naturelle, `5d1cbb79`) | 1 252 `all-public` (1 251 + `System.DoPlanning` sur `decisiondeath`) ; résumé : unit 869 verts et 13 désactivés sur 882, integration 65 verts et 29 désactivés sur 94, system 239 verts et 12 désactivés sur 251, performance 23, other 2 | 26,5 s réelles | — | 13 | 2 | 0 | 54 | — |
+| 2026-10-30 (lot 9c, `292352ac`) | 1 273 `all-public` (1 252 + 2 lignes de `knownbugs.csv` de `7fbca39e` + 12 rangées `FMTPerformanceTests.*` + 7 cas `Integration.` d'`IntegrationParallel`) ; résumé : unit 869 verts et 13 désactivés sur 882, integration 70 verts et 31 désactivés sur 101, system 239 verts et 14 désactivés sur 253, performance 35, other 2 ; preset `performance` : 37 verts (35 rangées et 2 fixtures), 8,7 s réelles ; installation de Gabriel (16 h 26) : 1 273 tests, 0 échec, 58 désactivés, 38 s | 33,5 s réelles | — | 13 | 2 | 0 | 58 | — |
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
