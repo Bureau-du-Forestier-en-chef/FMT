@@ -245,6 +245,18 @@ namespace Spatial
 			@param[in,out] p_tracker the solution tracker.
 			*/
 			void enableSolutionTracker(FMTSolutionTracker& p_tracker) const;
+			// DocString: FMTSpatialGraphs::getGraphsInErrorReport
+			/**
+			@brief Return the graphs breaking the invariants of their layout, to diagnose a failure, it never throws.
+			@param[in] p_AllGraphs the graphs of each constraint family.
+			@param[in] p_LastGraphId the last graph id.
+			@param[in] p_solution the solution giving the number of cells of the graphs, nullptr if none.
+			@return the report of the graphs in error, the first 20 detailed.
+			*/
+			FMTEXPORT static std::string getGraphsInErrorReport(
+				const std::vector<std::map<Graph::FMTLineGraph, FMTGraphInfo>>& p_AllGraphs,
+				size_t p_LastGraphId,
+				const FMTSolutionTracker* p_solution);
 		private:
 			using iterator = std::map<Graph::FMTLineGraph,
 				FMTGraphInfo>::iterator;
@@ -354,6 +366,13 @@ namespace Spatial
 			@return the number of cells.
 			*/
 			double _getGraphCells(const FMTSolutionTracker& p_solution, const FMTGraphInfo& p_GraphInfo) const;
+			// DocString: FMTSpatialGraphs::_getGraphsInErrorReport
+			/**
+			@brief Return the graphs breaking the invariants of their layout, to diagnose a failure, it never throws.
+			@param[in] p_solution the solution giving the number of cells of the graphs, nullptr if none.
+			@return the report of the graphs in error.
+			*/
+			std::string _getGraphsInErrorReport(const FMTSolutionTracker* p_solution) const;
 			// DocString: FMTSpatialGraphs::_getMaxGraphLength
 			/**
 			@brief Return the maximal graph length.

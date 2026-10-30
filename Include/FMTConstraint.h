@@ -42,7 +42,7 @@ enum  FMTconstrainttype
 	FMTspatialadjacency = 10,
 	FMTspatialgreenup = 11,
 	FMTSpatialGroup = 12,
-	FMTrandomaction = 13//need to be deleted
+	FMTrandomaction = 13
 };
 // DocString: FMTConstraint
 /**
@@ -463,9 +463,11 @@ class FMTEXPORT FMTConstraint: public FMTOutput,public FMTSpec
 		@param[in,out] goal the goal string.
 		@param[in,out] global the global string.
 		@param[in] asInt if true formats as int.
+		@param[in] p_specialKey put closing braket.
 		*/
 		void _standardString(std::string& line, std::string& period_bounds,
-			std::string& goal, std::string& global,bool asInt = false) const;
+			std::string& goal, std::string& global,
+			bool asInt = false, bool p_specialKey = false) const;
 		// DocString: FMTConstraint::_getMaxAndMin
 		/**
 		@brief Return the maximal and minimal value of a vector of double for the constraint.

@@ -126,7 +126,7 @@ TEST(FMTModelParser, GivenADistanceYieldAndARatioOfInventoryOutputsWhenWriteThen
 
 // Disabled: a _RANDOM(<output>) constraint is written without _RANDOM, and read back as a standard constraint
 // (#382).
-TEST(FMTModelParser, DISABLED_GivenRandomActionConstraintsWhenWriteThenRereadsTheSameModelAndRewritesTheSameFiles)
+TEST(FMTModelParser, GivenRandomActionConstraintsWhenWriteThenRereadsTheSameModelAndRewritesTheSameFiles)
 {
     // Arrange
     const Models::FMTModel model = Testing::readScenario("COMPLEX_NSS");
