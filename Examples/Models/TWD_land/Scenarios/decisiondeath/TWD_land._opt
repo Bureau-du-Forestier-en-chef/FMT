@@ -1,0 +1,5 @@
+; Harvested area of period 1, where youvert is the default value of DECISION_COS
+; (1): the three strata of unite1, 30 ha. The decision model builds its natural
+; growth model for the requests of period 2, the default update period.
+*OBJECTIVE
+_MAX oSupRec 1

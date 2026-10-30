@@ -49,6 +49,7 @@
 - `FMTAreaParser::getSchemeNeighbors` et `getClusters` mesurent les géométries avec Z, lues par exemple d’un shapefile PolygonZ : leur aire valait 0, donc sur une carte en Z aucune unité d’aménagement n’avait de voisin (#396 [BUG] _GetGeometryArea vaut 0 pour une géométrie avec Z : sur une carte en Z, les unités d'aménagement n'ont aucun voisin).
 - Le complément Excel retrouve les méthodes de `FMTExcelCache` renommées en camelCase : `NOMACTIONS`, `NOMAGGREGATES`, `NOMOUTPUTS`, `NOMCOURBES` et `TROUVECONTRAINTES` échouaient avec « Cannot find ... method in class Wrapper.FMTExcelCache », et `NOMTHEMES` appelle `getThemes` au lieu de `getyields`.
 - Une contrainte `_RANDOM(<output>)` s’écrit avec son `_RANDOM`, si bien qu’un modèle écrit la relit comme la même contrainte, et le cas d’aller-retour de `FMTModelParser` sur `COMPLEX_NSS`, désactivé jusqu’ici, est activé (#382 [BUG] Une contrainte `_RANDOM(<output>)` est réécrite sans `_RANDOM`).
+- Un modèle de décision, le `_PRED` d’un modèle `DECISION_TREE` comme `DECISION_COS`, garde la `_DEATH` du modèle dans le modèle de croissance naturelle qu’il résout : il construisait une `_DEATH` par défaut dont les cibles étaient les masques des durées de vie, si bien qu’une durée de vie écrite sur un agrégat ou sa négation, comme `!AA`, donnait plusieurs attributs d’un même thème à un peuplement mort, et la planification s’arrêtait sur `FMTexc(19)` dès la période 2. Le scénario `decisiondeath` de `TWD_land` le couvre.
 
 ## [v1.4.0] - 2026-10-21 (1cf2b516)
 

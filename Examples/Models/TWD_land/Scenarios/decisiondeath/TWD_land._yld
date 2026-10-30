@@ -1,0 +1,9 @@
+; Inputs of the decision model DECISION_COS on unite1, as in the scenario
+; DECISION, and youvert, the yield it predicts.
+*Y unite1 ? ?
+_AGE yRegeMature yRegeneration yMature ypremature yreference
+ 0 0 0 0 0 1
+40 0 0 0 0 1
+
+*YM unite1 ? ?
+youvert _PRED(DECISION_COS,yRegeMature,yRegeneration,yMature,ypremature,yreference)

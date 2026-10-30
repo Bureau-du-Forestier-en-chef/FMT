@@ -49,6 +49,7 @@
 - `FMTAreaParser::getSchemeNeighbors` and `getClusters` measure the geometries with Z, read for example from a PolygonZ shapefile: their area was 0, so on a map with Z no operating area had a neighbor (#396 [BUG] _GetGeometryArea vaut 0 pour une géométrie avec Z : sur une carte en Z, les unités d'aménagement n'ont aucun voisin).
 - The Excel add-in finds again the `FMTExcelCache` methods renamed in camelCase: `NOMACTIONS`, `NOMAGGREGATES`, `NOMOUTPUTS`, `NOMCOURBES` and `TROUVECONTRAINTES` failed with "Cannot find ... method in class Wrapper.FMTExcelCache", and `NOMTHEMES` calls `getThemes` instead of `getyields`.
 - A `_RANDOM(<output>)` constraint is written with its `_RANDOM`, so that a written model reads it back as the same constraint, and the round-trip case of `FMTModelParser` on `COMPLEX_NSS`, disabled until now, is enabled (#382 [BUG] Une contrainte `_RANDOM(<output>)` est réécrite sans `_RANDOM`).
+- A decision model, the `_PRED` of a `DECISION_TREE` model such as `DECISION_COS`, keeps the `_DEATH` of the model in the natural growth model that it solves: it built a default `_DEATH` whose targets were the lifespan masks, so that a lifespan written on an aggregate or its negation, such as `!AA`, gave several attributes of one theme to a stand that died, and the planning stopped on `FMTexc(19)` from period 2. The scenario `decisiondeath` of `TWD_land` covers it.
 
 ## [v1.4.0] - 2026-10-21 (1cf2b516)
 

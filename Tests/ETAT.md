@@ -1434,6 +1434,7 @@ Le reste de la marche à suivre :
 | Transformations d'actions | à évaluer | structure d'actions agrégées à reproduire |
 | Opérateurs stricts d'une condition d'action, bloc `*YT` en colonnes | **fait au lot 7c** | `strictbounds` (`_AGE` avec `>`, `>=`, `<` et `<=`, défaut 18 de la section 2.7) et `timeyieldcolumns` (`_CP`, défaut 13) : chacun copie une section de la racine et y ajoute ses lignes, commentées en tête |
 | Transitions GCBM d'un SES (issue #369) | **fait** | `GCBMtransitions` : la racine, sauf la plantation de `unite2` qui passe en `UTR1` ; une clé GCBM sur THEME3 finit alors avec deux attributs, dont le majoritaire n'est pas le premier en ordre alphabétique. `GetGCBMTransitions` le lit avec la cédule de `Spatial` |
+| Croissance naturelle d'un modèle de décision, durées de vie sur un agrégat nié | **fait** (section 5.21) | `decisiondeath` : le `.lan` de la racine plus l'agrégat `AA` (`peuplement3`), des durées de vie sur `!AA` et `AA`, trois strates de `unite1` et une `feu` de `unite2`, `COUPEtotale` opérable si `youvert`, le `_PRED(DECISION_COS, ...)` de `unite1`, vaut au moins 1 |
 
 **Scénarios existants qu'aucun test C++ n'utilise** : `actionrecurse`, `AVERAGEP`, `peak`,
 `Predeclared_Primary`, `Predeclared_Primary_ref`, `Spatial_8`, `LPwfire`, `Globalex4`,
@@ -3506,6 +3507,69 @@ dette d'`Architecture.md` (la suite de pickle compilée seulement dans `FMT.pyd`
   fonctions `serialize` sont maintenant atteintes) attend une recompilation de `build/coverage` ;
 - issues des défauts 24 à 31 ouvertes par Gabriel le 2026-10-29 : #407 à #414, dans l'ordre ; numéros reportés dans la
   section 2.7, les commentaires des cas, `CoreTestCoverage.csv` et les changelogs.
+
+### 5.21 Session à part : `_DEATH` de la croissance naturelle d'un modèle de décision (2026-10-30)
+
+**Défaut.** Le modèle 09371 (`PC_9718_U09371_4_Vg4_2023_v2DESJOB`, scénario `6001_Determination_avsp`) ne se construisait pas
+au-delà de la période 1 dans `RunPlanningTask` : `FMTexc(19)` « bitset count of 3 in theme 9 ». Pour un
+`_PRED(DECISION_COS, ...)`, `FMTYieldModelDecisionTree::_getNaturalGrowth` résout un modèle de croissance naturelle copié du
+modèle présolvé, après `setActions({})` : les transitions `_DEATH` du `.trn` partaient avec les actions, et `setDefaultObjects`
+refaisait une `_DEATH` par défaut, dont les cibles sont les masques des durées de vie (`FMTModel::defaultDeathTransition`). Le
+`.lif` de 09371 écrit `!AA` au thème 12. `FMTTransitionMask::build` prend `!AA` pour une valeur fixe, parce que
+`FMTTheme::isAttribute` accepte aussi les agrégats et leur négation : un peuplement mort reçoit alors tous les attributs de `!AA`
+restés dans le modèle de croissance naturelle (`AU06`, `AU07` et `AU14` pour le COS `C10134`). Le postsolve de ce modèle ne peut
+pas nommer ce masque dans le thème du modèle (`FMTTheme::_bitsToStr`) et lève l'exception, qui arrête la construction du modèle
+principal. Démontré sous cdb sur `RunPlanningTask.exe` du build : pile réelle, filtre de postsolve correct (211 bits), sommet
+fautif de période 1 et d'âge 0, arrivé par l'unique action du modèle de croissance naturelle, `_DEATH`.
+
+**Correction** (`83eb6eba`, commitée par Gabriel le 2026-10-30) : `_getNaturalGrowth` passe la `_DEATH` du modèle à
+`setActions`, qui garde alors ses transitions. La `_DEATH` par défaut n'est plus construite que pour un modèle qui n'en a pas.
+
+**Test** : `System.DoPlanning.GivenADecisionModelOverALifespanOnANegatedAggregateWhenDoPlanningThenFindsTheKnownOptimum`,
+ligne `DoPlanning` de `basetests.csv` sur le nouveau scénario `decisiondeath` (2 périodes, attendu 30). Le scénario :
+
+- copie le `.lan` de la racine et y ajoute l'agrégat `AA` (`peuplement3`) ;
+- écrit ses durées de vie sur `!AA` (20 ans) et `AA` (80 ans) ;
+- garde les transitions de la racine, dont la `_DEATH` laisse les thèmes d'un peuplement `peuplement1` à `peuplement3` ;
+- n'a que `COUPEtotale`, opérable dans `unite1` si `youvert >= 1`, `youvert` étant le `_PRED(DECISION_COS, ...)` de `unite1`,
+  dont les rendements d'entrée valent ceux de `unite1` dans le scénario `DECISION` ;
+- a trois strates de 10 ha dans `unite1` (`peuplement1` à 25 ans, `peuplement2` et `peuplement3` à 5 ans) et une strate `feu`
+  dans `unite2`.
+
+Le modèle garde ainsi les quatre attributs du thème 2, et le modèle de croissance naturelle (masque `unite1`) seulement
+`peuplement1` à `peuplement3`. `!AA` y vaut `peuplement1` et `peuplement2`, un ensemble qui n'est, dans le thème du modèle, ni un
+agrégat ni la négation d'un agrégat ou d'un attribut. La strate `peuplement1`, plus vieille que sa durée de vie, meurt en période 1
+dans le modèle de croissance naturelle.
+
+Valeur attendue calculée à la main : `UPDATE` vaut 2 par défaut, donc `predict` rend aux développements des périodes 0 et 1 la
+valeur par défaut de `DECISION_COS.json` (`Default` : 1). En période 1, `youvert` vaut 1 dans les trois strates de `unite1`, et
+l'objectif `_MAX oSupRec 1` récolte leurs 30 ha. La période 2 ne compte pas dans l'objectif, mais c'est la demande de `youvert`
+d'un développement de période 2 qui fait construire le modèle de croissance naturelle : d'où les 2 périodes.
+
+| Exécution de la ligne | Avant (`FMTlib.dll` du build du 2026-10-29) | Après (DLL d'essai) |
+|---|---|---|
+| attendu 30 | rouge : `FMTexc(19)` « bitset count of 2 in theme 1 » à la demande de `youvert` en période 2, sortie non nulle | vert, objectif 30 |
+| attendu faussé à 31 | — | rouge, `Wrong value` |
+
+Vus avant le build. La DLL d'essai est `FMTYieldModelDecisionTree.cpp` corrigé, recompilé par sa commande de
+`CL.command.1.tlog` (en `/W4` : aucun avertissement sur les lignes ajoutées), puis relié avec les autres objets de
+`build/release` par `link.command.1.tlog`, le tout dans le scratchpad ; `build/release` n'a pas changé. Avec elle, les autres
+lignes qui passent par `DECISION_COS` donnent les mêmes résultats qu'avec la DLL du build : `DoPlanning` sur `COS` et `cos_pass`
+(302), `SimulateNonSpatially` sur `DECISION` (60), `Presolve` sur `COS`. L'aire de TWD_land n'a aucun `feu`, et la `_DEATH` de la
+racine laisse les thèmes des autres strates : la croissance naturelle de ces scénarios ne change pas. Le modèle 09371 d'origine
+construit ses deux périodes avec la DLL d'essai.
+
+`CoreTestCoverage.csv` : la ligne de `FMTYieldModelDecisionTree` cite le nouveau test ; `CoreTestCoverage.md` régénéré. Les deux
+changelogs ont leur entrée sous « Fixed » et « Corrigé ».
+
+**Lu dans le code, non démontré, hors de ce correctif** : un modèle sans `*CASE _DEATH`, dont le `.lif` porte un agrégat ou une
+négation, reçoit la même `_DEATH` par défaut dans le modèle principal, et `FMTTransitionMask::build` y donnerait de même plusieurs
+attributs d'un thème aux peuplements morts. Avant `c5bbcd01` (2025-11-13), `isAttribute("!AA")` rendait faux, et la cible
+ajoutait alors les attributs de `AA` à celui du peuplement : faux aussi, autrement.
+
+**À faire après le build de Gabriel** : reconfigurer (nouvelle ligne CSV), passer `all-public` et noter la mesure (section 8),
+un test système de plus ; passer la suite BFEC, dont `DoPlanning` sur COS_03771 (`13_Sc5a_Determin_avsp`, attendu 2044003), dont
+la croissance naturelle suit maintenant la `_DEATH` du modèle.
 
 ## 6. Prochain lot
 

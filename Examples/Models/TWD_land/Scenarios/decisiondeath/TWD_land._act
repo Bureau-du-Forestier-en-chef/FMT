@@ -1,0 +1,4 @@
+; COUPEtotale only, in unite1, where the decision model predicts youvert.
+*ACTION COUPEtotale Y CT
+*OPERABLE COUPEtotale
+unite1 ? ? youvert >= 1

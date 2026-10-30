@@ -39,6 +39,7 @@ ReplanWithModelAdaption;;;;TheModelsOfAReplanning;EndsWithoutError
 ReadTemplates;../../../../Examples/Models/TWD_land/TWD_land.pri;../../../../Examples/Models/TWD_land/Templates;5;AFolderOfOptimizeTemplates;ReadsAtLeastOneModel
 WriteModel;../../../../Examples/Models/TWD_land/TWD_land.pri;LEVEL1;;LevelsBuiltFromConstants;RereadsItWithTheSameOptimum
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|COS;3;302;AnOperabilityFromAPredictedYield;FindsTheKnownOptimum
+DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|decisiondeath;2;30;ADecisionModelOverALifespanOnANegatedAggregate;FindsTheKnownOptimum
 ReplayScheduleOutputs;../../../../Examples/Models/TWD_land/TWD_land.pri|DISTANCE;RATIO;6.58;ARatioOfADistanceYield;GivesItsKnownValue
 GetNoChoice;../../../../Examples/Models/TWD_land/TWD_land.pri|NOCHOICE;RATIO;8;AScenarioWithoutOperableAction;CountsTheDevelopmentsWithoutChoice
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|TSLA;25;1411.48;AnOperabilityOnTheTimeSinceTheLastAction;FindsTheKnownOptimum
