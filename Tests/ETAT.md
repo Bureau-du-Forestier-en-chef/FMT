@@ -3562,14 +3562,56 @@ construit ses deux périodes avec la DLL d'essai.
 `CoreTestCoverage.csv` : la ligne de `FMTYieldModelDecisionTree` cite le nouveau test ; `CoreTestCoverage.md` régénéré. Les deux
 changelogs ont leur entrée sous « Fixed » et « Corrigé ».
 
-**Lu dans le code, non démontré, hors de ce correctif** : un modèle sans `*CASE _DEATH`, dont le `.lif` porte un agrégat ou une
-négation, reçoit la même `_DEATH` par défaut dans le modèle principal, et `FMTTransitionMask::build` y donnerait de même plusieurs
-attributs d'un thème aux peuplements morts. Avant `c5bbcd01` (2025-11-13), `isAttribute("!AA")` rendait faux, et la cible
-ajoutait alors les attributs de `AA` à celui du peuplement : faux aussi, autrement.
+**Démontré, hors de ce correctif** (2026-10-30, `ReadScenario` et `DoPlanning` du build de `5d1cbb79`) : sans `*CASE _DEATH`,
+FMT construit la `_DEATH` par défaut (`FMTModel::defaultDeathTransition`, appelée à la lecture par `FMTModelParser` et par
+`setDefaultObjects`), dont chaque cible est le masque d'une ligne du `.lif`. Quand cette ligne porte un agrégat ou sa négation,
+`FMTTransitionMask::build` en fait une valeur fixe, et le peuplement mort reçoit tous les attributs de l'agrégat, dans le modèle
+principal cette fois. Scénarios d'une copie de TWD_land dans le scratchpad de la session (rien sous `Examples/Models`), tous avec
+le `._lan` de `decisiondeath`, `COUPEtotale` opérable nulle part et l'objectif `_MAX P1area 2` (aire de `peuplement1` au début de
+la période 2). La strate `peuplement1` de 25 ans (10 ha) meurt en période 1 : l'attendu, à la main, est 10.
 
-**À faire après le build de Gabriel** : reconfigurer (nouvelle ligne CSV), passer `all-public` et noter la mesure (section 8),
-un test système de plus ; passer la suite BFEC, dont `DoPlanning` sur COS_03771 (`13_Sc5a_Determin_avsp`, attendu 2044003), dont
-la croissance naturelle suit maintenant la `_DEATH` du modèle.
+| Scénario | `.lif` | `*CASE _DEATH` | Aire | `OPERATE` de `_DEATH` sur `UNITE1 PEUPLEMENT1 UTR1`, 25 ans | `DoPlanning`, 2 périodes |
+|---|---|---|---|---|---|
+| `Aany` | `? ? ? 20` | non | `peuplement1` et `peuplement3` dans `unite1`, `feu` dans `unite2` | `UNITE1 PEUPLEMENT1 UTR1`, 0 an | 10 |
+| `Adeath` | `? !AA ? 20`, `? AA ? 80` | celui de la racine | même aire | `UNITE1 PEUPLEMENT1 UTR1`, 0 an | 10 |
+| `Bneg` | `? !AA ? 20`, `? AA ? 80` | non | même aire | `UNITE1 !AA UTR1` | 0, sans erreur : l'objectif ne trouve aucune aire de `peuplement1` (`FMTexc(51)`) |
+| `Bagg` | `? prod ? 20`, `? feu ? 80` | non | même aire | `UNITE1 PROD UTR1` | `FMTexc(19)` « bitset count of 2 in theme 1 » au postsolve |
+| `Cany` | `? ? ? 20` | non | `peuplement1` à `peuplement3` dans `unite1` | `UNITE1 PEUPLEMENT1 UTR1`, 0 an | 10 |
+| `Cneg` | `? !AA ? 20`, `? AA ? 80` | non | même aire que `Cany` | `UNITE1 !AA UTR1` | `FMTexc(19)` « bitset count of 2 in theme 1 » au postsolve |
+
+Erreur ou résultat faux selon ce que le présolve garde du thème (déduit du code) : dans `Bneg`, le thème garde `peuplement1`, `peuplement3` et
+`feu`, et le mort reçoit `peuplement1` et `feu`, que le postsolve nomme `!pourpl` : aucune erreur, mais le peuplement ne compte plus
+comme `peuplement1`. Dans `Bagg` (`peuplement1` et `peuplement3`) et `Cneg` (`peuplement1` et `peuplement2`), l'ensemble n'a pas de
+nom dans le thème du modèle, et le postsolve lève l'exception.
+
+Origine : `defaultDeathTransition` vise les masques du `.lif` depuis le premier commit (`2e3dc129`, 2019-06-07), où `build`
+décidait déjà thème par thème avec `isattribute`. En 2019, `isattribute` ne connaissait que les attributs : un agrégat en cible
+ajoutait alors au peuplement les attributs hors de l'agrégat (lu dans le code de `2e3dc129`, non exécuté). Aujourd'hui,
+`isAttribute` cherche dans `m_attributem_locations`, qui contient aussi les agrégats, et retire le `!` depuis `c5bbcd01`
+(2025-11-13). Le résultat a changé de forme sans jamais garder l'attribut du peuplement. Non vérifié : un agrégat écrit à la main
+dans le `*TARGET` d'un `.trn`, que `build` traiterait de la même façon si le parseur l'accepte. Suite selon la règle 3 : une issue,
+puis une ligne de `knownbugs.csv` sur un scénario de TWD_land, et la correction dans une autre session.
+
+Commité par Gabriel : la correction en `83eb6eba`, le test, le scénario, la couverture, les changelogs et cette section en
+`5d1cbb79`.
+
+**Validation après le build de Gabriel** (2026-10-30, sources de `5d1cbb79`) :
+
+- build de 9 h 40, reconfiguré : la nouvelle ligne est inscrite ;
+- installation (`INSTALL_TEST_SUITE=public`, 9 h 44) : 1 252 tests, 0 échec, 1 198 exécutés et 54 désactivés, 34 s ; unit 869
+  verts et 13 désactivés, integration 65 verts et 29 désactivés, system 239 verts et 12 désactivés, performance 23, other 2 ;
+  aucun test en `T:/`. Le nouveau test y est vert (0,21 s). `InstallTests.xml`, `InstallTests.json`, `LastTest.log` et
+  `LastTestsDisabled.log` copiés dans le scratchpad de la session avant tout appel de ctest ;
+- suite privée, lancée par Gabriel (10 h 02) : 94 tests réussis, 0 échec, dont `DoPlanning` sur COS_03771
+  (`13_Sc5a_Determin_avsp`, attendu 2044003), dont la croissance naturelle suit maintenant la `_DEATH` du modèle, et
+  `GetRotations` sur le même modèle ;
+- `ctest --preset all-public` (après 10 h 02) : « 0 tests failed out of 1198 », 26,5 s réelles ; unit 869 verts et 13
+  désactivés sur 882, integration 65 verts et 29 désactivés sur 94, system 239 verts et 12 désactivés sur 251, performance 23,
+  other 2 ; Total 1 198 verts et 54 désactivés sur 1 252. Par rapport au lot 9b (section 5.20), seul le nouveau test change
+  les comptes : system + 1. Le nouveau test est vert (0,15 s), la fixture `ExamplesModelsUnchanged` aussi, et l'arbre de
+  travail est resté le même après le passage ;
+- non relues : les consoles de la configuration et du build. Les avertissements de la correction ne sont couverts que par la
+  passe `/W4` hors dépôt d'avant le build. Le modèle 09371 n'est pas relancé avec le build : il l'a été avec la DLL d'essai.
 
 ## 6. Prochain lot
 
@@ -4327,6 +4369,7 @@ dans `LastTest.log`, que le moindre appel à ctest réécrit (section 7).
 | 2026-10-27 (lot 8b, `12d46d92`) | 1 065 `all-public` (922 + 143 cas `Unit.`) ; résumé : unit 732 verts et 13 désactivés sur 745, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 28,3 s réelles | — | 13 | 2 | 0 | 36 | — |
 | 2026-10-28 (lot 8c, `73ccbfd8`) | 1 202 `all-public` (1 065 + 137 cas `Unit.`) ; résumé : unit 869 verts et 13 désactivés sur 882, integration 35 verts et 11 désactivés sur 46, system 237 verts et 12 désactivés sur 249, performance 23, other 2 | 33,2 s réelles | — | 13 | 2 | 0 | 36 | — |
 | 2026-10-29 (lot 9b, `7f410902`) | 1 251 `all-public` (1 202 + 43 cas `Integration.` d'`IntegrationSerialization` + 5 cas `Integration.FMTTransitionParser` + `System.Python.Serialization`) ; résumé : unit 869 verts et 13 désactivés sur 882, integration 65 verts et 29 désactivés sur 94, system 238 verts et 12 désactivés sur 250, performance 23, other 2 | 34,1 s réelles | — | 13 | 2 | 0 | 54 | — |
+| 2026-10-30 (`_DEATH` de la croissance naturelle, `5d1cbb79`) | 1 252 `all-public` (1 251 + `System.DoPlanning` sur `decisiondeath`) ; résumé : unit 869 verts et 13 désactivés sur 882, integration 65 verts et 29 désactivés sur 94, system 239 verts et 12 désactivés sur 251, performance 23, other 2 | 26,5 s réelles | — | 13 | 2 | 0 | 54 | — |
 
 - Tests base inscrits : `ctest --preset all-public -N`, autrefois `ctest ... -N -E "T:/"`
   (fixtures et tests désactivés compris).
