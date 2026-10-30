@@ -1,0 +1,20 @@
+; The constraints of the scenario Spatial, then a _GROUP constraint, for IntegrationParser
+; (Tests/Integration/Parser/FMTModelParser.cpp): each spatial constraint must be written so that it reads back
+; the same. No other scenario of TWD_land has a _GROUP constraint.
+
+*OBJECTIVE
+_MAXMIN oVolRec 1.._LENGTH
+
+*CONSTRAINTS
+
+Burnedarea = 0 1.._LENGTH
+oVolRec <= 48000 1.._LENGTH
+_EVEN(oVolRec) 1.._LENGTH
+
+;spatial constraint
+_SIZE(coupetotale,4) >= 2 1.._LENGTH
+_SIZE(coupetotale,4) <= 2 1.._LENGTH
+_ADJACENCY(coupetotale,1) >= 1 1.._LENGTH
+_GROUP(coupetotale,_TH1,2) >= 1 1.._LENGTH
+
+*FORMAT MOSEK

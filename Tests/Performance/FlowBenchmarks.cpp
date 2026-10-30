@@ -17,6 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "BenchmarkSuite.h"
 #include "DatasetFingerprint.h"
 #include "DefinedBenchmarks.h"
+#include "ModelSetup.h"
 #include "QuietFmt.h"
 
 #ifdef FMTWITHOSI
@@ -49,8 +50,6 @@ namespace
 {
 	// Seed of the non-spatial simulations, as in the replanning examples.
 	constexpr unsigned int SEED = 0;
-	// Tolerance of a replayed schedule, as in SetSolution.
-	constexpr double REPLAY_TOLERANCE = 0.01;
 	// Minimal drift of a replanned output, as in the replanning examples.
 	constexpr double MINIMAL_DRIFT = 0.5;
 
@@ -160,16 +159,6 @@ namespace
 		return text.str();
 	}
 
-	// MOSEK, the solver of production, when FMT is built with it; CLP otherwise.
-	Models::FMTSolverInterface solver()
-	{
-	#ifdef FMTWITHMOSEK
-		return Models::FMTSolverInterface::MOSEK;
-	#else
-		return Models::FMTSolverInterface::CLP;
-	#endif
-	}
-
 	// Sum of the finite totals of the first p_maximumOutputs outputs of the model, all of them when it
 	// is 0, over p_length periods. An output that gives no total is left out.
 	double sumOfOutputs(const Models::FMTModel& p_model, int p_length, std::size_t p_maximumOutputs)
@@ -194,17 +183,6 @@ namespace
 			}
 		}
 		return sum;
-	}
-
-	// Builds a model with the schedule of its scenario over p_length periods, without solving it, as
-	// SetSolution does.
-	void buildWithSchedule(Models::FMTLpModel& p_model, const std::vector<Core::FMTSchedule>& p_schedules, int p_length)
-	{
-		p_model.setParameter(Models::FMTintmodelparameters::LENGTH, p_length);
-		p_model.setParameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
-		p_model.setParameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);
-		p_model.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, REPLAY_TOLERANCE);
-		p_model.doPlanning(false, p_schedules);
 	}
 
 	double outputValue(const Models::FMTModel& p_model, const std::string& p_output, int p_period)
@@ -332,7 +310,7 @@ namespace
 		Parser::FMTModelParser parser;
 		const std::vector<Models::FMTModel> MODELS = parser.readproject(getPrimaryFile(), getScenarios());
 		endPhase(m_read);
-		Models::FMTLpModel model(MODELS.at(0), solver());
+		Models::FMTLpModel model(MODELS.at(0), Performance::getSolver());
 		model.setParameter(Models::FMTintmodelparameters::LENGTH, m_length);
 		model.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 		model.setParameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);
@@ -386,8 +364,8 @@ namespace
 		const std::vector<Models::FMTModel> MODELS = parser.readproject(getPrimaryFile(), getScenarios());
 		const std::vector<Core::FMTSchedule> SCHEDULES = parser.readSchedules(getPrimaryFile(), MODELS).at(0);
 		endPhase(m_read);
-		Models::FMTLpModel model(MODELS.at(0), solver());
-		buildWithSchedule(model, SCHEDULES, m_length);
+		Models::FMTLpModel model(MODELS.at(0), Performance::getSolver());
+		Performance::buildWithSchedule(model, SCHEDULES, m_length);
 		endPhase(m_build);
 		return outputValue(model, m_output, m_period);
 	#else
@@ -429,8 +407,8 @@ namespace
 		Parser::FMTModelParser parser;
 		const std::vector<Models::FMTModel> MODELS = parser.readproject(getPrimaryFile(), getScenarios());
 		const std::vector<Core::FMTSchedule> SCHEDULES = parser.readSchedules(getPrimaryFile(), MODELS).at(0);
-		m_model = std::make_unique<Models::FMTLpModel>(MODELS.at(0), solver());
-		buildWithSchedule(*m_model, SCHEDULES, m_length);
+		m_model = std::make_unique<Models::FMTLpModel>(MODELS.at(0), Performance::getSolver());
+		Performance::buildWithSchedule(*m_model, SCHEDULES, m_length);
 	#endif
 	}
 
@@ -627,7 +605,7 @@ namespace
 		Parser::FMTModelParser parser;
 		const std::vector<Models::FMTModel> MODELS = parser.readproject(getPrimaryFile(), getScenarios());
 		endPhase(m_read);
-		Models::FMTLpModel global(MODELS.at(0), solver());
+		Models::FMTLpModel global(MODELS.at(0), Performance::getSolver());
 		global.setParameter(Models::FMTintmodelparameters::LENGTH, m_globalLength);
 		global.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 		global.setParameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
@@ -635,7 +613,7 @@ namespace
 		Models::FMTNssModel stochastic(MODELS.at(1), SEED);
 		stochastic.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 		stochastic.setParameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);
-		Models::FMTLpModel local(MODELS.at(2), solver());
+		Models::FMTLpModel local(MODELS.at(2), Performance::getSolver());
 		local.setParameter(Models::FMTintmodelparameters::LENGTH, 1);
 		local.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 		local.setParameter(Models::FMTboolmodelparameters::QUIET_LOGGING, true);

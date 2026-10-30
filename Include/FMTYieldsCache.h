@@ -23,6 +23,9 @@ namespace Core
 	// DocString: FMTYieldsCache
 	/**
 	@brief Cache of yield values keyed by development and yield name.
+	@details Every cache shares one static table, a boost::concurrent_flat_map: its lookups and insertions are safe
+	from several threads, but its key holds neither the model nor its yields, so that the threads and the models of
+	a process share their values (#403).
 	*/
 	class FMTEXPORT FMTYieldsCache
 		{

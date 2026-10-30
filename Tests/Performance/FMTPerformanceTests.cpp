@@ -15,7 +15,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "BenchmarkSuite.h"
 #include "ComplexYieldBenchmarks.h"
 #include "DefinedBenchmarks.h"
+#include "ExpressionBenchmarks.h"
 #include "FlowBenchmarks.h"
+#include "GraphBenchmarks.h"
 #include "MaskBenchmarks.h"
 #include "ParserBenchmarks.h"
 #include "TestTools.h"
@@ -30,6 +32,8 @@ int main(int argc, char* argv[])
 		Performance::addComplexYieldBenchmarks(suite, OPTIONS.getModelFile());
 		Performance::addYieldBenchmarks(suite, OPTIONS.getModelFile());
 		Performance::addMaskBenchmarks(suite, OPTIONS.getModelFile());
+		Performance::addExpressionBenchmarks(suite);
+		Performance::addGraphBenchmarks(suite, OPTIONS.getModelFile());
 		Performance::addParserBenchmarks(suite, OPTIONS.getModelFile());
 		Performance::addFlowBenchmarks(suite, OPTIONS.getModelFile(), OPTIONS.getWorkFolder());
 		Performance::addDefinedBenchmarks(suite, OPTIONS.getDefinedBenchmarks(), OPTIONS.getWorkFolder());

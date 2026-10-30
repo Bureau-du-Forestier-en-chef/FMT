@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTYieldModelDecisionTree.h"
+#include <algorithm>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/filesystem.hpp>
 #include "FMTYieldRequest.h"
@@ -15,6 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTGraphVertexToYield.h"
 #include "FMTQuietLogger.h"
 #include "FMTModel.h"
+#include "FMTAction.h"
 
 
 
@@ -271,7 +273,17 @@ namespace Core {
 				++constraintid;
 			}*/
 			naturalGrowth->setConstraints(newconstraints);
-			naturalGrowth->setActions(std::vector<Core::FMTAction>());
+			//Keep _DEATH so that setActions keeps the _DEATH transitions of the model:
+			//the default ones target the lifespan masks, aggregates included.
+			const std::vector<Core::FMTAction>MODEL_ACTIONS = naturalGrowth->getActions();
+			const std::vector<Core::FMTAction>::const_iterator DEATH_IT = std::find_if(MODEL_ACTIONS.cbegin(), MODEL_ACTIONS.cend(),
+				Core::FMTActionComparator("_DEATH"));
+			std::vector<Core::FMTAction>deathOnly;
+			if (DEATH_IT != MODEL_ACTIONS.cend())
+				{
+				deathOnly.push_back(*DEATH_IT);
+				}
+			naturalGrowth->setActions(deathOnly);
 			//naturalGrowth->setConstraints(naturalGrowth->goalConstraints());
 			//naturalGrowth->setParallelLogger(Logging::FMTQuietLogger());
 			if (!naturalGrowth->doPlanning(true))

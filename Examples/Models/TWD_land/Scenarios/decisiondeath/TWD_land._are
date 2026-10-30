@@ -1,0 +1,9 @@
+; Three strata of unite1, the mask of the decision model, and one of unite2.
+; The natural growth model of the decision model holds peuplement1 to 3 only,
+; the model also feu. The peuplement1 stratum, older than its lifespan, dies
+; in period 1.
+;*A TH1 TH2 TH3 AGE AREA
+*A UNITE1 PEUPLEMENT1 UTR1 25 10.000000
+*A UNITE1 PEUPLEMENT2 UTR1 5 10.000000
+*A UNITE1 PEUPLEMENT3 UTR1 5 10.000000
+*A UNITE2 FEU UTR1 5 10.000000

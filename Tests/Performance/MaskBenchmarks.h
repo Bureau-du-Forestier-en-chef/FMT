@@ -14,7 +14,7 @@ namespace Performance
 {
 	class BenchmarkSuite;
 
-	// Adds the benchmarks of mask operations, on the themes of the root of p_primaryFile.
+	// Adds the benchmarks of mask operations, on the themes and the yields of the root of p_primaryFile.
 	void addMaskBenchmarks(BenchmarkSuite& p_suite, const std::string& p_primaryFile);
 }
 

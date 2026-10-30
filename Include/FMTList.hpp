@@ -39,6 +39,8 @@ namespace Core
 	/**
 	@brief Dictionary-like container keeping track of objects tagged with a FMTMask, used by the yield, action and transition classes.
 	@details Uses caching and a mask filter to reduce the size of the list and provide fast access to the objects.
+	findSets and findSetsWithFiltered are const, but fill that cache without a lock: a list is not safe for
+	concurrent use, not even for reading.
 	@tparam T the type of the objects held by the list.
 	*/
 	template<typename T>

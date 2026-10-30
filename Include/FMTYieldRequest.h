@@ -32,6 +32,8 @@ namespace Core
 	/**
 	@brief Request for yield values using a development and optionally a graph vertex.
 	@details The yield is calculated using the FMTYields class and the graph to locate the actual state of the development. A request can also be built without any reference to a graph.
+	Its first use by a FMTYields locates the yield data of its development and keeps them in mutable members: a
+	request is not safe for concurrent use.
 	*/
 	class FMTEXPORT FMTYieldRequest final : public FMTObject
 	{

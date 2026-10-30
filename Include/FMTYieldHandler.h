@@ -75,6 +75,8 @@ struct cmpYieldString
 // DocString: FMTYieldHandler
 /**
 @brief Base class for yield handlers, holding a mask and the base ages of the yields.
+@details get is const, but records the yields being computed, to detect a recursion: a handler is not safe for
+concurrent use.
 */
 class FMTEXPORT FMTYieldHandler : public FMTObject
 {

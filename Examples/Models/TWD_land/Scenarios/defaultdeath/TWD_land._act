@@ -1,0 +1,4 @@
+; COUPEtotale is operable nowhere: the only change is the death of the stands.
+*ACTION COUPEtotale Y CT
+*OPERABLE COUPEtotale
+unite3 ? ?

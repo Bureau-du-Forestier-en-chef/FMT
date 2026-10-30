@@ -44,6 +44,9 @@ namespace Core
 /**
 @brief Base class of multiple FMT classes holding a shared exception handler pointer and logger.
 @details Plays a major role in exception handling and ctrl-c signals for boost::python, and provides utility functions for mask validation and runtime location.
+The exception handler and the logger are static, shared by every object and every thread of the process: their
+calls are locked, but replacing them (passInLogger, setDefaultLogger, setQuietLogger, passInExceptionHandler,
+setDefaultExceptionHandler...) while other threads use them is not safe.
 */
 class FMTEXPORT FMTObject
 	{

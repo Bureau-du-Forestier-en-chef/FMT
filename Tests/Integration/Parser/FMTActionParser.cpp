@@ -74,7 +74,7 @@ TEST(FMTActionParser, GivenAMaximumAgeWrittenWithLessOrEqualWhenReadThenTheActio
 }
 
 // Disabled: FMTParser::bounds gives no bound to the operators > and <, which getBaseOperators lists: the condition is
-// dropped without a message, and the action is operable at every age (defect 18 of section 2.7 of Tests/ETAT.md).
+// dropped without a message, and the action is operable at every age (#393, defect 18 of section 2.7 of Tests/ETAT.md).
 // Woodstock refuses both operators (messages 142 and 143 of Wk.msg): if the correction refuses them too, this case
 // becomes a test of the exception.
 TEST(FMTActionParser, DISABLED_GivenAMinimumAgeWrittenWithGreaterThanWhenReadThenTheActionIsOperableAboveThatAgeOnly)
@@ -89,7 +89,7 @@ TEST(FMTActionParser, DISABLED_GivenAMinimumAgeWrittenWithGreaterThanWhenReadThe
     EXPECT_EQ(operableAges, std::vector<int>({ 11, 20 }));
 }
 
-// Disabled: the operator < is dropped as > is (defect 18 of section 2.7 of Tests/ETAT.md).
+// Disabled: the operator < is dropped as > is (#393, defect 18 of section 2.7 of Tests/ETAT.md).
 TEST(FMTActionParser, DISABLED_GivenAMaximumAgeWrittenWithLessThanWhenReadThenTheActionIsOperableBelowThatAgeOnly)
 {
     // Arrange: *ACTION aYoungerThan Y, ? prod ? _AGE < 5

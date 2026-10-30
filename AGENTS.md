@@ -23,7 +23,7 @@ lives in exactly one document, and changes to it belong in that document only.
 | `Excel/` | Excel integration. |
 | `Examples/Models/` | Woodstock models used by the tests. |
 | `Tests/` | Test registration and the tests by level: see [Testing](#testing). |
-| `Tests/Unit/Core/`, `Tests/Integration/` | GoogleTest tests: the unit tests of FMTlib, one source per class, built into `UnitCore`; the integration tests, one folder per component, `Parser/` for the parsers of FMTlib with the Woodstock files they write and read back, and the vector maps that `FMTAreaParser` reads, built into `IntegrationParser`. |
+| `Tests/Unit/Core/`, `Tests/Integration/` | GoogleTest tests: the unit tests of FMTlib, one source per class, built into `UnitCore`; the integration tests, one folder per component, `Parser/` for the parsers of FMTlib with the Woodstock files they write and read back, and the vector maps that `FMTAreaParser` reads, built into `IntegrationParser`, `Models/` for the planning models with their solver, built into `IntegrationModels`, `Serialization/` for the objects that the pickle of Python saves and reads back with Boost.Serialization, built into `IntegrationSerialization`, and `Parallel/` for the tasks that plan and replan models on several threads, built into `IntegrationParallel`. |
 | `Tests/System/Cpp/` | C++ system tests: each `.cpp` becomes a test executable, which the rows of the CSV files of the folder run; `FMTWrapperCore/` and `Excel/` hold those of the wrapper core and of Excel. |
 | `Tests/System/Python/`, `Tests/System/R/` | pytest and testthat suites, one system test per file, run by ctest. |
 | `Tests/Performance/` | Performance and allocation benchmarks: `FMTPerformanceTests`, its harness and `performance.csv`. |
@@ -94,7 +94,10 @@ GoogleTest executable and registers each of its cases. `Tests/System/Cpp/CMakeLi
 `registercsvtests` for its CSV files and `registersystemtest` for the Excel test,
 `Tests/System/Python/CMakeLists.txt` and `Tests/System/R/CMakeLists.txt` call `registersystemtest` for
 their tests, `Tests/Unit/Core/CMakeLists.txt` calls `registergoogletests` for `UnitCore`, and
-`Tests/Integration/Parser/CMakeLists.txt` for `IntegrationParser`.
+`Tests/Integration/Parser/CMakeLists.txt` for `IntegrationParser`,
+`Tests/Integration/Models/CMakeLists.txt` for `IntegrationModels`,
+`Tests/Integration/Serialization/CMakeLists.txt` for `IntegrationSerialization` and
+`Tests/Integration/Parallel/CMakeLists.txt` for `IntegrationParallel`.
 
 Each test carries one level label (`unit` for the GoogleTest tests of `Tests/Unit`, `integration` for
 those of `Tests/Integration`, `system` for every C++, Python and R system test, `performance` for the
@@ -138,6 +141,17 @@ Python wheel or the R package, without running any test, so that this pass runs 
 rest. The private campaign runs apart, before a release: `ctest --preset system-private`, or
 `tools\tests\RunPrivateTests.bat [ctest options...]`, which checks that `T:\` is reachable, then
 runs `RunTests.bat system-private` and its summary.
+
+`tools\tests\MeasureCoverage.bat [-Levels unit,integration,system] [-Output <folder>]` measures the line
+and function coverage of `Source/` and `Include/` by the public C++ tests, level by level, with
+`Microsoft.CodeCoverage.Console` of Visual Studio Enterprise or Professional. It needs a build of its own,
+`build/coverage`, never `build/release`: Release without optimization (`/Od /Ob0 /Zi`), linked with
+`/DEBUG:FULL /PROFILE`, without `WITHOUT_PYTHONLIB`, and installed after deleting
+`build/coverage/bin/Release/setup.py`; the help of `Measure-Coverage.ps1` gives the commands. The script
+instruments the binaries, runs each level under the tool, gives the binaries back as they were, and writes
+the Cobertura reports and `summary.txt` in `coverage-reports` beside the repository. Coverage is
+informative: it lists what no test reaches, and a report goes into `Documentation/Testing/` only at a
+release.
 
 ### Adding a unit or integration test
 
@@ -215,6 +229,10 @@ registered at the next configuration.
   builds. `runTestFile.R` runs one file with testthat against the FMT package installed in that R by
   `cmake/BaseInstallR.cmake`: the tests are skipped until the package of this build's version is
   installed. `runTests.R` still runs the whole folder by hand.
+- A pytest case that reveals an open defect is marked
+  `pytest.mark.xfail(strict=True, raises=<exception>, reason="<defect>")`, the counterpart of `DISABLED_`: it runs,
+  must fail with that exception, and turns red on the day the defect is fixed. `pytest --runxfail` runs it
+  as an ordinary case.
 
 A test that cannot run, because pytest, testthat or the package is missing, returns 77 and prints
 `SKIPPED: <reason>`, which the summary shows. Both suites run in the ctest pass of `cmake --install`,

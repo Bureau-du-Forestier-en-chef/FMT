@@ -81,6 +81,8 @@ enum class FMTgraphbuild
 /**
 @brief Directed graph holding the FMTDevelopment of every period as vertices and the actions and natural growth as edges.
 @details The graph is divided per period and is the backbone used to build the matrix of the LP models and the line graphs of the spatially explicit models.
+Its const methods that select vertices, such as getNode and getOutput, fill caches: the node cache of each period
+and the selected vertices. A graph is not safe for concurrent use, not even for reading.
 @tparam tvertexproperties the vertex properties type.
 @tparam tedgeproperties the edge properties type.
 */
@@ -3798,6 +3800,8 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		// DocString: FMTGraph::threadedStaticSearch
 		/**
 		@brief Search in parallel the vertices matching a static output node for a period.
+		@details Not called by FMT. Its threads would write adjacent elements of one std::vector<bool>, which the
+		standard does not allow from several threads.
 		@param[in] p_node the output node.
 		@param[in] p_model the model.
 		@param[in] p_period the period.

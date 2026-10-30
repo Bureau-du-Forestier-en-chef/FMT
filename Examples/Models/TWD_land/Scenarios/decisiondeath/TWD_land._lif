@@ -1,0 +1,4 @@
+; Lifespans on a negated aggregate: !AA is peuplement1, peuplement2 and feu.
+; The default _DEATH transitions target these masks.
+? !AA ? 20
+? AA ? 80
