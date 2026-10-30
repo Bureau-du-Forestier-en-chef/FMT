@@ -365,11 +365,14 @@ namespace Spatial
 		int p_period, Core::FMToutputlevel level) const
 	{
 		std::map<std::string, double> results;
+		size_t family = 0;
+		const std::pair<const Graph::FMTLineGraph, FMTGraphInfo>* currentGraph = nullptr;
 		try {
 			for (const auto& FAMILY : m_AllGraphs)
 			{
 				for (const auto& GRAPH : FAMILY)
 				{
+					currentGraph = &GRAPH;
 					const double CELLS = _getGraphCells(p_Solution, GRAPH.second);
 					if (CELLS > FMT_DBL_TOLERANCE)
 					{
@@ -386,11 +389,20 @@ namespace Spatial
 						}
 					}
 				}
+				++family;
 			}
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::getOutput",
+			std::string message = "For output " + p_output.getName() + " at period " + std::to_string(p_period);
+			if (currentGraph != nullptr)
+			{
+				message += " in graph id " + std::to_string(currentGraph->second.getGraphId()) +
+					" of family " + std::to_string(family) +
+					" with " + std::to_string(p_Solution.getNumberOfCells(currentGraph->second.getGraphId())) +
+					" cells base (" + currentGraph->first.getBaseDiagnostic() + ")";
+			}
+			_exhandler->raiseFromCatch(message + _getGraphsInErrorReport(&p_Solution), "FMTSpatialGraphs::getOutput",
 				__LINE__, __FILE__);
 		}
 		return results;
@@ -552,6 +564,14 @@ namespace Spatial
 		FMTSpatialGraphs::iterator p_Graph,
 		size_t p_family)
 	{
+		//What the catch reports
+		const Core::FMTConstraint* currentConstraint = nullptr;
+		int lowerBound = 0;
+		int upperBound = 0;
+		int lowestPeriod = 0;
+		int upperPeriod = 0;
+		bool inGraph = false;
+		size_t fromLastPeriod = 0;
 		try {
 			size_t ConstraintId = 0;
 			for (const Core::FMTConstraint& CONSTRAINT : getModel().constraints)
@@ -564,6 +584,11 @@ namespace Spatial
 					{
 						int LowestPeriod = CONSTRAINT.getPeriodLowerBound();
 						int UpperPeriod = CONSTRAINT.getPeriodUpperBound();
+						currentConstraint = &CONSTRAINT;
+						lowerBound = LowestPeriod;
+						upperBound = UpperPeriod;
+						inGraph = false;
+						fromLastPeriod = 0;
 						if (p_Graph->second.isEmpty())
 						{
 							p_Graph->second.setValuesSize(getModel().constraints.size());
@@ -574,11 +599,15 @@ namespace Spatial
 							{
 								++UpperPeriod;
 							}
+							inGraph = true;
+							lowestPeriod = LowestPeriod;
+							upperPeriod = UpperPeriod;
 							const double GRAPH_AREA = p_Graph->first.getBaseDevelopment().getArea();
 							const double* SOLUTION = &GRAPH_AREA;
 							std::vector<double>Values((UpperPeriod - LowestPeriod) + 1, 0.0);
 							size_t i  = _fillValuesFromLastPeriod(p_family, p_Graph, ConstraintId,
 								Values);
+							fromLastPeriod = i;
 							LowestPeriod += static_cast<int>(i);
 							for (int period = LowestPeriod; period <= UpperPeriod; ++period)
 							{
@@ -599,7 +628,29 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::_buildConstraintsValues",
+			std::string message = "For graph id " + std::to_string(p_Graph->second.getGraphId()) +
+				" of family " + std::to_string(p_family) + " (" + std::to_string(m_AllGraphs.at(p_family).size()) +
+				" graphs) at length " + std::to_string(getModel().getParameter(Models::FMTintmodelparameters::LENGTH)) +
+				" base (" + p_Graph->first.getBaseDiagnostic() + ")";
+			if (currentConstraint != nullptr)
+			{
+				message += " constraint " + std::string(*currentConstraint) +
+					" across periods " + std::to_string(currentConstraint->acrossPeriod()) +
+					" bounds " + std::to_string(lowerBound) + ".." + std::to_string(upperBound);
+				if (inGraph)
+				{
+					message += " periods in graph " + std::to_string(lowestPeriod) + ".." + std::to_string(upperPeriod) +
+						" with " + std::to_string(fromLastPeriod) + " values from the last period graph";
+				}else {
+					message += " not in graph";
+				}
+			}
+			const std::string INCOHERENCES = p_Graph->first.getIncoherences();
+			if (!INCOHERENCES.empty())
+			{
+				message += " incoherences:" + INCOHERENCES;
+			}
+			_exhandler->raiseFromCatch(message + _getGraphsInErrorReport(nullptr), "FMTSpatialGraphs::_buildConstraintsValues",
 				__LINE__, __FILE__);
 		}
 	}
@@ -680,8 +731,8 @@ namespace Spatial
 		FMTSpatialGraphs::family_iterator FirstGraphFamily,
 		FMTSpatialGraphs::family_iterator GraphFamilyEnd)
 	{
+		size_t Family = 0;
 		try {
-			size_t Family = 0;
 			for (family_iterator It = FirstGraphFamily; It != GraphFamilyEnd; ++It)
 			{
 				for (iterator GraphIt = It->begin();
@@ -694,7 +745,7 @@ namespace Spatial
 		}
 		catch (...)
 		{
-			_exhandler->raiseFromCatch("", "FMTSpatialGraphs::_buildConstraintsValues",
+			_exhandler->raiseFromCatch("For family " + std::to_string(Family), "FMTSpatialGraphs::_buildConstraintsValues",
 				__LINE__, __FILE__);
 		}
 	}
@@ -814,6 +865,58 @@ namespace Spatial
 				__LINE__, __FILE__);
 			}
 		return area;
+	}
+
+	std::string FMTSpatialGraphs::_getGraphsInErrorReport(const FMTSolutionTracker* p_solution) const
+	{
+		return getGraphsInErrorReport(m_AllGraphs, m_LastGraphId, p_solution);
+	}
+
+	std::string FMTSpatialGraphs::getGraphsInErrorReport(
+		const std::vector<std::map<Graph::FMTLineGraph, FMTGraphInfo>>& p_AllGraphs,
+		size_t p_LastGraphId,
+		const FMTSolutionTracker* p_solution)
+	{
+		const size_t MAXIMUM_DETAILED = 20;
+		std::string report;
+		size_t checked = 0;
+		size_t inError = 0;
+		try {
+			size_t family = 0;
+			for (const auto& FAMILY : p_AllGraphs)
+			{
+				for (const auto& GRAPH : FAMILY)
+				{
+					++checked;
+					const std::string INCOHERENCES = GRAPH.first.getIncoherences();
+					if (!INCOHERENCES.empty())
+					{
+						if (inError < MAXIMUM_DETAILED)
+						{
+							report += " | graph id " + std::to_string(GRAPH.second.getGraphId()) +
+								" of family " + std::to_string(family);
+							if (p_solution != nullptr)
+							{
+								//The tracker can be wrong, the postSolve removes the cells from the base graph of the family
+								report += " with " + std::to_string(p_solution->getNumberOfCells(GRAPH.second.getGraphId())) +
+									" cells in the tracker";
+							}
+							report += " base (" + GRAPH.first.getBaseDiagnostic() + ")" +
+								" incoherences:" + INCOHERENCES + " " + GRAPH.first.getDiagnosticString();
+						}
+						++inError;
+					}
+				}
+				++family;
+			}
+		}
+		catch (...)
+		{
+			report += " | (report incomplete)";
+		}
+		return " Graphs in error: " + std::to_string(inError) + " of " + std::to_string(checked) +
+			" graphs in " + std::to_string(p_AllGraphs.size()) + " families, last graph id " +
+			std::to_string(p_LastGraphId) + report;
 	}
 
 	void FMTSpatialGraphs::_removeGraphsShorterThan(size_t p_GraphSize)
