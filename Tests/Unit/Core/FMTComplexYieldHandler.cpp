@@ -563,7 +563,7 @@ TEST(FMTComplexYieldHandler, GivenAMinimumOfNegativeYieldsWhenGetThenReturnsTheS
 
 // Disabled: _MAX starts from 0 (FMTComplexYieldHandler::_getMax), while _MIN starts from the highest double, so that
 // the maximum of yields that are all negative is 0 (#389, defect 14 of section 2.7 of Tests/ETAT.md).
-TEST(FMTComplexYieldHandler, DISABLED_GivenAMaximumOfNegativeYieldsWhenGetThenReturnsTheLargest)
+TEST(FMTComplexYieldHandler, GivenAMaximumOfNegativeYieldsWhenGetThenReturnsTheLargest)
 {
     // Arrange: NEGATIVE _MULTIPLY(VOLUME,-1), MORENEGATIVE _MULTIPLY(VOLUME,-2) and LARGEST _MAX(NEGATIVE,MORENEGATIVE)
     Core::FMTComplexYieldHandler handler = getHandler("NEGATIVE",

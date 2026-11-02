@@ -96,6 +96,11 @@ namespace Exception
 		return "\nIn Method("+ m_method +") \n In File(" + m_file + ") \n At Line(" + std::to_string(m_line) + ")";
 		}
 
+	std::string FMTException::getBaseSrcInfo() const
+		{
+		return "\nIn Method(" + m_method + ") \n At Line(" + std::to_string(m_line) + ")";
+		}
+
 	int FMTException::_getPrintLevel() const
 		{
 		return m_PrintLevel;
@@ -118,6 +123,8 @@ namespace Exception
 		if (_getPrintLevel() > 0)
 			{
 			m_msg +=  getSrcInfo();
+		}else {
+			m_msg += getBaseSrcInfo();
 			}
 	}
 

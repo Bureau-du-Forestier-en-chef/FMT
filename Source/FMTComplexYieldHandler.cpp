@@ -674,7 +674,7 @@ namespace Core {
 		try {
 			const std::vector<const std::string*> SOURCES = p_data->getSources();
 			const std::vector<const std::unique_ptr<FMTYieldHandler>*> SOURCES_DATA = _getData(p_request, SOURCES, p_yld);
-			double maxValue = 0;
+			double maxValue = std::numeric_limits<double>::lowest();
 			for (size_t Id = 0; Id < SOURCES.size(); ++Id)
 			{
 				const std::unique_ptr<FMTYieldHandler>* DATA = SOURCES_DATA.at(Id);
