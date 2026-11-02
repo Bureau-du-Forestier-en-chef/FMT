@@ -113,7 +113,12 @@ namespace Core {
 						return (1 / std::pow((1 + rateofreturn), pertio * exponant));
 					}else {
 						double value = lvalues->data.back();
-						const int BASE = getBases().at(0);
+						size_t baseIndex = 0;
+						if (getBases().size()>1)
+							{
+							baseIndex = std::distance(m_elements.begin(), data0it);
+							}
+						const int BASE = getBases().at(baseIndex);
 						const int INDEX = target - BASE; 
 						if (INDEX < 0)
 						{

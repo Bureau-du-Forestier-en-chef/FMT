@@ -128,7 +128,7 @@ TEST(FMTTimeYieldHandler, GivenTwoTimeYieldsStartingAtTheSamePeriodWhenGetThenEa
 // of the handler for every yield. FMTYieldParser pushes one starting period per yield of a *YT section, kept in the
 // order of the yield names (cmpYieldString, the shortest name first), so that LATE, shorter, comes first: PERIODVALUE
 // then starts at period 3, and gives 0 at period 1 and 10 at period 3.
-TEST(FMTTimeYieldHandler, DISABLED_GivenTwoTimeYieldsStartingAtDifferentPeriodsWhenGetThenEachStartsAtItsOwnPeriod)
+TEST(FMTTimeYieldHandler, GivenTwoTimeYieldsStartingAtDifferentPeriodsWhenGetThenEachStartsAtItsOwnPeriod)
 {
     // Arrange: the lines "PERIODVALUE 1 10 20 30" and "LATE 3 5 6" of a *YT section, as FMTYieldParser reads them.
     Core::FMTTimeYieldHandler handler;

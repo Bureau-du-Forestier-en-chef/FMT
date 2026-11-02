@@ -400,7 +400,7 @@ TEST(FMTModelYieldHandler, GivenModelsWithPeriodicValuesWhenToTimeHandlerThenGiv
     EXPECT_EQ(std::string(timeHandler.getMask()), "UNITE1 ? ?");
     EXPECT_EQ(timeHandler.getYieldNames(), std::vector<std::string>({ "AREA", "STEMS" }));
     EXPECT_DOUBLE_EQ(timeHandler.get("AREA", request), 2.0);
-    EXPECT_DOUBLE_EQ(timeHandler.get("STEMS", request), 5.0);
+	EXPECT_DOUBLE_EQ(timeHandler.get("STEMS", request), 5.0);
 }
 
 TEST(FMTModelYieldHandler, GivenAModelWithoutPeriodicValuesWhenToTimeHandlerThenGivesAnEmptyTimeHandlerOfTheMask)
