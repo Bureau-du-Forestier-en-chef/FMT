@@ -737,8 +737,6 @@ namespace Core
 						{FMTconstrainttype::FMTMINobjective,    "_MIN "},
 						{FMTconstrainttype::FMTMAXMINobjective, "_MAXMIN "},
 						{FMTconstrainttype::FMTMINMAXobjective, "_MINMAX "},
-						{FMTconstrainttype::FMTspatialsize, "_SIZE("},
-						{FMTconstrainttype::FMTspatialadjacency,"_ADJACENCY("},
 						{FMTconstrainttype::FMTspatialgreenup,"_GROUP("},
 						{FMTconstrainttype::FMTrandomaction,"_RANDOM("} };
 
@@ -774,6 +772,8 @@ namespace Core
 				case FMTconstrainttype::FMTspatialadjacency:
 				case FMTconstrainttype::FMTSpatialGroup:
 				case FMTconstrainttype::FMTspatialsize:
+					_standardString(line, period_bounds, goal, global, true);
+					break;
 				case FMTconstrainttype::FMTrandomaction:
 					_standardString(line, period_bounds, goal, global, true,true);
 					break;
