@@ -316,7 +316,7 @@ TEST(FMTModelParser, GivenAProjectWhenWriteToProjectThenRereadsTheScenarioAsTheM
 
 // Disabled: writeToProject writes the sections of a scenario that differ from the root, and the yields always
 // differ, since FMTYields::operator== compares the addresses of their handlers: the yields are written too (#383).
-TEST(FMTModelParser, DISABLED_GivenAScenarioThatOnlyChangesItsObjectiveWhenWriteToProjectThenWritesItsOptimizeAndScheduleSectionsOnly)
+TEST(FMTModelParser, GivenAScenarioThatOnlyChangesItsObjectiveWhenWriteToProjectThenWritesItsOptimizeAndScheduleSectionsOnly)
 {
     // Arrange
     const Models::FMTModel root = Testing::readScenario("NOT_MASK");

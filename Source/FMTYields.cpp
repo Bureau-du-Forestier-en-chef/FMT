@@ -474,9 +474,24 @@ std::vector<double>FMTYields::getYlds(const FMTDevelopment& dev, const FMTSpec& 
 
 bool FMTYields::operator == (const FMTYields& rhs) const
 	{
-	return (m_yieldsLocations == rhs.m_yieldsLocations &&
-		FMTList<std::unique_ptr<FMTYieldHandler>>::operator==(rhs));
-
+	if (m_yieldsLocations == rhs.m_yieldsLocations &&
+		size() == rhs.size())
+		{
+		auto& firstId = begin();
+		auto& secondId = rhs.begin();
+		while (firstId!=end())
+			{
+			if (!(firstId->second.get()->operator==(*secondId->second.get()))||
+				!(firstId->first==secondId->first))
+				{
+				return false;
+				}
+			++firstId;
+			++secondId;
+			}
+		return true;
+		}
+	return false;
 	}
 
 bool FMTYields::operator != (const FMTYields& rhs) const
