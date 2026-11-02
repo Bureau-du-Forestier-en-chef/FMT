@@ -248,6 +248,12 @@ class FMTEXPORT FMTException : public std::exception
 		@return the formatted source location.
 		*/
 		std::string getSrcInfo() const;
+		// DocString: FMTException::getBaseSrcInfo
+		/**
+		@brief Return a formatted string for the location of the exception without full path
+		@return the formatted source location.
+		*/
+		std::string getBaseSrcInfo() const;
 		// DocString: FMTException::getMessage
 		/**
 		@brief Return the message of the exception
