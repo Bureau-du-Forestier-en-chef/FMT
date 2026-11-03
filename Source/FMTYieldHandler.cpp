@@ -311,7 +311,7 @@ double FMTYieldHandler::getYieldLinearValue(const std::string&yldname, const FMT
 		{
 		double value = 0;
 		try{
-		if (peakstep > 0)
+		if (peakstep > 0 && static_cast<size_t>(peakstep) < m_bases.size())
 			{
 			const size_t agesize = static_cast<size_t>(targetage);
 			std::vector<double>peakvalues(std::max(agesize, m_bases.size()) + 1, 0.0);

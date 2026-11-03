@@ -594,11 +594,7 @@ TEST(FMTComplexYieldHandler, GivenAnEndPointWhoseSourceIsWithinItsBoundsWhenGetT
     EXPECT_EQ(value, 0.0);
 }
 
-// Disabled: when its source leaves its bounds, _ENDPOINT reads the base ages of the complex handler, which has none
-// (FMTYieldHandler::_getChangesFrom): an access violation, raised as FMTexc(85) on Windows (#392, defect 17 of
-// section 2.7 of Tests/ETAT.md). Its value outside its bounds is not settled (Tests/ETAT.md, section 5.5): the case
-// asks only that it raises nothing.
-TEST(FMTComplexYieldHandler, DISABLED_GivenAnEndPointWhoseSourceIsBelowItsLowerBoundWhenGetThenRaisesNothing)
+TEST(FMTComplexYieldHandler, GivenAnEndPointWhoseSourceIsBelowItsLowerBoundWhenGetThenRaisesNothing)
 {
     // Arrange: BELOW _ENDPOINT(VOLUME,VOLUME,150,250), VOLUME being 100 at age 10
     const Core::FMTYields yields = getYields(getHandler("BELOW",
