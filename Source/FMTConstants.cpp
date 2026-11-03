@@ -99,9 +99,13 @@ FMTConstants::operator std::string() const
     for (auto it : m_data)
         {
         line+=it.first+" ";
-        for (auto val : it.second)
+        for (size_t valueid = 0; valueid < it.second.size(); ++valueid)
             {
-            line+=std::to_string(val);
+            line+=std::to_string(it.second.at(valueid));
+            if (valueid + 1 < it.second.size())
+                {
+                line+=" ";
+                }
             }
         line+="\n";
         }
