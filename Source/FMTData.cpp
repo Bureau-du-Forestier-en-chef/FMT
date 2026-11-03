@@ -104,21 +104,6 @@ bool FMTData::nullData() const
 	return false;
 	}
 
-/*size_t FMTData::hashdata(const int& period, const int& age, const FMTMask& mask) const
-	{
-	std::size_t seed = 0;
-	boost::hash_combine(seed, boost::hash<Core::FMTMask>()(mask));
-	boost::hash_combine(seed, boost::hash<int>()(age));
-	if (ops != FMTyieldparserop::FMTcai && ops != FMTyieldparserop::FMTmai && ops!= FMTyieldparserop::FMTytp && ops != FMTyieldparserop::FMTrange)
-		{
-		if (!_agebase)
-			{
-			boost::hash_combine(seed, boost::hash<int>()(period));
-			}
-		}
-	return seed;
-	}*/
-
 FMTDevelopment FMTData::getSummaryDevelopment(const FMTYieldRequest& request) const
 	{
 	const Core::FMTDevelopment& refdev = request.getDevelopment();
@@ -191,28 +176,6 @@ std::vector<std::string> FMTData::getSourcesCopy() const
 	return result;
 }
 
-/*
-std::vector<std::string> FMTData::getSource() const
-    {
-	if (ops == FMTyieldparserop::FMTequation)
-		{
-		std::vector<std::string>nsources;
-		for (const std::string& val : source)
-			{
-			if (!FMTFunctionCall(val).valid() && !FMTOperator(val).valid() && 
-				!(val.size() == 1 && (val.at(0) == '(' || val.at(0) == ')')))
-				{
-				nsources.push_back(val);
-				}
-			}
-		return nsources;
-	}else if (ops==FMTyieldparserop::FMTmodelpred)
-		{
-		//Get sources from the model
-		}
-    return source;
-    }
-*/
 FMTData::operator std::string() const
     {
 	std::string value = "";
@@ -323,30 +286,6 @@ std::vector<const double*>FMTData::getValues() const
 	return values;
 
 }
-
-/*
-std::vector<double>FMTData::tovalues(const std::map<std::string, double>& sources) const
-	{
-	std::vector<double>values(stacking.size(),0.0);
-	
-	size_t varid = 0;
-	size_t numid = 0;
-	int id = 0;
-	for (const bool& isvar : stacking)
-		{
-		if (isvar)
-		{
-			values[id] = sources.at(source.at(varid));
-			++varid;
-		}else {
-			values[id] = data.at(numid);
-			++numid;
-		}
-		++id;
-		}
-	return values;
-	}
-*/
 
 FMTExpression FMTData::toExpression() const
 	{

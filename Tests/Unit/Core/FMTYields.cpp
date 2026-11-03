@@ -419,7 +419,6 @@ TEST(FMTYields, GivenADiscountFactorWhenGetThenReturnsTheFactorOfThePeriod)
 
     // Act
     const double atPeriodOne = getYield(yields, "DISCOUNTFULL", 20, 1);
-
     // Assert
     EXPECT_NEAR(atPeriodOne, 0.821927106759, TOLERANCE);
 }
@@ -427,7 +426,7 @@ TEST(FMTYields, GivenADiscountFactorWhenGetThenReturnsTheFactorOfThePeriod)
 // Disabled: FMTTimeYieldHandler::getFromFactor multiplies every value of the data of a yield, and those of a
 // _DISCOUNTFACTOR are its rate and its years per period (FMTData::operator*): the factor gives 1 / 1.08^10 instead of
 // 2 / 1.04^5 (#390, defect 15 of section 2.7 of Tests/ETAT.md).
-TEST(FMTYields, DISABLED_GivenAFactorOfADiscountFactorWhenGetFromFactorThenMultipliesItsValue)
+TEST(FMTYields, GivenAFactorOfADiscountFactorWhenGetFromFactorThenMultipliesItsValue)
 {
     // Arrange
     const Core::FMTYields yields = getDiscountYields();

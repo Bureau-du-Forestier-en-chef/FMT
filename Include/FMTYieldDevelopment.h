@@ -32,7 +32,9 @@ namespace Core
 		@param[in] p_yield the yield.
 		*/
 		FMTYieldDevelopment(int p_age, int p_period,
-			const boost::dynamic_bitset<uint8_t>& p_mask, const std::string& p_yield);
+			const boost::dynamic_bitset<uint8_t>& p_mask, 
+			const std::string& p_yield,
+			size_t p_yieldsHash);
 		// DocString: FMTYieldDevelopment::operator==
 		/**
 		@brief Equality comparison operator of FMTYieldDevelopment.
@@ -57,6 +59,7 @@ namespace Core
 		uint8_t m_period;
 		boost::dynamic_bitset<uint8_t> m_resumeMask;
 		std::string m_yield;
+		size_t m_YieldsHash;
 		// DocString: FMTYieldDevelopment::_equalYield
 		/**
 		@brief Return true if two yields are equal.

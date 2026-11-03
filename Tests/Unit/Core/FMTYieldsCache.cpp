@@ -252,7 +252,7 @@ TEST(FMTYieldsCache, GivenAValueInTheCacheForAComplexYieldWhenYieldsGetThenServe
 // of the same masks, such as the yields of another scenario or those that getFromFactor returns. The first section is
 // cached with the value it computes (400), as FMTComplexYieldHandler caches a calculation of more than 0.05 ms; the
 // second one defines the yield as _MULTIPLY(VOLUME,3), 3 x 200.
-TEST(FMTYieldsCache, DISABLED_GivenAComplexYieldCachedForOneSectionOfYieldsWhenAnotherSectionDefinesItOtherwiseThenComputesItFromItsOwnDefinition)
+TEST(FMTYieldsCache, GivenAComplexYieldCachedForOneSectionOfYieldsWhenAnotherSectionDefinesItOtherwiseThenComputesItFromItsOwnDefinition)
 {
     // Arrange
     Core::FMTYieldsCache cache;

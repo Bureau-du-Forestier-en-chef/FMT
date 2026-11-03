@@ -22,19 +22,20 @@ namespace Core {
 			for (std::map<std::string, FMTData, cmpYieldString>::const_iterator it = m_elements.begin(); it != m_elements.end(); ++it)
 			{
 				value += it->first + " ";
-				/*for (const int& base : bases)
+				if (it->second.getOp() == FMTyieldparserop::FMTdiscountfactor)
 				{
-					value += std::to_string(base) + " ";
-				}*/
-				value += std::to_string(m_bases.at(std::min(baseid, m_bases.size()-1))) + " ";
-				const std::vector<double>* data = &it->second.data;
-				for (const double & val : *data)
-				{
-					std::string singlevalue = std::to_string(val);
-					singlevalue.erase(singlevalue.find_last_not_of('0') + 1, std::string::npos);
-					singlevalue.erase(singlevalue.find_last_not_of('.') + 1, std::string::npos);
-					value += singlevalue + " ";
-				}
+					value += it->second;
+				}else {
+						value += std::to_string(m_bases.at(std::min(baseid, m_bases.size() - 1))) + " ";
+						const std::vector<double>* data = &it->second.data;
+						for (const double& val : *data)
+						{
+							std::string singlevalue = std::to_string(val);
+							singlevalue.erase(singlevalue.find_last_not_of('0') + 1, std::string::npos);
+							singlevalue.erase(singlevalue.find_last_not_of('.') + 1, std::string::npos);
+							value += singlevalue + " ";
+						}
+					}
 				value += "\n";
 				++baseid;
 			}
@@ -97,20 +98,7 @@ namespace Core {
 					const int target = request.getDevelopment().getPeriod();
 					if (lvalues->getOp() == FMTyieldparserop::FMTdiscountfactor)
 					{
-						const double perioddbl = static_cast<double>(target);
-						const double pertio = lvalues->data.at(1);
-						const std::string discounttype = *lvalues->getSources().at(0);
-						const double rateofreturn = lvalues->data.at(0);
-						double exponant = perioddbl; //full
-						if (discounttype == "NONE")
-						{
-							exponant = perioddbl - 1;
-						}
-						else if (discounttype == "HALF")
-						{
-							exponant = perioddbl - 0.5;
-						}
-						return (1 / std::pow((1 + rateofreturn), pertio * exponant));
+						return _getDiscountFactorValue(*lvalues, target);
 					}else {
 						double value = lvalues->data.back();
 						size_t baseIndex = 0;
@@ -145,6 +133,29 @@ namespace Core {
 		return it->second.data.back();
 	}
 
+	double FMTTimeYieldHandler::_getDiscountFactorValue(const FMTData& p_data, int p_period) const
+	{
+		const double PERIOD = static_cast<double>(p_period);
+		const double RATIO = p_data.data.at(1);
+		const std::string DISCOUNT_TYPE = *p_data.getSources().at(0);
+		const double RATE_OF_RETURN = p_data.data.at(0);
+		double EXPONANT = PERIOD; //full
+		double factor = 1.0;
+		if (p_data.data.size() > 2)
+			{
+			factor = p_data.data.at(2);
+			}
+		if (DISCOUNT_TYPE == "NONE")
+		{
+			EXPONANT = PERIOD - 1;
+		}
+		else if (DISCOUNT_TYPE == "HALF")
+		{
+			EXPONANT = PERIOD - 0.5;
+		}
+		return ((1 / std::pow((1 + RATE_OF_RETURN), RATIO * EXPONANT)) * factor);
+	}
+
 
 	std::unique_ptr<FMTYieldHandler> FMTTimeYieldHandler::getFromFactor(const double& factor,
 		std::vector<std::string>yieldnames) const
@@ -172,7 +183,19 @@ namespace Core {
 			}
 			for (std::map<std::string, FMTData, cmpYieldString>::iterator datait : iterators)
 			{
-				datait->second = ((datait->second)*factor);
+				if (datait->second.getOp() == FMTyieldparserop::FMTdiscountfactor)
+				{
+					if (datait->second.data.size()<3)
+					{
+						datait->second.data.push_back(factor);
+					}else{
+						datait->second.data.back() = factor;
+						}
+					
+				}else {
+					datait->second = ((datait->second) * factor);
+					}
+				
 			}
 		}
 		catch (...)

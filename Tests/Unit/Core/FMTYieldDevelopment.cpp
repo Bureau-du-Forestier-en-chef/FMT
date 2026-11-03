@@ -27,9 +27,12 @@ namespace
         return boost::dynamic_bitset<uint8_t>(p_bits);
     }
 
-    Core::FMTYieldDevelopment getKey(int p_age, int p_period, const std::string& p_bits, const std::string& p_yield)
+    Core::FMTYieldDevelopment getKey(int p_age, int p_period, 
+        const std::string& p_bits, 
+        const std::string& p_yield,
+        size_t p_yieldhash = 0)
     {
-        return Core::FMTYieldDevelopment(p_age, p_period, getBits(p_bits), p_yield);
+        return Core::FMTYieldDevelopment(p_age, p_period, getBits(p_bits), p_yield, p_yieldhash);
     }
 }
 

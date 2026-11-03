@@ -67,6 +67,16 @@ namespace Core
 		return m_graphvertex;
 	}
 
+	size_t FMTYieldRequest::getYieldsHash() const
+		{
+		size_t hash = 0;
+		if (m_yields)
+			{
+			hash = m_yields->_getYieldsHash();
+			}
+		return hash;
+		}
+
 	FMTYieldRequest::const_iterator FMTYieldRequest::getFirstSeen(const std::string& p_yield) const
 		{
 		return  m_yields->_getFirstSeen(p_yield);

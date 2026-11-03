@@ -110,6 +110,12 @@ namespace Core
 		@return the first data iterator for the yield.
 		*/
 		const_iterator getFirstSeen(const std::string& p_yield) const;
+		// DocString: FMTYieldRequest::getYieldsHash
+		/**
+		@brief return the yield hash of the yields section of the request.
+		@return yields hash
+		*/
+		size_t getYieldsHash() const;
 	private:
 		friend class FMTYields;
 		mutable std::vector<const_iterator>m_datas;

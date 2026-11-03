@@ -288,6 +288,9 @@ class FMTEXPORT FMTYields : public FMTList<std::unique_ptr<FMTYieldHandler>>
 		// DocString: FMTYields::nullYield
 		///the null yields.
 		static const std::string m_nullYield;
+		// DocString: FMTYields::m_yieldsHash
+		///unique yields hash
+		size_t m_yieldsHash;
 		// DocString: FMTYields::_getHandlerOfType
 		/**
 		@brief Return pointers to all yield handlers of a given type.
@@ -307,6 +310,11 @@ class FMTEXPORT FMTYields : public FMTList<std::unique_ptr<FMTYieldHandler>>
 		@brief Update the presence of the yields.
 		*/
 		void _updateYieldLocations();
+		// DocString: FMTYields::_updateHas
+		/**
+		@brief Update the hash value
+		*/
+		void _updateHash();
 		// DocString: FMTYields::_setModel
 		/**
 		@brief Set the model linked to the yield model handlers.
@@ -320,6 +328,13 @@ class FMTEXPORT FMTYields : public FMTList<std::unique_ptr<FMTYieldHandler>>
 		@return the location of the first yield with this name.
 		*/
 		const_iterator _getFirstSeen(const std::string& p_yield) const;
+		// DocString: FMTYields::_getYieldsHash
+		/**
+		@brief return the yields hash value
+		@return the hash value
+		*/
+		size_t _getYieldsHash() const;
+		
     };
 }
 BOOST_CLASS_EXPORT_KEY(Core::FMTYields)

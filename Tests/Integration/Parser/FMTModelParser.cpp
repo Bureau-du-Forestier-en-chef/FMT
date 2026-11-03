@@ -249,7 +249,7 @@ TEST(FMTModelParser, DISABLED_GivenARatioOfAnInventoryOutputToAnActionOutputWhen
 // read back has a rate of 0.04 at period 1 and 5 at period 2 (FMTTimeYieldHandler::operator std::string, #380).
 // The scenario timeyields takes the yield YBM_RTM_F and the objective of the root (#347 and #379): this case
 // compares the discount factors only.
-TEST(FMTModelParser, DISABLED_GivenDiscountFactorsWhenWriteThenRereadsTheirValues)
+TEST(FMTModelParser, GivenDiscountFactorsWhenWriteThenRereadsTheirValues)
 {
     // Arrange
     const Models::FMTModel model = Testing::readScenario("timeyields");

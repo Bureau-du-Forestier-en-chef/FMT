@@ -193,6 +193,14 @@ namespace Core
 			ar& BOOST_SERIALIZATION_NVP(m_elements);
 		}
 		std::map<std::string, FMTData, cmpYieldString>m_elements;
+		// DocString: FMTTimeYieldHandler::_getDiscountFactorValue
+		/**
+		@brief Get the value of a yield for a request.
+		@param[in] data
+		@param[in] period
+		@return the yield value
+		*/
+		double _getDiscountFactorValue(const FMTData& p_data, int p_period) const;
 	};
 
 }
