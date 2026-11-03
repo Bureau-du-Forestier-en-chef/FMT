@@ -559,7 +559,7 @@ TEST(FMTSrModel, GivenBoundSolutionsWhenIsPeriodBoundedThenReturnsTrue)
     model.boundSolution(1, BOUND_TOLERANCE);
 
     // Act
-    const bool BOUNDED = model.isPeriodBounded(1);
+    const bool BOUNDED = model.isPeriodBounded(1, BOUND_TOLERANCE);
 
     // Assert
     EXPECT_TRUE(BOUNDED);
@@ -570,14 +570,14 @@ TEST(FMTSrModel, GivenBoundSolutionsWhenIsPeriodBoundedThenReturnsTrue)
 
 // Disabled: isPeriodBounded counts only the bounded variables of the period, among all and among the bounded ones,
 // so that it returns true for any period of the graph (#400, defect 20 of section 2.7 of Tests/ETAT.md).
-TEST(FMTSrModel, DISABLED_GivenAnOptimizedModelWhenIsPeriodBoundedThenReturnsFalse)
+TEST(FMTSrModel, GivenAnOptimizedModelWhenIsPeriodBoundedThenReturnsFalse)
 {
 #ifdef FMTWITHOSI
     // Arrange
     Models::FMTLpModel model = getSolvedModel("LP");
 
     // Act
-    const bool BOUNDED = model.isPeriodBounded(1);
+    const bool BOUNDED = model.isPeriodBounded(1, BOUND_TOLERANCE);
 
     // Assert
     EXPECT_FALSE(BOUNDED);

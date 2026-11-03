@@ -710,6 +710,7 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		@brief Set the options of a CLP solver before optimization.
 		*/
 		void _setClpOptions();
+		void _clearCachedData();
 	};
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTLpSolver)

@@ -73,7 +73,7 @@ namespace Models
 		return stats;
 	}
 
-	bool FMTSrModel::isPeriodBounded(int period) const
+	bool FMTSrModel::isPeriodBounded(int period,double p_tolerance) const
 	{
 		try {
 			if (static_cast<int>(m_graph->size()) > period)
@@ -89,11 +89,14 @@ namespace Models
 					const std::map<int, int>variables = m_graph->getOutVariables(vertex_descriptor);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
-						if (*(columnsupperbounds + varit->second) == *(columnslowerbounds + varit->second))
+						const double GAP = *(columnsupperbounds + varit->second) -
+							*(columnslowerbounds + varit->second);
+						const double TOLERANCE_GAP = *(columnsupperbounds + varit->second) * p_tolerance * 2;
+						if (GAP <= TOLERANCE_GAP)
 						{
 							++boundededges;
-							++totaledges;
 						}
+						++totaledges;
 					}
 				}
 				if (boundededges == totaledges)
@@ -1509,6 +1512,7 @@ namespace Models
 
 	bool FMTSrModel::boundSolution(int period, double tolerance)
 	{
+		bool resolved = false;
 		try {
 			if (static_cast<int>(m_graph->size()) > period)
 			{
@@ -1529,12 +1533,12 @@ namespace Models
 							//Had tolerance on primal infeasibilities with FMT_DBL_TOLERANCE ...
 							bounds.push_back(*(actual_solution + varit->second)*(1 - tolerance));
 							bounds.push_back(*(actual_solution + varit->second)*(1 + tolerance));
+
 						}
 					}
 				}
 				solver.setColSetBounds(&variable_index[0], &variable_index.back() + 1, &bounds[0]);
-				return solver.resolve();
-				//return solver.stockResolve();
+				resolved = solver.resolve();
 			}
 		}
 		catch (...)
@@ -1542,7 +1546,7 @@ namespace Models
 			_exhandler->printExceptions("at period " + std::to_string(period), "FMTLpModel::boundSolution", __LINE__, __FILE__);
 		}
 
-		return false;
+		return resolved;
 	}
 
 

@@ -149,9 +149,10 @@ namespace Models
 		/**
 		@brief Check if the FMTDevelopment areas are bounded on their primal variables for a given period.
 		@param[in] period the period.
+		@param[in] p_tolerance the tolerance to consider a variable bounded.
 		@return true if the period is bounded else false.
 		*/
-		bool isPeriodBounded(int period) const;
+		bool isPeriodBounded(int period, double p_tolerance=FMT_DBL_TOLERANCE) const;
 		// DocString: FMTSrModel::clearGraphDevelopments
 		/**
 		@brief Clear the developments location by periods in the graph.

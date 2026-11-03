@@ -198,6 +198,7 @@ namespace Models
 						solverinterface->resolve();
 						erroroccured = true;
 					}
+					_clearCachedData();
 				}
 				break;
 				#endif
@@ -622,6 +623,11 @@ namespace Models
 		default:                                return "Unknown Solver";
 		}
 	}
+	void FMTLpSolver::_clearCachedData()
+		{
+		OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+		msksolver->freeCachedData();
+		}
 
 	int FMTLpSolver::getNumCols() const
 		{
