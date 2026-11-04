@@ -421,8 +421,8 @@ bool FMTYields::operator == (const FMTYields& rhs) const
 	if (m_yieldsLocations == rhs.m_yieldsLocations &&
 		size() == rhs.size())
 		{
-		auto& firstId = begin();
-		auto& secondId = rhs.begin();
+		auto firstId = begin();
+		auto secondId = rhs.begin();
 		while (firstId!=end())
 			{
 			if (!(firstId->second.get()->operator==(*secondId->second.get()))||
