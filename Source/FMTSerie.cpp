@@ -73,18 +73,12 @@ namespace Core{
 
 	bool FMTSerie::isAllowedInSerie(const std::vector<std::string>& p_SerieMask) const
 	{
-		const std::string SERIE = getSerie();
-		const std::string TEST_SERIE = FMTSerie(p_SerieMask,0).getSerie();
-		std::vector<std::string>::const_iterator firstelement = std::find_first_of(p_SerieMask.begin(), p_SerieMask.end(),
-																				m_serie.begin(), m_serie.end());
-
-		if (firstelement != p_SerieMask.end() &&
-			std::equal(firstelement, p_SerieMask.end(), m_serie.begin()) &&
-			SERIE != TEST_SERIE)
-		{
-			return true;
-		}
-		return false;
+		//The serie ends with its action: the last actions of the mask must be the actions of the serie before it,
+		//whatever the actions before them (a stand back on a serie right after the end of its previous one).
+		const size_t PREVIOUS_SIZE = m_serie.empty() ? 0 : m_serie.size() - 1;
+		return (PREVIOUS_SIZE > 0 &&
+			p_SerieMask.size() >= PREVIOUS_SIZE &&
+			std::equal(p_SerieMask.end() - PREVIOUS_SIZE, p_SerieMask.end(), m_serie.begin()));
 	}
 
 	bool FMTSerie::isEmpty() const

@@ -1,6 +1,7 @@
 TEST;primarylocation;scenario;doublevalue;given;then
 SolveAndWriteSchedules;../../../../Examples/Models/TWD_land/TWD_land.pri;LP;;AMaxMinHarvest;RereadsTheOptimalSchedules
 SimulateSpatially;;;;ASpatialScheduleOnRasters;EndsWithoutError
+SimulateSpatiallyWithActionSeries;../../../../Examples/Models/TWD_land/TWD_land.pri|Spatial_actionseries|COUPETOTALE|PLANTATION|PLANTATIONCC;10;;AnActionSeriesInASpatialSimulation;NeverBreaksTheSeries
 DoSpatiallyExplicitPlanning;;;;ASpatialScheduleOnAVectorMap;CountsTheWholeHarvestInItsStandTypes
 GetCarbonPredictors;;;;AnOptimalScheduleSpreadOnAVectorMap;EndsWithoutError
 MapToForest;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|1420;../../../../Examples/Models/TWD_land/Carte/TWD_land.shp;../../tests/MapToForest/;TheRootVectorMap;EndsWithoutError
