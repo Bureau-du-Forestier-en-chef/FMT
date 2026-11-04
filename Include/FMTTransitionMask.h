@@ -35,31 +35,6 @@ class FMTTheme;
 */
 class FMTEXPORT FMTTransitionMask : public FMTMaskFilter,public FMTSpec
     {
-	friend class boost::serialization::access;
-	// DocString: FMTTransitionMask::serialize
-	/**
-	@brief Serialize the FMTTransitionMask through its bases FMTMaskFilter and FMTSpec for multiprocessing across multiple cpus (pickle in Python).
-	@tparam Archive the archive type.
-	@param[in,out] ar the archive to serialize to or from.
-	@param[in] version the serialization version.
-	*/
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar & boost::serialization::make_nvp("maskfilter", boost::serialization::base_object<FMTMaskFilter>(*this));
-		ar & boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTSpec>(*this));
-		ar & BOOST_SERIALIZATION_NVP(mask);
-		ar & BOOST_SERIALIZATION_NVP(proportion);
-	}
-    FMTMask mask;
-    double proportion;
-        // DocString: FMTTransitionMask::build
-        /**
-        @brief Build the transition mask from a mask string and the themes.
-        @param[in] lmask the mask string.
-        @param[in] themes the themes.
-        */
-        void build(const std::string& lmask,const std::vector<FMTTheme>& themes);
     public:
         // DocString: FMTTransitionMask()
         /**
@@ -186,6 +161,39 @@ class FMTEXPORT FMTTransitionMask : public FMTMaskFilter,public FMTSpec
         @return the string representation of the transition mask.
         */
         operator std::string() const override;
+    private:
+        friend class boost::serialization::access;
+        // DocString: FMTTransitionMask::serialize
+        /**
+        @brief Serialize the FMTTransitionMask through its bases FMTMaskFilter and FMTSpec for multiprocessing across multiple cpus (pickle in Python).
+        @tparam Archive the archive type.
+        @param[in,out] ar the archive to serialize to or from.
+        @param[in] version the serialization version.
+        */
+        template<class Archive>
+        void serialize(Archive& ar, const unsigned int version)
+        {
+            ar& boost::serialization::make_nvp("maskfilter", boost::serialization::base_object<FMTMaskFilter>(*this));
+            ar& boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTSpec>(*this));
+            ar& BOOST_SERIALIZATION_NVP(mask);
+            ar& BOOST_SERIALIZATION_NVP(proportion);
+        }
+        FMTMask mask;
+        double proportion;
+        // DocString: FMTTransitionMask::_build
+        /**
+        @brief Build the transition mask based on the mask member
+        @param[in] p_themes the themes.
+        */
+        void _build(const std::vector<FMTTheme>& p_themes);
+        // DocString: FMTTransitionMask::_buildMask
+        /**
+        @brief build the inner mask by removing the aggregates
+        @param[in] p_mask the mask to set
+        @param[in] p_themes the themes.
+        */
+        void _buildMask(const FMTMask& p_mask,
+            const std::vector<FMTTheme>& p_themes);
     };
 
 }

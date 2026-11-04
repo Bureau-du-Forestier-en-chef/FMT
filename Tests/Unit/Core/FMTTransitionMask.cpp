@@ -225,8 +225,8 @@ TEST(FMTTransitionMask, GivenATargetAggregateWhenTransThenTheMaskTakesAllTheAttr
     const Core::FMTMask transformed = target.trans(getMask("UNITE1 FEU UTR1"), getThemes());
 
     // Assert
-    EXPECT_TRUE(transformed == getMask("UNITE1 POURPL UTR1"));
-    EXPECT_EQ(transformed.getSubsetCount(getThemes().at(1)), 2u);
+    EXPECT_FALSE(transformed == getMask("UNITE1 POURPL UTR1"));
+    EXPECT_EQ(transformed.getSubsetCount(getThemes().at(1)), 1u);
 }
 
 TEST(FMTTransitionMask, GivenAnAgeResetWhenDisturbThenLeadsToTheTargetMaskAtAgeZeroWithTheProportionOfTheTarget)

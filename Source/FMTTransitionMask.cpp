@@ -13,23 +13,28 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
-void FMTTransitionMask::build(const std::string& lmask, const std::vector<FMTTheme>& themes )
+
+void  FMTTransitionMask::_build(const std::vector<FMTTheme>& p_themes)
+{
+    for (const FMTTheme& theme : p_themes)
     {
-    int id = 0;
-	std::vector<std::string>bases;
-    boost::split(bases,lmask,boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
-    for(const FMTTheme& theme : themes)
+        if (theme.isAttribute(mask.get(theme)))
         {
-        if (theme.isAttribute(bases[id]))
-            {
-            flippedselection.resize(theme.size()+flippedselection.size(),false);
-            }else{
-            flippedselection.resize(theme.size()+flippedselection.size(),true);
-            }
-        ++id;
+            flippedselection.resize(theme.size() + flippedselection.size(), false);
         }
-    selection = (flippedselection ^ mask.getBitsetReference());
+        else {
+            flippedselection.resize(theme.size() + flippedselection.size(), true);
+        }
     }
+    selection = (flippedselection ^ mask.getBitsetReference());
+}
+
+
+void  FMTTransitionMask::_buildMask(const FMTMask& p_mask, 
+                        const std::vector<FMTTheme>& p_themes)
+{
+    mask = p_mask.convertAggregatesToQuestionMarks(p_themes);
+}
 
 FMTTransitionMask::FMTTransitionMask():FMTMaskFilter(),FMTSpec(),mask(),proportion()
     {
@@ -38,7 +43,8 @@ FMTTransitionMask::FMTTransitionMask():FMTMaskFilter(),FMTSpec(),mask(),proporti
 FMTTransitionMask::FMTTransitionMask(const std::string& lmask,const std::vector<FMTTheme>& themes,const double& lproportion):FMTMaskFilter(),FMTSpec(),
         mask(lmask,themes),proportion(lproportion)
         {
-        this->build(lmask,themes);
+        this->_buildMask(Core::FMTMask(lmask, themes), themes);
+        this->_build(themes);
         }
     FMTMask FMTTransitionMask::trans(const FMTMask& p_baseMask,
                             const std::vector<FMTTheme>& p_themes) const
@@ -54,10 +60,12 @@ FMTTransitionMask::FMTTransitionMask(const std::string& lmask,const std::vector<
         {
 
         }
-    FMTTransitionMask::FMTTransitionMask(const FMTTransitionMask& rhs,const FMTMask& lmask,const std::vector<FMTTheme>& themes):FMTMaskFilter(),
-                FMTSpec(rhs),mask(lmask),proportion(rhs.proportion)
+    FMTTransitionMask::FMTTransitionMask(const FMTTransitionMask& rhs,
+            const FMTMask& lmask,const std::vector<FMTTheme>& themes):FMTMaskFilter(),
+                FMTSpec(rhs),mask(),proportion(rhs.proportion)
         {
-        this->build(std::string(lmask),themes);
+        this->_buildMask(lmask, themes);
+        this->_build(themes);
         }
     FMTTransitionMask& FMTTransitionMask::operator = (const FMTTransitionMask& rhs)
         {
@@ -121,7 +129,7 @@ FMTTransitionMask::FMTTransitionMask(const std::string& lmask,const std::vector<
         {
         mask.preSolveRef(filter, presolvedthemes, false);
         flippedselection.clear();
-        build(mask, presolvedthemes);
+        this->_build(presolvedthemes);
         }
 
     double FMTTransitionMask::getProportion() const

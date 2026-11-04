@@ -458,6 +458,20 @@ FMTMask FMTMask::removeAggregates(const std::vector<FMTTheme>& themes, bool ques
 	return newmask;
 	}
 
+FMTMask FMTMask::convertAggregatesToQuestionMarks(const std::vector<FMTTheme>& p_themes) const
+	{
+	FMTMask newMask(*this);
+	for (const FMTTheme& theme : p_themes)
+		{
+		const std::string VALUE = this->get(theme);
+		if (theme.isAggregate(VALUE))
+			{
+			newMask.set(theme, "?");
+			}
+		}
+	return newMask;
+	}
+
 void FMTMask::clear()
 	{
 	m_data.clear();

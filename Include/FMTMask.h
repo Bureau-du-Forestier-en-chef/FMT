@@ -288,6 +288,13 @@ class FMTEXPORT FMTMask
 		@return the mask without aggregates.
 		*/
 		FMTMask removeAggregates(const std::vector<FMTTheme>& themes,bool questionmarkonly=false) const;
+		// DocString: FMTMask::convertAggregatesToQuestionMarks
+		/**
+		@brief Return a new mask question marks instead of aggregates
+		@param[in] p_themes
+		@return the mask without aggregates but with question marks
+		*/
+		FMTMask convertAggregatesToQuestionMarks(const std::vector<FMTTheme>& p_themes) const;
 		// DocString: FMTMask::empty
 		/**
 		@brief Return true if the data member is empty.

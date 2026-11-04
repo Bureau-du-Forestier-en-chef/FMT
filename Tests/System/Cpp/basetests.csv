@@ -76,6 +76,7 @@ SolveWithEachSolver;;;;EachAvailableSolver;SolvesTheModel
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|Shift;10;3646861;AnObjectiveOnAShiftedYield;FindsTheKnownOptimum
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|DB_test;1;270600;YieldsReadFromADatabase;FindsTheKnownOptimum
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|DB_test_const;1;270600;ADatabaseQueryWithAConstant;FindsTheKnownOptimum
+DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|defaultdeath;5;10;ADefaultDeathActionWithAggregates;FindsTheKnownOptimum
 WrapperCoreRasterize;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|1420;../../../../Examples/Models/TWD_land/Carte/TWD_land.shp;../../tests/WrapperCoreRasterize/;TheRootVectorMap;WritesRastersThatReadBackAsAForest
 WrapperCoreRunAreaVariability;;;;ValidAndInvalidParameters;RunsTheValidOnesAndRefusesTheOthers
 WrapperCoreRunPlanning;;;;ScenariosToPlanAndToReplan;WritesTheResultsAndReportsTheMissingSchedule
