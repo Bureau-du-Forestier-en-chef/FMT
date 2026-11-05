@@ -522,7 +522,7 @@ TEST(FMTSrModel, GivenAnActionNotOperableOnItsDevelopmentWhenSetSolutionThenRais
 // Disabled: unboundSolution gives the variables of the period the bounds -max and +max of a double, not the bounds
 // they had (0 and infinity), so that the areas may be negative and the matrix is no longer optimal (#399, defect 19
 // of section 2.7 of Tests/ETAT.md).
-TEST(FMTSrModel, DISABLED_GivenBoundSolutionsWhenUnboundSolutionThenResolvesToTheModelBefore)
+TEST(FMTSrModel, GivenBoundSolutionsWhenUnboundSolutionThenResolvesToTheModelBefore)
 {
 #ifdef FMTWITHOSI
     // Arrange
