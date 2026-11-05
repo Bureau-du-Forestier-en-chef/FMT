@@ -153,7 +153,7 @@ namespace Parallel
 	std::unique_ptr<Models::FMTModel>FMTReplanningTask::_copySharedModel(const std::shared_ptr<Models::FMTModel>model)
 		{
 		try {
-			//boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
+			boost::lock_guard<boost::recursive_mutex> guard(m_taskmutex);
 			std::unique_ptr<Models::FMTModel>modelcpy = std::move(model->clone());
 			modelcpy->setParallelLogger(*m_tasklogger.get());
 			return std::move(modelcpy);

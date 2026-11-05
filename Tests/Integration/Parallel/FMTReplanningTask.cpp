@@ -184,7 +184,7 @@ TEST(FMTReplanningTask, GivenTheReplanningScenariosWhenReplannedOnSeveralThreads
 // forbids: a task must not be "accessed from more than one thread at a time" (defect 37 of section 2.7 of
 // Tests/ETAT.md). Two threads that copy the same task within 20 ms of each other are let meet, so that the copies that
 // can run at the same time do.
-TEST(FMTReplanningTask, DISABLED_GivenTheReplanningScenariosWhenReplannedOnSeveralThreadsThenNoTwoThreadsCopyTheSameMosekTaskAtOnce)
+TEST(FMTReplanningTask, GivenTheReplanningScenariosWhenReplannedOnSeveralThreadsThenNoTwoThreadsCopyTheSameMosekTaskAtOnce)
 {
 #if defined(FMTWITHMOSEK) && defined(_WIN32)
 	// Arrange
