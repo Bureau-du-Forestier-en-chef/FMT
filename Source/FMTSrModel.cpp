@@ -130,7 +130,7 @@ namespace Models
 						if (std::find(variable_index.begin(), variable_index.end(), varit->second) == variable_index.end())
 						{
 							variable_index.push_back(varit->second);
-							bounds.push_back(-std::numeric_limits< double >::max());
+							bounds.push_back(0.0);
 							bounds.push_back(std::numeric_limits< double >::max());
 						}
 					}
