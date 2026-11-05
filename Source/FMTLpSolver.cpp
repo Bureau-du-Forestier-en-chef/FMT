@@ -625,8 +625,10 @@ namespace Models
 	}
 	void FMTLpSolver::_clearCachedData()
 		{
-		OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-		msksolver->freeCachedData();
+		#ifdef FMTWITHMOSEK
+			OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+			msksolver->freeCachedData();
+		#endif
 		}
 
 	int FMTLpSolver::getNumCols() const
