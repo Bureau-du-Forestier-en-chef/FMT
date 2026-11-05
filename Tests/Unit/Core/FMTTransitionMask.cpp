@@ -387,7 +387,7 @@ TEST(FMTTransitionMask, GivenATargetBuiltWithANewThemeWhenTransThenKeepsTheAttri
 // Defect 21 (#402, Tests/ETAT.md, section 2.7): setMask changes the mask without rebuilding the selection of the target, so
 // that trans still works on the mask the target was built with, of 10 bits, and loses the fourth theme. FMTModel::pushTheme,
 // which FMTModel::buildAction calls, moves the targets of the transitions to a new theme so.
-TEST(FMTTransitionMask, DISABLED_GivenAMaskOfANewThemeWhenSetMaskThenTransAppliesTheNewMask)
+TEST(FMTTransitionMask, GivenAMaskOfANewThemeWhenSetMaskThenTransAppliesTheNewMask)
 {
     // Arrange: the target ? feu ? of the three themes, then the mask ? feu ? ? of the four themes, as pushTheme sets it
     const std::vector<Core::FMTTheme> themes = getThemesWithANewTheme();
@@ -396,7 +396,7 @@ TEST(FMTTransitionMask, DISABLED_GivenAMaskOfANewThemeWhenSetMaskThenTransApplie
     Core::FMTMask transformed;
 
     // Act
-    target.setMask(Core::FMTMask("? FEU ? ?", themes));
+    target.setMask(Core::FMTMask("? FEU ? ?", themes), themes);
     const std::vector<Exception::FMTexc> raised = Testing::getRaisedTypes([&]()
         {
         transformed = target.trans(base, themes);

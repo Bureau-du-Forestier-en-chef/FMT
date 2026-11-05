@@ -478,7 +478,7 @@ namespace Models{
 					newFork.clear();
 					for (Core::FMTTransitionMask trnm : op.second.getMaskTrans())
 						{
-						trnm.setMask(Core::FMTMask(std::string(trnm.getMask()) + " "+ DEFAULT_ATTRIBUTE, themes));
+						trnm.setMask(Core::FMTMask(std::string(trnm.getMask()) + " "+ DEFAULT_ATTRIBUTE, themes), themes);
 						newFork.add(trnm);
 						}
 					op.second = newFork;

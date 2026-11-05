@@ -16,6 +16,7 @@ namespace Core{
 
 void  FMTTransitionMask::_build(const std::vector<FMTTheme>& p_themes)
 {
+    flippedselection.clear();
     for (const FMTTheme& theme : p_themes)
     {
         if (theme.isAttribute(mask.get(theme)))
@@ -41,7 +42,7 @@ FMTTransitionMask::FMTTransitionMask():FMTMaskFilter(),FMTSpec(),mask(),proporti
 
     }
 FMTTransitionMask::FMTTransitionMask(const std::string& lmask,const std::vector<FMTTheme>& themes,const double& lproportion):FMTMaskFilter(),FMTSpec(),
-        mask(lmask,themes),proportion(lproportion)
+        mask(),proportion(lproportion)
         {
         this->_buildMask(Core::FMTMask(lmask, themes), themes);
         this->_build(themes);
@@ -147,10 +148,12 @@ FMTTransitionMask::FMTTransitionMask(const std::string& lmask,const std::vector<
         return mask;
         }
 
-    void FMTTransitionMask::setMask(const Core::FMTMask& mtmask)
-        {
-        mask = mtmask;
-        }
+    void FMTTransitionMask::setMask(const Core::FMTMask& p_mask,
+        const std::vector<FMTTheme>& p_themes)
+    {
+        this->_buildMask(p_mask, p_themes);
+        this->_build(p_themes);
+    }
 
 	std::map<std::string, std::string>FMTTransitionMask::get(const std::vector<FMTTheme>& themes) const
         {

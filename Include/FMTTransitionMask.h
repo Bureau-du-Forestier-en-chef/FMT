@@ -130,10 +130,12 @@ class FMTEXPORT FMTTransitionMask : public FMTMaskFilter,public FMTSpec
         const FMTMask& getMaskReference() const;
         // DocString: FMTTransitionMask::setMask
         /**
-        @brief Set the mask of the transition mask.
-        @param[in] mtmask the mask to set.
+        @brief Set the mask of the transition mask and rebuild the inner transition
+        @param[in] p_mask the mask to set.
+        @param[in] p_themes the themes
         */
-        void setMask(const Core::FMTMask& mtmask);
+        void setMask(const Core::FMTMask& p_mask,
+            const std::vector<FMTTheme>& p_themes);
         // DocString: FMTTransitionMask::setProportion
         /**
         @brief Set the proportion of the transition mask.
