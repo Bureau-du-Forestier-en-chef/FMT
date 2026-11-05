@@ -280,7 +280,7 @@ void FMTYieldParser::_checkPreExisting(const std::vector<std::string>& preexists
     }
 
 double FMTYieldParser::_getNumwithproportion(const std::string& value,const Core::FMTConstants& constants,
-	const std::vector<double>& proportions, const int& location)
+	const std::vector<double>& proportions, const int& location) const
 	{
 	try {
 		double factor = 1;
@@ -619,40 +619,8 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 								{
 									continue;
 								}
-								if (actualyield->second->empty())
-								{
-									actualyield->second->pushBase(_getNum<int>(values[0], constants));
-									values.erase(values.begin());
-									int id = 0;
-									for (const std::string& yldname : yldsnames)
-									{
-										const std::string& value = values.at(id);
-										actualyield->second->pushData(yldname, _getNumwithproportion(value, constants, proportion, id));
-										++id;
-									}
-								}
-								else {
-									const int newbase = _getNum<int>(values[0], constants);
-									values.erase(values.begin());
-									for (int base = actualyield->second->getLastBase(); base <= newbase; ++base)
-									{
-										actualyield->second->pushBase(base);
-										int id = 0;
-										for (const std::string& yldname : yldsnames)
-										{
-											const std::string& value = values.at(id);
-											double thevalue = actualyield->second->getLastValue(yldname);
-											if (base == newbase)
-											{
-												thevalue = _getNum<double>(value, constants);
-											}
-											actualyield->second->pushData(yldname, thevalue);
-											++id;
-										}
-									}
-								}
-
-
+								_populateTimeYields(*actualyield->second,
+									values, yldsnames, constants, proportion);
 							}
 							else {
 								if (_isNum(values.at(0),constants,false))
@@ -919,6 +887,57 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 				"for "+std::string(mask)+" at index "+ indexerror+" for theme "+std::to_string(themeid), "FMTYieldParser::_getIndexValues", __LINE__, __FILE__, m_section);
 		}
 	return handler_values;
+	}
+
+void FMTYieldParser::_populateTimeYields(Core::FMTYieldHandler& p_handler,
+		std::vector<std::string>& p_values,
+		const std::vector<std::string>& p_yieldsName,
+		const Core::FMTConstants& p_constants,
+		const std::vector<double>& p_proportion) const
+	{
+	try {
+		if (p_handler.empty())
+		{
+			p_handler.pushBase(_getNum<int>(p_values[0], p_constants));
+			p_values.erase(p_values.begin());
+			int id = 0;
+			for (const std::string& yldname : p_yieldsName)
+			{
+				const std::string& value = p_values.at(id);
+				p_handler.pushData(yldname, _getNumwithproportion(value, p_constants,
+					p_proportion, id));
+				++id;
+			}
+		}
+		else {
+			const int NEW_BASE = _getNum<int>(p_values[0], p_constants);
+			p_values.erase(p_values.begin());
+			int lastBase = p_handler.getLastBase() + 1;
+			while (p_handler.getLastBase() < NEW_BASE)
+			{
+				p_handler.pushBase(lastBase);
+				for (const std::string& yldName : p_yieldsName)
+				{
+					const double VALUE = p_handler.getLastValue(yldName);
+					p_handler.pushData(yldName, VALUE);
+				}
+				++lastBase;
+			}
+			int id = 0;
+			for (const std::string& yldName : p_yieldsName)
+			{		
+				const std::string& VALUE = p_values.at(id);
+				const double THEVALUE = _getNum<double>(VALUE, p_constants);
+				p_handler.pushData(yldName, THEVALUE);
+				++id;
+			}
+		}
+	}catch (...)
+		{
+		_exhandler->raiseFromCatch(
+			"", "FMTYieldParser::_populateSidedTimeYields",
+			__LINE__, __FILE__, m_section);
+		}
 	}
 
 void FMTYieldParser::_cleanUp(Core::FMTYields& yields,const std::vector<Core::FMTTheme>& themes, const Core::FMTConstants& constants) const

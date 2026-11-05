@@ -161,7 +161,7 @@ class FMTEXPORT FMTYieldParser : public FMTParser
 		@return the value.
 		*/
 		double _getNumwithproportion(const std::string& value,const Core::FMTConstants& constants,
-			const std::vector<double>& proportions, const int& location);
+			const std::vector<double>& proportions, const int& location) const;
 		// DocString: FMTYieldParser::_getEq
 		/**
 		@brief Generate the FMTData of a complex yield.
@@ -212,6 +212,12 @@ class FMTEXPORT FMTYieldParser : public FMTParser
 		@param[in] constants the constants.
 		*/
 		void _cleanAll(Core::FMTYields& ylds, const std::vector<Core::FMTTheme>& themes, const Core::FMTConstants& constants) const;
-    };
+    
+		void _populateTimeYields(Core::FMTYieldHandler& p_handler,
+						std::vector<std::string>& p_values,
+						const std::vector<std::string>& p_yieldsName,
+						const Core::FMTConstants& p_constants,
+						const std::vector<double>& p_proportion) const;
+		};
 }
 #endif // FMTyieldparser_Hm_included
