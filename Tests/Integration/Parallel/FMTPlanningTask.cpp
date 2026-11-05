@@ -225,7 +225,7 @@ TEST(FMTPlanningTask, GivenScenariosWithKnownOptimaWhenPlannedOnSeveralThreadsBy
 // CoinMessageHandler, which has no lock: with CLP, the threads write in it at once (defect 36 of section 2.7 of
 // Tests/ETAT.md). The case plans with CLP, whose solver logs through the handler; MOSEK does not, at the log level of
 // the task.
-TEST(FMTPlanningTask, DISABLED_GivenClpModelsWhenPlannedOnSeveralThreadsThenEachThreadLogsIntoItsOwnMessageHandler)
+TEST(FMTPlanningTask, GivenClpModelsWhenPlannedOnSeveralThreadsThenEachThreadLogsIntoItsOwnMessageHandler)
 {
 #if defined(FMTWITHOSI) && defined(_WIN32)
 	// Arrange

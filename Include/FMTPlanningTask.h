@@ -168,13 +168,21 @@ namespace Parallel
 		// DocString: FMTPlanningTask::m_keepModels
 		///If keep models is true the models will be kept after work
 		bool m_keepModels;
-		// DocString: FMTPlanningTask::copyModels
+		// DocString: FMTPlanningTask::_copyModels
 		/**
 		@brief Return a copy of a list of unique models.
-		@param[in] tocopy the models to copy.
+		@param[in] p_toCopy the models to copy.
 		@return the copied models.
 		*/
-		std::list<std::unique_ptr<Models::FMTModel>>copyModels(const std::list<std::unique_ptr<Models::FMTModel>>& tocopy) const;
+		static std::list<std::unique_ptr<Models::FMTModel>>_copyModels(
+			const std::list<std::unique_ptr<Models::FMTModel>>& p_toCopy);
+		// DocString: FMTPlanningTask::_assignLoggerToModels
+		/**
+		@brief Assign the logger to all the task models
+		*/
+		void _assignLoggerToModels();
+
+
 
 	};
 

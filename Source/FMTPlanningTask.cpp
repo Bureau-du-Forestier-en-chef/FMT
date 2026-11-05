@@ -17,11 +17,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parallel
 {
 
-	std::list<std::unique_ptr<Models::FMTModel>>FMTPlanningTask::copyModels(const std::list<std::unique_ptr<Models::FMTModel>>& tocopy) const
+	std::list<std::unique_ptr<Models::FMTModel>>FMTPlanningTask::_copyModels(const std::list<std::unique_ptr<Models::FMTModel>>& p_toCopy)
 	{
 		std::list<std::unique_ptr<Models::FMTModel>>newmodels;
 		try {
-			for (const std::unique_ptr<Models::FMTModel>& model : tocopy)
+			for (const std::unique_ptr<Models::FMTModel>& model : p_toCopy)
 				{
 				newmodels.push_back(std::move(model->clone()));
 				}
@@ -32,15 +32,30 @@ namespace Parallel
 		return newmodels;
 	}
 
+	void FMTPlanningTask::_assignLoggerToModels()
+	{
+		try {
+			for (std::unique_ptr<Models::FMTModel>& model : m_Models)
+				{
+				model->setParallelLogger(*m_tasklogger.get());
+				}
+		}catch (...)
+			{
+			_exhandler->printExceptions("", 
+				"FMTPlanningTask::_assignLoggerToModels", __LINE__, __FILE__);
+			}
+	}
+
 
 	FMTPlanningTask::FMTPlanningTask(const FMTPlanningTask& rhs):
 		m_ResultsWriter(rhs.m_ResultsWriter),
-		m_Models(copyModels(rhs.m_Models)),
+		m_Models(),
 		m_allSchedules(rhs.m_allSchedules),
 		m_Outputs(rhs.m_Outputs),
 		m_keepModels(rhs.m_keepModels)
 	{
-
+		m_Models = _copyModels(rhs.m_Models);
+		_assignLoggerToModels();
 		
 	}
 
@@ -49,7 +64,8 @@ namespace Parallel
 		if (this!=&rhs)
 		{
 			m_ResultsWriter = rhs.m_ResultsWriter;
-			m_Models = copyModels(rhs.m_Models);
+			m_Models = _copyModels(rhs.m_Models);
+			_assignLoggerToModels();
 			m_allSchedules = rhs.m_allSchedules;
 			m_Outputs = rhs.m_Outputs;
 			m_keepModels = rhs.m_keepModels;
@@ -112,7 +128,7 @@ namespace Parallel
 	{
 		std::vector<std::unique_ptr<FMTTask>>tasks;
 		try {
-			std::list<std::unique_ptr<Models::FMTModel>>allmodels=copyModels(m_Models);
+			std::list<std::unique_ptr<Models::FMTModel>>allmodels=_copyModels(m_Models);
 			std::list<std::vector<Core::FMTSchedule>>modelschedules(m_allSchedules);
 			std::list<std::vector<Core::FMTOutput>>modeloutputs(m_Outputs);
 			for (const size_t tasksize : _splitWork(numberoftasks, static_cast<int>(m_Models.size())))
@@ -130,7 +146,8 @@ namespace Parallel
 					modelschedules.pop_front();
 					modeloutputs.pop_front();
 					}
-				newtask.m_Models = copyModels(modelsoftask);
+				newtask.m_Models = _copyModels(modelsoftask);
+				newtask._assignLoggerToModels();
 				newtask.m_allSchedules = schedulesoftask;
 				newtask.m_Outputs = outputsoftask;
 				tasks.push_back(std::move(newtask.clone()));
@@ -158,6 +175,7 @@ namespace Parallel
 				m_allSchedules.pop_front();
 				m_Outputs.pop_front();
 				newtask.m_Models.swap(singlemodel);
+				newtask._assignLoggerToModels();
 				newtask.m_allSchedules.swap(singleschedule);
 				newtask.m_Outputs.swap(singleoutputs);
 				return std::move(newtask.clone());
