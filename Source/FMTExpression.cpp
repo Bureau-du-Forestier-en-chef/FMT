@@ -49,11 +49,17 @@ std::vector<std::string> FMTExpression::_getPostFix(const std::vector<std::strin
 	std::stack<bool>function_parenthesis;
 	bool function_start = false;
 	const std::vector<std::string>infixes = localinfix;
-	std::vector<std::string>postfix;
+    std::vector<std::string>postfix;
+	bool expectsValue = true;
 	//https://stackoverflow.com/questions/11708195/infix-to-postfix-with-function-support
 	//http://interactivepython.org/runestone/static/pythonds/BasicDS/InfixPrefixandPostfixExpressions.html
 	for (const std::string& invalue : infixes)
-		{
+       {
+		if (invalue == "-" && expectsValue)
+			{
+			values.push("NEG");
+			continue;
+			}
 		const FMTOperator op(invalue);
 		const FMTFunctionCall fcall(invalue);
 		if (fcall.valid())
@@ -61,13 +67,17 @@ std::vector<std::string> FMTExpression::_getPostFix(const std::vector<std::strin
 			function_start = true;
 			values.push(invalue);
 			}else if (op.valid())
-				{
-				while (!values.empty() && ((FMTOperator(values.top()).precedence() >= op.precedence() ) || FMTFunctionCall(values.top()).valid()) && values.top() != "(")
+               {
+				while (!values.empty() && values.top() != "(" &&
+					(values.top() == "NEG" ||
+						FMTOperator(values.top()).precedence() >= op.precedence() ||
+						FMTFunctionCall(values.top()).valid()))
 					{
 					postfix.push_back(values.top());
 					values.pop();
 					}
-				values.push(invalue);
+               values.push(invalue);
+				expectsValue = true;
 				}
 			else if (invalue == "(")
 				{
@@ -78,7 +88,8 @@ std::vector<std::string> FMTExpression::_getPostFix(const std::vector<std::strin
 				}else {
 					function_parenthesis.push(false);
 					}
-				values.push(invalue);
+               values.push(invalue);
+				expectsValue = true;
 				}
 			else if (invalue == ")")
 				{
@@ -96,9 +107,16 @@ std::vector<std::string> FMTExpression::_getPostFix(const std::vector<std::strin
 						}
 					function_parenthesis.pop();
 					values.pop();
+                   }
+				if (!values.empty() && values.top() == "NEG")
+					{
+					postfix.push_back(values.top());
+					values.pop();
 					}
+				expectsValue = false;
 			}else {
-				postfix.push_back(invalue);
+             postfix.push_back(invalue);
+				expectsValue = false;
 			}
 		}
 	while (!values.empty())
@@ -219,8 +237,13 @@ double FMTExpression::_evaluatePostFix(const std::vector<std::string>& postfix) 
 	for (const std::string& post : postfix)
 		{
 		const FMTOperator op(post);
-		const FMTFunctionCall fcall(post);
-		if (!op.valid() && !fcall.valid())
+      const FMTFunctionCall fcall(post);
+		if (post == "NEG")
+			{
+			const double value = values.top();
+			values.pop();
+			values.push(-value);
+			}else if (!op.valid() && !fcall.valid())
 			{
 			values.push(std::stod(post));
 			}else if (op.valid())
