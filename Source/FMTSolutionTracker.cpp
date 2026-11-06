@@ -33,6 +33,14 @@ namespace Spatial
 		_buildConstraintsFamilies(p_ConstraintsFamilies, p_NumberOfFamilies);
 	};
 
+	void FMTSolutionTracker::clear()
+		{
+		for (size_t& cell : m_Solution)
+			{
+			cell = 0;
+			}
+		}
+
 
 
 	void FMTSolutionTracker::_modifySolution(
@@ -149,6 +157,16 @@ namespace Spatial
 		std::map<Graph::FMTLineGraph, FMTGraphInfo>::const_iterator p_OldGraph)
 	{
 		try {
+			size_t& cell = m_Solution.at(p_OldGraph->second.getGraphId());
+			if (cell==0)
+				{
+				_exhandler->raise(
+					Exception::FMTexc::FMTrangeerror, 
+					"Decrementing null solution "+ 
+					std::string(p_OldGraph->first.getBaseDevelopment()),
+					"FMTSolutionTracker::removeFromSolution", 
+					__LINE__, __FILE__);
+				}
 			--m_Solution.at(p_OldGraph->second.getGraphId());
 			if (isTrackingEnable())
 				{

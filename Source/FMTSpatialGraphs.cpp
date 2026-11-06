@@ -215,9 +215,6 @@ namespace Spatial
 	}
 
 
-
-
-
 	FMTSolutionTracker FMTSpatialGraphs::getBaseSolution() const
 	{
 		return m_BaseSolution;

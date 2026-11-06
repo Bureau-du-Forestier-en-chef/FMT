@@ -1542,6 +1542,7 @@ void FMTSpatialSchedule::postSolve(const Core::FMTMaskFilter& p_Filter,
 	try {
 		assert(m_mapping.size() == _getNonSpatialCellsCount());
 		m_Tracker = p_Graphs.getBaseSolution();
+		m_Tracker.clear();
 		const std::vector<Core::FMTAction> postsolveactions = p_Graphs.getModel().getActions();
 		std::vector<int>actionmapping;
 		actionmapping.reserve(p_PresolveActions.size());

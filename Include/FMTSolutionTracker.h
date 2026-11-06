@@ -145,6 +145,11 @@ namespace Spatial
 			@return true if the tracking is enabled else false.
 			*/
 			bool isTrackingEnable() const;
+			// DocString: FMTSolutionTracker::clear
+			/**
+			@brief clear the underlying solution;
+			*/
+			void clear();
 		private:
 			std::vector<std::vector<double>>m_LastConstraintsEvaluation;
 			std::vector<size_t>m_Solution;
