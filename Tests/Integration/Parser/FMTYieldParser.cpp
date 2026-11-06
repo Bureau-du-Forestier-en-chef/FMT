@@ -40,7 +40,7 @@ namespace
 // Disabled: for each line after the first, FMTYieldParser::read fills the periods from the last one already pushed, which
 // it pushes a second time: each line delays the values of the next ones by one period, and CPA is 10, 10, 10, 30, 30,
 // 30 and 50 (#387, defect 13 of section 2.7 of Tests/ETAT.md).
-TEST(FMTYieldParser, DISABLED_GivenTimeYieldsWrittenInColumnsWhenReadThenEachLineGivesItsValuesFromItsPeriod)
+TEST(FMTYieldParser, GivenTimeYieldsWrittenInColumnsWhenReadThenEachLineGivesItsValuesFromItsPeriod)
 {
     // Arrange: _CP CPA CPB, then the lines 1 10 100, 3 30 300 and 5 50 500
     const Models::FMTModel model = Testing::readScenario("timeyieldcolumns");

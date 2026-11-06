@@ -901,27 +901,27 @@ void FMTYieldParser::_populateTimeYields(Core::FMTYieldHandler& p_handler,
 			p_handler.pushBase(_getNum<int>(p_values[0], p_constants));
 			p_values.erase(p_values.begin());
 			int id = 0;
-			for (const std::string& yldname : p_yieldsName)
+			for (const std::string& yldName : p_yieldsName)
 			{
-				const std::string& value = p_values.at(id);
-				p_handler.pushData(yldname, _getNumwithproportion(value, p_constants,
+				const std::string& VALUE = p_values.at(id);
+				const double THEVALUE = _getNum<double>(VALUE, p_constants);
+				p_handler.pushData(yldName, _getNumwithproportion(VALUE, p_constants,
 					p_proportion, id));
 				++id;
 			}
 		}
 		else {
-			const int NEW_BASE = _getNum<int>(p_values[0], p_constants);
+			const size_t NEW_BASE = _getNum<size_t>(p_values[0], p_constants);
 			p_values.erase(p_values.begin());
-			int lastBase = p_handler.getLastBase() + 1;
-			while (p_handler.getLastBase() < NEW_BASE)
+			const size_t CURRENT_BASE = static_cast<size_t>(p_handler.getLastBase());
+			const size_t DATA_SIZE = p_handler.at(*p_yieldsName.begin()).data.size() + CURRENT_BASE;
+			for (size_t base = DATA_SIZE; base < NEW_BASE; ++base)
 			{
-				p_handler.pushBase(lastBase);
 				for (const std::string& yldName : p_yieldsName)
 				{
 					const double VALUE = p_handler.getLastValue(yldName);
 					p_handler.pushData(yldName, VALUE);
 				}
-				++lastBase;
 			}
 			int id = 0;
 			for (const std::string& yldName : p_yieldsName)
