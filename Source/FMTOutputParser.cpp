@@ -14,6 +14,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTExceptionHandler.h"
 #include "FMTSpec.h"
 
+#include <algorithm>
+
 namespace Parser
 {
 	const boost::regex FMTOutputParser::m_rxoutput=boost::regex("(\\*OUTPUT|\\*LEVEL)(([\\s\\t]*)([^\\s\\t\\(]*)([\\s\\t]*)(\\()([^\\s\\t\\)]*)(\\))([\\s\\t]*)(.+))|((\\*OUTPUT|\\*LEVEL)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(.+))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
@@ -806,15 +808,19 @@ namespace Parser
 						}
 					}
 				}
-			outputs->shrink_to_fit();
+           outputs->shrink_to_fit();
 			/*-----------------------------------------
 			-----------Fix for outputorigin------------
 			-------------------------------------------*/
-			int index = 0; 
-			for (Core::FMTOutput& output : *outputs)
+         outputs->erase(std::remove_if(outputs->begin(), outputs->end(),
+				[](const Core::FMTOutput& p_output)
 				{
-				output.changeSourcesId(index);
-				++index;
+					const std::string& name = p_output.getName();
+					return !name.empty() && name.front() == '~';
+				}), outputs->end());
+			for (size_t index = 0; index < outputs->size(); ++index)
+				{
+				outputs->at(index).changeSourcesId(static_cast<int>(index));
 				}
 			/*-----------------------------------------
 			-----------Fix for outputorigin------------
