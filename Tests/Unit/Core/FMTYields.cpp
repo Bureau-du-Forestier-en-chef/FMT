@@ -440,7 +440,7 @@ TEST(FMTYields, GivenAFactorOfADiscountFactorWhenGetFromFactorThenMultipliesItsV
 
 // Disabled: getFromFactor multiplies the yields named only, and none when no yield is named, while its documentation
 // says all when the list is empty, as the handlers do (#391, defect 16 of section 2.7 of Tests/ETAT.md).
-TEST(FMTYields, DISABLED_GivenAFactorWithoutYieldNamesWhenGetFromFactorThenMultipliesEveryYield)
+TEST(FMTYields, GivenAFactorWithoutYieldNamesWhenGetFromFactorThenMultipliesEveryYield)
 {
     // Arrange
     const Core::FMTYields yields = getYields();

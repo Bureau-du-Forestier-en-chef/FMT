@@ -52,9 +52,9 @@ int main(int argc, char* argv[])
 		boost::split(spatialOutputs, std::string(argv[1]), boost::is_any_of("|"));
 		length = std::stoi(argv[3]);
 	}else {
-		modellocation = "C:\\Users\\admlocal\\Desktop\\06471\\";
-		primarylocation = modellocation + "PC_9981_U06471_2028_MODB01.pri";
-		scenario = "TBE_V3";
+		modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/TEST_CARBONES/PC_9964_U08451_2028_MODB01/";
+		primarylocation = modellocation + "PC_9964_U08451_2028_MODB01.pri";
+		scenario = "400_Carbone_apsp";
 		length = 30;
 		spatialOutputs = { "OVOLTOTREC"};
 		/*modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/CC_V2/20251016/";

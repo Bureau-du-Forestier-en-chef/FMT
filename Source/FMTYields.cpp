@@ -355,22 +355,34 @@ FMTYields FMTYields::getFromFactor(const double& factor,
 	std::vector<std::string>yieldnames) const
 	{
 	FMTYields newyields(*this);
+	if (yieldnames.empty())
+		{
+		yieldnames = getAllYieldNames();
+		}
+	
 	try {
 		for (auto& handlerobj : newyields)
 		{
-			bool gotyield = false;
-			for (const std::string& yield : yieldnames)
+			if (handlerobj.second->getType()==
+				Core::FMTyldtype::FMTageyld ||
+				handlerobj.second->getType() ==
+				Core::FMTyldtype::FMTtimeyld)
 			{
-				if (handlerobj.second->containsYield(yield))
-					{
-					gotyield = true;
-					break;
-					}
-			}
-			if (gotyield)
+				bool gotyield = false;
+				for (const std::string& yield : yieldnames)
 				{
-				handlerobj.second = handlerobj.second->getFromFactor(factor, yieldnames);
+					if (handlerobj.second->containsYield(yield))
+					{
+						gotyield = true;
+						break;
+					}
 				}
+				if (gotyield)
+				{
+					handlerobj.second = handlerobj.second->getFromFactor(factor, yieldnames);
+				}
+			}
+			
 		}
 	}catch (...)
 		{
