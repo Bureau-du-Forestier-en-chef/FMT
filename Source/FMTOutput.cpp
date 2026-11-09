@@ -62,6 +62,7 @@ FMTOutput& FMTOutput::operator = (const FMTOutput& rhs)
         m_sources = rhs.m_sources;
         m_operators = rhs.m_operators;
         m_description = rhs.m_description;
+		m_group = rhs.m_group;
         }
     return *this;
     }
@@ -839,12 +840,12 @@ size_t FMTOutput::hash() const
 
 bool FMTOutput::operator == (const FMTOutput& rhs) const
     {
-	// TODO gab mettre un bool sexy
 	bool is_valid = false;
 	if (m_name != rhs.m_name ||
 		m_description != rhs.m_description ||
 		m_sources != rhs.m_sources ||
-		m_operators != rhs.m_operators)
+		m_operators != rhs.m_operators ||
+		m_group != rhs.m_group)
 	{
 		return false;
 	}

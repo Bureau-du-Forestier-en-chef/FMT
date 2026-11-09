@@ -78,7 +78,7 @@ TEST(FMTLpSolver, GivenASolvedProblemWhenPickledThenUnpicklesTheSameProblemAndIt
 
 // Defect 31 (#414) of Tests/ETAT.md: the sense of the objective is not saved; the unpickled problem is loaded in a
 // new solver interface, which minimizes: solved again, it gives 0 instead of 2.8.
-TEST(FMTLpSolver, DISABLED_GivenAMaximizedProblemWhenPickledThenSolvingItAgainGivesTheSameOptimum)
+TEST(FMTLpSolver, GivenAMaximizedProblemWhenPickledThenSolvingItAgainGivesTheSameOptimum)
 {
     // Arrange
     const Models::FMTLpSolver solver = getSolvedProblem();

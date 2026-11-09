@@ -58,7 +58,7 @@ TEST(FMTSchedule, DISABLED_GivenAScheduleOfAnActionOfTWDLandWhenPickledThenUnpic
 
 // Defect 31 (#414) of Tests/ETAT.md: FMTSchedule::serialize does not save m_uselock, which says whether the
 // areas of a schedule are by lock level: an unpickled schedule never uses them.
-TEST(FMTSchedule, DISABLED_GivenAScheduleThatUsesLockLevelsWhenPickledThenUnpicklesAScheduleThatUsesThem)
+TEST(FMTSchedule, GivenAScheduleThatUsesLockLevelsWhenPickledThenUnpicklesAScheduleThatUsesThem)
 {
     // Arrange
     const Core::FMTSchedule schedule(2, Core::FMTObject(), true);

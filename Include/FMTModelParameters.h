@@ -239,6 +239,7 @@ namespace Models
                     ar& BOOST_SERIALIZATION_NVP(m_dblparameters);
                     ar& BOOST_SERIALIZATION_NVP(m_boolparameters);
                     ar& BOOST_SERIALIZATION_NVP(m_compresstime);
+                    ar& BOOST_SERIALIZATION_NVP(m_strparameters);
                 }
                 catch (...)
                 {

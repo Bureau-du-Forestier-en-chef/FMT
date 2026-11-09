@@ -59,7 +59,7 @@ TEST(FMTOutput, GivenAnOutputConstructedByDefaultWhenPickledThenUnpicklesAnEmpty
 
 // Defect 31 (#414) of Tests/ETAT.md: FMTOutput::serialize does not save m_group, the *GROUP of the output section
 // that FMTOutputParser::write writes back; FMTOutput::operator== does not compare it.
-TEST(FMTOutput, DISABLED_GivenAnOutputOfAGroupWhenPickledThenUnpicklesAnOutputOfTheSameGroup)
+TEST(FMTOutput, GivenAnOutputOfAGroupWhenPickledThenUnpicklesAnOutputOfTheSameGroup)
 {
     // Arrange
     const Core::FMTOutput output("OVOLUME", "volume", "GROUPE1", std::vector<Core::FMTOutputSource>(),

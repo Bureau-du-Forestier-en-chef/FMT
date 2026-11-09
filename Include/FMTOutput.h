@@ -523,6 +523,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 				ar& boost::serialization::make_nvp("operators", m_operators);
 				//ar & BOOST_SERIALIZATION_NVP(theme_target);
 				ar& boost::serialization::make_nvp("name", m_name);
+				ar& boost::serialization::make_nvp("group", m_group);
 				ar& boost::serialization::make_nvp("description", m_description);
 			}
 			catch (...)

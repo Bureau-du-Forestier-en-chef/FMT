@@ -311,6 +311,7 @@ class FMTEXPORT FMTSchedule : public FMTObject
 				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
 				ar& boost::serialization::make_nvp("period", m_period);
 				ar& boost::serialization::make_nvp("elements", m_elements);
+				ar& boost::serialization::make_nvp("uselock", m_uselock);
 			}
 			catch (...)
 			{

@@ -36,7 +36,7 @@ TEST(FMTModelParameters, GivenNumericAndBooleanParametersWhenPickledThenUnpickle
 
 // Defect 31 (#414) of Tests/ETAT.md: FMTModelParameters::serialize does not save the text parameters, the files
 // of the cold and warm start parameters of the solver and the working directory of the simulated annealing.
-TEST(FMTModelParameters, DISABLED_GivenATextParameterWhenPickledThenUnpicklesTheSameText)
+TEST(FMTModelParameters, GivenATextParameterWhenPickledThenUnpicklesTheSameText)
 {
     // Arrange
     Models::FMTModelParameters parameters;

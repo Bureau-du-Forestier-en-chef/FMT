@@ -28,7 +28,8 @@ FMTSerializableMatrix::FMTSerializableMatrix():
 		rowlb(),
 		rowub(),
 		colsolution(),
-		rowprice()
+		rowprice(),
+	m_sense(0)
 	{
 
 	}
@@ -41,7 +42,8 @@ FMTSerializableMatrix::FMTSerializableMatrix(const FMTSerializableMatrix& rhs):
 	rowlb(rhs.rowlb),
 	rowub(rhs.rowub),
 	colsolution(rhs.colsolution),
-	rowprice(rhs.rowprice)
+	rowprice(rhs.rowprice),
+	m_sense(rhs.m_sense)
 	{
 
 	}
@@ -57,6 +59,7 @@ FMTSerializableMatrix& FMTSerializableMatrix::operator = (const FMTSerializableM
 		rowub = rhs.rowub;
 		colsolution = rhs.colsolution;
 		rowprice = rhs.rowprice;
+		m_sense = rhs.m_sense;
 		}
 	return *this;
 	}
@@ -69,10 +72,13 @@ FMTSerializableMatrix::FMTSerializableMatrix(const std::shared_ptr<OsiSolverInte
 	rowlb(),
 	rowub(),
 	colsolution(),
-	rowprice()
+	rowprice(),
+	m_sense()
 	{
+	
 	if (solverinterface->getNumCols()>0)
 		{
+			m_sense = solverinterface->getObjSense();
 			const CoinPackedMatrix* newmatrix = solverinterface->getMatrixByRow();
 			*matrix = *newmatrix;
 			size_t ncols = solverinterface->getNumCols();
@@ -115,6 +121,7 @@ void FMTSerializableMatrix::setMatrix(std::shared_ptr<OsiSolverInterface>& solve
 		solverinterface->loadProblem(*matrix, &collb[0], &colub[0], &obj[0], &rowlb[0], &rowub[0]);
 		solverinterface->setColSolution(&colsolution[0]);
 		solverinterface->setRowPrice(&rowprice[0]);
+		solverinterface->setObjSense(m_sense);
 		}
 	
 	}
@@ -194,7 +201,8 @@ void FMTSerializableMatrix::getSetMemberElements(bool loading,
 	std::vector<double>& lrowlb,
 	std::vector<double>& lrowub,
 	std::vector<double>& lcolsolution,
-	std::vector<double>& lrowprice)
+	std::vector<double>& lrowprice,
+	double& p_sense)
 {
 	if (!loading)
 	{
@@ -205,6 +213,8 @@ void FMTSerializableMatrix::getSetMemberElements(bool loading,
 		lrowub = rowub;
 		lcolsolution = colsolution;
 		lrowprice = rowprice;
+		p_sense = m_sense;
+
 	}else {
 		collb = lcollb;
 		colub = lcolub;
@@ -213,6 +223,7 @@ void FMTSerializableMatrix::getSetMemberElements(bool loading,
 		rowub = lrowub;
 		colsolution = lcolsolution;
 		rowprice = lrowprice;
+		m_sense = p_sense;
 		}
 
 }
