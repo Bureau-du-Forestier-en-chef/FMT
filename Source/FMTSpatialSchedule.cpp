@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <algorithm>
 #include <set>
 #include <iterator>
+#include <limits>
 #include "FMTBindingSpatialAction.h"
 #include "FMTOutput.h"
 #include "FMTEventRelation.h"
@@ -1831,81 +1832,67 @@ std::map<std::string, double> FMTSpatialSchedule::referenceBuild(const Core::FMT
 				actiontargets.push_back(actionid);
 				total_area += actionArea;
 				}
-			++actionid;
-			}
-		std::vector<int>basetargets(actiontargets);
-		double allocated_area = 0;
-		const std::vector<Spatial::FMTBindingSpatialAction>bindingactions = this->getBindingActions(model, period);
-		if (!schedule.empty() || !schedule_only)
-		{
-			double pass_allocated_area = 0;
-			bool schedulepass = scheduleatfirstpass;
-			bool schedulechange = false;
-			int pass = 0;
-			boost::unordered_map<Core::FMTDevelopment, std::vector<bool>>cachedactions;
-			std::vector<std::set<Spatial::FMTCoordinate>>actions_operabilities = this->getUpdatedScheduling(model, actiontargets, cachedactions, scheduleoperabilities, schedulepass);
-			do {
-				pass_allocated_area = 0;
-				int action_id = 0;
+			boost::unordered_map<Core::FMTDevelopment, std::vector<bool>> cachedactions;
+
+			std::vector<std::set<Spatial::FMTCoordinate>> actions_operabilities =
+				this->getUpdatedScheduling(
+					model,
+					actiontargets,
+					cachedactions,
+					scheduleoperabilities,
+					schedulepass);
+
+			do
+			{
+				pass_allocated_area = 0.0;
+
 				if (schedulechange)
 				{
 					cachedactions.clear();
-					actions_operabilities = this->getUpdatedScheduling(model, actiontargets, cachedactions, scheduleoperabilities, schedulepass);
+
+					actions_operabilities =
+						this->getUpdatedScheduling(
+							model,
+							actiontargets,
+							cachedactions,
+							scheduleoperabilities,
+							schedulepass);
+
 					schedulechange = false;
 				}
-				std::vector<int>targetstoremove;
-				for (const int& action_id : actiontargets)
-				{
-					const double& action_area = targets.at(action_id);
-					const std::set<Spatial::FMTCoordinate>& allowable_coordinates = actions_operabilities.at(action_id);
-					if (!allowable_coordinates.empty() && action_area > 0)
-					{
-						const std::set<Spatial::FMTCoordinate> spatially_allowable = this->verifySpatialFeasibility(action_id, bindingactions, period, allowable_coordinates);
-						if (!spatially_allowable.empty())
-						{
-							std::vector<Spatial::FMTCoordinate> updatedcells;
-							const Spatial::FMTEventContainer harvest = this->buildHarvest(action_area, bindingactions.at(action_id), p_randomEngine, spatially_allowable, period, action_id, updatedcells);
-							if (harvest.size() > 0)
-							{
-								const double operatedarea = this->operateEvents(harvest,model.actions.at(action_id), action_id, model.transitions[action_id], model.yields, model.themes);
-								actions_operabilities = this->getUpdatedScheduling(model, actiontargets, cachedactions, scheduleoperabilities, schedulepass, actions_operabilities, updatedcells);
-								targets[action_id] -= operatedarea;
-								if (targets[action_id]<=0)//remove this index from the actiontargets!
-									{
-									targetstoremove.push_back(action_id);
-									}
-								pass_allocated_area += operatedarea;
-							}
-						}
-					}
-				}
-				if (!targetstoremove.empty())
-					{
-					std::vector<int>newtargets;
-					for (const int& action_id : actiontargets)
-						{
-						if (std::find(targetstoremove.begin(), targetstoremove.end(),action_id)== targetstoremove.end())
-							{
-							newtargets.push_back(action_id);
-							}
 
-						}
-					actiontargets = newtargets;
-					}
+				pass_allocated_area =
+                   this->_executeActionSeriesSchedulingPass(
+						model,
+						bindingactions,
+						actiontargets,
+						targets,
+						cachedactions,
+						scheduleoperabilities,
+						actions_operabilities,
+						p_randomEngine,
+						schedulepass);
+
 				allocated_area += pass_allocated_area;
+
 				++pass;
-				if (!schedule_only && pass_allocated_area == 0)
+
+				if (!schedule_only && pass_allocated_area == 0.0)
 				{
 					if (schedulepass)
 					{
 						schedulechange = true;
 						schedulepass = false;
 					}
-					else {
+					else
+					{
 						schedule_only = true;
 					}
 				}
-			} while (allocated_area < total_area && (pass_allocated_area != 0 || (!schedule_only)));
+
+			} while (
+				allocated_area < total_area &&
+				(pass_allocated_area != 0.0 || !schedule_only));
 		}
 		this->grow();
 		results["Total"] = allocated_area / total_area;
@@ -1920,8 +1907,74 @@ std::map<std::string, double> FMTSpatialSchedule::referenceBuild(const Core::FMT
 		_exhandler->printExceptions("", "FMTSpatialSchedule::referenceBuild", __LINE__, __FILE__);
 	}
 	return results;
+}
 
 
+
+bool FMTSpatialSchedule::_hasActionSeries(const Models::FMTModel& p_model) const
+{
+	return std::any_of(
+		p_model.actions.begin(),
+		p_model.actions.end(),
+		[](const Core::FMTAction& p_action)
+		{
+			return p_action.isPartOfASerie();
+		});
+}
+
+std::set<Spatial::FMTCoordinate> FMTSpatialSchedule::_getIncompleteSerieCoordinates(
+	const Models::FMTModel& p_model, int p_actionId) const
+{
+	std::set<Spatial::FMTCoordinate> coordinates;
+	try
+	{
+     if (p_actionId < 0)
+		{
+			return coordinates;
+		}
+
+     const Core::FMTAction& action = p_model.actions.at(p_actionId);
+		for (const auto& cell : m_mapping)
+		{
+			const Graph::FMTLineGraph& lineGraph = cell.second.getLineGraph();
+           std::vector<std::string> actionHistory;
+			for (int period = 1; period <= lineGraph.getPeriod(); ++period)
+			{
+                for (const int actionId : lineGraph.getPeriodActionIds(period, false))
+				{
+                 if (actionId >= 0)
+					{
+						actionHistory.push_back(p_model.actions.at(actionId).getName());
+					}
+				}
+			}
+
+          for (const Core::FMTSerie& serie : action.getSeries())
+			{
+             const std::vector<std::string>& serieActions = serie.getActions();
+				if (serieActions.size() < 2 || serieActions.back() != action.getName())
+				{
+					continue;
+				}
+
+				const size_t prefixSize = serieActions.size() - 1;
+				if (actionHistory.size() >= prefixSize &&
+					std::equal(
+						serieActions.begin(),
+						serieActions.end() - 1,
+						actionHistory.end() - prefixSize))
+				{
+					coordinates.insert(cell.first);
+					break;
+				}
+			}
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raiseFromCatch("", "FMTSpatialSchedule::_getIncompleteSerieCoordinates", __LINE__, __FILE__);
+	}
+	return coordinates;
 }
 
 std::map<std::string, double> FMTSpatialSchedule::greedyReferenceBuild(const Core::FMTSchedule& schedule, const FMTSpatialGraphs& p_Graphs,

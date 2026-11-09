@@ -895,6 +895,10 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 		static void _setTabouOutOfCache(
 			std::vector<std::pair<Core::FMTDevelopment, std::vector<int>>>& p_GoodValues);
 
+		bool _hasActionSeries(const Models::FMTModel& p_model) const;
+		std::set<Spatial::FMTCoordinate> _getIncompleteSerieCoordinates(
+			const Models::FMTModel& p_model, int p_actionId) const;
+
 		
 
 		

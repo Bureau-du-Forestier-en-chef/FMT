@@ -34,6 +34,7 @@ int main(int argc, char* argv[])
 	std::string nextaction = "PLANTATION";
 	std::string competingaction = "PLANTATIONCC";
 	int periods = 10;
+	bool requireNextAction = true;
 	if (argc > 1)
 		{
 		std::vector<std::string>results;
@@ -45,6 +46,10 @@ int main(int argc, char* argv[])
 		nextaction = results.at(3);
 		competingaction = results.at(4);
 		periods = std::stoi(argv[2]);
+		if (argc > 3)
+			{
+			requireNextAction = std::stoi(argv[3]) != 0;
+			}
 		}
 	const std::string modellocation = primarylocation.substr(0, primarylocation.find_last_of("/\\") + 1);
 	Parser::FMTModelParser mparser;
@@ -102,7 +107,7 @@ int main(int argc, char* argv[])
 		}
 	// The actions of each cell in their order, then the action that follows each first action.
 	size_t followedbynext = 0;
-	size_t followedbycompeting = 0;
+	size_t brokenseries = 0;
 	std::string firstbrokencell;
 	const Spatial::FMTSpatialSchedule spatialsolution = simulationmodel.getSpSchedule();
 	for (Spatial::FMTSpatialSchedule::const_iterator cellit = spatialsolution.begin(); cellit != spatialsolution.end(); ++cellit)
@@ -123,9 +128,10 @@ int main(int argc, char* argv[])
 				if (history.at(index + 1) == nextid)
 					{
 					++followedbynext;
-				}else if (history.at(index + 1) == competingid)
+				}
+				else if (requireNextAction || history.at(index + 1) == competingid)
 					{
-					++followedbycompeting;
+					++brokenseries;
 					if (firstbrokencell.empty())
 						{
 						firstbrokencell = std::string(cellit->first);
@@ -133,14 +139,22 @@ int main(int argc, char* argv[])
 					}
 				}
 			}
+		if (requireNextAction && !history.empty() && history.back() == firstid)
+			{
+			++brokenseries;
+			if (firstbrokencell.empty())
+				{
+				firstbrokencell = std::string(cellit->first);
+				}
+			}
 		}
 	Logging::FMTDefaultLogger() << firstaction << " -> " << nextaction << ": " << followedbynext << " cells, "
-		<< firstaction << " -> " << competingaction << ": " << followedbycompeting << " cells\n";
-	if (followedbycompeting > 0)
+		<< firstaction << " -> " << competingaction << ": " << brokenseries << " broken cells\n";
+	if (brokenseries > 0)
 		{
 		Exception::FMTFreeExceptionHandler().raise(Exception::FMTexc::FMTfunctionfailed,
-			"The series " + firstaction + " -> " + nextaction + " is broken by " + competingaction + " in " +
-			std::to_string(followedbycompeting) + " cells, the first at " + firstbrokencell,
+			"The series " + firstaction + " -> " + nextaction + " is broken in " +
+			std::to_string(brokenseries) + " cells, the first at " + firstbrokencell,
 			"SimulateSpatiallyWithActionSeries", __LINE__, primarylocation);
 		}
 	if (followedbynext == 0)
