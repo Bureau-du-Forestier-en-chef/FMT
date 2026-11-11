@@ -21,19 +21,19 @@ namespace Core {
 			size_t baseid = 0;
 			for (std::map<std::string, FMTData, cmpYieldString>::const_iterator it = m_elements.begin(); it != m_elements.end(); ++it)
 			{
-				value += it->first + " ";
+				value += it->first + _getYieldsSeparator();
 				if (it->second.getOp() == FMTyieldparserop::FMTdiscountfactor)
 				{
 					value += it->second;
 				}else {
-						value += std::to_string(m_bases.at(std::min(baseid, m_bases.size() - 1))) + " ";
+						value += std::to_string(m_bases.at(std::min(baseid, m_bases.size() - 1))) + _getYieldsSeparator();
 						const std::vector<double>* data = &it->second.data;
 						for (const double& val : *data)
 						{
 							std::string singlevalue = std::to_string(val);
 							singlevalue.erase(singlevalue.find_last_not_of('0') + 1, std::string::npos);
 							singlevalue.erase(singlevalue.find_last_not_of('.') + 1, std::string::npos);
-							value += singlevalue + " ";
+							value += singlevalue + _getYieldsSeparator();
 						}
 					}
 				value += "\n";

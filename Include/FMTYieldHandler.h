@@ -407,6 +407,7 @@ protected:
 	@return the maximum base age.
 	*/
 	int _getMaxBase(const FMTYieldRequest& request) const;
+	static const std::string& _getYieldsSeparator();
 private:
 	friend class boost::serialization::access;
 	// DocString: FMTYieldHandler::serialize
@@ -422,6 +423,7 @@ private:
 		ar& boost::serialization::make_nvp("mask", m_mask);
 		ar& boost::serialization::make_nvp("bases", m_bases);
 	}
+	static const std::string YIELDS_SEPARATOR;
 
 	
 };

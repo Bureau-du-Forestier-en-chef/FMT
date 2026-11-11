@@ -448,7 +448,7 @@ TEST(FMTModelYieldHandler, GivenModelsWithPeriodicValuesWhenConvertedToStringThe
     const std::string text(handler);
 
     // Assert
-    EXPECT_EQ(text, "*YT UNITE1 ? ?\nAREA 0 1 2 3 \nSTEMS 0 4 5.5 6 \n");
+    EXPECT_EQ(text, "*YT UNITE1 ? ?\nAREA    0    1    2    3    \nSTEMS    0    4    5.5    6    \n");
 }
 
 // The _TSLA handler of the default yields writes nothing: FMTYields::generateDefaultYields gives it again at the

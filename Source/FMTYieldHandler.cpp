@@ -15,6 +15,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
+const std::string FMTYieldHandler::YIELDS_SEPARATOR = "    ";
+
+
 FMTYieldHandler::operator std::string() const
         {
 		std::string value = "";
@@ -379,6 +382,11 @@ double FMTYieldHandler::getYieldLinearValue(const std::string&yldname, const FMT
 		}
 		return maxage;
 	}
+
+   const std::string& FMTYieldHandler::_getYieldsSeparator()
+		{
+		return YIELDS_SEPARATOR;
+		}
 
 
     double FMTYieldHandler::getPeak(const FMTYieldRequest& request,const std::string& yld, const int& targetage) const

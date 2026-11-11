@@ -20,21 +20,21 @@ namespace Core {
 		std::string value;
 		try {
 				value += "*Y " + std::string(m_mask) + "\n";
-				value += "_AGE \t";
+				value += "_AGE "+ _getYieldsSeparator();
 				const std::vector<std::string> yieldNames = getYieldNames();
 				for (const std::string& NAME : yieldNames)
 				{
-					value += NAME + "\t";
+					value += NAME + _getYieldsSeparator();
 				}
 				value += "\n";
 				int baseid = 0;
 				for (const int& base : m_bases)
 				{
-					value += std::to_string(base) + "\t";
+					value += std::to_string(base) + _getYieldsSeparator();
 					for (const std::string& NAME : yieldNames)
 					{
 						const std::vector<double>* data = &m_elements.at(NAME).data;
-						value += std::to_string(data->at(baseid)) + "\t";
+						value += std::to_string(data->at(baseid)) + _getYieldsSeparator();
 					}
 					value += "\n";
 					++baseid;
@@ -126,6 +126,13 @@ namespace Core {
 					}
 					++index;
 				}
+				if (minimal_gap_index>=m_bases.size())
+					{
+					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+						"Cannot get age from " + yld,
+						"FMTAgeYieldHandler::_getAge", __LINE__, __FILE__, Core::FMTsection::Yield);
+
+					}
 				age = std::max(m_bases.at(minimal_gap_index), 1);
 			}
 		}

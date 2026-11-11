@@ -319,7 +319,7 @@ TEST(FMTAgeYieldHandler, GivenAHandlerWhenConvertedToStringThenWritesItsMaskThen
     const std::string written = std::string(handler);
 
     // Assert
-    EXPECT_EQ(written, "*Y ?\n_AGE \tVOLUME\t\n10\t100.000000\t\n20\t200.500000\t\n");
+    EXPECT_EQ(written, "*Y ?\n_AGE     VOLUME    \n10    100.000000    \n20    200.500000    \n");
 }
 
 // The age of a development disturbed by a transition whose target is a yield value (FMTYields::getAge): the base age,

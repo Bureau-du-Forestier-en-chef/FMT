@@ -273,7 +273,7 @@ TEST(FMTTimeYieldHandler, GivenATimeYieldWhenConvertedToStringThenWritesItsStart
     const std::string written = std::string(handler);
 
     // Assert
-    EXPECT_EQ(written, "*YT ?\nPERIODVALUE 1 10 20.5 30 \n");
+    EXPECT_EQ(written, "*YT ?\nPERIODVALUE    1    10    20.5    30    \n");
 }
 
 // Reveals the defect of issue #380: operator std::string ignores the operator of the data, and writes the rate and
