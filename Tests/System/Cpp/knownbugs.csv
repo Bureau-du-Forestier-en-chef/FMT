@@ -1,6 +1,4 @@
 TEST;primarylocation;scenario;doublevalue;given;then
-TEST;primarylocation;scenario;doublevalue;given;then
-SimulateSpatiallyWithActionSeries;../../../../Examples/Models/TWD_land/TWD_land.pri|Spatial_actionseries|COUPETOTALE|PLANTATION|PLANTATIONCC;10;1;Issue423CompetingPlantationSchedule;DetectsAClearcutWithoutItsNextAction
 ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|PRECEDENCE;18;;APowerAfterAProductInAnEquation;AppliesThePowerFirst
 ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|YIELD|UNITE1 PEUPLEMENT1 UTR1|1|YBM_RTM_BOG;9.05365226732;;APowerAfterAProductInARootYield;AppliesThePowerFirst
 ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|yieldoperators|YIELD|UNITE1 PEUPLEMENT1 UTR1|7|SUMOFYIELDS;11;;ASumOfTwoNumericEquations;AddsThem

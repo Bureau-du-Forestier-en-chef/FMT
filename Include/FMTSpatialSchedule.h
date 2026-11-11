@@ -898,6 +898,14 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 		bool _hasActionSeries(const Models::FMTModel& p_model) const;
 		std::set<Spatial::FMTCoordinate> _getIncompleteSerieCoordinates(
 			const Models::FMTModel& p_model, int p_actionId) const;
+		std::vector<double> _completeActionSeries(const std::vector<double>& p_targets,
+											const std::vector<Spatial::FMTBindingSpatialAction>& p_bindings,
+											const Models::FMTModel& p_modele);
+		bool _completeActionSeriesAtCoordinate(
+			const Spatial::FMTCoordinate& p_coordinate,
+			const std::vector<Spatial::FMTBindingSpatialAction>& p_bindings,
+			const Models::FMTModel& p_model,
+			std::vector<double>& p_targets);
 
 		
 

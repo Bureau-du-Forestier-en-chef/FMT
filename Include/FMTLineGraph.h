@@ -132,6 +132,13 @@ class FMTEXPORT FMTLineGraph : public FMTGraph<FMTBaseVertexProperties,FMTBaseEd
 		@return true if the action is allowed, else false.
 		*/
 		bool isAllowedBySeries(int p_actionId, const Models::FMTModel& p_model) const;
+     // DocString: FMTLineGraph::completeSerie
+		/**
+		@brief Return a copy of the graph with the operable actions missing from its active action serie.
+		@param[in] p_model the model.
+		@return the graph with the active action serie completed without natural growth.
+		*/
+		FMTLineGraph completeSerie(const Models::FMTModel& p_model) const;
 		// DocString: FMTLineGraph::getLastActionId
 		/**
 		@brief Return the action id of the last edge of a period.

@@ -16,11 +16,11 @@ UC prod ? _AGE >= 8
 
 *ACTION plantation Y _LOCKEXEMPT
 *OPERABLE plantation
-;c'est rendu dans chacun des scenario de replanning - > ? pourpl ? _AGE = 0 ;_AGE >= 1 AND _AGE <= 3
-? prod ? _AGE >= 1 AND _AGE <= 3
+? prod ? _AGE = 0
 
-
-
+*ACTION aec N _LOCKEXEMPT
+*OPERABLE aec
+? prod ? _AGE >= 3
 
 
 *ACTION plantationCC Y _LOCKEXEMPT
@@ -29,4 +29,4 @@ UC prod ? _AGE >= 8
 ? prod ? _AGE >= 1 AND _AGE <= 3
 
 *ACTIONSERIES
-COUPEtotale -> plantation
+COUPEtotale -> plantation -> aec

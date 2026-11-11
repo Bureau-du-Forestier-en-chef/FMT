@@ -33,6 +33,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace
 {
+    static std::string VALID_YIELDS = "VOLUMETOTAL";
     std::vector<Core::FMTTheme> getThemes()
     {
         const std::vector<std::map<std::string, double>> NO_INDEXES;
@@ -69,8 +70,19 @@ namespace
     Core::FMTYields getYields()
     {
         Core::FMTAgeYieldHandler handler(getMask("? ? ?"));
-        handler.setYieldValues("VOLUMETOTAL", { 0, 5, 10, 15, 20, 25, 30 },
+        handler.setYieldValues(VALID_YIELDS, { 0, 5, 10, 15, 20, 25, 30 },
             { 0.0, 100.0, 150.0, 200.0, 250.0, 300.0, 350.0 });
+        Core::FMTYields yields;
+        yields.pushBackAgeHandler(getMask("? ? ?"), handler);
+        yields.update();
+        return yields;
+    }
+
+    Core::FMTYields getTruncatedYields()
+    {
+        Core::FMTAgeYieldHandler handler(getMask("? ? ?"));
+        handler.setYieldValues(VALID_YIELDS, {5, 10, 15, 20, 25, 30 },
+            {100.0, 150.0, 200.0, 250.0, 300.0, 350.0 });
         Core::FMTYields yields;
         yields.pushBackAgeHandler(getMask("? ? ?"), handler);
         yields.update();
@@ -298,7 +310,7 @@ TEST(FMTTransitionMask, GivenATargetYieldWhenDisturbThenSetsTheAgeWhereTheYieldR
     // Arrange: *TARGET ? ? ? 100 VOLUMETOTAL 150, for an action of age reset
     const Core::FMTYields yields = getYields();
     Core::FMTTransitionMask target = getTarget("? ? ?", 100.0);
-    target.addBounds(Core::FMTYldBounds(Core::FMTsection::Transition, Core::FMTkwor::Target, "VOLUMETOTAL", 150.0, 150.0));
+    target.addBounds(Core::FMTYldBounds(Core::FMTsection::Transition, Core::FMTkwor::Target, VALID_YIELDS, 150.0, 150.0));
     const Core::FMTDevelopment development = getDevelopment("UNITE1 PEUPLEMENT1 UTR1", 20);
 
     // Act
@@ -370,6 +382,27 @@ TEST(FMTTransitionMask, GivenAnotherMaskWhenConstructedFromATargetThenKeepsItsPr
     EXPECT_DOUBLE_EQ(burnt.getProportion(), 60.0);
     EXPECT_EQ(describe(burnt.disturb(development, yields, getThemes(), false).getDevelopment()), "UNITE1 FEU UTR1|8|1|1");
 }
+
+TEST(FMTTransitionMask, GivenATruncatedYieldsWithTooSmallTargetVolumeThenReturnMinimumAgeOfTheYields)
+{
+    // Arrange
+    const Core::FMTYields yields = getTruncatedYields();
+    const Core::FMTTransitionMask caribou = getLockTarget("? ? ?",
+                                            100.0, 1);
+    const Core::FMTDevelopment development = getDevelopment("UNITE1 PEUPLEMENT1 UTR1", 8);
+
+    // Act
+    Core::FMTTransitionMask target(caribou, getMask("? FEU ?"), getThemes());
+    target.addBounds(Core::FMTYldBounds(Core::FMTsection::Transition, Core::FMTkwor::Target,
+                            VALID_YIELDS, 40.0, 40.0));
+    const Core::FMTDevelopmentPath PATHS  = target.disturb(
+                                    development, yields, getThemes(), false);
+
+    // Assert
+    EXPECT_EQ(PATHS.getDevelopment().getAge(), 5);
+}
+
+
 
 TEST(FMTTransitionMask, GivenATargetBuiltWithANewThemeWhenTransThenKeepsTheAttributeOfTheNewTheme)
 {

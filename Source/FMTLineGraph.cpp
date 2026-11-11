@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/iostreams/stream.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include "FMTEventContainer.h"
+#include <algorithm>
 
 
 namespace Graph
@@ -206,6 +207,77 @@ namespace Graph
 	bool FMTLineGraph::isAllowedBySeries(int p_actionId, const Models::FMTModel& p_model) const
 	{
 		return isAllowedBySeries(p_actionId, p_model, p_model.getSeriesMaxSize());
+	}
+
+	FMTLineGraph FMTLineGraph::completeSerie(const Models::FMTModel& p_model) const
+	{
+		FMTLineGraph completed(*this);
+		try {
+			const size_t maxSerieSize = p_model.getSeriesMaxSize();
+			while (maxSerieSize > 0)
+			{
+				const FMTvertex_descriptor active = completed.getActiveVertex();
+				const std::vector<std::string> actionSerie = completed._getActionSerie(
+					active, maxSerieSize, p_model.actions);
+				const auto firstSerieAction = completed._getActionOfFirstSerie(
+					active, maxSerieSize, p_model);
+				if (firstSerieAction == p_model.actions.cend())
+				{
+					break;
+				}
+
+				const Core::FMTSerie* serie = firstSerieAction->getSerie(actionSerie);
+				if (serie == nullptr)
+				{
+					break;
+				}
+
+				const std::vector<std::string>& serieActions = serie->getActions();
+				size_t prefixSize = std::min(actionSerie.size(), serieActions.size());
+				while (prefixSize > 0 && !std::equal(
+					actionSerie.end() - prefixSize, actionSerie.end(), serieActions.begin()))
+				{
+					--prefixSize;
+				}
+				if (prefixSize == 0 || prefixSize >= serieActions.size())
+				{
+					break;
+				}
+
+				const std::string& nextActionName = serieActions.at(prefixSize);
+				const auto nextAction = std::find_if(p_model.actions.cbegin(), p_model.actions.cend(),
+					[&nextActionName](const Core::FMTAction& p_action)
+					{
+						return p_action.getName() == nextActionName;
+					});
+				if (nextAction == p_model.actions.cend())
+				{
+					break;
+				}
+
+				const Core::FMTDevelopment& activeDevelopment = completed.getDevelopment(active);
+				if (!activeDevelopment.operable(*nextAction, p_model.yields))
+				{
+					break;
+				}
+
+				const std::vector<Core::FMTDevelopmentPath> paths = activeDevelopment.operate(
+					*nextAction, p_model.transitions.at(std::distance(p_model.actions.cbegin(), nextAction)),
+					p_model.yields, p_model.themes);
+				if (paths.size() != 1)
+				{
+					break;
+				}
+				const int actionId = static_cast<int>(std::distance(p_model.actions.cbegin(), nextAction));
+				completed.setAction(active, actionId, paths);
+               break;
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raiseFromCatch("", "FMTLineGraph::completeSerie", __LINE__, __FILE__);
+		}
+		return completed;
 	}
 
 	int FMTLineGraph::getInEdgeActionId(const FMTvertex_descriptor& vdesc)const

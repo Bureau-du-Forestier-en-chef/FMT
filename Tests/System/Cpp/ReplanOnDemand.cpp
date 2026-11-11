@@ -53,11 +53,11 @@ int main(int argc, char *argv[])
 		replicate = 5;
 		n_threads = 5;
 		// Stratégique
-		allscenarios.push_back("strategique_CC_FR10_10_CENTRE"); 
+		allscenarios.push_back("strategique_CC_noprod_10"); 
 		// Stochastique
-		allscenarios.push_back("stochastique_CC_10_CENTRE");
+		allscenarios.push_back("stochastique_CC_noprod_10");
 		// Tactique
-		allscenarios.push_back("tactique_CC_FR10_10_CENTRE");
+		allscenarios.push_back("tactique_CC_invest_10");
 	}
 	int repSize = length;
 	//int repSize = 20;

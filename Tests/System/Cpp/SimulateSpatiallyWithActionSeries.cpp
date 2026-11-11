@@ -30,8 +30,8 @@ int main(int argc, char* argv[])
 	Logging::FMTDefaultLogger().logStamp();
 	std::string primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
 	std::string scenario = "Spatial_actionseries";
-	std::string firstaction = "COUPETOTALE";
-	std::string nextaction = "PLANTATION";
+	std::string firstaction = "PLANTATION";
+	std::string nextaction = "AEC";
 	std::string competingaction = "PLANTATIONCC";
 	int periods = 10;
 	bool requireNextAction = true;
@@ -141,6 +141,11 @@ int main(int argc, char* argv[])
 			}
 		if (requireNextAction && !history.empty() && history.back() == firstid)
 			{
+			for (const auto& HIST : history)
+				{
+				std::cout << HIST << " ";
+				}
+			std::cout << "\n";
 			++brokenseries;
 			if (firstbrokencell.empty())
 				{

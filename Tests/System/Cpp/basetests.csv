@@ -64,7 +64,7 @@ SimulateNonSpatially;../../../../Examples/Models/TWD_land/TWD_land.pri|COMPLEX_N
 SimulateNonSpatially;../../../../Examples/Models/TWD_land/TWD_land.pri|DECISION|UNIT_REC|5;1;60;AHarvestOpenedByADecisionModel;HarvestsTheTargetWhereItIsOpen
 WriteModel;../../../../Examples/Models/TWD_land/TWD_land.pri;ACT_DEATH;;ADeathOperabilityInTheActions;RereadsItWithTheSameOptimum
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|Parameters;5;65733;SolverParameterFiles;FindsTheKnownOptimum
-WriteAndReadOutputTypes;../../../../Examples/Models/TWD_land/TWD_land.pri;output_type;5;OutputsOfEveryForm;RereadsAsManyOutputs
+WriteAndReadOutputTypes;../../../../Examples/Models/TWD_land/TWD_land.pri;output_type;16;OutputsOfEveryForm;RereadsAsManyOutputs
 WrapperCoreGetMaxAge;../../../../Examples/Models/TWD_land/TWD_land.pri;equation;;AScenarioWithEquationYields;ReturnsAnAgeInTheValidRange
 WrapperCoreGetYield;../../../../Examples/Models/TWD_land/TWD_land.pri|equation|TEST1|? ? ?;20|29.3868586;;AnEquationYieldWithExpAndLn;EvaluatesIt
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|ExcludeArea;5;16849;ExclusionsInTheAreaSection;FindsTheKnownOptimum

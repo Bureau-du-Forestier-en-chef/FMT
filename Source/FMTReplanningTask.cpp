@@ -443,7 +443,16 @@ namespace Parallel
 						_checkpoint();//reduce heap contention
 					}*/
 					
-					const std::unique_ptr<Models::FMTModel> stochasticcopy = std::move(_doModelPlanning(m_stochastic,replanningperiod,false,false,false));
+					const std::unique_ptr<Models::FMTModel> stochasticcopy = std::move(_doModelPlanning(m_stochastic,replanningperiod,
+																			false,false,false));
+					if (!stochasticcopy)//infeasible replicate end here
+					{
+						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+							"Null copy of stochastic on replicate "+
+							 std::to_string(_getIteration()) + 
+							" at replanning period " + std::to_string(replanningperiod),
+							"FMTReplanningTask::_doModelPlanning", __LINE__, __FILE__);
+					}
 					m_dynamicarea = stochasticcopy->getArea(replanningperiod + 1,true);
 					for (Core::FMTActualDevelopment& development : m_dynamicarea)
 						{

@@ -272,3 +272,15 @@ TEST(FMTLineGraph, GivenAStandBackOnASerieRightAfterTheLastActionOfItsPreviousSe
     EXPECT_TRUE(isAllowed(MODEL, GRAPH, "APL"));
     EXPECT_FALSE(isAllowed(MODEL, GRAPH, "APLCC"));
 }
+
+TEST(FMTLineGraph, GivenAStandWithAnIncompleteSerieWhenTheSerieIsCompletedThenTheNextActionIsOperatedWithoutGrowth)
+{
+    const Models::FMTModel MODEL = getSerieModel();
+    const Graph::FMTLineGraph GRAPH = getSerieGraph(MODEL, "A1", { "ACTPL" });
+
+    const Graph::FMTLineGraph COMPLETED = GRAPH.completeSerie(MODEL);
+
+    EXPECT_EQ(GRAPH.getInEdgeActionId(GRAPH.getActiveVertex()), getActionId(MODEL, "ACTPL"));
+    EXPECT_EQ(COMPLETED.getInEdgeActionId(COMPLETED.getActiveVertex()), getActionId(MODEL, "APL"));
+    EXPECT_EQ(COMPLETED.getPeriod(), GRAPH.getPeriod());
+}
