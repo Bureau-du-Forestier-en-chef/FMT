@@ -469,6 +469,10 @@ namespace Models
 			solver.passInMessageHandler(*_logger);
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
+			std::vector<Core::FMTActualDevelopment>FMTSrModel::_gutsOfGetArea(
+				int p_period,
+				const double* p_solution,
+				bool p_beforeGrowAndDeath) const;
 
 	};
 

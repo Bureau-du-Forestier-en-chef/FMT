@@ -1422,43 +1422,10 @@ namespace Models
 	{
 		std::vector<Core::FMTActualDevelopment>returnedarea;
 		try {
-			returnedarea.reserve(area.size());//Reserve at least the size of the initial area.
-			if (period == 0)
-			{
-				return FMTModel::getArea();
-			};
 			const double* modelsolution = solver.getColSolution();
-			const int deathactionid = static_cast<int>(actions.size()-1);
-			Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-			if (beforegrowanddeath)
-			{
-				--period;
-			}
-			for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getPeriodVertices(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
-			{
-				if ((!beforegrowanddeath&&m_graph->periodStart(*vertex_iterator)))
-				{
-					const Core::FMTDevelopment& graphdevelopment = m_graph->getDevelopment(*vertex_iterator);
-					const double areaofdevelopment = m_graph->inArea(*vertex_iterator, modelsolution,-1,true);
-					if (areaofdevelopment > FMT_DBL_TOLERANCE)
-					{
-						returnedarea.push_back(Core::FMTActualDevelopment(graphdevelopment, areaofdevelopment));
-					}
-				}
-				else if (beforegrowanddeath)
-				{
-					const Core::FMTDevelopment& graphdevelopment = m_graph->getDevelopment(*vertex_iterator);
-					const double indeatharea = m_graph->inArea(*vertex_iterator, modelsolution, deathactionid, true);
-					const double areaofdevelopment = m_graph->outArea(*vertex_iterator, -1, modelsolution) +m_graph->outArea(*vertex_iterator, deathactionid, modelsolution) -indeatharea;
-					if (areaofdevelopment > FMT_DBL_TOLERANCE)
-					{
-						returnedarea.push_back(Core::FMTActualDevelopment(graphdevelopment, areaofdevelopment));
-					}
-
-				}
-				
-			}
-			std::sort(returnedarea.begin(), returnedarea.end());
+			returnedarea = _gutsOfGetArea(period, 
+				modelsolution,beforegrowanddeath);
+			
 		}
 		catch (...)
 		{
@@ -1469,20 +1436,72 @@ namespace Models
 	}
 
 
-	std::vector<Core::FMTActualDevelopment> FMTSrModel::getPotentialArea(int p_Period, bool p_BeforeGrowAndDeath) const
+	std::vector<Core::FMTActualDevelopment> FMTSrModel::getPotentialArea(int p_Period, 
+																	bool p_BeforeGrowAndDeath) const
 	{
 		std::vector<Core::FMTActualDevelopment> devArea;
 		try {
-			const std::vector<double> POTENTIAL_SOLUTION(solver.getNumCols(), 1.0);
-			FMTSrModel newModel(*this);
-			newModel.solver.setColSolution(&*POTENTIAL_SOLUTION.cbegin());
-			devArea = newModel.getArea(p_Period, p_BeforeGrowAndDeath);
+			const std::vector<double> POTENTIAL_SOLUTION(getStats().cols, 1.0);
+			devArea = _gutsOfGetArea(p_Period,
+				POTENTIAL_SOLUTION.data(),p_BeforeGrowAndDeath);
 		}
 		catch (...)
 		{
 			_exhandler->printExceptions("", "FMTSrModel::getPotentialArea", __LINE__, __FILE__);
 		}
 		return devArea;
+	}
+
+	std::vector<Core::FMTActualDevelopment>FMTSrModel::_gutsOfGetArea(
+															int p_period,
+															const double* p_solution,
+															bool p_beforeGrowAndDeath) const
+	{
+		std::vector<Core::FMTActualDevelopment>returnedarea;
+		try {
+			returnedarea.reserve(area.size());//Reserve at least the size of the initial area.
+			if (p_period == 0)
+			{
+				return FMTModel::getArea();
+			};
+			const int deathactionid = static_cast<int>(actions.size() - 1);
+			Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+			if (p_beforeGrowAndDeath)
+			{
+				--p_period;
+			}
+			for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getPeriodVertices(p_period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+			{
+				if ((!p_beforeGrowAndDeath && m_graph->periodStart(*vertex_iterator)))
+				{
+					const Core::FMTDevelopment& graphdevelopment = m_graph->getDevelopment(*vertex_iterator);
+					const double areaofdevelopment = m_graph->inArea(*vertex_iterator, p_solution, -1, true);
+					if (areaofdevelopment > FMT_DBL_TOLERANCE)
+					{
+						returnedarea.push_back(Core::FMTActualDevelopment(graphdevelopment, areaofdevelopment));
+					}
+				}
+				else if (p_beforeGrowAndDeath)
+				{
+					const Core::FMTDevelopment& graphdevelopment = m_graph->getDevelopment(*vertex_iterator);
+					const double indeatharea = m_graph->inArea(*vertex_iterator, p_solution, deathactionid, true);
+					const double areaofdevelopment = m_graph->outArea(*vertex_iterator, -1, p_solution) + m_graph->outArea(*vertex_iterator, deathactionid, p_solution) - indeatharea;
+					if (areaofdevelopment > FMT_DBL_TOLERANCE)
+					{
+						returnedarea.push_back(Core::FMTActualDevelopment(graphdevelopment, areaofdevelopment));
+					}
+
+				}
+
+			}
+			std::sort(returnedarea.begin(), returnedarea.end());
+		}catch (...)
+			{
+			_exhandler->printExceptions("", 
+							"FMTSrModel::_gutsOfGetArea",__LINE__, __FILE__);
+			}	
+
+		return returnedarea;
 	}
 
 	FMTLpSolver* FMTSrModel::getSolverPtr()

@@ -48,11 +48,11 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		pathPri = "C:\\Users\\admlocal\\Documents\\Dossier_de_travail\\Modeles\\modele_julianne_8451\\PC_9964_U08451_2028_MODB01.pri";
-		scenarioName = "400_Carbone_apsp";
+		pathPri = "T:\\Donnees\\Usagers\\GIALO1\\carbone_12171\\sc_carbone\\PC_9933_U12171_2028_MODB01.pri";
+		scenarioName = "ROOT";
 		periods = 30;
 		writeOnDisk = true;
-		outputFilePath = "C:\\Users\\admlocal\\Documents\\Dossier_de_travail\\Claude\\bug_carbone_Julianne\\get_all_mask_output.txt";
+		outputFilePath = "T:\\Donnees\\Usagers\\GIALO1\\carbone_12171\\sc_carbone\\get_all_mask_output.txt";
 		resultSize = 19607;
 		themesNumbers = {3, 5, 6, 12, 21};
 		rastpath = "";
