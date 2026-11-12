@@ -439,7 +439,7 @@ void exportCore()
 				.def(bp::init<const std::string&, const std::string&, const std::string&,
 					const std::vector<Core::FMTOutputSource>&,
 					const std::vector<Core::FMTOperator>&>())
-				.def_pickle(FMT_pickle_suite<Core::FMTTransition>())
+				.def_pickle(FMT_pickle_suite<Core::FMTOutput())
                 .def("getname",&Core::FMTOutput::getName,
 					"@DocString(FMTOutput::getname)")
                 .def("getdescription",&Core::FMTOutput::getDescription,
