@@ -134,12 +134,12 @@ void FMTSerializableMatrix::getSetMatrixElements(bool loading,
 	int& minordim,
 	int& numelements,
 	int& majordim,
-	int& maxsize,
 	std::vector<double>& lelement,
 	std::vector<int>& lindex,
 	std::vector<int>& llength,
 	std::vector<int>& lstart)
 {
+
 	if (!loading)
 	{
 		order = matrix->isColOrdered();
@@ -149,9 +149,8 @@ void FMTSerializableMatrix::getSetMatrixElements(bool loading,
 		minordim = matrix->getMinorDim();
 		numelements = matrix->getNumElements();
 		majordim = matrix->getMaxMajorDim();
-		maxsize = std::max(1, matrix->getNumElements());
-		lelement.resize(maxsize);
-		lindex.resize(maxsize);
+		lelement.resize(numelements);
+		lindex.resize(numelements);
 		llength.resize(majordim);
 		lstart.resize(majordim + 1);
 		const double* lelement_i = matrix->getMutableElements();

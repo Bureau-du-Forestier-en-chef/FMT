@@ -125,7 +125,6 @@ class FMTEXPORT FMTSerializableMatrix
 			int minordim;
 			int numelements;
 			int majordim;
-			int maxsize;
 			std::vector<double> lelement;
 			std::vector<int> lindex;
 			std::vector<int> llength;
@@ -149,7 +148,6 @@ class FMTEXPORT FMTSerializableMatrix
 					minordim,
 					numelements,
 					majordim,
-					maxsize,
 					lelement,
 					lindex,
 					llength,
@@ -171,7 +169,6 @@ class FMTEXPORT FMTSerializableMatrix
 			ar& minordim;
 			ar& numelements;
 			ar& majordim;
-			ar& maxsize;
 			ar& lelement;
 			ar& lindex;
 			ar& llength;
@@ -195,7 +192,6 @@ class FMTEXPORT FMTSerializableMatrix
 						minordim,
 						numelements,
 						majordim,
-						maxsize,
 						lelement,
 						lindex,
 						llength,
@@ -224,7 +220,6 @@ class FMTEXPORT FMTSerializableMatrix
 		@param[in,out] minordim the minor dimension.
 		@param[in,out] numelements the number of elements.
 		@param[in,out] majordim the major dimension.
-		@param[in,out] maxsize the maximum size.
 		@param[in,out] lelement the elements.
 		@param[in,out] lindex the indices.
 		@param[in,out] llength the lengths.
@@ -238,7 +233,6 @@ class FMTEXPORT FMTSerializableMatrix
 			int& minordim,
 			int& numelements,
 			int& majordim,
-			int& maxsize,
 			std::vector<double>& lelement,
 			std::vector<int>& lindex,
 			std::vector<int>& llength,
