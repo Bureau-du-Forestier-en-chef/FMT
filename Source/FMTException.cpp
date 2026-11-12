@@ -120,12 +120,17 @@ namespace Exception
 			m_msg = "FMTexc(" + std::to_string(static_cast<int>(m_exceptiontype)) + ") " + getDescription() + _getUserMessage() +
 				" FMTsection(" + std::to_string(static_cast<int>(m_section)) + ") " + Core::FMTsection_str(m_section);
 		}
-		if (_getPrintLevel() > 0)
+		if (isFatal())
+		{
+			if (_getPrintLevel() > 0)
 			{
-			m_msg +=  getSrcInfo();
-		}else {
-			m_msg += getBaseSrcInfo();
+				m_msg += getSrcInfo();
 			}
+			else {
+				m_msg += getBaseSrcInfo();
+			}
+		}
+		
 	}
 
 
