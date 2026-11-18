@@ -10,29 +10,27 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Configure
-        run: >
-          cmake CMakeLists.txt
-          -B build/release
-          -G "Visual Studio 17 2022"
-          -DVCPKG_TARGET_TRIPLET=x64-windows
-          -DVCPKG_MANIFEST_MODE=ON
-          -DWITHOUT_TESTS=true
-          -DGENERATE_RELEASE_PACKAGE=true
+        shell: cmd
+        run: |
+          cmake CMakeLists.txt ^
+            -B build/release ^
+            -G "Visual Studio 17 2022" ^
+            -DVCPKG_TARGET_TRIPLET=x64-windows ^
+            -DVCPKG_MANIFEST_MODE=ON ^
+            -DWITHOUT_TESTS=true ^
+            -DGENERATE_RELEASE_PACKAGE=true
 
       - name: Build
-        run: >
-          cmake --build build/release
-          --config Release
-          --parallel
+        run: cmake --build build/release --config Release --parallel
 
       - name: Install
-        run: >
-          cmake --install build/release
-          --config Release
+        run: cmake --install build/release --config Release
