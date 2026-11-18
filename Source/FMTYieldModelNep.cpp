@@ -62,5 +62,5 @@ namespace Core {
 		return values;
 	}
 }
-
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTYieldModelNep)
 #endif

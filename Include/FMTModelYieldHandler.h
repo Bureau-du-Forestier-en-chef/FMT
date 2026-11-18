@@ -9,9 +9,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTMODELYIELDHANDLER_Hm_included
 
 #include "FMTYieldHandler.h"
+#include "FMTYieldModel.h"
 #include <string>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/unique_ptr.hpp>
+#include <boost/serialization/export.hpp>
 #include <memory>
 
 namespace Models
@@ -49,7 +52,7 @@ namespace Core
 		/**
 		@brief Default destructor for FMTModelYieldHandler.
 		*/
-		~FMTModelYieldHandler() = default;
+		~FMTModelYieldHandler();
 		// DocString: FMTModelYieldHandler()
 		/**
 		@brief Default constructor for FMTModelYieldHandler.
@@ -195,13 +198,15 @@ namespace Core
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTYieldHandler>(*this));
-			ar& m_yldnames;
+				ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTYieldHandler>(*this));
+				ar& boost::serialization::make_nvp("m_models", m_models);
+				ar& boost::serialization::make_nvp("m_yldnames", m_yldnames);
 		}
 		std::vector<std::unique_ptr<FMTYieldModel>>m_models;
 		std::map<std::string, std::pair<size_t, size_t>, cmpYieldString>m_yldnames;
 	};
 
 }
+BOOST_CLASS_EXPORT_KEY(Core::FMTModelYieldHandler);
 
 #endif 

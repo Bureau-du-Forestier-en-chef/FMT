@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTObject.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
 
 
 #ifndef FMTYIELDMODEL_Hm_included
@@ -150,9 +151,13 @@ namespace Core
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
+			ar& boost::serialization::make_nvp("FMTobject", 
+				boost::serialization::base_object<FMTObject>(*this));
+			ar& boost::serialization::make_nvp("m_modelName", m_modelName);
+			ar& boost::serialization::make_nvp("m_modelYields", m_modelYields);
 		}
 	};
 }
+BOOST_CLASS_EXPORT_KEY(Core::FMTYieldModel)
 
 #endif

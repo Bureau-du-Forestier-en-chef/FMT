@@ -4,7 +4,8 @@ Copyright (c) 2019 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
-
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 #include "FMTBaseVertexProperties.h"
 #include "FMTFuturDevelopment.h"
 #include "FMTActualDevelopment.h"
@@ -86,16 +87,27 @@ namespace Graph
 		return m_development->hash();
 	}
 
-
-	void FMTBaseVertexProperties::_save(double p_area)
-		{
-		if (p_area > 0)
+	void FMTBaseVertexProperties::_assignDevelopment(
+		Core::FMTDevelopment& p_development,
+		double& p_area)
+	{
+		if (p_area>0)
 			{
-				m_development = std::unique_ptr<Core::FMTDevelopment>(new Core::FMTActualDevelopment(*m_development, p_area));
+			m_development = std::unique_ptr<Core::FMTDevelopment>(
+					new Core::FMTActualDevelopment(p_development, p_area));
 			}else {
-				m_development = std::unique_ptr<Core::FMTDevelopment>(new Core::FMTFuturDevelopment(*m_development));
-				}
-		}
+			m_development = std::unique_ptr<Core::FMTDevelopment>(
+				new Core::FMTFuturDevelopment(p_development));
+			}
+	}
+	void FMTBaseVertexProperties::_getDevelopment(
+		Core::FMTDevelopment& p_development,
+		double& p_area) const
+	{
+		p_development = *m_development;
+		p_area = m_development->getArea();
+	}
+
 
 }
 

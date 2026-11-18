@@ -9,6 +9,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTedgeproperties_Hm_included
 
 #include <boost/serialization/serialization.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <vector>
 #include <string>
@@ -22,23 +24,6 @@ namespace Graph
 	*/
 	class FMTEdgeProperties : public FMTBaseEdgeProperties
 	{
-		friend class boost::serialization::access;
-		// DocString: FMTEdgeProperties::serialize
-		/**
-		@brief Serialize the FMTEdgeProperties for multiprocessing across multiple cpus (pickle in Python).
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to serialize to or from.
-		@param[in] version the serialization version.
-		*/
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-			ar& boost::serialization::make_nvp("FMTbaseedgeproperties", boost::serialization::base_object<FMTBaseEdgeProperties>(*this));
-			ar& BOOST_SERIALIZATION_NVP(variableID);
-			ar& BOOST_SERIALIZATION_NVP(proportion);
-		}
-		int variableID;
-		float proportion;
 	public:
 		// DocString: ~FMTEdgeProperties()
 		/**
@@ -126,6 +111,25 @@ namespace Graph
 		{
 			return &variableID;
 		}
+	private:
+		friend class boost::serialization::access;
+		// DocString: FMTEdgeProperties::serialize
+		/**
+		@brief Serialize the FMTEdgeProperties for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
+		*/
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("FMTbaseedgeproperties",
+				boost::serialization::base_object<FMTBaseEdgeProperties>(*this));
+			ar& BOOST_SERIALIZATION_NVP(variableID);
+			ar& BOOST_SERIALIZATION_NVP(proportion);
+		}
+		int variableID;
+		float proportion;
 
 	};
 }

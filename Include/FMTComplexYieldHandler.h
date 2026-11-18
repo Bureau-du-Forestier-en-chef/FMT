@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTData.h"
 #include <string>
 #include <boost/serialization/serialization.hpp>
+#include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/nvp.hpp>
 #include "FMTYieldsCache.h"
 #include <memory>
@@ -239,20 +240,6 @@ namespace Core
 		*/
 		virtual double getYieldLinearValue(const std::string& yldname, const FMTYieldRequest& request, bool allowoutofrange=true) const;
 	private:
-		friend class boost::serialization::access;
-		// DocString: FMTComplexYieldHandler::serialize
-		/**
-		@brief Serialize the FMTComplexYieldHandler through its base FMTYieldHandler for multiprocessing across multiple cpus (pickle in Python).
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to serialize to or from.
-		@param[in] version the serialization version.
-		*/
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTYieldHandler>(*this));
-			ar& BOOST_SERIALIZATION_NVP(m_elements);
-		}
 		std::map<std::string, FMTData, cmpYieldString>m_elements;
 		// DocString: FMTComplexYieldHandler::_getSources
 		/**
@@ -447,10 +434,33 @@ namespace Core
 		std::unordered_set<size_t>m_overridetabou;
 		size_t m_overrideindex;
 		mutable FMTYieldsCache _cache;
+		friend class boost::serialization::access;
+		// DocString: FMTComplexYieldHandler::serialize
+		/**
+		@brief Serialize the FMTComplexYieldHandler through its base FMTYieldHandler for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
+		*/
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+				ar& boost::serialization::make_nvp("FMTyieldhandler",
+					boost::serialization::base_object<FMTYieldHandler>(*this));
+				ar& BOOST_SERIALIZATION_NVP(m_elements);
+				ar& BOOST_SERIALIZATION_NVP(m_overridetabou);
+				ar& BOOST_SERIALIZATION_NVP(m_overrideindex);
+				if constexpr (Archive::is_loading::value)
+					{
+					initializeCache();
+					}
+			
+		}
+		void initializeCache();
 	};
 
 }
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTComplexYieldHandler)
 #endif 
 
 

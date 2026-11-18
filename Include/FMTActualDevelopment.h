@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 
+
 namespace Core
 {
 class FMTLifespans;
@@ -149,15 +150,9 @@ class FMTEXPORT FMTActualDevelopment : public FMTDevelopment
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			try {
-
-				ar& boost::serialization::make_nvp("development", boost::serialization::base_object<FMTDevelopment>(*this));
-				ar& BOOST_SERIALIZATION_NVP(area);
-			}
-			catch (...)
-			{
-				_exhandler->printExceptions("", "FMTActualDevelopment::serialize", __LINE__, __FILE__);
-			}
+			ar& boost::serialization::make_nvp("development", 
+					boost::serialization::base_object<FMTDevelopment>(*this));
+			ar& BOOST_SERIALIZATION_NVP(area);
 		}
 		// DocString: FMTActualDevelopment::area
 		///The area of the actual development.

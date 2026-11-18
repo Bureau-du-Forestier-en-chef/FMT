@@ -3658,8 +3658,8 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		*/
 		void save(Archive& ar, unsigned int version) const
 		{
-			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
-			FMTObject::forceSave(ar, version);
+			ar& boost::serialization::make_nvp("FMTobject",
+				boost::serialization::base_object<FMTObject>(*this));
 			ar& BOOST_SERIALIZATION_NVP(m_gotDeath);
 			ar& BOOST_SERIALIZATION_NVP(data);
 			ar& BOOST_SERIALIZATION_NVP(stats);
@@ -3676,8 +3676,8 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		*/
 		void load(Archive& ar, unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
-			FMTObject::forceSave(ar, version);
+			ar& boost::serialization::make_nvp("FMTobject",
+				boost::serialization::base_object<FMTObject>(*this));
 			ar& BOOST_SERIALIZATION_NVP(m_gotDeath);
 			ar& BOOST_SERIALIZATION_NVP(data);
 			_generateDevelopments();

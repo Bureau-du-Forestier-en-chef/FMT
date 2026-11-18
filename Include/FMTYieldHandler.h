@@ -15,6 +15,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <algorithm>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/assume_abstract.hpp>
+#include <boost/serialization/unordered_set.hpp>
+#include <boost/serialization/vector.hpp>
 #include "FMTMask.h"
 #include <vector>
 #include "FMTutility.h"
@@ -420,13 +424,16 @@ private:
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar& boost::serialization::make_nvp("mask", m_mask);
-		ar& boost::serialization::make_nvp("bases", m_bases);
+			ar& boost::serialization::make_nvp("FMTObject",
+				boost::serialization::base_object<FMTObject>(*this));
+			ar& boost::serialization::make_nvp("m_mask", m_mask);
+			ar& boost::serialization::make_nvp("m_bases", m_bases);
+			ar& boost::serialization::make_nvp("m_lookat", m_lookat);
 	}
 	static const std::string YIELDS_SEPARATOR;
 
 	
 };
-
 }
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(Core::FMTYieldHandler)
 #endif // FMTYLDDATA_Hm_included

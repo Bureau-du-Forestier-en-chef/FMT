@@ -1,5 +1,8 @@
 #ifdef FMTWITHONNXR
 #include "FMTYieldModelNn.h"
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
 
 #ifndef FMTYIELDMODELNEP_Hm_included
 #define FMTYIELDMODELNEP_Hm_included
@@ -62,9 +65,16 @@ namespace Core
 		@return the model type.
 		*/
 		static std::string getModelType();
+	private:
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("FMTYieldModelNn",
+				boost::serialization::base_object<FMTYieldModelNn>(*this));
+		}
 	};
 }
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTYieldModelNep)
 #endif
 
 #endif

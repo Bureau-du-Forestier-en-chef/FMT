@@ -293,7 +293,7 @@ TEST(FMTYields, GivenYieldsWhenComparedWithThemselvesThenTheyAreEqual)
 
 // Disabled: FMTList::operator== compares the std::unique_ptr of the handlers, that is their addresses, so that a copy
 // is never equal to its original (#383).
-TEST(FMTYields, DISABLED_GivenYieldsWhenCopiedThenTheCopyIsEqual)
+TEST(FMTYields, GivenYieldsWhenCopiedThenTheCopyIsEqual)
 {
     // Arrange
     const Core::FMTYields original = getYields();

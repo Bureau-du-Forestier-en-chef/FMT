@@ -272,6 +272,7 @@ void exportCore()
 		bp::class_<Core::FMTActualDevelopment, bp::bases<Core::FMTDevelopment>>("FMTactualdevelopment", "@DocString(FMTActualDevelopment)")
 				.def(bp::init<const Core::FMTMask&, const int&, const int&, const double&>())
 				.def(bp::init<Core::FMTActualDevelopment>())
+			    .def_pickle(FMT_pickle_suite<Core::FMTActualDevelopment>())
 			    .def("getarea", &Core::FMTActualDevelopment::getArea,
 					"@DocString(FMTActualDevelopment::getarea)")
 				.def("setarea", &Core::FMTActualDevelopment::setArea,
@@ -283,7 +284,8 @@ void exportCore()
 				.def("__lt__", &Core::FMTActualDevelopment::operator <,
 					"@DocString(FMTActualDevelopment::operator<)");
 
-		bp::class_<Core::FMTFuturDevelopment, bp::bases<Core::FMTDevelopment>>("FMTfuturdevelopment", "@DocString(FMTFuturDevelopment)");
+		bp::class_<Core::FMTFuturDevelopment, bp::bases<Core::FMTDevelopment>>("FMTfuturdevelopment", "@DocString(FMTFuturDevelopment)")
+				.def_pickle(FMT_pickle_suite<Core::FMTFuturDevelopment>());
 
             //Need preprocessor here
             
@@ -439,7 +441,7 @@ void exportCore()
 				.def(bp::init<const std::string&, const std::string&, const std::string&,
 					const std::vector<Core::FMTOutputSource>&,
 					const std::vector<Core::FMTOperator>&>())
-				.def_pickle(FMT_pickle_suite<Core::FMTOutput())
+				.def_pickle(FMT_pickle_suite<Core::FMTOutput>	())
                 .def("getname",&Core::FMTOutput::getName,
 					"@DocString(FMTOutput::getname)")
                 .def("getdescription",&Core::FMTOutput::getDescription,

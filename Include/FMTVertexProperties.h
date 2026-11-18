@@ -31,21 +31,6 @@ namespace Graph
 	*/
 	class FMTEXPORT FMTVertexProperties : public FMTBaseVertexProperties
 		{
-		friend class boost::serialization::access;
-		// DocString: FMTVertexProperties::serialize
-		/**
-		@brief Serialize the FMTVertexProperties for multiprocessing across multiple cpus (pickle in Python).
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to serialize to or from.
-		@param[in] version the serialization version.
-		*/
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-			{
-			ar & boost::serialization::make_nvp("FMTbasevertexproperties", boost::serialization::base_object<FMTBaseVertexProperties>(*this));
-			ar & BOOST_SERIALIZATION_NVP(constraintID);
-			}
-			int constraintID;
 		public:
 			// DocString: ~FMTVertexProperties()
 			/**
@@ -115,6 +100,23 @@ namespace Graph
 			@param[in] ID the constraint id.
 			*/
 			void setConstraintId(const int& ID);
+		private:
+			friend class boost::serialization::access;
+			// DocString: FMTVertexProperties::serialize
+			/**
+			@brief Serialize the FMTVertexProperties for multiprocessing across multiple cpus (pickle in Python).
+			@tparam Archive the archive type.
+			@param[in,out] ar the archive to serialize to or from.
+			@param[in] version the serialization version.
+			*/
+			template<class Archive>
+			void serialize(Archive& ar, const unsigned int version)
+			{
+				ar& boost::serialization::make_nvp("FMTbasevertexproperties", 
+					boost::serialization::base_object<FMTBaseVertexProperties>(*this));
+				ar& BOOST_SERIALIZATION_NVP(constraintID);
+			}
+			int constraintID;
 		};
 }
 

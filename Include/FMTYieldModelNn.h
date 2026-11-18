@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTYieldModel.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
 
 
 #ifndef FMTYIELDMODELNN_Hm_included
@@ -29,19 +30,6 @@ namespace Core
 	*/
 	class FMTYieldModelNn : public FMTYieldModel
 	{
-		friend class boost::serialization::access;
-		// DocString: FMTYieldModelNn::serialize
-		/**
-		@brief Serialize the FMTYieldModelNn through its base FMTYieldModel for multiprocessing across multiple cpus (pickle in Python).
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to serialize to or from.
-		@param[in] version the serialization version.
-		*/
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-			ar & boost::serialization::make_nvp("FMTyieldmodel", boost::serialization::base_object<FMTYieldModel>(*this));
-		}
 	public:
 		// DocString: FMTYieldModelNn::~FMTYieldModel()
 		/**
@@ -148,7 +136,33 @@ namespace Core
 		@param[in,out] inputYields the input yield names.
 		*/
 		FMTYieldModelNn(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields);
+	private:
+		friend class boost::serialization::access;
+		// DocString: FMTYieldModelNn::serialize
+		/**
+		@brief Serialize the FMTYieldModelNn through its base FMTYieldModel for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
+		*/
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("FMTyieldmodel",
+				boost::serialization::base_object<FMTYieldModel>(*this));
+			if constexpr (Archive::is_loading::value)
+				{
+				_buildOrtEnv();
+				_buildOrtSession();
+				}
+			ar& boost::serialization::make_nvp("m_modelType", m_modelType);
+			ar& boost::serialization::make_nvp("m_standardParamMeans", m_standardParamMeans);
+			ar& boost::serialization::make_nvp("m_standardParamVars", m_standardParamVars);
+			ar& boost::serialization::make_nvp("m_modelOutputs", m_modelOutputs);
+		}
+		void _buildOrtSession();
+		static void _buildOrtEnv();
 	};
 }
-
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(Core::FMTYieldModelNn)
 #endif

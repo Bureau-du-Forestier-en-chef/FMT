@@ -20,18 +20,6 @@ import pytest
 from FMT import Core, Heuristics, Models, Parser
 from conftest import hasFeature, twdLandPrimary
 
-# Defect 29 (#412): FMT_pickle_suite::getstate hands the archive, compressed by zlib, to Python as a std::string, which
-# Boost.Python converts to a str by decoding it as UTF-8; the header of zlib, 78 9C, is not UTF-8.
-DEFECT_29 = pytest.mark.xfail(strict=True, raises=UnicodeDecodeError,
-                              reason="#412, defect 29: the state of a pickle is converted to a str, not to bytes")
-# Defect 26 (#409): the yields are saved through a pointer to FMTYieldHandler, whose derived classes are not exported to
-# Boost.Serialization: saving throws "unregistered class" before defect 29.
-DEFECT_26 = pytest.mark.xfail(strict=True, raises=RuntimeError,
-                              reason="#409, defect 26: the yield handlers are not exported to Boost.Serialization")
-# Defect 30 (#413): FMToutput declares the pickle suite of FMTTransition, whose functions do not take an FMToutput.
-DEFECT_30 = pytest.mark.xfail(strict=True, raises=TypeError,
-                              reason="#413, defect 30: FMToutput declares the pickle suite of FMTTransition")
-
 
 def readRoot() -> Models.FMTmodel:
     parser = Parser.FMTmodelparser()
@@ -52,28 +40,23 @@ def describeModel(model) -> tuple:
 
 # Each case: the class, the object built from the root of TWD_land, and what the unpickled object must keep.
 CASES = [
-    pytest.param(lambda model: model.getarea()[0].getmask(), lambda value: value, id="FMTmask", marks=DEFECT_29),
-    pytest.param(lambda model: Core.FMTdevelopment(model.getarea()[0]), lambda value: value, id="FMTdevelopment",
-                 marks=DEFECT_29),
-    pytest.param(lambda model: model.getactions()[0], lambda value: value, id="FMTaction", marks=DEFECT_29),
-    pytest.param(lambda model: Core.FMTageyieldhandler(model.getarea()[0].getmask()), str, id="FMTageyieldhandler",
-                 marks=DEFECT_29),
-    pytest.param(lambda model: Core.FMTtimeyieldhandler(model.getarea()[0].getmask()), str, id="FMTtimeyieldhandler",
-                 marks=DEFECT_29),
-    pytest.param(lambda model: model.getyields(), lambda value: sorted(value.getallyieldnames()), id="FMTyields",
-                 marks=DEFECT_26),
-    pytest.param(lambda model: model.gettransitions()[0], lambda value: value, id="FMTtransition", marks=DEFECT_29),
-    pytest.param(lambda model: model.getoutputs()[0], lambda value: value, id="FMToutput", marks=DEFECT_30),
-    pytest.param(lambda model: model.getthemes()[0], lambda value: value, id="FMTtheme", marks=DEFECT_29),
-    pytest.param(lambda model: Core.FMTschedule(), lambda value: value, id="FMTschedule", marks=DEFECT_29),
-    pytest.param(lambda model: model, describeModel, id="FMTmodel", marks=DEFECT_26),
-    pytest.param(lambda model: Models.FMTsemodel(model), describeModel, id="FMTsemodel", marks=DEFECT_26),
-    pytest.param(lambda model: Models.FMTsesmodel(model), describeModel, id="FMTsesmodel", marks=DEFECT_26),
-    pytest.param(lambda model: Models.FMTnssmodel(model, 0), describeModel, id="FMTnssmodel", marks=DEFECT_26),
-    pytest.param(getLpModel, describeModel, id="FMTlpmodel", marks=DEFECT_26),
+    pytest.param(lambda model: model.getarea()[0].getmask(), lambda value: value, id="FMTmask"),
+    pytest.param(lambda model: Core.FMTdevelopment(model.getarea()[0]), lambda value: value, id="FMTdevelopment"),
+    pytest.param(lambda model: model.getactions()[0], lambda value: value, id="FMTaction"),
+    pytest.param(lambda model: Core.FMTageyieldhandler(model.getarea()[0].getmask()), str, id="FMTageyieldhandler"),
+    pytest.param(lambda model: Core.FMTtimeyieldhandler(model.getarea()[0].getmask()), str, id="FMTtimeyieldhandler"),
+    pytest.param(lambda model: model.getyields(), lambda value: sorted(value.getallyieldnames()), id="FMTyields"),
+    pytest.param(lambda model: model.gettransitions()[0], lambda value: value, id="FMTtransition"),
+    pytest.param(lambda model: model.getoutputs()[0], lambda value: value, id="FMToutput"),
+    pytest.param(lambda model: model.getthemes()[0], lambda value: value, id="FMTtheme"),
+    pytest.param(lambda model: Core.FMTschedule(), lambda value: value, id="FMTschedule"),
+    pytest.param(lambda model: model, describeModel, id="FMTmodel"),
+    pytest.param(lambda model: Models.FMTsemodel(model), describeModel, id="FMTsemodel"),
+    pytest.param(lambda model: Models.FMTsesmodel(model), describeModel, id="FMTsesmodel"),
+    pytest.param(lambda model: Models.FMTnssmodel(model, 0), describeModel, id="FMTnssmodel"),
+    pytest.param(getLpModel, describeModel, id="FMTlpmodel"),
     pytest.param(lambda model: Heuristics.FMToperatingarea(model.getarea()[0].getmask(), 12.5),
-                 lambda value: (str(value.getmask()), value.getneihgborsperimeter()), id="FMToperatingarea",
-                 marks=DEFECT_29),
+                 lambda value: (str(value.getmask()), value.getneihgborsperimeter()), id="FMToperatingarea"),
 ]
 
 
@@ -90,7 +73,7 @@ def testGivenAnObjectOfAClassWithAPickleSuiteWhenPickledThenUnpicklesTheSameObje
     assert keep(unpickled) == keep(value)
 
 
-@DEFECT_29
+
 def testGivenAMaskWhenDeepCopiedThenCopiesTheSameMask():
     # Arrange
     mask = readRoot().getarea()[0].getmask()

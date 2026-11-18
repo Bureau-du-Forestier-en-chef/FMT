@@ -12,6 +12,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/export.hpp>
 #include "FMTData.h"
 
 namespace Core
@@ -238,8 +240,9 @@ namespace Core
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTYieldHandler>(*this));
-			ar& BOOST_SERIALIZATION_NVP(m_elements);
+				ar& boost::serialization::make_nvp("FMTyieldhandler", 
+					boost::serialization::base_object<FMTYieldHandler>(*this));
+				ar& BOOST_SERIALIZATION_NVP(m_elements);
 		}
 		std::map<std::string, FMTData, cmpYieldString>m_elements;
 		// DocString: FMTAgeYieldHandler::_getAge(const std::string, const double&, const int&)
@@ -254,6 +257,6 @@ namespace Core
 	};
 
 }
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTAgeYieldHandler)
 #endif 
 

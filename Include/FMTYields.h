@@ -21,6 +21,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <unordered_map>
 #include <memory>
 #include <boost/serialization/export.hpp>
+#include <boost/serialization/unique_ptr.hpp>
 #include "FMTYieldRequest.h"
 
 namespace Models
@@ -261,6 +262,7 @@ class FMTEXPORT FMTYields : public FMTList<std::unique_ptr<FMTYieldHandler>>
 		*/
 		void clear();
 	private:
+		
 		// DocString: FMTYields::serialize
 		/**
 		@brief Serialize the FMTYields through its base FMTList for multiprocessing across multiple cpus (pickle in Python).
@@ -274,12 +276,20 @@ class FMTEXPORT FMTYields : public FMTList<std::unique_ptr<FMTYieldHandler>>
 		void serialize(Archive& ar, const unsigned int version)
 		{
 			try {
-				ar& boost::serialization::make_nvp("handlers", boost::serialization::base_object<FMTList<std::unique_ptr<FMTYieldHandler>>>(*this));
-				_updateYieldLocations();
+				ar& boost::serialization::make_nvp("handlers", 
+					boost::serialization::base_object<
+							FMTList<std::unique_ptr<FMTYieldHandler>>>(*this));
+				if (Archive::is_loading::value) 
+					{
+					_updateYieldLocations();
+					}
+				ar&  boost::serialization::make_nvp("m_yieldsHash", 
+					m_yieldsHash);
 			}
 			catch (...)
 			{
-				_exhandler->printExceptions("", "FMTYields::serialize", __LINE__, __FILE__);
+				_exhandler->printExceptions("", 
+					"FMTYields::serialize", __LINE__, __FILE__);
 			}
 		}
 		// DocString: FMTYields::m_yieldsLocations

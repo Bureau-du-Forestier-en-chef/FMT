@@ -9,9 +9,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTfuturdevelopment_Hm_included
 
 #include "FMTDevelopment.h"
-#include <boost/serialization/serialization.hpp>
 #include <memory>
+#include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
+
+
 
 namespace Core
 {
@@ -95,13 +97,8 @@ namespace Core
 			template<class Archive>
 			void serialize(Archive& ar, const unsigned int version)
 			{
-				try {
-					ar& boost::serialization::make_nvp("development", boost::serialization::base_object<FMTDevelopment>(*this));
-				}
-				catch (...)
-				{
-					_exhandler->printExceptions("", "FMTFuturDevelopment::serialize", __LINE__, __FILE__);
-				}
+					ar& boost::serialization::make_nvp("development", 
+						boost::serialization::base_object<FMTDevelopment>(*this));
 			}
 
 		};

@@ -4,6 +4,9 @@
 #include <string>
 #include <memory>
 #include <boost/thread/recursive_mutex.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
 
 #ifndef FMTYIELDMODELTSLA_Hm_included
 #define FMTYIELDMODELTSLA_Hm_included
@@ -85,7 +88,15 @@ namespace Core
 		@return the string representation.
 		*/
 		virtual  operator std::string() const;
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("FMTYieldModel",
+				boost::serialization::base_object<FMTYieldModel>(*this));
+		}
 	};
 }
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTYieldModelTsla)
 #endif

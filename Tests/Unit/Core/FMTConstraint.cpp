@@ -449,7 +449,7 @@ TEST(FMTConstraint, GivenANonDecliningYieldWithoutVariationWhenConvertedToString
 
 // Disabled: a _RANDOM(<output>) constraint is written as a standard constraint, without _RANDOM, and read back as one
 // (#382).
-TEST(FMTConstraint, DISABLED_GivenARandomActionConstraintWhenConvertedToStringThenWritesRandom)
+TEST(FMTConstraint, GivenARandomActionConstraintWhenConvertedToStringThenWritesRandom)
 {
     // Arrange: _RANDOM(OVOL) >= 1 1.._LENGTH
     Core::FMTConstraint random = getConstraint(Core::FMTconstrainttype::FMTrandomaction);

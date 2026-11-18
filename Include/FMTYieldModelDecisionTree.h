@@ -5,6 +5,10 @@
 #include <memory>
 #include <map>
 #include <boost/thread/recursive_mutex.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/unique_ptr.hpp>
 
 #ifndef FMTYIELDMODELDECISIONTREE_Hm_included
 #define FMTYIELDMODELDECISIONTREE_Hm_included
@@ -189,7 +193,19 @@ namespace Core
 		@return the update period.
 		*/
 		int _getUpdatePeriod(const Core::FMTYieldRequest& p_request) const;
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+			{
+			ar& boost::serialization::make_nvp("FMTYieldModel",
+				boost::serialization::base_object<FMTYieldModel>(*this));
+			ar& boost::serialization::make_nvp("m_values", m_values);
+			ar& boost::serialization::make_nvp("m_reference", m_reference);
+			ar& boost::serialization::make_nvp("m_nodes", m_nodes);
+			ar& boost::serialization::make_nvp("m_default_values", m_default_values);
+			ar& boost::serialization::make_nvp("m_update", m_update);
+			}
 	};
 }
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTYieldModelDecisionTree)
 #endif

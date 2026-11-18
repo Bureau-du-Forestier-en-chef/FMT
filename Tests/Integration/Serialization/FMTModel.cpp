@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 // Defect 26 (#409) of Tests/ETAT.md: saving the yields throws "unregistered class". Behind it, defect 25: the
 // actions, the transitions, the yields and the lifespans are FMTList, whose load does not read what its save writes.
-TEST(FMTModel, DISABLED_GivenTheRootModelOfTWDLandWhenPickledThenUnpicklesTheSameModel)
+TEST(FMTModel, GivenTheRootModelOfTWDLandWhenPickledThenUnpicklesTheSameModel)
 {
     // Arrange
     Models::FMTModel model = Testing::readScenario("ROOT");
@@ -34,7 +34,7 @@ TEST(FMTModel, DISABLED_GivenTheRootModelOfTWDLandWhenPickledThenUnpicklesTheSam
 
 // Defect 25 (#408) of Tests/ETAT.md: a model without any section saves, but its yields and its lifespans are
 // FMTList, whose load does not read the base FMTObject that its save writes.
-TEST(FMTModel, DISABLED_GivenAModelConstructedByDefaultWhenPickledThenUnpicklesAModelWithoutAnySection)
+TEST(FMTModel, GivenAModelConstructedByDefaultWhenPickledThenUnpicklesAModelWithoutAnySection)
 {
     // Arrange
     const Models::FMTModel model;

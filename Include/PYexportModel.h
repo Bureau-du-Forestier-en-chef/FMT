@@ -60,6 +60,8 @@ void exportModel()
 	bp::class_<Models::FMTModel, bp::bases<Core::FMTObject>>("FMTmodel", "@DocString(FMTModel)")
 			.def_pickle(FMT_pickle_suite<Models::FMTModel>())
 			.def(bp::init<Models::FMTModel>())
+			.def("__eq__", &Models::FMTModel::operator ==,
+				"@DocString(FMTModel::operator==)")
             .def("getyields",&Models::FMTModel::getYields,
 				"@DocString(FMTModel::getyields)")
 			.def("setyields", &Models::FMTModel::setYields,
@@ -152,6 +154,8 @@ void exportModel()
 
 	bp::class_<Models::FMTSeModel, bp::bases<Models::FMTModel>>("FMTsemodel", "@DocString(FMTSeModel)")
 		.def(bp::init<Models::FMTModel>())
+		.def("__eq__", &Models::FMTSeModel::operator ==,
+			"@DocString(FMTSeModel::operator==)")
 		.def_pickle(FMT_pickle_suite<Models::FMTSeModel>())
 		.def("getmapping", &Models::FMTSeModel::getMapping,
 			"@DocString(FMTSeModel::getmapping)")
@@ -163,12 +167,6 @@ void exportModel()
 			"@DocString(FMTSeModel::getdisturbancestats)")
 		.def("getspatialoutput", &Models::FMTSeModel::getSpatialOutput,
 			"@DocString(FMTSeModel::getspatialoutput)")
-		/*.def("getSolution", &Models::FMTSeModel::getSolution,
-			getsolution_overloads(bp::args("period", "withlock"),"@DocString(FMTSeModel::getSolution)"))
-		.def("getarea", &Models::FMTSeModel::getArea,
-			getarea_overloads(bp::args("period", "beforegrowanddeath"), "@DocString(FMTSeModel::getarea)"))
-		.def("getOutput", &Models::FMTSeModel::getOutput,
-			getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTSeModel::getOutput)"))*/
 		.def("getspschedule", &Models::FMTSeModel::getSpSchedule,
 			"@DocString(FMTSeModel::getspschedule)");
 
@@ -177,6 +175,8 @@ void exportModel()
 
 	bp::class_<Models::FMTSesModel, bp::bases<Models::FMTSeModel>>("FMTsesmodel", "@DocString(FMTSesModel)")
 		.def(bp::init<Models::FMTModel>())
+		.def("__eq__", &Models::FMTSesModel::operator ==,
+			"@DocString(FMTSesModel::operator==)")
 		.def_pickle(FMT_pickle_suite<Models::FMTSesModel>())
 		.def("greedyreferencebuild", &Models::FMTSesModel::greedyReferenceBuild,
 			greedyreferencebuild_overloads(bp::args("schedule", "numberofiterations", "seed", "tolerance"), "@DocString(FMTSesModel::GreedyReferenceBuild)"));
@@ -248,7 +248,8 @@ void exportModel()
 	bp::class_<Models::FMTSrModel, bp::bases<Models::FMTModel>>("FMTsrmodel", "@DocString(FMTSrModel)")
 		.def_pickle(FMT_pickle_suite<Models::FMTSrModel>())
 		.def("buildperiod", &Models::FMTSrModel::buildPeriod, buildperiod_overloads(bp::args("schedule", "forcepartialbuild", "compressageclass"), "@DocString(FMTSrModel::buildperiod)"))
-		
+		.def("__eq__", &Models::FMTSrModel::operator ==,
+			"@DocString(FMTSrModel::operator==)")
 		.def("setsolution", &Models::FMTSrModel::setSolution,
 			setsolution_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTSrModel::setsolution)"))
 		.def("forcesolution", &Models::FMTSrModel::forceSolution, "@DocString(FMTSrModel::forcesolution)")
@@ -269,6 +270,8 @@ void exportModel()
 	definePyList<Models::FMTSrModel>();
 	
 	bp::class_<Models::FMTNssModel, bp::bases<Models::FMTSrModel>>("FMTnssmodel", "@DocString(FMTNssModel)")
+		.def("__eq__", &Models::FMTNssModel::operator ==,
+			"@DocString(FMTNssModel::operator==)")
 		.def(bp::init<Models::FMTModel, unsigned int>())
 		.def(bp::init<Models::FMTNssModel>())
 		.def_pickle(FMT_pickle_suite<Models::FMTNssModel>())
@@ -332,6 +335,7 @@ void exportModel()
 	bp::class_<Models::FMTSaModel, bp::bases<Models::FMTSeModel>>("FMTsamodel", "@DocString(FMTSaModel)")
 		.def(bp::init<Models::FMTModel>())
 		.def(bp::init<Models::FMTSaModel>())
+		.def_pickle(FMT_pickle_suite<Models::FMTSaModel>())
 		.def("initialsolve", &Models::FMTSaModel::initialSolve,
 			"@DocString(FMTSaModel::initialsolve)");
 

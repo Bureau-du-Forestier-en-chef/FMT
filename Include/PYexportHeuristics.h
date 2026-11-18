@@ -35,15 +35,6 @@ void exportHeuristics()
 		"\n";
 	#ifdef FMTWITHOSI
 
-	/*bp::class_<Heuristics::FMTLpHeuristicMtHandler>("FMTlpheuristicmthandler", "@DocString(FMTLpHeuristicMtHandler)")
-		//.def(bp::init<std::vector<Heuristics::FMTOperatingAreaScheduler>&>())
-		//.def(bp::init<std::vector<Heuristics::FMTOperatingAreaClusterer>&>())
-		.def(bp::init<boost::python::list&,const double&>())
-		.def("initialSolve", &Heuristics::FMTLpHeuristicMtHandler::initialSolve,
-					"@DocString(FMTLpHeuristicMtHandler::initialSolve)")
-		.def("greedySolve", &Heuristics::FMTLpHeuristicMtHandler::greedySolve,
-					"@DocString(FMTLpHeuristicMtHandler::greedySolve)");*/
-
 	bp::class_<Heuristics::FMTOperatingArea>("FMToperatingarea", "@DocString(FMTOperatingArea)")
 		.def(bp::init<const Core::FMTMask&, const double&>())
 		.def_pickle(FMT_pickle_suite<Heuristics::FMTOperatingArea>())
@@ -58,7 +49,9 @@ void exportHeuristics()
 
 	definePyList<Heuristics::FMTOperatingArea>();
 
-	bp::class_<Heuristics::FMTOperatingAreaScheme,bp::bases<Heuristics::FMTOperatingArea>>("FMToperatingareascheme", "@DocString(FMTOperatingAreaScheme)")
+	bp::class_<Heuristics::FMTOperatingAreaScheme,bp::bases<Heuristics::FMTOperatingArea>>(
+		"FMToperatingareascheme", "@DocString(FMTOperatingAreaScheme)")
+		.def_pickle(FMT_pickle_suite<Heuristics::FMTOperatingAreaScheme>())
 		.def(bp::init<const Heuristics::FMTOperatingArea&,const size_t&,const size_t&,
 			const size_t&, const size_t&, const size_t&, const size_t&, double>())
 		.def("presolve", &Heuristics::FMTOperatingAreaScheme::preSolve,
@@ -66,12 +59,15 @@ void exportHeuristics()
 
 	definePyList<Heuristics::FMTOperatingAreaScheme>();
 
-	bp::class_<Heuristics::FMTOperatingAreaClusterBinary,bp::bases<Heuristics::FMTOperatingArea>>("FMToperatingareaclusterbinary", "@DocString(FMTOperatingAreaClusterBinary)");
+	bp::class_<Heuristics::FMTOperatingAreaClusterBinary,bp::bases<Heuristics::FMTOperatingArea>>
+		("FMToperatingareaclusterbinary", "@DocString(FMTOperatingAreaClusterBinary)")
+		.def_pickle(FMT_pickle_suite<Heuristics::FMTOperatingAreaClusterBinary>());
 
 	definePyList<Heuristics::FMTOperatingAreaClusterBinary>();
 
 	bp::class_<Heuristics::FMTOperatingAreaCluster>("FMToperatingareacluster", "@DocString(FMTOperatingAreaCluster)")
         .def(bp::init<const Heuristics::FMTOperatingAreaCluster&,const double&, const double&>())
+		.def_pickle(FMT_pickle_suite<Heuristics::FMTOperatingAreaCluster>())
         .def("getfilteredcluster",&Heuristics::FMTOperatingAreaCluster::getFilteredCluster,
              "@DocString(FMTOperatingAreaCluster::getfilteredcluster)")
         .def("getallmasks",&Heuristics::FMTOperatingAreaCluster::getAllMasks,
@@ -85,9 +81,13 @@ void exportHeuristics()
 
 	definePyList<Heuristics::FMTOperatingAreaCluster>();
 
-	bp::class_<Heuristics::FMTLpHeuristic, bp::bases<Core::FMTObject, Models::FMTLpSolver>>("FMTlpheuristic", "@DocString(Heuristics::FMTLpHeuristic)");
+	bp::class_<Heuristics::FMTLpHeuristic, bp::bases<Core::FMTObject, Models::FMTLpSolver>>(
+		"FMTlpheuristic", "@DocString(Heuristics::FMTLpHeuristic)")
+		.def_pickle(FMT_pickle_suite<Heuristics::FMTLpHeuristic>());
 
-    bp::class_<Heuristics::FMTOperatingAreaClusterer, bp::bases<Heuristics::FMTLpHeuristic>>("Heuristics::FMToperatingareaclusterer", "@DocString(FMTOperatingAreaClusterer)")
+    bp::class_<Heuristics::FMTOperatingAreaClusterer, bp::bases<Heuristics::FMTLpHeuristic>>(
+		"Heuristics::FMToperatingareaclusterer", "@DocString(FMTOperatingAreaClusterer)")
+		.def_pickle(FMT_pickle_suite<Heuristics::FMTOperatingAreaClusterer>())
 		.def("initialsolve", &Heuristics::FMTOperatingAreaClusterer::initialSolve,
 			"@DocString(FMTOperatingAreaClusterer::initialsolve)")
 		.def("branchnboundsolve", &Heuristics::FMTOperatingAreaClusterer::branchNBoundSolve,
@@ -99,7 +99,9 @@ void exportHeuristics()
 
 	definePyList<Heuristics::FMTOperatingAreaClusterer>();
 
-	bp::class_<Heuristics::FMTOperatingAreaScheduler, bp::bases<Heuristics::FMTLpHeuristic>>("Heuristics::FMToperatingareascheduler", "@DocString(FMTOperatingAreaScheduler)")
+	bp::class_<Heuristics::FMTOperatingAreaScheduler, bp::bases<Heuristics::FMTLpHeuristic>>(
+		"Heuristics::FMToperatingareascheduler", "@DocString(FMTOperatingAreaScheduler)")
+		.def_pickle(FMT_pickle_suite<Heuristics::FMTOperatingAreaScheduler>())
 		.def("initialsolve", &Heuristics::FMTOperatingAreaScheduler::initialSolve,
 			"@DocString(FMTOperatingAreaScheduler::initialsolve)")
 		.def("branchnboundsolve", &Heuristics::FMTOperatingAreaScheduler::branchNBoundSolve,

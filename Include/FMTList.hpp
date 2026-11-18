@@ -17,6 +17,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTMaskFilter.h"
 #include <boost/serialization/version.hpp>
 #include <boost/serialization/serialization.hpp>
+#include <boost/serialization/utility.hpp> 
+#include <boost/serialization/unique_ptr.hpp> 
 #include <boost/serialization/hash_collections_save_imp.hpp>
 #include <boost/serialization/hash_collections_load_imp.hpp>
 #include <boost/serialization/split_member.hpp>
@@ -648,11 +650,10 @@ namespace Core
 		void save(Archive& ar, const unsigned int version) const
 		{
 			try {
-				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
+				ar& boost::serialization::make_nvp("FMTobject", 
+					boost::serialization::base_object<FMTObject>(*this));
 				ar& boost::serialization::make_nvp("data", m_data);
 				ar& boost::serialization::make_nvp("filter", m_filter);
-				std::vector<std::pair<FMTMask, std::vector<int>>>vecFastPass(m_fastpass.begin(), m_fastpass.end());
-				ar& BOOST_SERIALIZATION_NVP(vecFastPass);
 			}
 			catch (...)
 			{
@@ -669,14 +670,10 @@ namespace Core
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)
 		{
+			ar& boost::serialization::make_nvp("FMTobject",
+				boost::serialization::base_object<FMTObject>(*this));
 			ar& boost::serialization::make_nvp("data", m_data);
 			ar& boost::serialization::make_nvp("filter", m_filter);
-			std::vector<std::pair<FMTMask, std::vector<int>>>vecFastPass;
-			ar& BOOST_SERIALIZATION_NVP(vecFastPass);
-			for (const std::pair<FMTMask, std::vector<int>>& values : vecFastPass)
-			{
-				m_fastpass[values.first] = values.second;
-			}
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
 			// DocString: FMTList::m_data

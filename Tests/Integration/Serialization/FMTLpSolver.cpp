@@ -94,7 +94,7 @@ TEST(FMTLpSolver, GivenAMaximizedProblemWhenPickledThenSolvingItAgainGivesTheSam
 
 // Defect 27 (#410) of Tests/ETAT.md: FMTSerializableMatrix reads one element of an empty matrix
 // (std::max(1, getNumElements())), whose array is null: saving a solver without any column is an access violation.
-TEST(FMTLpSolver, DISABLED_GivenASolverWithoutAnyColumnWhenPickledThenUnpicklesASolverWithoutAnyColumn)
+TEST(FMTLpSolver, GivenASolverWithoutAnyColumnWhenPickledThenUnpicklesASolverWithoutAnyColumn)
 {
     // Arrange
     const Models::FMTLpSolver solver = getSolver();

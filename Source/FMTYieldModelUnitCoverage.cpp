@@ -121,4 +121,4 @@ namespace Core
 
 }
 
-
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTYieldModelUnitCoverage)

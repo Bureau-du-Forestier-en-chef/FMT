@@ -405,6 +405,8 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 				ar& boost::serialization::make_nvp("aggregates", m_aggregates);
 				ar& boost::serialization::make_nvp("lock", m_lock);
 				ar& boost::serialization::make_nvp("reset", m_reset);
+				ar& boost::serialization::make_nvp("series", m_series);
+				ar& boost::serialization::make_nvp("in_series", m_InSerie);
 			}
 			catch (...)
 			{

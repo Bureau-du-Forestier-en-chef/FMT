@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/functional/hash.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/unique_ptr.hpp>
 #include <memory>
 #include "FMTutility.h"
 
@@ -131,23 +132,29 @@ namespace Graph
 		template<class Archive>
 		void serialize(Archive& ar, unsigned int version)
 			{
-			double area = getBaseRhs();
-			ar& BOOST_SERIALIZATION_NVP(*m_development);
-			ar& BOOST_SERIALIZATION_NVP(area);
-			if (Archive::is_saving::value)
+			Core::FMTDevelopment baseDevelopment;
+			double area = 0.0;
+			if constexpr (Archive::is_saving::value)
 				{
-				_save(area);
+				_getDevelopment(baseDevelopment,
+					area);
+				}
+			ar& BOOST_SERIALIZATION_NVP(baseDevelopment);
+			ar& BOOST_SERIALIZATION_NVP(area);
+			if constexpr (Archive::is_loading::value)
+				{
+				_assignDevelopment(baseDevelopment,
+					area);
 				}
 			}
 		// DocString: FMTBaseVertexProperties::m_development
 		///The development that hold the information about the strata.
 		std::unique_ptr<Core::FMTDevelopment> m_development;
-		// DocString: FMTBaseVertexProperties::_save
-		/**
-		@brief Save the area of the vertex development during serialization.
-		@param[in] p_area the area to save.
-		*/
-		void _save(double p_area);
+		void _assignDevelopment(Core::FMTDevelopment& p_development,
+						double& p_area);
+		void _getDevelopment(Core::FMTDevelopment& p_development,
+			double& p_area) const;
+
 	};
 }
 

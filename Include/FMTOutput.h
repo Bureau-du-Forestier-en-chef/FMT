@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 #include <stack>
 #include <set>
+#include <map>
 #include "FMTOutputSource.h"
 #include "FMTOperator.h"
 #include "FMTBounds.hpp"

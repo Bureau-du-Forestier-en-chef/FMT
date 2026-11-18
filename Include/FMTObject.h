@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/unique_ptr.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
+#include <boost/serialization/split_member.hpp>
 #include "FMTException.h"
 #include <memory>
 #include <chrono>
@@ -194,21 +195,6 @@ class FMTEXPORT FMTObject
 		@brief will write the stack in the log when abort called with SIGABRT and raise a function failed.
 		*/
 		static void setAbortStack();
-		// DocString: FMTObject::serialize
-		/**
-		@brief Serialize the FMTObject for multiprocessing across multiple cpus (pickle in Python).
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to serialize to or from.
-		@param[in] version the serialization version.
-		*/
-		friend class boost::serialization::access;
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
-			//ar & BOOST_SERIALIZATION_NVP(_logger);
-			//ar & BOOST_SERIALIZATION_NVP(m_section);
-		}
 	protected:
 		// DocString: FMTObject::_exhandler
 		///A shared pointer to the exception handler.
@@ -216,36 +202,6 @@ class FMTEXPORT FMTObject
 		// DocString: FMTObject::_logger
 		///A shared pointer to the logger.
 		static std::unique_ptr<Logging::FMTLogger> _logger;
-		// DocString: FMTObject:: forceSave
-		/**
-		@brief Force the serialization to save useful information, which the default FMTObject serialization does not.
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to save to.
-		@param[in] version the serialization version.
-		*/
-		template<class Archive>
-		void forceSave(Archive& ar, const unsigned int version) const
-		{
-			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
-			//ar & BOOST_SERIALIZATION_NVP(_logger);
-			//ar & BOOST_SERIALIZATION_NVP(m_section);
-		}
-		// DocString: FMTObject:: forceLoad
-		/**
-		@brief Force the serialization to load useful information, which the default FMTObject serialization does not.
-		@tparam Archive the archive type.
-		@param[in,out] ar the archive to load from.
-		@param[in] version the serialization version.
-		*/
-		template<class Archive>
-		void forceLoad(Archive& ar, const unsigned int version)
-		{
-			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
-			//ar & BOOST_SERIALIZATION_NVP(_logger);
-			setDefaultLogger();
-			setDefaultExceptionHandler();
-			//ar & BOOST_SERIALIZATION_NVP(m_section);
-		}
 		// DocString: FMTObject::checkSignals
 		/**
 		@brief Check if the user has sent a ctrl-c signal using boost::python to FMT.
@@ -294,8 +250,23 @@ class FMTEXPORT FMTObject
 		@param[in] p_signal the signal for abort.
 		*/
 		static void _abort(int p_signal);
-		
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void save(Archive& ar, const unsigned int version) const
+			{
 
+			}
+		template<class Archive>
+		void load(Archive& ar, const unsigned int version)
+			{
+			if (!_logger)
+				setDefaultLogger();
+			if (!_exhandler)
+				setDefaultExceptionHandler();
+
+			}
+		BOOST_SERIALIZATION_SPLIT_MEMBER()
 	};
 }
 BOOST_SERIALIZATION_ASSUME_ABSTRACT(Core::FMTObject)

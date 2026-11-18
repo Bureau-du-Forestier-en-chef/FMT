@@ -20,6 +20,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
+FMTData::~FMTData() = default;
 
 void FMTData::allocateCache() const
 	{

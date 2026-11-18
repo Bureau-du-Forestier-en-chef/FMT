@@ -43,12 +43,7 @@ namespace Core {
 	#endif	
 	{
 		try {
-			#ifdef FMTWITHONNXR
-						if (!m_envPtr)
-						{
-							m_envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
-						}
-			#endif
+			_buildOrtEnv();
 			boost::filesystem::path fmtdll(getRuntimeLocation());
 			boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(m_JSON_PROP_MODEL_NAME);
 			boost::filesystem::path filenamepath(modelNameIt->second.data());
@@ -61,10 +56,7 @@ namespace Core {
 			boost::filesystem::path parampath(stdParamsFileNameIt->second.data());
 			std::string stdParamsFileName = (fmtdll / parampath).string();
 
-			std::wstring wideModelName = std::wstring(m_modelName.begin(), m_modelName.end());
-			#ifdef FMTWITHONNXR
-			m_sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*m_envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
-			#endif
+			_buildOrtSession();
 			std::ifstream file(stdParamsFileName);
 			std::vector<std::string> headers = _getNextLineAndSplitIntoTokens(file);
 			headers.erase(headers.begin());
@@ -103,6 +95,26 @@ namespace Core {
 		}
 	}
 
+	void FMTYieldModelNn::_buildOrtSession()
+		{
+		#ifdef FMTWITHONNXR
+			std::wstring wideModelName = std::wstring(m_modelName.begin(), m_modelName.end());
+			m_sessionPtr = std::unique_ptr<Ort::Session>(
+				new Ort::Session(*m_envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
+		#endif
+		}
+
+	void FMTYieldModelNn::_buildOrtEnv()
+	{
+		#ifdef FMTWITHONNXR
+		if (!m_envPtr)
+			{
+			m_envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
+			}
+		#endif
+
+	}
+
 
 
 
@@ -113,16 +125,16 @@ namespace Core {
 		m_standardParamVars(rhs._getStandardParamVars()),
 		m_modelOutputs(rhs.getModelOutputNames())
 	{
-	#ifdef FMTWITHONNXR
-		std::wstring wideModelName = std::wstring(m_modelName.begin(), m_modelName.end());
-		m_sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*m_envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
-	#endif
+		_buildOrtSession();
 	}
 
 	FMTYieldModelNn::~FMTYieldModelNn()
 	{
 	#ifdef FMTWITHONNXR
+		if (m_sessionPtr)
+			{
 			m_sessionPtr->release();
+			}
 	#endif
 	}
 
@@ -368,3 +380,5 @@ namespace Core {
 	}
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTYieldModelNn)

@@ -19,7 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 // in Tests/Integration/Serialization/FMTFork.cpp.
 
 // Defect 25 (#408) of Tests/ETAT.md: FMTList::save writes its base FMTObject, which FMTList::load does not read.
-TEST(FMTTransition, DISABLED_GivenTheTransitionsOfTWDLandWhenPickledThenUnpicklesTheSameTransitions)
+TEST(FMTTransition, GivenTheTransitionsOfTWDLandWhenPickledThenUnpicklesTheSameTransitions)
 {
     // Arrange
     const std::vector<Core::FMTTransition> transitions = Testing::readScenario("ROOT").getTransitions();

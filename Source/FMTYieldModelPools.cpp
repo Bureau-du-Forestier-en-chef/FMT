@@ -53,5 +53,5 @@ namespace Core {
 	}
 
 }
-
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTYieldModelPools)
 #endif

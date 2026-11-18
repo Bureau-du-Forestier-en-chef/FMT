@@ -19,11 +19,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 // Defect 26 (#409) of Tests/ETAT.md: the yields are saved through a pointer to FMTYieldHandler, and no derived
 // handler is exported to Boost.Serialization (BOOST_CLASS_EXPORT): saving throws "unregistered class". Behind it,
 // defect 25: FMTYields is an FMTList.
-TEST(FMTYields, DISABLED_GivenTheYieldsOfTWDLandWhenPickledThenGivesTheSameValues)
+TEST(FMTYields, GivenTheYieldsOfTWDLandWhenPickledThenGivesTheSameValues)
 {
     // Arrange: TWD_land has age, time and complex yields
     const Models::FMTModel model = Testing::readScenario("ROOT");
-
     // Act
     const Core::FMTYields unpickled = Testing::pickleAndUnpickle(model.getYields());
 

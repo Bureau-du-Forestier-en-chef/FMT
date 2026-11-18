@@ -5,7 +5,10 @@
 #include "FMTutility.h"
 #include "FMTException.h"
 #include <string>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
+
 
 namespace Exception
 	{
@@ -46,5 +49,5 @@ namespace Exception
 					}
 		};
 	}
-
+BOOST_CLASS_EXPORT_KEY(Exception::FMTYieldModelPrediction)
 #endif

@@ -64,17 +64,25 @@ namespace Python {
 		static boost::python::object getstate(const T& target)
 		{
 			std::stringstream os;
-				{
+			{
 				boost::archive::binary_oarchive oa(os);
 				oa << boost::serialization::make_nvp(getName(), target);
-				}
+			}
 			std::stringstream compressed;
 			boost::iostreams::filtering_streambuf<boost::iostreams::input> out;
 			out.push(boost::iostreams::zlib_compressor());
 			out.push(os);
 			boost::iostreams::copy(out, compressed);
-			return boost::python::make_tuple(compressed.str());
+
+			const std::string data = compressed.str();
+			boost::python::object py_bytes(
+				boost::python::handle<>(
+					PyBytes_FromStringAndSize(data.data(), static_cast<Py_ssize_t>(data.size()))
+				)
+			);
+			return boost::python::make_tuple(py_bytes);
 		}
+
 		// DocString: Python::FMT_pickle_suite::setstate
 		/**
 		@brief Restore the state of an object from a zlib compressed binary archive.

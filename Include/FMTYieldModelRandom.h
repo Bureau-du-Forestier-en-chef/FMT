@@ -13,6 +13,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/unordered_map.hpp>
 
 // DocString: FMTYieldModelRandom
 /**
@@ -25,6 +29,7 @@ namespace Core
         public FMTYieldModel
     {
     public:
+		FMTYieldModelRandom() = default;
 		// DocString: FMTYieldModelRandom::FMTYieldModelRandom(const boost::property_tree::ptree&,const std::string&)
 		/**
 		@brief Main constructor for the random yield model.
@@ -109,9 +114,18 @@ namespace Core
 		// DocString: FMTYieldModelRandom::m_useCache
 		///tell if cache on or off...
 		bool m_useCache;
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("FMTYieldModel",
+				boost::serialization::base_object<FMTYieldModel>(*this));
+			ar& boost::serialization::make_nvp("m_cache", m_cache);
+			ar& boost::serialization::make_nvp("m_useCache", m_useCache);
+		}
     };
 }
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTYieldModelRandom)
 
 #endif
 

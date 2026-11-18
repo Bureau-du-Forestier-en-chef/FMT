@@ -276,6 +276,5 @@ class FMTEXPORT FMTOutputNodeHasher
 
 }
 
-BOOST_CLASS_EXPORT_KEY(Core::FMTOutputNode)
 
 #endif

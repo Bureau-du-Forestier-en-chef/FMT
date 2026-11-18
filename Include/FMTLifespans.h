@@ -21,19 +21,6 @@ namespace Core
 */
 class FMTEXPORT FMTLifespans : public FMTList<int>
     {
-	// DocString: FMTLifespans::serialize
-	/**
-	@brief Serialize the FMTLifespans through its base FMTList<int> for multiprocessing across multiple cpus (pickle in Python).
-	@tparam Archive the archive type.
-	@param[in,out] ar the archive to serialize to or from.
-	@param[in] version the serialization version.
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar & boost::serialization::make_nvp("data", boost::serialization::base_object<FMTList<int>>(*this));
-	}
     public:
 		// DocString: swap
 		/**
@@ -101,7 +88,22 @@ class FMTEXPORT FMTLifespans : public FMTList<int>
 		FMTLifespans preSolve(const FMTMaskFilter& filter,
 			const std::vector<FMTTheme>& originalthemes,
 			std::vector<FMTTheme>& newthemes,bool compressdata=false) const;
-    };
+	private:
+		// DocString: FMTLifespans::serialize
+		/**
+		@brief Serialize the FMTLifespans through its base FMTList<int> for multiprocessing across multiple cpus (pickle in Python).
+		@tparam Archive the archive type.
+		@param[in,out] ar the archive to serialize to or from.
+		@param[in] version the serialization version.
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("data", 
+				boost::serialization::base_object<FMTList<int>>(*this));
+		}
+};
 
 }
 BOOST_CLASS_EXPORT_KEY(Core::FMTLifespans)

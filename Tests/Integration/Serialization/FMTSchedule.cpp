@@ -37,7 +37,7 @@ TEST(FMTSchedule, GivenAScheduleWithoutActionWhenPickledThenUnpicklesAnEmptySche
 
 // Defect 25 (#408) of Tests/ETAT.md: the actions of a schedule are FMTList, whose load does not read the base
 // FMTObject that its save writes.
-TEST(FMTSchedule, DISABLED_GivenAScheduleOfAnActionOfTWDLandWhenPickledThenUnpicklesTheSameAreas)
+TEST(FMTSchedule, GivenAScheduleOfAnActionOfTWDLandWhenPickledThenUnpicklesTheSameAreas)
 {
     // Arrange: the first action of TWD_land operates 10 ha of the first development of the area at period 1
     const Models::FMTModel model = Testing::readScenario("ROOT");

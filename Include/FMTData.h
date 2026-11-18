@@ -45,7 +45,7 @@ class FMTEXPORT FMTData
 		/**
 		@brief Default destructor for FMTData.
 		*/
-		~FMTData()=default;
+		~FMTData();
         // DocString: FMTData(const FMTData&)
         /**
         @brief Copy constructor for FMTData.

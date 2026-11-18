@@ -110,6 +110,6 @@ namespace Core {
 		return std::unique_ptr<FMTYieldModel>(nullptr);
 	}
 
-
-
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTYieldModelTsla)

@@ -167,6 +167,37 @@ namespace Models
 		}
 	}
 
+	void FMTLpModel::_saveIndexes(
+		std::vector<ConstraintIndex>& keys,
+		std::vector<std::vector<int>>& values) const
+	{
+		keys.clear();
+		values.clear();
+
+		keys.reserve(m_indexes.size());
+		values.reserve(m_indexes.size());
+
+		for (const auto& [key, value] : m_indexes)
+		{
+			keys.push_back(key);
+			values.push_back(value);
+		}
+	}
+
+	void FMTLpModel::_loadIndexes(
+		const std::vector<ConstraintIndex>& keys,
+		const std::vector<std::vector<int>>& values)
+	{
+		m_indexes.clear();
+
+		const size_t count = std::min(keys.size(), values.size());
+
+		for (size_t i = 0; i < count; ++i)
+		{
+			m_indexes.emplace(keys[i], values[i]);
+		}
+	}
+
 	Heuristics::FMTOperatingAreaClusterer FMTLpModel::getClusterer(
 		const std::vector<Heuristics::FMTOperatingAreaCluster>& initialcluster,
 		const Core::FMTOutput& areaoutput,

@@ -11,6 +11,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTYieldModel.h"
 #include "FMTMask.h"
 #include <vector>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
 
 namespace Core
 {
@@ -23,6 +27,7 @@ namespace Core
 		public FMTYieldModel
 	{
 	public:
+		FMTYieldModelUnitCoverage() = default;
 		// DocString: FFMTyieldmodelUnitCoverage::FMTYieldModelUnitCoverage(const boost::property_tree::ptree&,const std::string&)
 		/**
 		@brief Main constructor for the unit coverage model.
@@ -90,10 +95,19 @@ namespace Core
 		// DocString: FMTYieldModelUnitCoverage::m_mask
 		///The mask of the yield.
 		Core::FMTMask m_mask;
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("FMTYieldModel",
+				boost::serialization::base_object<FMTYieldModel>(*this));
+			ar& BOOST_SERIALIZATION_NVP(m_cache);
+			ar& BOOST_SERIALIZATION_NVP(m_mask);
+		}
 
 	};
 }
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTYieldModelUnitCoverage)
 
 #endif
 

@@ -8,15 +8,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTDEV_Hm_included
 #define FMTDEV_Hm_included
 
-#include "FMTMask.h"
+
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/string.hpp>
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/assume_abstract.hpp>
+#include "FMTMask.h"
 #include "FMTObject.h"
 #include <memory>
 #include <vector>
-#include <boost/serialization/export.hpp>
-#include "FMTExceptionHandler.h"
 
 namespace Graph
 {
@@ -371,17 +372,12 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 			template<class Archive>
 			void serialize(Archive& ar, const unsigned int version)
 			{
-				try {
-					ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
+					ar& boost::serialization::make_nvp("FMTobject", 
+						boost::serialization::base_object<FMTObject>(*this));
 					ar& boost::serialization::make_nvp("mask", m_mask);
 					ar& boost::serialization::make_nvp("age", m_age);
 					ar& boost::serialization::make_nvp("lock", m_lock);
 					ar& boost::serialization::make_nvp("period", m_period);
-				}
-				catch (...)
-				{
-					_exhandler->printExceptions("", "FMTDevelopment::serialize", __LINE__, __FILE__);
-				}
 			}
 			// DocString: FMTDevelopment::m_mask
 			///Mask of the FMTDevelopment data member
@@ -415,7 +411,6 @@ namespace boost {
 
 }
 BOOST_SERIALIZATION_ASSUME_ABSTRACT(Core::FMTDevelopment)
-BOOST_CLASS_TRACKING(Core::FMTDevelopment, boost::serialization::track_always)
-BOOST_CLASS_EXPORT_KEY(Core::FMTDevelopment)
+
 
 #endif // FMTDEV_Hm_included

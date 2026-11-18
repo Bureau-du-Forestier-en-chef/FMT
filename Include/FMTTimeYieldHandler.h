@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/map.hpp>
 
 namespace Core
 {
@@ -189,8 +190,9 @@ namespace Core
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTYieldHandler>(*this));
-			ar& BOOST_SERIALIZATION_NVP(m_elements);
+				ar& boost::serialization::make_nvp("FMTyieldhandler",
+					boost::serialization::base_object<FMTYieldHandler>(*this));
+				ar& BOOST_SERIALIZATION_NVP(m_elements);
 		}
 		std::map<std::string, FMTData, cmpYieldString>m_elements;
 		// DocString: FMTTimeYieldHandler::_getDiscountFactorValue
@@ -204,5 +206,5 @@ namespace Core
 	};
 
 }
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTTimeYieldHandler)
 #endif 

@@ -34,7 +34,7 @@ namespace
 }
 
 // Defect 25 (#408) of Tests/ETAT.md: FMTList::save writes its base FMTObject, which FMTList::load does not read.
-TEST(FMTLifespans, DISABLED_GivenTheLifespansOfTWDLandWhenPickledThenUnpicklesTheSameLifespans)
+TEST(FMTLifespans, GivenTheLifespansOfTWDLandWhenPickledThenUnpicklesTheSameLifespans)
 {
     // Arrange
     const Core::FMTLifespans lifespans = Testing::readScenario("ROOT").getLifespan();
@@ -50,7 +50,7 @@ TEST(FMTLifespans, DISABLED_GivenTheLifespansOfTWDLandWhenPickledThenUnpicklesTh
 
 // Defect 25 (#408) of Tests/ETAT.md, as above. The cache of findSets is saved with the lifespans: the unpickled
 // lifespans must find the same lifespans for a mask already looked for.
-TEST(FMTLifespans, DISABLED_GivenLifespansWhoseCacheOfFindSetsIsFilledWhenPickledThenFindTheSameLifespans)
+TEST(FMTLifespans, GivenLifespansWhoseCacheOfFindSetsIsFilledWhenPickledThenFindTheSameLifespans)
 {
     // Arrange
     const Models::FMTModel model = Testing::readScenario("ROOT");

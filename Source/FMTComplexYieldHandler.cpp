@@ -4,7 +4,8 @@ Copyright (c) 2019 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
-
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 #include "FMTComplexYieldHandler.h"
 #include "FMTYieldRequest.h"
 #include "FMTDevelopment.h"
@@ -1003,6 +1004,12 @@ namespace Core {
 		return 0;
 	}
 
+	void FMTComplexYieldHandler::initializeCache()
+		{
+		_cache = FMTYieldsCache();
+		}
+
 
 }
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTComplexYieldHandler)

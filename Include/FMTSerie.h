@@ -11,6 +11,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 #include <vector>
 #include "FMTutility.h"
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
 
 
 namespace Core
@@ -137,9 +141,16 @@ class FMTEXPORT FMTSerie
 		// DocString: FMTSerie::m_SEPERATOR
 		///string seperator
 		static const std::string m_SEPERATOR;
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("m_serie", m_serie);
+			ar& boost::serialization::make_nvp("m_length", m_length);
+		}
 
     };
 
 }
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTSerie)
 #endif // FMTSerie_Hm_included

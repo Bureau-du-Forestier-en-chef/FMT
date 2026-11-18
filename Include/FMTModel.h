@@ -18,6 +18,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTConstraint.h"
 #include "FMTList.hpp"
 #include "FMTModelParameters.h"
+#include <boost/serialization/serialization.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/unordered_map.hpp>
@@ -960,8 +963,8 @@ namespace Models
 		template<class Archive>
 		void save(Archive& ar, const unsigned int version) const
 		{
-			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
-			FMTObject::forceSave(ar, version);
+			ar& boost::serialization::make_nvp("FMTobject", 
+				boost::serialization::base_object<FMTObject>(*this));
 			std::stringstream basegenerator;
 			basegenerator << m_generator;
 			const std::string baseGeneratorString(basegenerator.str());
@@ -987,8 +990,8 @@ namespace Models
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)
 		{
-			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
-			FMTObject::forceLoad(ar, version);//get the object information for the global object
+			ar& boost::serialization::make_nvp("FMTobject", 
+				boost::serialization::base_object<FMTObject>(*this));
 			std::string baseGeneratorString;
 			ar& BOOST_SERIALIZATION_NVP(baseGeneratorString);
 			std::stringstream(baseGeneratorString) >> m_generator;

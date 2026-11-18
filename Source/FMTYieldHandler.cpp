@@ -12,6 +12,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTData.h"
 #include "FMTTheme.h"
 #include "FMTExceptionHandler.h"
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/serialization/export.hpp>
 
 namespace Core{
 
@@ -569,3 +572,5 @@ double FMTYieldHandler::getYieldLinearValue(const std::string&yldname, const FMT
 
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTYieldHandler)

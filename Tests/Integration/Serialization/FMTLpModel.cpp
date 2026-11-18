@@ -81,7 +81,7 @@ namespace
 
 // Defects 26 (the yields do not save), 27 (the empty matrix of a model not built does not save), 28 (reading a model
 // passes the logger to a solver that is not read yet) and 25 (the lists do not read what they save).
-TEST(FMTLpModel, DISABLED_GivenAnLpModelOfTWDLandNotBuiltWhenPickledThenUnpicklesTheSameModel)
+TEST(FMTLpModel, GivenAnLpModelOfTWDLandNotBuiltWhenPickledThenUnpicklesTheSameModel)
 {
     // Arrange
     const Models::FMTLpModel model = getModel("LP");
@@ -95,7 +95,7 @@ TEST(FMTLpModel, DISABLED_GivenAnLpModelOfTWDLandNotBuiltWhenPickledThenUnpickle
 }
 
 // Defects 26, 28, 25, then 31: the sense of the objective, _MAXMIN, is not saved, and a solver read back minimizes.
-TEST(FMTLpModel, DISABLED_GivenAnLpModelOfTWDLandSolvedWhenPickledThenSolvingItAgainGivesTheSameOptimumAndOutputs)
+TEST(FMTLpModel, GivenAnLpModelOfTWDLandSolvedWhenPickledThenSolvingItAgainGivesTheSameOptimumAndOutputs)
 {
     // Arrange
     const Models::FMTLpModel model = getSolvedModel();
@@ -103,6 +103,7 @@ TEST(FMTLpModel, DISABLED_GivenAnLpModelOfTWDLandSolvedWhenPickledThenSolvingItA
 
     // Act
     unpickled.initialSolve();
+
 
     // Assert
     ASSERT_TRUE(model.isOptimal());
@@ -113,13 +114,14 @@ TEST(FMTLpModel, DISABLED_GivenAnLpModelOfTWDLandSolvedWhenPickledThenSolvingItA
 
 // Defects 26, 28 and 25. The solver of a model saves its solution with its matrix (FMTSerializableMatrix): the outputs
 // of the unpickled model are those of the solution, without solving it again.
-TEST(FMTLpModel, DISABLED_GivenAnLpModelOfTWDLandSolvedWhenPickledThenKeepsTheOutputsOfItsSolution)
+TEST(FMTLpModel, GivenAnLpModelOfTWDLandSolvedWhenPickledThenKeepsTheOutputsOfItsSolution)
 {
     // Arrange
     const Models::FMTLpModel model = getSolvedModel();
 
     // Act
     const Models::FMTLpModel unpickled = Testing::pickleAndUnpickle(model);
+
 
     // Assert
     ASSERT_TRUE(model.isOptimal());

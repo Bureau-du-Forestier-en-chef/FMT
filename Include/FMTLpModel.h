@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/vector.hpp>
+#include <boost/serialization/map.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/lock_guard.hpp> 
 #include <limits>
@@ -340,20 +341,22 @@ class FMTEXPORT FMTLpModel : public FMTSrModel
 			{
 			public:
 				ConstraintIndex(int p_constraintId, int p_period,FMTmatrixelement p_type);
-				/*ConstraintIndex(int p_constraintId, int p_period,
-							FMTmatrixelement p_type,
-							std::allocator<int>& p_allocator,size_t p_allocation=0);*/
-				//void push_back(const int& p_row);
 				bool operator < (const ConstraintIndex& p_rhs) const;
 				bool operator == (const ConstraintIndex& p_rhs) const;
-				//const std::vector<int>& getRows() const;
-				//std::vector<int>& getRowsRef();
 				size_t getHash() const;
+				ConstraintIndex() = default;
 			private:
+				friend class boost::serialization::access;
+				template<class Archive>
+				void serialize(Archive& ar, const unsigned int)
+				{
+					ar& BOOST_SERIALIZATION_NVP(m_constraintId);
+					ar& BOOST_SERIALIZATION_NVP(m_period);
+					ar& BOOST_SERIALIZATION_NVP(m_type);
+				}
 				int m_constraintId;
 				int m_period;
 				FMTmatrixelement m_type;
-				//std::vector<int>m_rows;
 			};
 		// DocString: FMTLpModel::m_rowsAllocator
 		///The int allocator for the constraintIndex
@@ -408,14 +411,29 @@ class FMTEXPORT FMTLpModel : public FMTSrModel
 		void save(Archive& ar, const unsigned int version) const
 		{
 			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTSrModel>(*this));
-			ar& BOOST_SERIALIZATION_NVP(m_indexes);
+			std::vector<ConstraintIndex> keys;
+			std::vector<std::vector<int>> values;
+			_saveIndexes(keys, values);
+			ar& BOOST_SERIALIZATION_NVP(keys);
+			ar& BOOST_SERIALIZATION_NVP(values);
 		}
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)
 		{
 			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTSrModel>(*this));
-			ar& BOOST_SERIALIZATION_NVP(m_indexes);
+			std::vector<ConstraintIndex> keys;
+			std::vector<std::vector<int>> values;
+			ar& BOOST_SERIALIZATION_NVP(keys);
+			ar& BOOST_SERIALIZATION_NVP(values);
+			_loadIndexes(keys, values);
 		}
+		BOOST_SERIALIZATION_SPLIT_MEMBER()
+		void _saveIndexes(
+				std::vector<ConstraintIndex>& keys,
+				std::vector<std::vector<int>>& values) const;
+		void _loadIndexes(
+			const std::vector<ConstraintIndex>& keys,
+			const std::vector<std::vector<int>>& values);
 		// DocString: FMTLpModel::elements
 		///Locations of the constraints and variables in the matrix for the constraints / objective.
 		//std::vector<std::unordered_map<std::string,
