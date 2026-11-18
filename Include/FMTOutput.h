@@ -518,7 +518,6 @@ class FMTEXPORT FMTOutput: public FMTObject
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			try {
 				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTObject>(*this));
 				ar& boost::serialization::make_nvp("sources", m_sources);
 				ar& boost::serialization::make_nvp("operators", m_operators);
@@ -526,11 +525,6 @@ class FMTEXPORT FMTOutput: public FMTObject
 				ar& boost::serialization::make_nvp("name", m_name);
 				ar& boost::serialization::make_nvp("group", m_group);
 				ar& boost::serialization::make_nvp("description", m_description);
-			}
-			catch (...)
-			{
-				_exhandler->printExceptions("", "FMTOutput::serialize", __LINE__, __FILE__);
-			}
 		}
 		// DocString: FMTOutput::_getFormatedOutputName()
 		/**
