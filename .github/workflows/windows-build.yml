@@ -21,13 +21,14 @@ jobs:
       - name: Configure
         shell: cmd
         run: |
-          cmake CMakeLists.txt ^
-            -B build/release ^
-            -G "Visual Studio 17 2022" ^
-            -DVCPKG_TARGET_TRIPLET=x64-windows ^
-            -DVCPKG_MANIFEST_MODE=ON ^
-            -DWITHOUT_TESTS=true ^
-            -DGENERATE_RELEASE_PACKAGE=true
+            cmake CMakeLists.txt ^
+              -B build/release ^
+              -G "Visual Studio 17 2022" ^
+              -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
+              -DVCPKG_TARGET_TRIPLET=x64-windows ^
+              -DVCPKG_MANIFEST_MODE=ON ^
+              -DWITHOUT_TESTS=true ^
+              -DGENERATE_RELEASE_PACKAGE=true
 
       - name: Build
         run: cmake --build build/release --config Release --parallel
