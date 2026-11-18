@@ -79,3 +79,4 @@ __pycache__/
 Documentation/Warnings.Log
 Documentation/html/*
 Documentation/latex/*
+Testing/*
