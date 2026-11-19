@@ -7,6 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 ]]
 
 FILE(GLOB_RECURSE Mosek_POTENTIAL_INCLUDE $ENV{Mosek_DIR}mosek.h)
+
+
 list(GET Mosek_POTENTIAL_INCLUDE 0 FIRSTINCLUDE)
 get_filename_component(POTMosek_INCLUDE_DIR ${FIRSTINCLUDE} DIRECTORY)
 find_path(Mosek_INCLUDE_DIR
@@ -19,6 +21,7 @@ else()
 	FILE(GLOB_RECURSE Mosek_POTENTIAL_LIB $ENV{Mosek_DIR}libmosek64_*_*${CMAKE_STATIC_LIBRARY_SUFFIX})
 ENDIF(VCPKG_PLATFORM_TOOLSET OR CMAKE_GENERATOR MATCHES "Visual Studio")
 
+message("TEST ${Mosek_POTENTIAL_LIB}")
 get_filename_component(Mosek_LIB_NAME ${Mosek_POTENTIAL_LIB} NAME)
 list(GET Mosek_POTENTIAL_LIB 0 FIRSTLIB)
 get_filename_component(POTMosek_LIB_DIR ${FIRSTLIB} DIRECTORY)

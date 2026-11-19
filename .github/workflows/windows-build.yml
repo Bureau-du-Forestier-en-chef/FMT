@@ -13,22 +13,34 @@ jobs:
     runs-on: windows-2022
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
 
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/release/vcpkg_installed
+            ${{ env.LOCALAPPDATA }}\vcpkg\archives
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-
+
       - name: Configure
         shell: cmd
         run: |
-            cmake CMakeLists.txt ^
-              -B build/release ^
-              -G "Visual Studio 17 2022" ^
-              -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
-              -DVCPKG_TARGET_TRIPLET=x64-windows ^
-              -DVCPKG_MANIFEST_MODE=ON ^
-              -DWITHOUT_TESTS=true ^
-              -DGENERATE_RELEASE_PACKAGE=true
+          cmake CMakeLists.txt ^
+            -B build/release ^
+            -G "Visual Studio 17 2022" ^
+            -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
+            -DVCPKG_TARGET_TRIPLET=x64-windows ^
+            -DVCPKG_MANIFEST_MODE=ON ^
+            -DVCPKG_MANIFEST_FEATURES="" ^
+            -DWITHOUT_TESTS=true ^
+            -DGENERATE_RELEASE_PACKAGE=true
 
       - name: Build
         run: cmake --build build/release --config Release --parallel

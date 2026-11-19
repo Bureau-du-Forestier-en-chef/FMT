@@ -25,17 +25,15 @@ set "MODULE_PATH=%MODULE_PATH:\=/%"
 set VCPKG_KEEP_ENV_VARS=MOSEK_DIR;MODULE_PATH
 ::::::::::::::::::::::::::::::::::::::::::::
 
-cmake CMakeLists.txt -B build/debug -G "Visual Studio 17 2022" -DBUILD_TYPE=Debug -T v143,version=14.36.17.6 -DPARALLEL_TESTS=8 -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DVCPKG_MANIFEST_MODE=ON
-
-
 cmake CMakeLists.txt ^
-	-B build/debug ^
-	-G "Visual Studio 17 2022" ^
-	-DBUILD_TYPE=Debug ^
-	-DPARALLEL_TESTS=8 ^
-	-DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
-	-DVCPKG_TARGET_TRIPLET=x64-windows ^
-	-DVCPKG_MANIFEST_MODE=ON 
+-B build/debug ^
+-G "Visual Studio 17 2022" ^
+-DBUILD_TYPE=Debug ^
+-DPARALLEL_TESTS=8 ^
+-DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
+-DVCPKG_TARGET_TRIPLET=x64-windows ^
+-DVCPKG_MANIFEST_MODE=ON ^
+-DVCPKG_MANIFEST_FEATURES=onnx
 
 
 cmake --build build/debug --config Debug -j 8
@@ -58,18 +56,29 @@ set "MODULE_PATH=%MODULE_PATH:\=/%"
 set VCPKG_KEEP_ENV_VARS=MOSEK_DIR;MODULE_PATH
 ::::::::::::::::::::::::::::::::::::::::::::
 
-cmake CMakeLists.txt -B build/release -G "Visual Studio 17 2022" -DBUILD_TYPE=Release -T v143,version=14.36.17.6 -DPARALLEL_TESTS=8 -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DVCPKG_MANIFEST_MODE=ON
-
 
 cmake CMakeLists.txt ^
-	-B build/release ^
-	-G "Visual Studio 17 2022" ^
-	-T v143,version=14.36.17.6 ^
-	-DBUILD_TYPE=Release ^
-	-DPARALLEL_TESTS=2 ^
-	-DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
-	-DVCPKG_TARGET_TRIPLET=x64-windows ^
-	-DVCPKG_MANIFEST_MODE=ON 
+-B build/release ^
+-G "Visual Studio 17 2022" ^
+-T v143,version=14.36.17.6 ^
+-DBUILD_TYPE=Release ^
+-DPARALLEL_TESTS=2 ^
+-DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
+-DVCPKG_TARGET_TRIPLET=x64-windows ^
+-DVCPKG_MANIFEST_MODE=ON ^
+-DVCPKG_MANIFEST_FEATURES=onnx
+
+::For static clean-up
+cmake CMakeLists.txt ^
+-B build/clang ^
+-G Ninja ^
+-DCMAKE_EXPORT_COMPILE_COMMANDS=ON ^
+-DBUILD_TYPE=Release ^
+-DWITHOUT_TESTS=true ^
+-DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
+-DVCPKG_TARGET_TRIPLET=x64-windows ^
+-DVCPKG_MANIFEST_MODE=ON ^
+-DVCPKG_MANIFEST_FEATURES=onnx
 	
 cmake --build build/release --config Release
 if errorlevel 1 set "BUILD_FAILED=1"

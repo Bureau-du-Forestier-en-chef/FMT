@@ -8,7 +8,6 @@
     },
 	"zlib",
     "boost",
-	"onnxruntime-gpu",
     "coin-or-cbc",
 	"mimalloc",
 	"gtest",
@@ -27,6 +26,14 @@
       ]
     }
   ],
+  "features": {
+    "onnx": {
+      "description": "ONNX Runtime support",
+      "dependencies": [
+        "onnxruntime-gpu"
+      ]
+    }
+  },
   "builtin-baseline": "13766fcd1292a973fea53fba731a0fb90c7ee310",
   "overrides": [
    {"name":"coin-or-osi","version":"2023-02-01"},
