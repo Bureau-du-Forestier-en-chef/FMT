@@ -35,6 +35,7 @@ jobs:
           cmake CMakeLists.txt ^
             -B build/release ^
             -G "Visual Studio 17 2022" ^
+            -DBUILD_TYPE=Release ^
             -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
             -DVCPKG_TARGET_TRIPLET=x64-windows ^
             -DVCPKG_MANIFEST_MODE=ON ^

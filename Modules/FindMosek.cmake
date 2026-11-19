@@ -15,13 +15,15 @@ find_path(Mosek_INCLUDE_DIR
           NAMES mosek.h
           PATHS ${POTMosek_INCLUDE_DIR})
 # MOSEK library detection
-if (VCPKG_PLATFORM_TOOLSET OR CMAKE_GENERATOR MATCHES "Visual Studio")
-	FILE(GLOB_RECURSE Mosek_POTENTIAL_LIB $ENV{Mosek_DIR}mosek64_*_*.lib)
+if (MSVC)
+    FILE(GLOB_RECURSE Mosek_POTENTIAL_LIB
+         "$ENV{Mosek_DIR}/mosek64_*_*.lib")
 else()
-	FILE(GLOB_RECURSE Mosek_POTENTIAL_LIB $ENV{Mosek_DIR}libmosek64_*_*${CMAKE_STATIC_LIBRARY_SUFFIX})
-ENDIF(VCPKG_PLATFORM_TOOLSET OR CMAKE_GENERATOR MATCHES "Visual Studio")
+    FILE(GLOB_RECURSE Mosek_POTENTIAL_LIB
+         "$ENV{Mosek_DIR}/libmosek64_*_*${CMAKE_STATIC_LIBRARY_SUFFIX}")
+endif()
 
-message("TEST ${Mosek_POTENTIAL_LIB}")
+
 get_filename_component(Mosek_LIB_NAME ${Mosek_POTENTIAL_LIB} NAME)
 list(GET Mosek_POTENTIAL_LIB 0 FIRSTLIB)
 get_filename_component(POTMosek_LIB_DIR ${FIRSTLIB} DIRECTORY)
