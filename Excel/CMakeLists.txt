@@ -12,8 +12,11 @@ FILE(GLOB ExcelWrapperSOURCES ${ExcelWrapperSOURCEDIR}*.cpp)
 if (MSVC AND ExcelWrapperSOURCES)
 	add_library(FMTExcelWrapper SHARED ${ExcelWrapperSOURCES})
 	target_include_directories(FMTExcelWrapper PRIVATE "${FMTINCLUDEDIR}")
-	get_target_property(FMTliblocation FMTlib LIBRARY_OUTPUT_DIRECTORY)
-	target_link_libraries(FMTExcelWrapper PRIVATE "${FMTliblocation}/${CMAKE_SHARED_LIBRARY_PREFIX}${BUILD_TYPE}/FMTlib${CMAKE_STATIC_LIBRARY_SUFFIX}")
+	target_link_libraries(
+		FMTExcelWrapper
+		PRIVATE
+		FMTlib
+	)
 	target_include_directories(FMTExcelWrapper PRIVATE ${ExcelWrapperINCLUDEDIR})
 	target_include_directories(FMTExcelWrapper PRIVATE ${Boost_INCLUDE_DIRS})
 	#target_include_directories(FMTExcelWrapper PRIVATE ${Boost_INCLUDE_DIRS})

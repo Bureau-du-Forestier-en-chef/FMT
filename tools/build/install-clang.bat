@@ -1,33 +1,38 @@
 @echo off
 setlocal
 
-echo ============================================================
-echo Installing LLVM / clang
-echo ============================================================
-echo.
+pushd "%~dp0..\.."
 
-where winget >nul 2>&1
-if errorlevel 1 (
-    echo ERROR: winget is not installed.
-    exit /b 1
-)
-
-winget install LLVM.LLVM --accept-package-agreements --accept-source-agreements
+call "%~dp0clang-tidy-fix.bat"
 
 if errorlevel 1 (
-    echo LLVM installation failed.
+    echo.
+    echo clang-tidy failed.
+    popd
+    pause
     exit /b 1
 )
 
 echo.
-echo ============================================================
-echo Installation complete
-echo ============================================================
+echo ==========================================
+echo Rebuilding project
+echo ==========================================
 echo.
 
-echo Checking installation...
-call clang-tidy --version
-call clang-format --version
+cmake --build build\clang
+
+if errorlevel 1 (
+    echo.
+    echo Build failed after clang-tidy fixes.
+    popd
+    pause
+    exit /b 1
+)
 
 echo.
+echo ==========================================
+echo Validation successful.
+echo ==========================================
+
+popd
 pause

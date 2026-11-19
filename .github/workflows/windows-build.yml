@@ -25,7 +25,7 @@ jobs:
           path: |
             build/release/vcpkg_installed
             ${{ env.LOCALAPPDATA }}\vcpkg\archives
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
           restore-keys: |
             vcpkg-${{ runner.os }}-
 
