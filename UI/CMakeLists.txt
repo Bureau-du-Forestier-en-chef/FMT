@@ -14,14 +14,18 @@ FILE(GLOB WrapperHEADER ${WrapperINCLUDEDIR}*.h*)
 if (MSVC AND WrapperSOURCES)
     add_library(FMTWrapper SHARED ${WrapperSOURCES} ${WrapperHEADER})
     target_include_directories(FMTWrapper PRIVATE "${FMTINCLUDEDIR}")
-	get_target_property(FMTliblocation FMTlib LIBRARY_OUTPUT_DIRECTORY)
 
     # Inclure les en-têtes de FMTWrapperCore
     target_include_directories(FMTWrapper PRIVATE ${WrapperCoreINCLUDEDIR})
     
     # Lier FMTWrapper à FMTWrapperCore
-	target_link_libraries(FMTWrapper PRIVATE "${FMTliblocation}/${CMAKE_SHARED_LIBRARY_PREFIX}${BUILD_TYPE}/FMTlib${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    target_link_libraries(FMTWrapper PRIVATE FMTWrapperCore)
+	# Lier FMTWrapper à FMTlib et FMTWrapperCore
+	target_link_libraries(
+		FMTWrapper
+		PRIVATE
+			FMTlib
+			FMTWrapperCore
+	)
     
     # Précompilation des en-têtes
     target_include_directories(FMTWrapper PRIVATE ${WrapperINCLUDEDIR})
@@ -30,6 +34,9 @@ if (MSVC AND WrapperSOURCES)
 
 	target_link_libraries(FMTWrapper PRIVATE ${Boost_LIBRARIES})
 	target_compile_definitions(FMTWrapper PRIVATE "-DFMTLIBIMPORT")
+	
+	target_compile_options(FMTWrapper PRIVATE /clr)
+	
 	set_property(TARGET FMTWrapper PROPERTY VS_DOTNET_REFERENCES
 		"System"
     		"System.Data"

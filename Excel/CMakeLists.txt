@@ -23,6 +23,7 @@ if (MSVC AND ExcelWrapperSOURCES)
 	target_precompile_headers(FMTExcelWrapper PRIVATE "${ExcelWrapperINCLUDEDIR}/stdafx.h")
 	target_link_libraries(FMTExcelWrapper PRIVATE ${Boost_LIBRARIES})
 	target_compile_definitions(FMTExcelWrapper PRIVATE "-DFMTLIBIMPORT")
+	target_compile_options(FMTExcelWrapper PRIVATE /clr)
 	set_property(TARGET FMTExcelWrapper PROPERTY VS_DOTNET_REFERENCES
 		"System"
     		"System.Data"

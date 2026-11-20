@@ -12,6 +12,9 @@ jobs:
   build:
     runs-on: windows-2022
 
+    env:
+      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}\vcpkg-binary-cache,readwrite
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,15 +22,12 @@ jobs:
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Cache vcpkg
-        uses: actions/cache@v4
+      - name: Restore vcpkg binary cache
+        id: restore-vcpkg-cache
+        uses: actions/cache/restore@v4
         with:
-          path: |
-            build/release/vcpkg_installed
-            ${{ env.LOCALAPPDATA }}\vcpkg\archives
+          path: vcpkg-binary-cache
           key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
-          restore-keys: |
-            vcpkg-${{ runner.os }}-
 
       - name: Configure
         shell: cmd
@@ -48,3 +48,10 @@ jobs:
 
       - name: Install
         run: cmake --install build/release --config Release
+
+      - name: Save vcpkg binary cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: vcpkg-binary-cache
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
