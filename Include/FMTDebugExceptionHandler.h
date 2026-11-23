@@ -29,7 +29,7 @@ namespace Exception
 		/**
 		@brief Default destructor for FMTDebugExceptionHandler.
 		*/
-		~FMTDebugExceptionHandler() = default;
+		~FMTDebugExceptionHandler() override = default;
 		// DocString: FMTDebugExceptionHandler::raise
 		/**
 		@brief Override the base class raise function with a debug style. See FMTExceptionHandler::raise.
@@ -66,7 +66,7 @@ namespace Exception
 		@brief clone the FMTDebugExceptionHandler
 		@return a valid cloned FMTDebugExceptionHandler
 		*/
-		virtual std::unique_ptr <FMTExceptionHandler> clone() const;
+		std::unique_ptr <FMTExceptionHandler> clone() const override;
 	private:
 		// DocString: FMTDebugExceptionHandler::serialize
 		/**

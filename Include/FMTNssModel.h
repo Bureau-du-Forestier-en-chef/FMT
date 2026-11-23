@@ -37,7 +37,7 @@ namespace Models
 			/**
 			@brief Default destructor for FMTNssModel.
 			*/
-			~FMTNssModel()=default;
+			~FMTNssModel() override=default;
 			// DocString: FMTNssModel(const FMTNssModel&)
 			/**
 			@brief Copy constructor for FMTNssModel.
@@ -79,7 +79,7 @@ namespace Models
 			@param[in] p_value to set to the p_key.
 			@return true if the parameter is set.
 			*/
-			virtual bool setParameter(const FMTintmodelparameters& p_key, const int& p_value);
+			bool setParameter(const FMTintmodelparameters& p_key, const int& p_value) override;
 			// DocString: FMTNssModel::simulate
 			/**
 			@brief Do a non spatial simulation based on the area constraints in the optimize section.
@@ -91,26 +91,26 @@ namespace Models
 			@param[in] optionaldevelopments the optional developments.
 			@return the presolved model.
 			*/
-			virtual std::unique_ptr<FMTModel>preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
+			std::unique_ptr<FMTModel>preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const override;
 			// DocString: FMTNssModel::clone
 			/**
 			@brief Get a clone of the FMTNssModel.
 			@return a unique pointer to the cloned model.
 			*/
-			virtual std::unique_ptr<FMTModel>clone() const;
+			std::unique_ptr<FMTModel>clone() const override;
 			// DocString: FMTModel::build
 			/**
 			@brief Build the model by simulating over the number of periods set as LENGTH.
 			@param[in] schedules the schedules.
 			@return true if the build succeeded else false.
 			*/
-			virtual bool build(std::vector<Core::FMTSchedule> schedules=std::vector<Core::FMTSchedule>());
+			bool build(std::vector<Core::FMTSchedule> schedules=std::vector<Core::FMTSchedule>()) override;
 			// DocString: FMTModel::solve
 			/**
 			@brief Return true; there is no solve since this is a simulation.
 			@return true.
 			*/
-			virtual bool solve()
+			bool solve() override
 			{
 				return true;
 			}
@@ -128,7 +128,7 @@ namespace Models
 			@param[in] period the period.
 			@return the copied model.
 			*/
-			virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;
+			std::unique_ptr<FMTModel> getCopy(int period = 0) const override;
 		private:
 			// DocString: FMTNssModel::save
 			/**
@@ -224,7 +224,7 @@ namespace Models
 			@brief Swap this model for the element at the end of the unique pointer.
 			@param[in,out] rhs the unique pointer to swap with.
 			*/
-			virtual void swapPtr(std::unique_ptr<FMTModel>& rhs);
+			void swapPtr(std::unique_ptr<FMTModel>& rhs) override;
 
 	};
 }

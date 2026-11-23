@@ -39,7 +39,7 @@ namespace Parallel
 		/**
 		@brief Default destructor for FMTTaskHandler.
 		*/
-		~FMTTaskHandler()=default;
+		~FMTTaskHandler() override=default;
 		// DocString: FMTTaskHandler::FMTTaskHandler(const Parallel::FMTTask&,unsigned int)
 		/**
 		@brief Constructor for Python and R taking a FMTTask by reference.

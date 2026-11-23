@@ -50,7 +50,7 @@ class FMTEXPORT FMTTransition : public FMTList<FMTFork>
 		/**
 		@brief Default destructor for FMTTransition.
 		*/
-		~FMTTransition() = default;
+		~FMTTransition() override = default;
 		// DocString: FMTTransition(const std::string&)
 		/**
 		@brief Construct a transition keeping only its name.

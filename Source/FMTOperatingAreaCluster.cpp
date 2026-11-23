@@ -124,7 +124,7 @@ namespace Heuristics
                     newbinaries.push_back(newbinary);
                     }
                 }
-			newcluster.m_binaries = newbinaries;
+			newcluster.m_binaries = std::move(newbinaries);
 			newcluster.m_centroid = m_centroid;
             }
         return newcluster;

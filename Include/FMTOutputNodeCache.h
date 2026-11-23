@@ -375,7 +375,7 @@ namespace Graph
 					{
 						if (attid != 0)
 						{
-							for (notecacheit it : potentials.at(attribute.first))
+							for (const notecacheit& it : potentials.at(attribute.first))
 							{
 								if ((*testting)->first.isSameButDifferentAction(it->first))
 								{

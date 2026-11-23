@@ -110,7 +110,7 @@ namespace Models
 		}
 		}
 
-	void FMTLpSolver::swap(FMTLpSolver& rhs)
+	void FMTLpSolver::swap(FMTLpSolver& rhs) noexcept
 	{
 		matrixcache.swap(rhs.matrixcache);
 		solvertype = rhs.solvertype;

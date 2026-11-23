@@ -7,6 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTSpatialSchedule_H
 #define FMTSpatialSchedule_H
 
+#include <utility>
+
 #include "FMTLayer.hpp"
 #include "FMTLineGraph.h"
 #include "FMTEventContainer.h"
@@ -62,7 +64,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 		/**
 		@brief Default destructor for FMTSpatialSchedule.
 		*/
-		virtual ~FMTSpatialSchedule() = default;
+		~FMTSpatialSchedule() override = default;
 		// DocString: FMTSpatialSchedule::=
 		/**
 		@brief Copy assignment operator for FMTSpatialSchedule.
@@ -636,7 +638,7 @@ class FMTEXPORT FMTSpatialSchedule : public FMTLayer<FMTVirtualLineGraph>
 			{
 			EventSpread(FMTLayer::const_iterator p_InIt,
 				FMTLayer::iterator p_OutIt, FMTEventContainer::iterator p_Event):
-				m_InEvent(p_InIt), m_OutEvent(p_OutIt), m_Event(p_Event){}
+				m_InEvent(std::move(p_InIt)), m_OutEvent(std::move(p_OutIt)), m_Event(std::move(p_Event)){}
 			FMTLayer::const_iterator m_InEvent;
 			FMTLayer::iterator  m_OutEvent;
 			FMTEventContainer::iterator m_Event;

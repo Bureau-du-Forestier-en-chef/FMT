@@ -52,7 +52,7 @@ FMTActionParser::FMTActionParser() : FMTParser()
 			{
 				if (std::find(baseoperators.begin(), baseoperators.end(), op) != baseoperators.end())
 				{
-					const std::string  yield = elements[loc - 1];
+					const std::string&  yield = elements[loc - 1];
 					if (yield == "_AGE")
 					{
 						spec.addBounds(Core::FMTAgeBounds(bounds<int>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
@@ -83,7 +83,7 @@ FMTActionParser::FMTActionParser() : FMTParser()
 				mask += elements[id] + " ";
 			}
 			mask = mask.substr(0, mask.size() - 1);
-			for (const std::string yldname : yields)
+			for (const std::string& yldname : yields)
 			{
 				if (!_isYld(ylds, yldname, Core::FMTsection::Action)) continue;
 			}

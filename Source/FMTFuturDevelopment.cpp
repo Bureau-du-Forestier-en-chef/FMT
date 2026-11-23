@@ -11,13 +11,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 
-	FMTFuturDevelopment::FMTFuturDevelopment(FMTFuturDevelopment&& rhs) :
-		FMTDevelopment(std::move(rhs))
+	FMTFuturDevelopment::FMTFuturDevelopment(FMTFuturDevelopment&& rhs) noexcept :
+		FMTDevelopment(std::move(rhs)) 
 	{
 
 	}
 
-	FMTFuturDevelopment& FMTFuturDevelopment::operator=(FMTFuturDevelopment&& rhs)
+	FMTFuturDevelopment& FMTFuturDevelopment::operator=(FMTFuturDevelopment&& rhs) noexcept
 	{
 		FMTDevelopment::operator=(std::move(rhs));
 		return *this;
@@ -25,10 +25,8 @@ namespace Core
 
 	FMTFuturDevelopment::FMTFuturDevelopment() :FMTDevelopment() {}
 
-	FMTFuturDevelopment::FMTFuturDevelopment(const FMTFuturDevelopment& rhs) : FMTDevelopment(rhs)
-	{
-
-	}
+	FMTFuturDevelopment::FMTFuturDevelopment(const FMTFuturDevelopment& rhs)  
+	= default;
 	FMTFuturDevelopment::FMTFuturDevelopment(const FMTDevelopment& dev) : FMTDevelopment(dev) {}
 
 	FMTFuturDevelopment& FMTFuturDevelopment::operator = (const FMTFuturDevelopment& rhs)

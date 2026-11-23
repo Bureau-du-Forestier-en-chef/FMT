@@ -42,7 +42,7 @@ namespace Parser
 		/**
 		@brief Default destructor for FMTLandscapeParser.
 		*/
-		~FMTLandscapeParser()=default;
+		~FMTLandscapeParser() override=default;
 		// DocString: FMTLandscapeParser::FMTLandscapeParser(const FMTLandscapeParser&)
 		/**
 		@brief Copy constructor for FMTLandscapeParser.
@@ -135,7 +135,7 @@ namespace Parser
 			@brief Clear the declarations of a theme.
 			@param[in] nameID the theme name.
 			*/
-			void clearTheme(std::string nameID);
+			void clearTheme(const std::string& nameID);
 		};
 		// DocString: FMTLandscapeParser::_processPreDeclarationLine
 		/**

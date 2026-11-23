@@ -35,7 +35,7 @@ namespace Exception
 		/**
 		@brief Default destructor for FMTWarning.
 		*/
-		~FMTWarning()=default;
+		~FMTWarning() override=default;
 		// DocString: FMTWarning::operator=
 		/**
 		@brief Default copy assignment operator for FMTWarning.

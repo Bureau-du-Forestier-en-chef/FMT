@@ -24,7 +24,7 @@ class FMTEXPORT FMTAgeBounds : public FMTBounds<int>
 
 public:
     FMTAgeBounds();
-    ~FMTAgeBounds() = default;
+    ~FMTAgeBounds() override = default;
     FMTAgeBounds(FMTsection section, const int& upper, const int& lower);
     FMTAgeBounds(FMTsection section, FMTkwor key, const int& upper, const int& lower);
     FMTAgeBounds(const FMTAgeBounds& rhs);

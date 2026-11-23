@@ -17,10 +17,8 @@ FMTExpression::FMTExpression():m_infix()
 
 	}
 
-FMTExpression::FMTExpression(const FMTExpression& rhs) : m_infix(rhs.m_infix)
-	{
-
-	}
+FMTExpression::FMTExpression(const FMTExpression& rhs)  
+	= default;
 
 FMTExpression& FMTExpression::operator = (const FMTExpression& rhs)
 	{
@@ -48,7 +46,7 @@ std::vector<std::string> FMTExpression::_getPostFix(const std::vector<std::strin
 	std::stack<std::string> values;
 	std::stack<bool>function_parenthesis;
 	bool function_start = false;
-	const std::vector<std::string>infixes = localinfix;
+	const std::vector<std::string>&infixes = localinfix;
 	std::vector<std::string>postfix;
 	//https://stackoverflow.com/questions/11708195/infix-to-postfix-with-function-support
 	//http://interactivepython.org/runestone/static/pythonds/BasicDS/InfixPrefixandPostfixExpressions.html

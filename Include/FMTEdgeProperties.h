@@ -29,7 +29,7 @@ namespace Graph
 		/**
 		@brief Default destructor for FMTEdgeProperties.
 		*/
-		~FMTEdgeProperties() = default;
+		~FMTEdgeProperties() override = default;
 		// DocString: FMTEdgeProperties()
 		/**
 		@brief Default constructor for FMTEdgeProperties.

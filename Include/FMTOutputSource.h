@@ -16,7 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTutility.h"
 #include <unordered_set>
 #include "FMTDevelopment.h"
-#include "FMTspec.h"
+#include "FMTSpec.h"
 
 
 namespace Graph
@@ -53,7 +53,7 @@ class FMTEXPORT FMTOutputSource : public FMTSpec
 		/**
 		@brief Default destructor for FMTOutputSource.
 		*/
-		~FMTOutputSource() = default;
+		~FMTOutputSource() override = default;
         // DocString: FMTOutputSource(const FMTotar,double,std::string,std::string,int,int)
         /**
         @brief Construct an output source from a target and optional value, yield, action, origin and theme target.

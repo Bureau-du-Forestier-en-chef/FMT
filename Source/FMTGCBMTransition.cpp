@@ -20,10 +20,8 @@ FMTGCBMTransition::FMTGCBMTransition(const int& lageafter, const std::map<std::s
 
 	}
 
-FMTGCBMTransition::FMTGCBMTransition(const FMTGCBMTransition& rhs):ageafter(rhs.ageafter), themes(rhs.themes), name(rhs.name)
-	{
-
-	}
+FMTGCBMTransition::FMTGCBMTransition(const FMTGCBMTransition& rhs) 
+	= default;
 FMTGCBMTransition& FMTGCBMTransition::operator = (const FMTGCBMTransition& rhs)
 	{
 	if (this != &rhs)

@@ -43,7 +43,7 @@ class FMTEXPORT FMTOutputParser : public FMTParser
 		/**
 		@brief Default destructor for FMTOutputParser.
 		*/
-		~FMTOutputParser() = default;
+		~FMTOutputParser() override = default;
 		// DocString: FMTOutputParser(const FMTOutputParser&)
 		/**
 		@brief Copy constructor for FMTOutputParser.
@@ -83,12 +83,12 @@ class FMTEXPORT FMTOutputParser : public FMTParser
 		@param[in] outputsnames the output names to add, all if empty.
 		@return the outputs.
 		*/
-		std::vector<Core::FMTOutput> addOutputs(const std::vector<Core::FMTOutput> oldoutputs, 
+		std::vector<Core::FMTOutput> addOutputs(const std::vector<Core::FMTOutput>& oldoutputs, 
 							const std::vector<Core::FMTTheme>& themes,
                             const std::vector<Core::FMTAction>& actions,
                             const Core::FMTYields& ylds,const Core::FMTConstants& constants,
 							const std::string& location,
-							std::vector<std::string> outputsnames = std::vector<std::string>());
+							const std::vector<std::string>& outputsnames = std::vector<std::string>());
 		// DocString: FMTOutputParser::write
 		/**
 		@brief Write a vector of outputs to a file.

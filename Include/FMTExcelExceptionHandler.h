@@ -40,9 +40,9 @@ namespace Exception
 		@param[in] throwit if true throws the exception.
 		@return the raised FMTException.
 		*/
-		virtual FMTException raise(FMTexc lexception, std::string text,
+		FMTException raise(FMTexc lexception, std::string text,
 			const std::string& method, const int& line, const std::string& file,
-			Core::FMTsection lsection = Core::FMTsection::Empty, bool throwit = true);
+			Core::FMTsection lsection = Core::FMTsection::Empty, bool throwit = true) override;
 		// DocString: FMTExcelExceptionHandler()
 		/**
 		@brief Default constructor for FMTExcelExceptionHandler.
@@ -53,7 +53,7 @@ namespace Exception
 		@brief clone the FMTExcelExceptionHandler.
 		@return a unique pointer to the cloned exception handler.
 		*/
-		virtual std::unique_ptr <FMTExceptionHandler> clone() const;
+		std::unique_ptr <FMTExceptionHandler> clone() const override;
 	private:
 		std::unordered_map<int, std::vector<std::string>>m_build_exceptions;
 	};

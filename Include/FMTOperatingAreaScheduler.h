@@ -375,7 +375,7 @@ namespace Heuristics
 		/**
 		@brief Destructor for FMTOperatingAreaScheduler.
 		*/
-		~FMTOperatingAreaScheduler();
+		~FMTOperatingAreaScheduler() override;
 	};
 }
 BOOST_CLASS_EXPORT_KEY(Heuristics::FMTOperatingAreaScheduler)

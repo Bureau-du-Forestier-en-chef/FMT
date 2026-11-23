@@ -67,7 +67,7 @@ namespace Spatial
 			/**
 			@brief Default destructor for FMTSolutionTracker.
 			*/
-			~FMTSolutionTracker() = default;
+			~FMTSolutionTracker() override = default;
 			// DocString: FMTSolutionTracker::addToSolution
 			/**
 			@brief Add a line graph to the solution for a constraint family, updating the tracked constraint values.
@@ -111,7 +111,7 @@ namespace Spatial
 			@brief Swap this FMTSolutionTracker with another one.
 			@param[in,out] p_tracker the FMTSolutionTracker to swap with.
 			*/
-			void swap(FMTSolutionTracker& p_tracker);
+			void swap(FMTSolutionTracker& p_tracker) noexcept ;
 			// DocString: FMTSolutionTracker::getNonSpatialCellsCount
 			/**
 			@brief Return the number of non spatial cells.

@@ -79,7 +79,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		@return the forest layer.
 		*/
 		Spatial::FMTForest readRasters(const std::vector<Core::FMTTheme>& themes, const std::vector<std::string>& data_rasters,
-			const std::string& age, double agefactor = 1.0, double areafactor = 0.0001, std::string lock = "") const;
+			const std::string& age, double agefactor = 1.0, double areafactor = 0.0001, const std::string& lock = "") const;
 		// DocString: FMTAreaParser::writeLayer
 		/**
 		@brief Write a layer into a raster file, with a mapping for categorical variables.
@@ -91,7 +91,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		@return true if the layer is written else false.
 		*/
 		template<typename T>
-		bool writeLayer(const Spatial::FMTLayer<T>& layer, std::string location, const std::map<T, std::string>& mapping, std::string format = "GTiff") const;
+		bool writeLayer(const Spatial::FMTLayer<T>& layer, const std::string& location, const std::map<T, std::string>& mapping, const std::string& format = "GTiff") const;
 		// DocString: FMTAreaParser::writeLayer
 		/**
 		@brief Write a double layer into a raster file.
@@ -100,7 +100,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		@param[in] format the format.
 		@return true if the layer is written else false.
 		*/
-		bool writeLayer(const Spatial::FMTLayer<double>& layer, std::string location, std::string format = "GTiff") const;
+		bool writeLayer(const Spatial::FMTLayer<double>& layer, const std::string& location, std::string format = "GTiff") const;
 		// DocString: FMTAreaParser::writeForest
 		/**
 		@brief Write a forest into multiple raster files.
@@ -283,7 +283,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		*/
 		std::vector<Core::FMTActualDevelopment>readVectors(const std::vector<Core::FMTTheme>& themes, const std::string& data_vectors,
 			const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
-			double areafactor = 1, std::string lockfield = "",
+			double areafactor = 1, const std::string& lockfield = "",
 			double minimalarea = 0.0) const;
 		// DocString: FMTAreaParser::vectormaptoFMTforest
 		/**
@@ -304,7 +304,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		Spatial::FMTForest vectormaptoFMTforest(const std::string& data_vectors,
 			const int& resolution, const std::vector<Core::FMTTheme>& themes,
 			const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
-			double areafactor = 1, std::string lockfield = "",
+			double areafactor = 1, const std::string& lockfield = "",
 			double minimalarea = 0.0, const std::string& writeforestfolder = "",
 			const bool& fittoforel = true) const;
 		// DocString: FMTAreaParser::vectormaptoFMTforest
@@ -343,7 +343,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		@param[in] p_folder the folder.
 		*/
 		void writeForestExtended(Spatial::FMTForest& p_forest,const std::string& p_VectorFile,
-						const std::vector<Core::FMTTheme> p_themes,
+						const std::vector<Core::FMTTheme>& p_themes,
 						const std::vector<Core::FMTActualDevelopment>& p_area,
 							const std::string& p_folder) const;
 
@@ -357,7 +357,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 		/**
 		@brief Default destructor for FMTAreaParser.
 		*/
-		~FMTAreaParser() = default;
+		~FMTAreaParser() override = default;
 		// DocString: FMTAreaParser(const FMTAreaParser&)
 		/**
 		@brief Copy constructor for FMTAreaParser.
@@ -585,7 +585,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			std::vector<OGRMultiPolygon> _getMultiPolygons(const std::vector<Heuristics::FMTOperatingArea>& operatingareas,
 				const std::vector<Core::FMTTheme>& themes, const std::string& data_vectors,
 				const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
-				double areafactor = 1, std::string lockfield = "",
+				double areafactor = 1, const std::string& lockfield = "",
 				double minimal_area = 0.0) const;
 			// DocString: FMTareaparser::_getNeighborsFromPolygons
 			/**
@@ -634,7 +634,7 @@ class FMTEXPORT FMTAreaParser : public FMTParser
 			 * @return The calculated area as a double; returns 0.0 if the geometry is invalid,
 			 *         nullptr, or not a polygonal type.
 			 */
-			static double _GetGeometryArea(const OGRGeometry* p_geometry);
+			static double GetGeometryArea(const OGRGeometry* p_geometry);
 		#endif
 			// DocString: FMTAreaParser::_getFMTforestfromlayer
 			/**

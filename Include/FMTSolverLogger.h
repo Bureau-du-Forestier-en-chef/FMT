@@ -40,7 +40,7 @@ namespace Logging
 			/**
 			@brief Default destructor for FMTSolverLogger.
 			*/
-			virtual ~FMTSolverLogger();
+			~FMTSolverLogger() override;
 			// DocString: FMTSolverLogger(const FMTsolverlogge&)
 			/**
 			@brief Default copy constructor for FMTSolverLogger.

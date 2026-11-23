@@ -57,7 +57,7 @@ class FMTEXPORT FMTTheme : public FMTObject
 		/**
 		@brief Default destructor for FMTTheme.
 		*/
-		~FMTTheme() = default;
+		~FMTTheme() override = default;
 		// DocString: FMTTheme(const std::vector<std::string>&,const std::vector<std::string>&,const std::vector<std::vector<std::string>>,const std::vector<std::map<std::string, double>>&,const size_t&, const size_t&, const std::string&)
 		/**
 		@brief Constructor used for theme indexing with indexes.
@@ -315,7 +315,7 @@ class FMTEXPORT FMTTheme : public FMTObject
 		@return true if the mask is valid else false.
 		*/
 		static bool validate(const std::vector<Core::FMTTheme>& p_themes,
-			std::string& p_mask, std::string p_otherinformation = std::string());
+			std::string& p_mask, const std::string& p_otherinformation = std::string());
 		// DocString: FMTObject::theme
 		/**
 		@brief Validate the mask string for a vector of themes and throw an exception if something is wrong, called by validate.

@@ -17,7 +17,7 @@ namespace Spatial
     FMTCoordinate::FMTCoordinate():m_x(), m_y(){}
     FMTCoordinate::FMTCoordinate(uint16_t p_x, uint16_t p_y):
         m_x(p_x),m_y(p_y){}
-    FMTCoordinate::FMTCoordinate(const FMTCoordinate& rhs):m_x(rhs.m_x), m_y(rhs.m_y){}
+    FMTCoordinate::FMTCoordinate(const FMTCoordinate& rhs) = default;
 
     FMTCoordinate FMTCoordinate::at(unsigned int id) const
         {

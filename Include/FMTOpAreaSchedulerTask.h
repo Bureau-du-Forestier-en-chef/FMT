@@ -166,13 +166,13 @@ namespace Parallel
 		/**
 		@brief Destructor for FMTOpAreaSchedulerTask, taking care of writing the solution.
 		*/
-		virtual ~FMTOpAreaSchedulerTask()=default;
+		~FMTOpAreaSchedulerTask() override=default;
 		// DocString: FMTOpAreaSchedulerTask::clone
 		/**
 		@brief Clone function for FMTOpAreaSchedulerTask.
 		@return a unique pointer to the cloned task.
 		*/
-		std::unique_ptr<FMTTask>clone() const;
+		std::unique_ptr<FMTTask>clone() const override;
 		// DocString: FMTOpAreaSchedulerTask::FMTOpAreaSchedulerTask(...)
 		/**
 		@brief Construct a FMTOpAreaSchedulerTask from a model, calling doPlanning on it and obtaining the operating area schemes from the FMTLpModel.
@@ -193,30 +193,30 @@ namespace Parallel
 			const std::string& outputyieldname,
 			const unsigned int& maxiterations,
 			const int& maxtime,
-			Core::FMTOutput returntime_output = Core::FMTOutput());
+			const Core::FMTOutput& returntime_output = Core::FMTOutput());
 		// DocString: FMTOpAreaSchedulerTask::split
 		/**
 		@brief Split the main task into multiple operating area scheduler tasks.
 		@param[in] numberoftasks the number of tasks.
 		@return the split tasks.
 		*/
-		virtual std::vector<std::unique_ptr<FMTTask>>split(const unsigned int& numberoftasks) const;
+		std::vector<std::unique_ptr<FMTTask>>split(const unsigned int& numberoftasks) const override;
 		// DocString: FMTOpAreaSchedulerTask::spawn
 		/**
 		@brief Spawn a minimal task from the master task.
 		@return a unique pointer to the spawned task.
 		*/
-		virtual std::unique_ptr<FMTTask>spawn();
+		std::unique_ptr<FMTTask>spawn() override;
 		// DocString: FMTOpAreaSchedulerTask::work
 		/**
 		@brief Main function doing the operating area scheduling task.
 		*/
-		virtual void work();
+		void work() override;
 		// DocString: FMTOpAreaSchedulerTask::finalize
 		/**
 		@brief Write the solution at finalization.
 		*/
-		virtual void finalize();
+		void finalize() override;
 		// DocString: FMTopareaschedulertask::passInLogger
 		/**
 		@brief Pass in the logger.

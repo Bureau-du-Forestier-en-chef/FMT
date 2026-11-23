@@ -65,7 +65,7 @@ class FMTEXPORT FMTOperatingAreaClusterer : public FMTLpHeuristic
 		 /**
 		 @brief Default destructor for FMTOperatingAreaClusterer.
 		 */
-		~FMTOperatingAreaClusterer() = default;
+		~FMTOperatingAreaClusterer() override = default;
 		// DocString: FMTOperatingAreaClusterer::getBinariesCount
 		/**
 		@brief Get the number of binaries in the whole problem.

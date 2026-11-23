@@ -61,7 +61,7 @@ Core::FMTMask FMTTransitionParser::getSource(std::string& line, Core::FMTSpec& s
 			rest = rest.substr(0, rest.size() - 1);
 			Core::FMTTheme::validate(themes, mask, " at line " + std::to_string(m_line));
 			const Core::FMTMask newmask(mask, themes);
-			rest += " ";
+			rest += ' ';
 			rest = _setSpec(Core::FMTsection::Transition, Core::FMTkwor::Source, ylds, constants, spec, rest);
 			return newmask;
 		}

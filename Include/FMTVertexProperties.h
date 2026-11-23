@@ -36,7 +36,7 @@ namespace Graph
 			/**
 			@brief Default destructor for FMTVertexProperties.
 			*/
-			~FMTVertexProperties() = default;
+			~FMTVertexProperties() override = default;
 			// DocString: FMTVertexProperties()
 			/**
 			@brief Default constructor for FMTVertexProperties.

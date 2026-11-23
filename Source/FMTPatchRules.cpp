@@ -170,7 +170,7 @@ namespace Spatial
 			{
 			for (int period = p_event.getPeriod(); period <= p_event.getPeriod() + m_GreenUp; ++period)
 				{
-				for (const FMTEventContainer::const_iterator eventIt : p_events.getEvents(period, m_RulesId))
+				for (const FMTEventContainer::const_iterator& eventIt : p_events.getEvents(period, m_RulesId))
 					{
 					if (*eventIt != p_event &&
 						p_event.within(m_MinimalAdjacency, *eventIt))
@@ -193,7 +193,7 @@ namespace Spatial
 				{
 				for (int period = m_MinimalPeriod; period <= m_MaximalPeriod; ++period)
 					{
-					for (const FMTEventContainer::const_iterator eventIt : p_events.getEvents(period, m_RulesId))
+					for (const FMTEventContainer::const_iterator& eventIt : p_events.getEvents(period, m_RulesId))
 						{
 						
 						}

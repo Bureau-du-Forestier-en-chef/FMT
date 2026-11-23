@@ -91,7 +91,7 @@ class FMTEXPORT FMTMaskFilter
 		@brief Swap this filter with another.
 		@param[in,out] rhs the filter to swap with.
 		*/
-		void swap(FMTMaskFilter& rhs);
+		void swap(FMTMaskFilter& rhs) noexcept ;
 		// DocString: FMTMaskFilter::preSolve
 		/**
 		@brief Return a presolved copy of the filter.

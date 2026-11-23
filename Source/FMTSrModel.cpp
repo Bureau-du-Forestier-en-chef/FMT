@@ -289,7 +289,7 @@ namespace Models
 									{
 										foundoutvar = true;
 										std::vector<Core::FMTDevelopmentPath> paths = m_graph->getPaths(*vertex_iterator, varit->first);
-										for (const Core::FMTDevelopmentPath path : paths)
+										for (const Core::FMTDevelopmentPath& path : paths)
 										{
 											if (path.getDevelopment().getPeriod() == period && processed.find(path.getDevelopment()) == processed.end())
 											{
@@ -385,7 +385,7 @@ namespace Models
 							{
 								foundoutvar = true;
 								std::vector<Core::FMTDevelopmentPath> paths = m_graph->getPaths(first, varit->first);
-								for (const Core::FMTDevelopmentPath path : paths)
+								for (const Core::FMTDevelopmentPath& path : paths)
 								{
 									if (path.getDevelopment().getPeriod() == period && processed.find(path.getDevelopment()) == processed.end())
 									{
@@ -559,7 +559,8 @@ namespace Models
 										const std::pair<size_t, size_t>& b) {return a.second < b.second; });
 
 								std::vector<std::pair<Core::FMTDevelopment, double>>sortedlocksfound;
-								for (const std::pair<size_t, size_t>& id : locksorter)
+								sortedlocksfound.reserve(locksorter.size());
+for (const std::pair<size_t, size_t>& id : locksorter)
 								{
 									sortedlocksfound.push_back(locksfound.at(id.first));
 								}
@@ -689,7 +690,7 @@ namespace Models
 						for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 						{
 							std::vector<Core::FMTDevelopmentPath> paths = m_graph->getPaths(*vertex_iterator, varit->first);
-							for (const Core::FMTDevelopmentPath path : paths)
+							for (const Core::FMTDevelopmentPath& path : paths)
 							{
 								if (path.getDevelopment().getPeriod() == period && processed.find(path.getDevelopment()) == processed.end())
 								{
@@ -725,7 +726,7 @@ namespace Models
 									}
 								}
 								locking.pop_back();
-								locking += ")";
+								locking += ')';
 							}
 
 							const Exception::FMTexc EXCEPTION = WILL_THROW ? Exception::FMTexc::FMTinvalid_number : Exception::FMTexc::FMTignore;
@@ -761,7 +762,7 @@ namespace Models
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
 						std::vector<Core::FMTDevelopmentPath> paths = m_graph->getPaths(first, varit->first);
-						for (const Core::FMTDevelopmentPath path : paths)
+						for (const Core::FMTDevelopmentPath& path : paths)
 						{
 							if (path.getDevelopment().getPeriod() == period && processed.find(path.getDevelopment()) == processed.end())
 							{
@@ -1304,7 +1305,7 @@ namespace Models
 
 
 
-	Graph::FMTGraphStats FMTSrModel::buildPeriod(Core::FMTSchedule schedule, bool forcepartialbuild, int compressageclassoperability)
+	Graph::FMTGraphStats FMTSrModel::buildPeriod(const Core::FMTSchedule& schedule, bool forcepartialbuild, int compressageclassoperability)
 	{
 		try {
 			std::queue<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor> actives = getActives();
@@ -1403,7 +1404,7 @@ namespace Models
 			const std::vector<Core::FMTAction>& presolveactions = this->actions;
 			std::vector<int>actionmapping;
 			actionmapping.reserve(presolveactions.size());
-			for (const Core::FMTAction action : presolveactions)
+			for (const Core::FMTAction& action : presolveactions)
 			{
 				const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTActionComparator(action.getName()))));
 				actionmapping.push_back(loc);

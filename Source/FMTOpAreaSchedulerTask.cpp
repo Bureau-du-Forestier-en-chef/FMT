@@ -148,7 +148,7 @@ namespace Parallel
 		const std::string& outputyieldname,
 		const unsigned int& maxiterations,
 		const int& maxtime,
-		Core::FMTOutput returntime_output):
+		const Core::FMTOutput& returntime_output):
 		bestscheduler(new Heuristics::FMTOperatingAreaScheduler()),
 		actualscheduler(),
 		lastspawned(0)

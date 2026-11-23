@@ -270,7 +270,7 @@ namespace Python
 		*/
 		static void* convertible(PyObject* object)
 		{
-			return PyObject_GetIter(object) ? object : NULL;
+			return PyObject_GetIter(object) ? object : nullptr;
 		}
 
 		// DocString: Python::iterable_converter::construct
@@ -404,7 +404,7 @@ namespace Python
 		PyErr_SetString(PyExc_UserWarning, e.what());
 	}
 
-	PyObject* FMTexceptiontype = NULL;
+	PyObject* FMTexceptiontype = nullptr;
 
 	// DocString: Python::FMTtranslate_error
 	/**
@@ -468,8 +468,8 @@ namespace Python
 		*/
 		static void* convertible(PyObject* obj)
 		{
-			if (!PyTuple_CheckExact(obj)) return 0;
-			if (PyTuple_Size(obj) != 2) return 0;
+			if (!PyTuple_CheckExact(obj)) return nullptr;
+			if (PyTuple_Size(obj) != 2) return nullptr;
 			return obj;
 		}
 		// DocString: Python::PythonToPairConverter::construct

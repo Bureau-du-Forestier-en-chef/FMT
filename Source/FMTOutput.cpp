@@ -18,6 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <queue>
 #include <boost/regex/config.hpp>
 #include <array>
+#include <utility>
 #include "FMTExceptionHandler.h"
 
 namespace Core{
@@ -43,16 +44,9 @@ FMTOutput::FMTOutput() : FMTObject(),m_sources(),m_operators(),m_name(),m_descri
 
     }
 
-FMTOutput::FMTOutput(const FMTOutput& rhs) :
-	FMTObject(rhs),
-    m_sources(rhs.m_sources),
-    m_operators(rhs.m_operators),
-    m_name(rhs.m_name),
-    m_description(rhs.m_description),
-	m_group(rhs.m_group)
-    {
-
-    }
+FMTOutput::FMTOutput(const FMTOutput& rhs) 
+	
+    = default;
 FMTOutput& FMTOutput::operator = (const FMTOutput& rhs)
     {
     if (this!=&rhs)
@@ -172,8 +166,8 @@ FMTOutput& FMTOutput::operator  *= (const FMTOutputSource& p_source)
 
 				++location;
 			}
-			m_sources = new_sources;
-			m_operators = new_operators;
+			m_sources = std::move(new_sources);
+			m_operators = std::move(new_operators);
 		}
 	}
 	catch (...)
@@ -215,8 +209,8 @@ FMTOutput& FMTOutput::operator /=(const FMTOutputSource& p_source)
 			}
 			++location;
 		}
-		m_sources = new_sources;
-		m_operators = new_operators;
+		m_sources = std::move(new_sources);
+		m_operators = std::move(new_operators);
 	}
 	}
 	catch (...)
@@ -250,7 +244,7 @@ FMTOutput::operator std::string() const
 					line += FMTOutputSource::trimDouble(std::to_string(value)) + " ";
 				}
 				line.pop_back();
-				line += "\n";
+				line += '\n';
 
 			}
 			else if (!isOnlyLevel())
@@ -264,7 +258,7 @@ FMTOutput::operator std::string() const
 						m_operators[id].isFactor() ? line += std::string(m_operators[id]) + " " : line += std::string(m_operators[id]) + "\n";
 					}
 				}
-				line += "\n";
+				line += '\n';
 			}
 		}
 	}
@@ -580,7 +574,7 @@ double FMTOutput::shuntingYard(const std::vector<double>& sourcevalues,const std
 	return 0;
 	}
 
-FMTOutput FMTOutput::boundTo(const std::vector<FMTTheme>& themes, const FMTPerBounds& bound,const std::string& specialbound, std::string attribute) const
+FMTOutput FMTOutput::boundTo(const std::vector<FMTTheme>& themes, const FMTPerBounds& bound,const std::string& specialbound, const std::string& attribute) const
 	{
 	FMTOutput newoutput(*this);
 	try {
@@ -614,11 +608,11 @@ FMTOutput FMTOutput::boundTo(const std::vector<FMTTheme>& themes, const FMTPerBo
 			name += "(" + newoutput.m_name;
 			if (!bound.empty())
 			{
-				name += ",";
+				name += ',';
 				name += std::to_string(bound.getLower()) + "..";
 				name += std::to_string(bound.getUpper());
 			}
-			name += ")";
+			name += ')';
 			newoutput.m_name = name;
 		}
 		//if (!newoutput.isLevel())
@@ -886,22 +880,22 @@ FMTOutput FMTOutput::preSolve(const FMTMaskFilter& filter,
 		size_t operatorid = 0;
 		bool pushfactor = true;
 		bool turntonegative = false;
-		for (size_t sourceid = 0; sourceid < m_sources.size(); ++sourceid)
+		for (const auto & m_source : m_sources)
 		{
 			bool pushedsource = true;
-			const std::string& yieldname = m_sources.at(sourceid).getYield();
-			if (m_sources.at(sourceid).isVariable())
+			const std::string& yieldname = m_source.getYield();
+			if (m_source.isVariable())
 			{
-				const std::string& actionname = m_sources.at(sourceid).getAction();
+				const std::string& actionname = m_source.getAction();
 				const bool IS_VALId_ACTION = _isValidAction(actionname,actions, p_valideActions);
-				if (filter.canPreSolve(m_sources.at(sourceid).getMask(), selectedthemes) &&
+				if (filter.canPreSolve(m_source.getMask(), selectedthemes) &&
 					(actionname.empty() ||
 						IS_VALId_ACTION) &&
 						(yieldname.empty() || !yields.isNullYld(yieldname)))
 				{
 					if (!filter.emptyFlipped())
 					{
-						newsources.push_back(m_sources.at(sourceid).preSolve(filter, newthemes));
+						newsources.push_back(m_source.preSolve(filter, newthemes));
 						pushfactor = true;
 					}else {
 						pushedsource = false;
@@ -912,21 +906,21 @@ FMTOutput FMTOutput::preSolve(const FMTMaskFilter& filter,
 					pushedsource = false;
 				}
 			}
-			else if (pushfactor&&!m_sources.at(sourceid).isVariable() && (m_sources.at(sourceid).isLevel() || (m_sources.at(sourceid).isTimeYield() && !yields.isNullYld(yieldname)) ||
-				(m_sources.at(sourceid).isConstant())))
+			else if (pushfactor&&!m_source.isVariable() && (m_source.isLevel() || (m_source.isTimeYield() && !yields.isNullYld(yieldname)) ||
+				(m_source.isConstant())))
 			{
 				pushedsource = true;
 				if (turntonegative)
 				{
-					newsources.push_back(FMTOutputSource(m_sources.at(sourceid).getTarget(),
-						m_sources.at(sourceid).getValue()*-1,
-						m_sources.at(sourceid).getYield(),
-						m_sources.at(sourceid).getAction(),
-						m_sources.at(sourceid).getOutputOrigin(),
-						m_sources.at(sourceid).getThemeTarget()));
+					newsources.push_back(FMTOutputSource(m_source.getTarget(),
+						m_source.getValue()*-1,
+						m_source.getYield(),
+						m_source.getAction(),
+						m_source.getOutputOrigin(),
+						m_source.getThemeTarget()));
 				}
 				else {
-					newsources.push_back(m_sources.at(sourceid));
+					newsources.push_back(m_source);
 				}
 			}
 			else {
@@ -1001,8 +995,8 @@ Core::FMTOutput FMTOutput::removeRHSvalue() const
 			}
 			++opid;
 		}
-		newoutput.m_sources = newsources;
-		newoutput.m_operators = newoperators;
+		newoutput.m_sources = std::move(newsources);
+		newoutput.m_operators = std::move(newoperators);
 	}catch (...)
 		{
 		_exhandler->raiseFromCatch("for " + this->getName(),
@@ -1149,7 +1143,7 @@ std::vector<std::string> FMTOutput::getThemeDecomposition(const FMTTheme& theme)
 		{
 			if (source.isVariable())
 			{
-				const FMTMask srcmask = source.getMask();
+				const FMTMask& srcmask = source.getMask();
 				const std::vector<FMTMask> ALL_MASKS = srcmask.decompose(theme);
 				std::vector<std::string>unique_selection(ALL_MASKS.size());
 				for (size_t Id = 0; Id < ALL_MASKS.size();++Id)
@@ -1283,7 +1277,7 @@ std::vector<const Core::FMTTheme*>FMTOutput::getStaticThemes(const std::vector<C
 					{
 					statics = source.getMask().getStaticThemes(statics);
 					}
-				const std::string yieldvalue = source.getYield();
+				const std::string& yieldvalue = source.getYield();
 				for (const std::string& yldbound : source.getYlds())
 					{
 					if (yields.isYld(yldbound))
@@ -1368,7 +1362,7 @@ bool FMTOutput::isInventory() const
 	return false;
 	}
 
-void FMTOutput::fillFromShuntingYard(const std::vector<std::string>baseeq,
+void FMTOutput::fillFromShuntingYard(const std::vector<std::string>&baseeq,
 						std::map<std::string, double>& results,
 						const std::vector<Core::FMTOutputNode>& nodes,
 						std::map<std::string,std::vector<std::string>>& allequations) const
@@ -1408,7 +1402,7 @@ FMTTheme FMTOutput::targetTheme(const std::vector<FMTTheme>& themes) const
 	}
 
 
-FMTOutputComparator::FMTOutputComparator(std::string name) : m_outputName(name)
+FMTOutputComparator::FMTOutputComparator(std::string name) : m_outputName(std::move(name))
 	{
 
 	}
@@ -1424,10 +1418,10 @@ bool FMTOutput::_sourceCounter(const std::string& p_source) const
 	//const int MAXSIZE = 256;
 	int count = 0;
 
-	for (std::size_t i = 0; i < p_source.size(); ++i) {
+	for (char i : p_source) {
 		try
 		{
-			if (p_source[i] == '\n')
+			if (i == '\n')
 			{
 				count = 0;
 			}
@@ -1459,8 +1453,8 @@ bool FMTOutput::_verifyOperatorOrder() const
 {
 	bool need_change = false;
 	int count = 0;
-	for (size_t i = 0; i < m_operators.size(); ++i) {
-		Core::FMTokey op = m_operators[i].getKey();
+	for (const auto & m_operator : m_operators) {
+		Core::FMTokey op = m_operator.getKey();
 		if (op == Core::FMTokey::multiply || op == Core::FMTokey::divide) {
 			count++;
 		}
@@ -1545,7 +1539,7 @@ std::string FMTOutput::_operatorFormat() const
 		{
 			newLine += op_str + " ";
 			if (op == Core::FMTokey::add || op == Core::FMTokey::sub) {
-				newLine += "\n";
+				newLine += '\n';
 			}
 		}
 		else if (op_count == 2 && i < last_operator_position)

@@ -48,7 +48,7 @@ class FMTEXPORT FMTVersion : public Core::FMTObject
 		/**
 		@brief Default destructor for FMTVersion.
 		*/
-		~FMTVersion()=default;
+		~FMTVersion() override=default;
 		// DocString: FMTVersion::getMajor
 		/**
 		@brief Return the major version of FMT.

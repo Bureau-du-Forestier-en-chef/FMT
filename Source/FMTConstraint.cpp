@@ -36,13 +36,9 @@ namespace Core
 		{
 
 		}
-	FMTConstraint::FMTConstraint(const FMTConstraint& rhs) :
-		FMTOutput(rhs),
-		FMTSpec(rhs),
-		m_type(rhs.m_type)
-		{
-
-		}
+	FMTConstraint::FMTConstraint(const FMTConstraint& rhs) 
+		
+		= default;
 	FMTConstraint& FMTConstraint::operator = (const FMTConstraint& rhs)
 		{
 		if (this!=&rhs)
@@ -102,12 +98,12 @@ namespace Core
 		std::vector<std::string>penalties;
         if (!this->emptyYlds())
 			{
-			for (size_t id = 0; id < yieldnames.size(); ++id)
+			for (const auto & yieldname : yieldnames)
 				{
-				if (yieldnames.at(id).find("Penalty") != std::string::npos)
+				if (yieldname.find("Penalty") != std::string::npos)
 					{
 					std::vector<std::string>names;
-					boost::split(names, yieldnames.at(id), boost::is_any_of("_"));
+					boost::split(names, yieldname, boost::is_any_of("_"));
 					char str_sense = names.at(0).back();
 					if (str_sense == '-')
 						{
@@ -189,10 +185,10 @@ namespace Core
 		{
 		if (!this->emptyYlds())
 			{
-			for (size_t id = 0; id < yieldnames.size(); ++id)
+			for (const auto & yieldname : yieldnames)
 			{
-				if (yieldnames.at(id).find("GOAL_") != std::string::npos ||
-					yieldnames.at(id).find("Penalty") != std::string::npos)
+				if (yieldname.find("GOAL_") != std::string::npos ||
+					yieldname.find("Penalty") != std::string::npos)
 				{
 					return true;
 				}
@@ -232,8 +228,8 @@ namespace Core
 					if (yieldnames.at(id).find("REPLICATE_") != std::string::npos)
 					{
 						gotSomething = true;
-						const size_t RepId = std::stoi(yieldnames.at(id).substr(yieldnames.at(id).find_first_of("_")+1, yieldnames.at(id).find_last_of("_")-1));
-						const int RepPeriod = std::stoi(yieldnames.at(id).substr(yieldnames.at(id).find_last_of("_")+1, yieldnames.at(id).size()));
+						const size_t RepId = std::stoi(yieldnames.at(id).substr(yieldnames.at(id).find_first_of('_')+1, yieldnames.at(id).find_last_of('_')-1));
+						const int RepPeriod = std::stoi(yieldnames.at(id).substr(yieldnames.at(id).find_last_of('_')+1, yieldnames.at(id).size()));
 						if (RepId == (p_replicate - 1) && period == RepPeriod)
 						{
 							p_bound = yieldbounds.at(id).getLower();
@@ -302,9 +298,9 @@ namespace Core
 		{
 			if (!this->emptyYlds())
 			{
-				for (size_t id = 0; id < yieldnames.size(); ++id)
+				for (const auto & yieldname : yieldnames)
 				{
-					if (yieldnames.at(id).find("REPLICATE_") != std::string::npos)
+					if (yieldname.find("REPLICATE_") != std::string::npos)
 					{
 						gotIt = true;
 						break;
@@ -333,9 +329,9 @@ namespace Core
 		try {
 			if (!this->emptyYlds()&&isObjective())
 			{
-				for (size_t id = 0; id < yieldnames.size(); ++id)
+				for (const auto & yieldname : yieldnames)
 				{
-					if (yieldnames.at(id).find("_SETGLOBALSCHEDULE") != std::string::npos)
+					if (yieldname.find("_SETGLOBALSCHEDULE") != std::string::npos)
 					{
 						return getYieldBound("_SETGLOBALSCHEDULE").getLower();
 					}
@@ -390,9 +386,9 @@ namespace Core
 		try {
 			if (!this->emptyYlds())
 			{
-				for (size_t id = 0; id < yieldnames.size(); ++id)
+				for (const auto & yieldname : yieldnames)
 				{
-					if (yieldnames.at(id).find("_REIGNORE") != std::string::npos&&
+					if (yieldname.find("_REIGNORE") != std::string::npos&&
 						getYieldBound("_REIGNORE").getLower()<= replanningperiod)
 					{
 						if (m_type != FMTconstrainttype::FMTstandard)
@@ -418,9 +414,9 @@ namespace Core
 		try {
 			if (!this->emptyYlds())
 			{
-				for (size_t id = 0; id < yieldnames.size(); ++id)
+				for (const auto & yieldname : yieldnames)
 				{
-					if (yieldnames.at(id).find("_SETFROM"+ modeltype) != std::string::npos)
+					if (yieldname.find("_SETFROM"+ modeltype) != std::string::npos)
 					{
 						if (m_type != FMTconstrainttype::FMTstandard)
 							{
@@ -562,9 +558,9 @@ namespace Core
 		{
 		//std::map<std::string, FMTYldBounds> thebounds = this->getYldsBounds();
 		//return (thebounds.find("Variation") != thebounds.end());
-		for (size_t id = 0; id < yieldnames.size(); ++id)
+		for (const auto & yieldname : yieldnames)
 			{
-				if (yieldnames.at(id).find("Variation") != std::string::npos)
+				if (yieldname.find("Variation") != std::string::npos)
 					{
 					return true;
 					}
@@ -713,7 +709,7 @@ namespace Core
 
 				if (!penalty.empty())
 				{
-					penalty += ")";
+					penalty += ')';
 				}
 				if (!goal.empty())
 				{
@@ -755,7 +751,7 @@ namespace Core
 				{
 					line += this->m_name;
 					if (!penalty.empty()) line += penalty;
-					line += " ";
+					line += ' ';
 					line += period_bounds + " " + ScheduleWeight;
 					break;
 				}
@@ -834,7 +830,7 @@ namespace Core
 				line += this->m_name;
 				if (p_specialKey)
 					{
-					line += ")";
+					line += ')';
 					}
 				line += " " + opt_str + " " + period_bounds + " " + goal + " " + global + "\n";
 		}
@@ -1072,10 +1068,9 @@ namespace Core
 				{
 					double totalcost = 0;
 					int period = getPeriodLowerBound();
-					for (size_t periodid = 0; periodid < temporalvalues.size(); ++periodid)
+					for (double value : temporalvalues)
 						{
-						const double& value = temporalvalues.at(periodid);
-						double lowerbound = 0;
+							double lowerbound = 0;
 						double upperbound = 0;
 						getBounds(lowerbound, upperbound, period);
 						if (lowerbound!=std::numeric_limits<double>::lowest()&&value<lowerbound)
@@ -1250,7 +1245,7 @@ namespace Core
 							{
 
 								const Core::FMTMask& sourcemask = source.getMask();
-								for (const FMTMask mask : transition.canProduce(sourcemask,themes))
+								for (const FMTMask& mask : transition.canProduce(sourcemask,themes))
 								{
 									sourcestoturnintoyield.push_back(Core::FMTOutputSource(Core::FMTSpec(),mask,newtarget,"",trigerringaction.getName(),source.getOutputOrigin(),source.getThemeTarget()));
 								}
@@ -1262,7 +1257,7 @@ namespace Core
 				//if (!sourcestoturnintoyield.empty())
 				//{
 					FMTConstraint toturnintoyield(*this);
-					toturnintoyield.m_sources = sourcestoturnintoyield;
+					toturnintoyield.m_sources = std::move(sourcestoturnintoyield);
 					toturnintoyield.turnToYieldsAndActions(themes, actions, p_valideActions, yields, constraintid);
 				//}
 				

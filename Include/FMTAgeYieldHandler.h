@@ -32,18 +32,18 @@ namespace Core
 		@param[in] request the yield request.
 		@return the yield value.
 		*/
-		virtual double get(const std::string& yld, const FMTYieldRequest& request) const;
+		double get(const std::string& yld, const FMTYieldRequest& request) const override;
 		// DocString: FMTAgeYieldHandler::operator std::string
 		/**
 		@brief Return the string representation of the age yield handler.
 		@return the string representation.
 		*/
-		virtual  operator std::string() const;
+		operator std::string() const override;
 		// DocString: ~FMTAgeYieldHandler()
 		/**
 		@brief Default destructor for FMTAgeYieldHandler.
 		*/
-		~FMTAgeYieldHandler() = default;
+		~FMTAgeYieldHandler() override = default;
 		// DocString: FMTAgeYieldHandler()
 		/**
 		@brief Default constructor for FMTAgeYieldHandler.
@@ -88,7 +88,7 @@ namespace Core
 		@param[in] yld the yield name.
 		@return the last value of the yield.
 		*/
-		virtual double getLastValue(const std::string yld) const;
+		double getLastValue(const std::string yld) const override;
 		// DocString: FMTAgeYieldHandler::pushData(const std::string&, const double&)
 		/**
 		@brief Push a value for a yield.
@@ -96,7 +96,7 @@ namespace Core
 		@param[in] value the value.
 		@return true if the value is pushed else false.
 		*/
-		virtual bool pushData(const std::string& yld, const double& value);
+		bool pushData(const std::string& yld, const double& value) override;
 		// DocString: FMTAgeYieldHandler::pushData(const std::string&, const FMTData&)
 		/**
 		@brief Push data for a yield.
@@ -104,13 +104,13 @@ namespace Core
 		@param[in] data the data.
 		@return true if the data is pushed else false.
 		*/
-		virtual bool pushData(const std::string& yld, const FMTData& data);
+		bool pushData(const std::string& yld, const FMTData& data) override;
 		// DocString: FMTAgeYieldHandler::clone
 		/**
 		@brief Clone the age yield handler.
 		@return a unique pointer to the cloned yield handler.
 		*/
-		virtual std::unique_ptr<FMTYieldHandler>clone() const;
+		std::unique_ptr<FMTYieldHandler>clone() const override;
 		// DocString: FMTAgeYieldHandler::operator==
 		/**
 		@brief Equality comparison operator of FMTAgeYieldHandler.
@@ -123,58 +123,58 @@ namespace Core
 		@brief Return true if the handler is empty.
 		@return true if the handler is empty else false.
 		*/
-		virtual bool empty() const;
+		bool empty() const override;
 		// DocString: FMTAgeYieldHandler::size
 		/**
 		@brief Return the number of yields in the handler.
 		@return the number of yields.
 		*/
-		virtual size_t size() const;
+		size_t size() const override;
 		// DocString: FMTAgeYieldHandler::getType
 		/**
 		@brief Return the type of the yield handler.
 		@return the yield type.
 		*/
-		virtual FMTyldtype getType() const;
+		FMTyldtype getType() const override;
 		// DocString: FMTAgeYieldHandler::operator[]
 		/**
 		@brief Access the data of a yield.
 		@param[in] yldname the yield name.
 		@return a reference to the data of the yield.
 		*/
-		virtual FMTData& operator[](const std::string& yldname);
+		FMTData& operator[](const std::string& yldname) override;
 		// DocString: FMTAgeYieldHandler::at
 		/**
 		@brief Access the data of a yield.
 		@param[in] yldname the yield name.
 		@return a const reference to the data of the yield.
 		*/
-		virtual const FMTData& at(const std::string& yldname) const;
+		const FMTData& at(const std::string& yldname) const override;
 		// DocString: FMTAgeYieldHandler::containsYield
 		/**
 		@brief Return true if the handler contains a given yield.
 		@param[in] yldname the yield name.
 		@return true if the handler contains the yield else false.
 		*/
-		virtual bool containsYield(const std::string& yldname) const;
+		bool containsYield(const std::string& yldname) const override;
 		// DocString: FMTAgeYieldHandler::getYieldNames
 		/**
 		@brief Return the yield names of the handler.
 		@return the yield names.
 		*/
-		virtual std::vector<std::string>getYieldNames() const;
+		std::vector<std::string>getYieldNames() const override;
 		// DocString: FMTAgeYieldHandler::clearCache
 		/**
 		@brief Clear the cache of the handler.
 		*/
-		virtual void clearCache();
+		void clearCache() override;
 		// DocString: FMTAgeYieldHandler::getAllYieldsData
 		/**
 		@brief Return all the yield data up to a maximum base age.
 		@param[in] maxbase the maximum base age.
 		@return a map of yield names to their values.
 		*/
-		virtual std::map<std::string, std::vector<double>>getAllYieldsData(const int& maxbase)const;
+		std::map<std::string, std::vector<double>>getAllYieldsData(const int& maxbase)const override;
 		// DocString: FMTAgeYieldHandler::getFromFactor
 		/**
 		@brief Multiply the handler by a factor and return a new handler.
@@ -182,8 +182,8 @@ namespace Core
 		@param[in] yieldnames the yield names to multiply, all if empty.
 		@return the multiplied yield handler.
 		*/
-		virtual std::unique_ptr<FMTYieldHandler> getFromFactor(const double& factor,
-			std::vector<std::string>yieldnames = std::vector<std::string>()) const;
+		std::unique_ptr<FMTYieldHandler> getFromFactor(const double& factor,
+			std::vector<std::string>yieldnames = std::vector<std::string>()) const override;
 		// DocString: FMTAgeYieldHandler::getEndPoint
 		/**
 		@brief Return the age at which a yield reaches a bound value.
@@ -193,7 +193,7 @@ namespace Core
 		@param[in] value the value.
 		@return the end point age.
 		*/
-		virtual int getEndPoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const;
+		int getEndPoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const override;
 		// DocString: FMTAgeYieldHandler::getPeak
 		/**
 		@brief Return the peak value of a yield for a request.
@@ -202,7 +202,7 @@ namespace Core
 		@param[in] targetage the target age.
 		@return the peak value.
 		*/
-		virtual double getPeak(const FMTYieldRequest& request,const std::string& yld, const int& targetage) const;
+		double getPeak(const FMTYieldRequest& request,const std::string& yld, const int& targetage) const override;
 		// DocString: FMTAgeYieldHandler::getPeakfrom
 		/**
 		@brief Return the peak value of a yield from a maximum value.
@@ -218,7 +218,7 @@ namespace Core
 		@param[in] spec the specification.
 		@return the age.
 		*/
-		virtual int getAge(const FMTYieldRequest& request, const FMTSpec& spec) const;
+		int getAge(const FMTYieldRequest& request, const FMTSpec& spec) const override;
 		// DocString: FMTAgeYieldHandler::getYieldLinearValue
 		/**
 		@brief Return the linearly interpolated value of a yield for a request.
@@ -227,7 +227,7 @@ namespace Core
 		@param[in] allowoutofrange if true allows out of range values.
 		@return the linear yield value.
 		*/
-		virtual double getYieldLinearValue(const std::string&yldname, const FMTYieldRequest& request, bool allowoutofrange=true) const;
+		double getYieldLinearValue(const std::string&yldname, const FMTYieldRequest& request, bool allowoutofrange=true) const override;
 	private:
 		friend class boost::serialization::access;
 		// DocString: FMTAgeYieldHandler::serialize
@@ -253,7 +253,7 @@ namespace Core
 		@param[in] starting_age the starting age.
 		@return the age.
 		*/
-		int _getAge(const std::string yld, const double& value, const int& starting_age) const;
+		int _getAge(const std::string& yld, const double& value, const int& starting_age) const;
 	};
 
 }

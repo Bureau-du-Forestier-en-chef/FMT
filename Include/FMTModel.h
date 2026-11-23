@@ -218,20 +218,20 @@ namespace Models
 		/**
 		@brief Default virtual destructor of FMTModel.
 		*/
-		virtual ~FMTModel() = default;
+		~FMTModel() override = default;
 		// DocString: FMTModel(FMTModel&&)
 		/**
 		@brief Default move constructor for FMTModel.
 		@param[in,out] rhs the FMTModel to move from.
 		*/
-		FMTModel(FMTModel&& rhs);
+		FMTModel(FMTModel&& rhs) noexcept ;
 		// DocString: FMTModel::operator=(FMTModel&&) 
 		/**
 		@brief Default move assignment for FMTModel.
 		@param[in,out] rhs the FMTModel to move from.
 		@return a reference to this FMTModel.
 		*/
-		FMTModel& operator =(FMTModel&& rhs);
+		FMTModel& operator =(FMTModel&& rhs) noexcept ;
 		// DocString: FMTModel::getArea
 		/**
 		@brief Get the area of a given period as actual developments.

@@ -37,7 +37,7 @@ class FMTEXPORT FMTScheduleParser: public FMTParser
 		/**
 		@brief Default destructor for FMTScheduleParser.
 		*/
-		~FMTScheduleParser() = default;
+		~FMTScheduleParser() override = default;
 		// DocString: FMTScheduleParser(const FMTScheduleParser&)
 		/**
 		@brief Copy constructor for FMTScheduleParser.

@@ -72,7 +72,7 @@ namespace Parser
 				
 			}else {
 				const double variale_value = _getNum<double>(numvalue, constants);
-				std::string yieldtarget(target);
+				const std::string& yieldtarget(target);
 				if (target == "_GOAL")
 				{
 					constraint.setGoal(std::string(kmatch[6]), variale_value);
@@ -221,7 +221,8 @@ namespace Parser
 				for (const std::vector<std::string>& line : readCsv(FILEm_location.string(), ';'))
 					{
 					std::vector<double>iterationvalues;
-					for (const std::string& itvalue : line)
+					iterationvalues.reserve(line.size());
+for (const std::string& itvalue : line)
 						{
 						iterationvalues.push_back(std::stod(itvalue));
 						}
@@ -251,7 +252,7 @@ namespace Parser
 			{
 				boost::smatch out_match;
 				std::string target(output_it->first);
-				const size_t OPERATOR = target.find_first_of("*");
+				const size_t OPERATOR = target.find_first_of('*');
 				Core::FMTOutputSource OtherFactor;
 				Core::FMTOperator OtherOperator;
 				if (OPERATOR!=std::string::npos)//Got the case of yield or temp const multi...
@@ -502,9 +503,9 @@ namespace Parser
 				//std::string target = std::string(kmatch[6]) + std::string(kmatch[12]) + std::string(kmatch[15]);
 				std::string target = std::string(kmatch[6]) + std::string(kmatch[15]) + std::string(kmatch[19]);
 				boost::trim(target);
-				if (target.find("(") != std::string::npos && target.find(")") == std::string::npos)
+				if (target.find('(') != std::string::npos && target.find(')') == std::string::npos)
 				{
-					target += ")";
+					target += ')';
 				}
 
 				std::map<std::string, double> nodes = _getEquation(target, p_constants, p_yields, p_outputs, target.size());
@@ -845,7 +846,7 @@ namespace Parser
 								}
 								case FMToptimizationsection::constraints:
 								{
-									for (Core::FMTConstraint baseconstraint : getConstraints(line, p_constants,p_yields, p_outputs, p_themes,p_actions))
+									for (const Core::FMTConstraint& baseconstraint : getConstraints(line, p_constants,p_yields, p_outputs, p_themes,p_actions))
 										{
 										//baseconstraint.passinobject(*this);
 										constraints.push_back(baseconstraint);
@@ -1050,7 +1051,7 @@ namespace Parser
 						outchar = subline.at(endoutputlocation);
 					}
 				}
-				if (output_name.find("#") != std::string::npos)//constant
+				if (output_name.find('#') != std::string::npos)//constant
 				{
 
 				}

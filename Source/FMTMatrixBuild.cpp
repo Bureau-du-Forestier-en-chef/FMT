@@ -180,7 +180,7 @@ namespace Models
 
 		}
 
-	void FMTMatrixBuild::swap(FMTMatrixBuild& rhs)
+	void FMTMatrixBuild::swap(FMTMatrixBuild& rhs) noexcept
 	{
 		m_colscount=rhs.m_colscount;
 		m_rowscount = rhs.m_rowscount;

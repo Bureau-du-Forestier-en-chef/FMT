@@ -18,9 +18,8 @@ FMTAgeBounds::FMTAgeBounds(FMTsection section, FMTkwor key, const int& upper, co
 }
 
 FMTAgeBounds::FMTAgeBounds(const FMTAgeBounds& rhs)
-    : FMTBounds(rhs)
-{
-}
+     
+= default;
 
 FMTAgeBounds::FMTAgeBounds(const FMTBounds<int>& rhs)
     : FMTBounds(rhs)

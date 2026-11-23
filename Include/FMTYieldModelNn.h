@@ -35,7 +35,7 @@ namespace Core
 		/**
 		@brief Destructor for FMTYieldModelNn.
 		*/
-		virtual ~FMTYieldModelNn();
+		~FMTYieldModelNn() override;
 		// DocString: FMTYieldModelNn::FMTYieldModelNn()
 		/**
 		@brief Default constructor for FMTYieldModelNn.
@@ -53,7 +53,7 @@ namespace Core
 		@param[in] request the yield request.
 		@return the predicted values.
 		*/
-		const std::vector<double>predict(const Core::FMTYieldRequest& request) const;
+		const std::vector<double>predict(const Core::FMTYieldRequest& request) const override;
 	protected:
 	#ifdef FMTWITHONNXR
 		static std::unique_ptr<Ort::Env> m_envPtr;

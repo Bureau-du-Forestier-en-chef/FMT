@@ -27,7 +27,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTGCBMGROWTHID 16
 #define FMTGCBMUNKNOWNID 17
 #define FMTGCBMWILDFIREID 10
-#define FMTMaxNumberOfActions _I8_MAX + 1
+#define FMTMaxNumberOfActions (_I8_MAX + 1)
 
 
 namespace Core
@@ -59,7 +59,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		/**
 		@brief Default virtual destructor for FMTAction.
 		*/
-		virtual ~FMTAction() = default;
+		~FMTAction() override = default;
 		// DocString: FMTAction(const std::string&)
 		/**
 		@brief Construct an empty action with a given name.
@@ -245,7 +245,7 @@ class FMTEXPORT FMTAction : public FMTList<FMTSpec>
 		@brief Set the series of the action, checking which ones the action is part of and building them.
 		@param[in] p_series the series to set.
 		*/
-		void setSeries(std::vector<Core::FMTSerie> p_series);
+		void setSeries(const std::vector<Core::FMTSerie>& p_series);
 		// DocString: FMTAction::useYield
 		/**
 		@brief Return true if the yield is used by the action to set operability.

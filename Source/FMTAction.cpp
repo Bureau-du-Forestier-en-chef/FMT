@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <bitset>
 #include <boost/algorithm/string/split.hpp>
 #include <algorithm>
+#include <utility>
 #include "FMTSpec.h"
 
 namespace Core{
@@ -105,18 +106,9 @@ namespace Core{
         {
         m_partials.push_back(yield);
         }
-	FMTAction::FMTAction(const FMTAction& rhs) : FMTList<FMTSpec>(rhs),
-		m_aggregates(rhs.m_aggregates),
-		m_partials(rhs.m_partials),
-		m_agelowerbound(rhs.m_agelowerbound), m_ageupperbound(rhs.m_ageupperbound), m_periodlowerbound(rhs.m_periodlowerbound), m_periodupperbound(rhs.m_periodupperbound),
-                        m_name(rhs.m_name),
-                        m_lock(rhs.m_lock),
-                        m_reset(rhs.m_reset),
-						m_series(rhs.m_series),
-		m_InSerie(rhs.m_InSerie)
-        {
-
-        }
+	FMTAction::FMTAction(const FMTAction& rhs) 
+		
+        = default;
     FMTAction& FMTAction::operator = (const FMTAction& rhs)
         {
         if (this!=&rhs)
@@ -295,7 +287,7 @@ namespace Core{
 		return sizeofserie;
 	}
 
-	void FMTAction::setSeries(std::vector<Core::FMTSerie> p_series)
+	void FMTAction::setSeries(const std::vector<Core::FMTSerie>& p_series)
 	{
 		try {
 			m_series.clear();
@@ -339,7 +331,7 @@ namespace Core{
 			{
 			line += std::string(yieldobject.first) + " ";
 			line += std::string(yieldobject.second);
-			line += "\n";
+			line += '\n';
 			}
         if(!m_partials.empty())
             {
@@ -350,7 +342,7 @@ namespace Core{
                 line+=partial+" ";
                 if (lid==20)
                     {
-                    line+="\n";
+                    line+='\n';
                     lid=0;
                     }
                 ++lid;
@@ -418,7 +410,7 @@ bool FMTAction::partial(const std::string& yield) const
 	}
 
 FMTActionComparator::FMTActionComparator(
-	std::string p_name, bool lcheckaggregate) : m_actionName(p_name),m_checkAggregate(lcheckaggregate) {}
+	std::string p_name, bool lcheckaggregate) : m_actionName(std::move(p_name)),m_checkAggregate(lcheckaggregate) {}
 
 bool FMTActionComparator::operator()(const FMTAction& action) const
 	{

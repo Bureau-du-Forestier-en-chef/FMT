@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTSchedule.h"
 #include "FMTExceptionHandler.h"
 #include <boost/filesystem.hpp>
+#include <utility>
 
 
 namespace Parallel
@@ -78,10 +79,10 @@ namespace Parallel
 		const int& minoutputperiod,
 		const int& maxoutputperiod,
 		const std::string& outputlocation,
-		std::string gdaldriver,
+		const std::string& gdaldriver,
 		std::vector<std::string>creationoptions,
 		Core::FMToutputlevel outputlevel,
-		std::string primaryfilelocatiron):
+		const std::string& primaryfilelocatiron):
 		m_ResultsWriter(),
 		m_Models(),
 		m_allSchedules(),
@@ -89,7 +90,7 @@ namespace Parallel
 		m_keepModels(false)
 	{
 		try {
-			m_ResultsWriter = std::shared_ptr<FMTParallelWriter>(new FMTParallelWriter(outputlocation,gdaldriver,outputlevel, creationoptions,minoutputperiod,maxoutputperiod, primaryfilelocatiron));
+			m_ResultsWriter = std::shared_ptr<FMTParallelWriter>(new FMTParallelWriter(outputlocation,gdaldriver,outputlevel, std::move(creationoptions),minoutputperiod,maxoutputperiod, primaryfilelocatiron));
 			m_ResultsWriter->setLayer(boost::filesystem::path(primaryfilelocatiron).stem().string());
 		}catch (...)
 			{
@@ -98,7 +99,7 @@ namespace Parallel
 	}
 
 	void FMTPlanningTask::push_back(const Models::FMTModel& model,
-		std::vector<Core::FMTSchedule>schedules, std::vector<Core::FMTOutput>loutputs)
+		const std::vector<Core::FMTSchedule>&schedules, const std::vector<Core::FMTOutput>&loutputs)
 	{
 		try {
 			m_Models.push_back(std::move(model.clone()));

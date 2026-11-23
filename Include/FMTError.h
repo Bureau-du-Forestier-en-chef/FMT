@@ -35,7 +35,7 @@ namespace Exception
 			/**
 			@brief Default destructor for FMTError.
 			*/
-			~FMTError() = default;
+			~FMTError() override = default;
 			// DocString: FMTError::operator=
 			/**
 			@brief Default copy assignment operator for FMTError.

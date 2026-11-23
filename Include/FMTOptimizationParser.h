@@ -117,7 +117,7 @@ namespace Parser
 		/**
 		@brief Default destructor for FMTOptimizationParser.
 		*/
-		~FMTOptimizationParser()=default;
+		~FMTOptimizationParser() override=default;
 	private:
 		const static boost::regex m_rxsections;
 		const static boost::regex m_rxobjectives;

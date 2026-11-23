@@ -41,7 +41,7 @@ namespace Logging
 		/**
 		@brief Default destructor for FMTDefaultLogger.
 		*/
-		~FMTDefaultLogger() = default;
+		~FMTDefaultLogger() override = default;
 		// DocString: FMTDefaultLogger::operator=
 		/**
 		@brief Default copy assignment operator for FMTDefaultLogger.
@@ -79,7 +79,7 @@ namespace Logging
 		@brief clone the FMTDefaultLogger
 		@return a valid cloned FMTDefaultLogger
 		*/
-		virtual std::unique_ptr <FMTLogger> Clone() const;
+		std::unique_ptr <FMTLogger> Clone() const override;
 	};
 
 }

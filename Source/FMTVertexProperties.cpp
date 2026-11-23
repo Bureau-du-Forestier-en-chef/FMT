@@ -12,11 +12,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	FMTVertexProperties::FMTVertexProperties(const FMTVertexProperties& rhs):
-		FMTBaseVertexProperties(rhs), constraintID(rhs.constraintID)
-	{
-
-	}
+	FMTVertexProperties::FMTVertexProperties(const FMTVertexProperties& rhs) 
+	= default;
 
 	FMTVertexProperties::FMTVertexProperties(const Core::FMTFuturDevelopment& ldevelopment,
 		const int& lconstraintID):FMTBaseVertexProperties(ldevelopment),constraintID(lconstraintID)

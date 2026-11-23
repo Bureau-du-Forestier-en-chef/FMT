@@ -353,11 +353,8 @@ void FMTMask::setIntersect(const FMTMask& rhs)
 	}
 
 
-FMTMask::FMTMask(const FMTMask& rhs) : m_name(rhs.m_name),m_data(rhs.m_data)
-            {
-
-
-            }
+FMTMask::FMTMask(const FMTMask& rhs) 
+            = default;
 
 FMTMask::FMTMask(FMTMask&& rhs) noexcept:
 	m_data(std::move(rhs.m_data)), m_name(std::move(rhs.m_name))
@@ -372,7 +369,7 @@ FMTMask& FMTMask::operator=(FMTMask&& rhs) noexcept
 	return *this;
 }
 
-void FMTMask::swap(FMTMask& rhs)
+void FMTMask::swap(FMTMask& rhs) noexcept
 	{
 	m_data.swap(rhs.m_data);
 	m_name.swap(rhs.m_name);

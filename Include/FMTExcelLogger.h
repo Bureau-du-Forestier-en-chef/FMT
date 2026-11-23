@@ -40,14 +40,14 @@ namespace Logging
 		@brief Clone the FMTExcelLogger.
 		@return a pointer to the cloned logger.
 		*/
-		virtual FMTLogger* clone() const;
+		FMTLogger* clone() const override;
 	#endif
 	// DocString: FMTExcelLogger::Clone
 	/**
 	@brief Clone the FMTExcelLogger.
 	@return a unique pointer to the cloned logger.
 	*/
-	virtual std::unique_ptr <FMTLogger> Clone() const;
+	std::unique_ptr <FMTLogger> Clone() const override;
 	protected:
 		// DocString: FMTExcelLogger::_cout
 		/**

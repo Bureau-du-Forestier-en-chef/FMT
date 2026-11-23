@@ -277,7 +277,7 @@ namespace Parser
 
 	FMTLandscapeParser::preDeclarationContext::preDeclarationContext() : state(ParseState::NORMAL), currentKey("")
 	{}
-	void FMTLandscapeParser::preDeclarationContext::clearTheme(std::string nameID)
+	void FMTLandscapeParser::preDeclarationContext::clearTheme(const std::string& nameID)
 	{
 		declarations.erase(nameID);
 	}
@@ -355,7 +355,7 @@ namespace Parser
 			OGRFeature *feature;
 			layer->ResetReading();
 			std::vector<std::vector<std::string>>themesattributes(themes_fields.size(), std::vector<std::string>());
-			while ((feature = layer->GetNextFeature()) != NULL)
+			while ((feature = layer->GetNextFeature()) != nullptr)
 			{
 				std::vector<std::string>masks(themes_fields.size());
 				for (std::map<int, int>::const_iterator it = themes_fields.begin(); it != themes_fields.end(); ++it)

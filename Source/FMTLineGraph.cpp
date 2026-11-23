@@ -39,11 +39,9 @@ namespace Graph
 	}
 
 
-    FMTLineGraph::FMTLineGraph(const FMTLineGraph& rhs):
-		FMTGraph<FMTBaseVertexProperties, FMTBaseEdgeProperties>(rhs)
-    {
-
-    }
+    FMTLineGraph::FMTLineGraph(const FMTLineGraph& rhs)
+		
+    = default;
 
     FMTLineGraph::FMTLineGraph(const FMTGraph<FMTBaseVertexProperties, FMTBaseEdgeProperties>& rhs):
 		FMTGraph<FMTBaseVertexProperties, FMTBaseEdgeProperties>(rhs)

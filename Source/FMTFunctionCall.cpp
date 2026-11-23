@@ -41,10 +41,8 @@ double FMTFunctionCall::call(const double& rhs) const
 	result = std::round(result * 100000000) / 100000000;
 	return result;
 	}
-FMTFunctionCall::FMTFunctionCall(const FMTFunctionCall& rhs) : m_key(rhs.m_key)
-	{
-	
-	}
+FMTFunctionCall::FMTFunctionCall(const FMTFunctionCall& rhs)  
+	= default;
 
 bool FMTFunctionCall::valid() const
 	{

@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core{
 
 FMTLifespans::FMTLifespans() : FMTList<int>(){}
-FMTLifespans::FMTLifespans(const FMTLifespans& rhs) : FMTList<int>(rhs){}
+FMTLifespans::FMTLifespans(const FMTLifespans& rhs)  = default;
 FMTLifespans& FMTLifespans::operator = (const FMTLifespans& rhs)
     {
     if (this!=&rhs)
@@ -20,7 +20,7 @@ FMTLifespans& FMTLifespans::operator = (const FMTLifespans& rhs)
     return *this;
     }
 
-void FMTLifespans::swap(FMTLifespans& rhs)
+void FMTLifespans::swap(FMTLifespans& rhs) noexcept
 	{
 	FMTList<int>::swap(rhs);
 	}

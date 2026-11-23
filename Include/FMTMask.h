@@ -114,7 +114,7 @@ class FMTEXPORT FMTMask
 		@brief Swap this mask with another.
 		@param[in,out] rhs the mask to swap with.
 		*/
-		void swap(FMTMask& rhs);
+		void swap(FMTMask& rhs) noexcept ;
 		// DocString: FMTMask()
 		/**
 		@brief Default constructor for FMTMask.

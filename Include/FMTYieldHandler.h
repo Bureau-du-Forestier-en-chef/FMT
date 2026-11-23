@@ -107,7 +107,7 @@ public:
 	/**
 	@brief Default virtual destructor for FMTYieldHandler.
 	*/
-	virtual ~FMTYieldHandler() = default;
+	~FMTYieldHandler() override = default;
 	// DocString: FMTYieldHandler()
 	/**
 	@brief Default constructor for FMTYieldHandler.

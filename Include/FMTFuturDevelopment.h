@@ -29,14 +29,14 @@ namespace Core
 			@brief Move copy constructor
 			@param[in] rhs development to swap
 			*/
-			FMTFuturDevelopment(FMTFuturDevelopment&& rhs);
+			FMTFuturDevelopment(FMTFuturDevelopment&& rhs) noexcept ;
 			// DocString: FMTFuturDevelopment::operator=(FMTFuturDevelopment&& rhs)
 			/**
 			@brief Move assignment operator for FMTFuturDevelopment.
 			@param[in] rhs the development to move from.
 			@return a reference to this FMTFuturDevelopment.
 			*/
-			FMTFuturDevelopment& operator=(FMTFuturDevelopment&& rhs);
+			FMTFuturDevelopment& operator=(FMTFuturDevelopment&& rhs) noexcept ;
 			// DocString: FMTFuturDevelopment()
 			/**
 			@brief Default constructor for FMTFuturDevelopment.
@@ -46,7 +46,7 @@ namespace Core
 			/**
 			@brief Default destructor for FMTFuturDevelopment.
 			*/
-			~FMTFuturDevelopment() = default;
+			~FMTFuturDevelopment() override = default;
 			// DocString: FMTFuturDevelopment(const FMTDevelopment&)
 			/**
 			@brief Construct a future development from a development.

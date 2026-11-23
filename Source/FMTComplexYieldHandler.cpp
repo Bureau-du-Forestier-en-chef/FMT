@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTException.h"
 #include "FMTExpression.h"
 #include <unordered_set>
-#include "FMTspec.h"
+#include "FMTSpec.h"
 
 
 namespace Core {
@@ -34,7 +34,7 @@ namespace Core {
 				}
 			
 
-			value += "\n";
+			value += '\n';
 			std::vector<std::string>YieldsNames;
 			for (std::map<std::string, FMTData>::const_iterator it = m_elements.begin(); it != m_elements.end(); ++it)
 				{
@@ -138,16 +138,16 @@ namespace Core {
 			{
 				nhandler.pushBase(age);
 			}
-			for (size_t id = 0; id < yieldnames.size(); ++id)
+			for (const auto & yieldname : yieldnames)
 			{
-				if (containsYield(yieldnames.at(id)))
+				if (containsYield(yieldname))
 				{
 					Core::FMTDevelopment newDev(request.getDevelopment());
 					for (int age = minage; age <= maxage; ++age)
 					{
 						newDev.setAge(age);
 						const FMTYieldRequest newrequest(newDev, request);
-						nhandler.pushData(yieldnames.at(id), get(yieldnames.at(id), newrequest));
+						nhandler.pushData(yieldname, get(yieldname, newrequest));
 					}
 				}
 			}

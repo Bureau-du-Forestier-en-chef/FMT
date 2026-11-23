@@ -148,7 +148,7 @@ class FMTEXPORT FMTException : public std::exception
 		/**
 		@brief Default virtual destructor for FMTException.
 		*/
-		virtual ~FMTException() = default;
+		~FMTException() override = default;
 		// DocString: FMTException(FMTexc,FMTlev,Core::FMTsection,const std::string&,const std::string&,const std::string&,const std::string&,const std::string&,const std::string&)
 		/**
 		@brief Construct a FMTException from an exception type, a section, a message and the location where it occurred.

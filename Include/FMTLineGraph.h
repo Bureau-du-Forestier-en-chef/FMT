@@ -35,7 +35,7 @@ class FMTEXPORT FMTLineGraph : public FMTGraph<FMTBaseVertexProperties,FMTBaseEd
 		/**
 		@brief Default destructor for FMTLineGraph.
 		*/
-        ~FMTLineGraph()=default;
+        ~FMTLineGraph() override=default;
 		// DocString: FMTLineGraph(const FMTgraphbuild)
 		/**
 		@brief Construct a FMTLineGraph reserving memory for a given length.

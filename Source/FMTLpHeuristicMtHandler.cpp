@@ -67,9 +67,9 @@ namespace Heuristics
 
 		void FMTLpHeuristicMtHandler::_resetNumberOfThreads(const unsigned int& ncpu) const
 		{
-			for(std::size_t i = 0; i < m_heuristics.size(); ++i)
+			for(auto m_heuristic : m_heuristics)
 			{
-				m_heuristics[i]->setNumberOfThreads(static_cast<size_t>(ncpu));
+				m_heuristic->setNumberOfThreads(static_cast<size_t>(ncpu));
 			}
 
 		}
@@ -80,10 +80,9 @@ namespace Heuristics
 			int mosek_process = static_cast<int>(processor_count/m_heuristics.size());
 			if (mosek_process<1){mosek_process=1;}
 			std::vector<boost::thread>threads;
-			for(std::size_t i = 0; i < m_heuristics.size(); ++i)
+			for(auto heuristic : m_heuristics)
 			{
-				FMTLpHeuristic* heuristic = m_heuristics[i];
-				heuristic->setNumberOfThreads(static_cast<size_t>(mosek_process));
+					heuristic->setNumberOfThreads(static_cast<size_t>(mosek_process));
 				threads.push_back(boost::thread(std::bind(&FMTLpHeuristic::initialSolve, heuristic)));
 			}
 			for(boost::thread& thr : threads)
@@ -101,10 +100,9 @@ namespace Heuristics
 			if (mosek_process<1){mosek_process=1;}
 			std::vector<boost::thread>threads;
 			const std::chrono::steady_clock::time_point Start = std::chrono::steady_clock::now();
-			for(std::size_t i = 0; i < m_heuristics.size(); ++i)
+			for(auto heuristic : m_heuristics)
 			{
-				FMTLpHeuristic* heuristic = m_heuristics[i];
-				heuristic->setNumberOfThreads(static_cast<size_t>(mosek_process));
+					heuristic->setNumberOfThreads(static_cast<size_t>(mosek_process));
 				threads.push_back(boost::thread(std::bind(&FMTLpHeuristic::parallelOptimize, heuristic, m_initialsolution,iterations,maxtime,Start)));
 			}
 			for(boost::thread& thr : threads)

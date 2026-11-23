@@ -94,7 +94,7 @@ class FMTEXPORT FMTParser: public Core::FMTObject
 		/**
 		@brief Default destructor for FMTParser.
 		*/
-        virtual ~FMTParser()=default;
+        ~FMTParser() override=default;
 		// DocString: FMTParser::getMostRecentFiletime
 		/**
 		@brief Return the most recent file time of the files read by the parser.

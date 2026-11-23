@@ -65,13 +65,13 @@ namespace Parallel
 		/**
 		@brief Default destructor for FMTReplanningTask.
 		*/
-		virtual ~FMTReplanningTask() = default;
+		~FMTReplanningTask() override = default;
 		// DocString: FMTReplanningTask::clone
 		/**
 		@brief Clone function for FMTReplanningTask.
 		@return a unique pointer to the cloned task.
 		*/
-		std::unique_ptr<FMTTask>clone() const;
+		std::unique_ptr<FMTTask>clone() const override;
 		// DocString: FMTReplanningTask::FMTReplanningTask(...)
 		/**
 		@brief Construct a FMTReplanningTask from the models and the replanning parameters.
@@ -145,23 +145,23 @@ namespace Parallel
 		@param[in] numberoftasks the number of tasks.
 		@return the split tasks.
 		*/
-		virtual std::vector<std::unique_ptr<FMTTask>>split(const unsigned int& numberoftasks) const;
+		std::vector<std::unique_ptr<FMTTask>>split(const unsigned int& numberoftasks) const override;
 		// DocString: FMTReplanningTask::spwan
 		/**
 		@brief Spawn a minimal task from the master task.
 		@return a unique pointer to the spawned task.
 		*/
-		virtual std::unique_ptr<FMTTask>spawn();
+		std::unique_ptr<FMTTask>spawn() override;
 		// DocString: FMTReplanningTask::work
 		/**
 		@brief Main function doing the replanning task.
 		*/
-		virtual void work();
+		void work() override;
 		// DocString: FMTReplanningTask::finalize
 		/**
 		@brief Take care of writing the drift probabilities at finalization.
 		*/
-		virtual void finalize();
+		void finalize() override;
 		// DocString: FMTReplanningTask::passInLogger
 		/**
 		@brief Pass in the logger.
@@ -221,7 +221,7 @@ namespace Parallel
 		@param[in] model the model to copy.
 		@return the copied model.
 		*/
-		std::unique_ptr<Models::FMTModel>_copySharedModel(const std::shared_ptr<Models::FMTModel>model);
+		std::unique_ptr<Models::FMTModel>_copySharedModel(const std::shared_ptr<Models::FMTModel>&model);
 		// DocString: FMTReplanningTask::_doModelPlanning
 		/**
 		@brief Call doPlanning on a model for a given replanning period, keeping the solution and constraints and applying the schedule weight when requested.
@@ -233,7 +233,7 @@ namespace Parallel
 		@return the planned model.
 		*/
 		std::unique_ptr<Models::FMTModel>_doModelPlanning(
-			const std::shared_ptr<Models::FMTModel>model,
+			const std::shared_ptr<Models::FMTModel>&model,
 			const int& replanningperiod,
 			bool getsolutionandlocal = false,
 			bool applyscheduleweight = false,

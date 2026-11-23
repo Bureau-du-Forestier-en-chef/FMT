@@ -25,7 +25,7 @@ namespace Spatial
     }
 
     void FMTEventContainer::swap(FMTEventContainer& rhs)
-    {
+ noexcept     {
 		m_events.swap(rhs.m_events);
     }
 
@@ -57,7 +57,7 @@ namespace Spatial
 		m_events.clear();
 	}
 
-    FMTEventContainer::const_iterator FMTEventContainer::erase(const FMTEventContainer::const_iterator event)
+    FMTEventContainer::const_iterator FMTEventContainer::erase(const FMTEventContainer::const_iterator& event)
     {
         return m_events.erase(event);
     }
@@ -126,7 +126,7 @@ namespace Spatial
 				std::vector<FMTEvent> splittedevents;
 				if (event.splitEvent(splittedevents))
 				{
-					for (auto e : splittedevents)
+					for (const auto& e : splittedevents)
 					{
 						if (!e.empty())
 						{
@@ -254,7 +254,7 @@ namespace Spatial
 			{
 				FMTEvent combinedevents(coord, actionid, period, p_GraphFamily);
 				//combinedevents.insert(coord);
-				for (FMTEventContainer::const_iterator e : aroundevents)
+				for (const FMTEventContainer::const_iterator& e : aroundevents)
 				{
 					combinedevents.merge(*e);
 					erase(*e);
@@ -274,7 +274,7 @@ namespace Spatial
 		try{
 				const FMTCoordinate ndistcalculator = FMTCoordinate(neighborsize+1,neighborsize+1);
 				const double distneighbors = ndistcalculator.at(neighborsize).distance(ndistcalculator);
-				for (FMTEventContainer::const_iterator eventit : iterators)
+				for (const FMTEventContainer::const_iterator& eventit : iterators)
 				{
 					if (eventit->within(distneighbors, coord))
 					{
@@ -399,7 +399,7 @@ namespace Spatial
 		{
 			FMTEvent combinedevents(coord, actionid, period, p_GraphFamily);
 			//combinedevents.insert(coord);
-			for (FMTEventContainer::const_iterator e : aroundevents)
+			for (const FMTEventContainer::const_iterator& e : aroundevents)
 			{
 				combinedevents.merge(*e);
 				//tocalculate.push_back(e);
@@ -495,7 +495,7 @@ namespace Spatial
 							std::vector<FMTEvent> splittedevents;
 							if (event.splitEvent(splittedevents))
 							{
-								for (auto e : splittedevents)
+								for (const auto& e : splittedevents)
 								{
 									if (!e.empty())
 									{
@@ -716,7 +716,7 @@ namespace Spatial
     {
     double distancevalue = static_cast<double>(distancel) + 1.0;
     std::vector<FMTEventContainer::const_iterator> potentialneighbors = getEvents(period,actionsid);
-    for (const auto eventit : potentialneighbors)
+    for (const auto& eventit : potentialneighbors)
     {
         if (*eventit!=event)
         {
@@ -745,7 +745,7 @@ namespace Spatial
 	const unsigned int upperdistance = static_cast<unsigned int>(upperdistancetoevent);
 	const bool testlower = (lowerdistancetoevent == -std::numeric_limits<double>::infinity()) ? false : true;
 	const bool testupper = (upperdistancetoevent == std::numeric_limits<double>::infinity()) ? false : true;
-	for (FMTEventContainer::const_iterator eventit : getEvents(period, actionsused))
+	for (const FMTEventContainer::const_iterator& eventit : getEvents(period, actionsused))
 		{
 			if (&(*eventit) != &eventof)//They will have the same address if it's the same event!
 			{
@@ -960,7 +960,7 @@ namespace Spatial
 
 
 
-	void FMTEventContainer::BoundingBox::add(FMTEventContainer::const_iterator p_event)
+	void FMTEventContainer::BoundingBox::add(const FMTEventContainer::const_iterator& p_event)
 	{
 
 			const std::array<FMTCoordinate, 4> EVENT_BOX = p_event->getEnveloppe();

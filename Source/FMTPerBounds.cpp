@@ -13,9 +13,8 @@ FMTPerBounds::FMTPerBounds(FMTsection section, const int& upper, const int& lowe
 }
 
 FMTPerBounds::FMTPerBounds(const FMTPerBounds& rhs)
-    : FMTBounds(rhs)
-{
-}
+     
+= default;
 
 FMTPerBounds::FMTPerBounds(const FMTBounds<int>& rhs)
     : FMTBounds(rhs)

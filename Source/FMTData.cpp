@@ -266,7 +266,7 @@ FMTData::operator std::string() const
 			loc += 1;
 			}
 		}
-    value+=")";
+    value+=')';
     return value;
     }
 

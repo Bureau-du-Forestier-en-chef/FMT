@@ -41,7 +41,7 @@ class FMTEXPORT FMTActionParser : public FMTParser
 		/**
 		@brief Default destructor for FMTActionParser.
 		*/
-		~FMTActionParser() = default;
+		~FMTActionParser() override = default;
 		// DocString: FMTActionParser(const FMTActionParser&)
 		/**
 		@brief Copy constructor for FMTActionParser.

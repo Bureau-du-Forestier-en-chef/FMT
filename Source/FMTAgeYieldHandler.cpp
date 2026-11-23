@@ -29,7 +29,7 @@ namespace Core {
 				{
 					value += NAME + _getYieldsSeparator();
 				}
-				value += "\n";
+				value += '\n';
 				int baseid = 0;
 				for (const int& base : m_bases)
 				{
@@ -39,7 +39,7 @@ namespace Core {
 						const std::vector<double>* data = &m_elements.at(NAME).data;
 						value += std::to_string(data->at(baseid)) + _getYieldsSeparator();
 					}
-					value += "\n";
+					value += '\n';
 					++baseid;
 				}
 		
@@ -108,7 +108,7 @@ namespace Core {
 		std::map<std::string, FMTData, cmpYieldString>::const_iterator it = m_elements.find(yld);
 		return it->second.data.back();
 	}
-	int FMTAgeYieldHandler::_getAge(const std::string yld, const double& value, const int& starting_age) const
+	int FMTAgeYieldHandler::_getAge(const std::string& yld, const double& value, const int& starting_age) const
 	{
 		int age = 0;
 		try {
@@ -210,7 +210,7 @@ namespace Core {
 						}
 					}
 				}
-				for (std::map<std::string, FMTData, cmpYieldString>::iterator datait : iterators)
+				for (const std::map<std::string, FMTData, cmpYieldString>::iterator& datait : iterators)
 				{
 					datait->second = ((datait->second)*factor);
 				}

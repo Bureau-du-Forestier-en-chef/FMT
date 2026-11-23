@@ -16,7 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
-#include "FMTspec.h"
+#include "FMTSpec.h"
 
 namespace Core
 {
@@ -285,7 +285,7 @@ class FMTEXPORT FMTConstraint: public FMTOutput,public FMTSpec
 		@brief Return the string representation of the constraint as in the optimization section.
 		@return the string representation of the constraint.
 		*/
-		operator std::string() const;
+		operator std::string() const override;
 		// DocString: FMTConstraint::isSpatial
 		/**
 		@brief Return true if the constraint is a spatial constraint.
@@ -351,7 +351,7 @@ class FMTEXPORT FMTConstraint: public FMTOutput,public FMTSpec
 		/**
 		@brief Default destructor for FMTConstraint.
 		*/
-		~FMTConstraint()=default;
+		~FMTConstraint() override=default;
 		// DocString: FMTConstraint::evaluate
 		/**
 		@brief Return a value representing the quality of the solution for the constraint.

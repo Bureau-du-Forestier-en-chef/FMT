@@ -44,7 +44,7 @@ class FMTEXPORT FMTEventContainer : public Core::FMTObject
         /**
         @brief Default destructor for FMTEventContainer.
         */
-        ~FMTEventContainer()=default;
+        ~FMTEventContainer() override=default;
         // DocString: FMTEventContainer(const FMTEventContainer&)
         /**
         @brief Copy constructor for FMTEventContainer.
@@ -70,7 +70,7 @@ class FMTEXPORT FMTEventContainer : public Core::FMTObject
          @brief Swap the events of this container with another one.
          @param[in,out] rhs the FMTEventContainer to swap with.
          */
-        void swap(FMTEventContainer& rhs);
+        void swap(FMTEventContainer& rhs) noexcept ;
         // DocString: FMTEventContainer::begin
         /**
         @brief Return a const iterator to the first event.
@@ -134,7 +134,7 @@ class FMTEXPORT FMTEventContainer : public Core::FMTObject
         @param[in] event the iterator to the event to erase.
         @return the next iterator.
         */
-        const_iterator erase (const const_iterator event);
+        const_iterator erase (const const_iterator& event);
         // DocString: FMTEventContainer::clear
         /**
         @brief Clear the content of the container.
@@ -430,7 +430,7 @@ class FMTEXPORT FMTEventContainer : public Core::FMTObject
             {
             public:
                 BoundingBox();
-                void add(FMTEventContainer::const_iterator p_event);
+                void add(const FMTEventContainer::const_iterator& p_event);
                 double evaluateUpperBound(int p_UpperBound) const;
                 std::vector<FMTEventContainer::const_iterator> getEvents() const;
             private:

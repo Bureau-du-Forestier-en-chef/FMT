@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTLpHeuristic.h"
 #include <algorithm>
 #include <random>
-#include "FMTSolverInterface.h"
+#include "FMTsolverinterface.h"
 #include "FMTExceptionHandler.h"
 
 namespace Heuristics

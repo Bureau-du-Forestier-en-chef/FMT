@@ -62,20 +62,20 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
         @param[in] schedules the schedules.
         @return true if the build succeeded else false.
         */
-        virtual bool build(std::vector<Core::FMTSchedule> schedules = std::vector<Core::FMTSchedule>());
+        bool build(std::vector<Core::FMTSchedule> schedules = std::vector<Core::FMTSchedule>()) override;
         // DocString: FMTSaModel::solve
         /**
         @brief Call initialSolve on the solver.
         @return true if the solve succeeded else false.
         */
-        virtual bool solve();
+        bool solve() override;
         // DocString: FMTSaModel::preSolve
         /**
         @brief Return a presolved copy of the model using a vector of developments and the actual transitions, reducing the model data if it is badly formulated.
         @param[in] optionaldevelopments the optional developments.
         @return the presolved model.
         */
-        virtual std::unique_ptr<FMTModel>preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
+        std::unique_ptr<FMTModel>preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const override;
         // DocString: FMTSaModel::getCopy
         /**
         @brief Return a copy of the FMTModel for the selected period.
@@ -83,7 +83,7 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
         @param[in] period the period.
         @return the copied model.
         */
-        virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;
+        std::unique_ptr<FMTModel> getCopy(int period = 0) const override;
         // DocString: FMTSaModel()
         /**
         @brief Default constructor for FMTSaModel.
@@ -93,7 +93,7 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
         /**
         @brief Destructor for FMTSaModel.
         */
-        ~FMTSaModel();
+        ~FMTSaModel() override;
         // DocString: FMTSaModel(const FMTSaModel)
         /**
         @brief Copy constructor for FMTSaModel.
@@ -125,7 +125,7 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
         @brief Get a clone of the FMTSaModel.
         @return a unique pointer to the cloned model.
         */
-        virtual std::unique_ptr<FMTModel>clone() const final;
+        std::unique_ptr<FMTModel>clone() const final;
 
         // DocString: FMTSaModel::buildPeriod
         /**
@@ -139,7 +139,7 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
         @brief Swap this model with an abstract FMTModel.
         @param[in,out] rhs the unique pointer to swap with.
         */
-        virtual void swapPtr(std::unique_ptr<FMTModel>& rhs);
+        void swapPtr(std::unique_ptr<FMTModel>& rhs) override;
     private:
     // DocString: FMTSaModel::Serialize
     /**
@@ -446,7 +446,7 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
         /**
         @brief Update the failed move count using the not accepted moves count and the move stats.
         */
-        void _UpdateFailedMoveCount();
+        void UpdateFailedMoveCount();
 
         // DocString: FMTSaModel::_GetSchedules
         /**
@@ -455,7 +455,7 @@ class FMTEXPORT FMTSaModel final: public FMTSeModel
         @param[in] withlock if true includes the locked developments.
         @return the schedules.
         */
-        std::vector<Core::FMTSchedule>_GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule, bool withlock) const;
+        std::vector<Core::FMTSchedule>GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule, bool withlock) const;
 
         #ifdef FMTWITHOSI
             // DocString: FMTSaModel::_getRandomLpModel

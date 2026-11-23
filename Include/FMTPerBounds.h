@@ -24,7 +24,7 @@ class FMTEXPORT FMTPerBounds : public FMTBounds<int>
 
 public:
     FMTPerBounds();
-    ~FMTPerBounds() = default;
+    ~FMTPerBounds() override = default;
     FMTPerBounds(FMTsection section, const int& upper, const int& lower);
     FMTPerBounds(const FMTPerBounds& rhs);
     FMTPerBounds(const FMTBounds<int>& rhs);

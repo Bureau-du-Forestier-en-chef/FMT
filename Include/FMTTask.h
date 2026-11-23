@@ -35,7 +35,7 @@ namespace Parallel
 		/**
 		@brief Default virtual destructor for FMTTask.
 		*/
-		virtual ~FMTTask() = default;
+		~FMTTask() override = default;
 		// DocString: FMTTask::FMTTask(const FMTTask&)
 		/**
 		@brief Default copy constructor for FMTTask.

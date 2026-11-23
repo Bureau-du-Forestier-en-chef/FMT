@@ -41,7 +41,7 @@ class FMTEXPORT FMTSeModel : public FMTModel
 		/**
 		@brief Default virtual destructor for FMTSeModel.
 		*/
-		virtual ~FMTSeModel() = default;
+		~FMTSeModel() override = default;
 		// DocString: FMTSeModel(const FMTSeModel)
 		/**
 		@brief Copy constructor for FMTSeModel.
@@ -119,14 +119,14 @@ class FMTEXPORT FMTSeModel : public FMTModel
 		@param[in] optionaldevelopments the optional developments.
 		@return the presolved model.
 		*/
-		virtual std::unique_ptr<FMTModel>preSolve(
-			std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
+		std::unique_ptr<FMTModel>preSolve(
+			std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const override;
 		// DocString: FMTSeModel::postSolve
 		/**
 		@brief Postsolve the model back into a complete model using the original model.
 		@param[in] originalbasemodel the original base model.
 		*/
-		virtual void postSolve(const FMTModel& originalbasemodel);
+		void postSolve(const FMTModel& originalbasemodel) override;
 		// DocString: FMTSeModel::getOutput
 		/**
 		@brief Get the output value for a period using the spatial solution.
@@ -136,8 +136,8 @@ class FMTEXPORT FMTSeModel : public FMTModel
 		@param[in] level the output level.
 		@return a map of names to values.
 		*/
-		virtual std::map<std::string, double> getOutput(const Core::FMTOutput& output,
-			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
+		std::map<std::string, double> getOutput(const Core::FMTOutput& output,
+			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const override;
 		// DocString: FMTSeModel::getOutput
 		/**
 		@brief Get the spatial output value based on the spatial solution.
@@ -153,7 +153,7 @@ class FMTEXPORT FMTSeModel : public FMTModel
 		@param[in] withlock if true includes the locked developments.
 		@return the solution schedule.
 		*/
-		virtual Core::FMTSchedule getSolution(int period, bool withlock = false) const;
+		Core::FMTSchedule getSolution(int period, bool withlock = false) const override;
 
 		
 		// DocString: FMTSeModel::clone
@@ -161,7 +161,7 @@ class FMTEXPORT FMTSeModel : public FMTModel
 		@brief Get a clone of the FMTSeModel.
 		@return a unique pointer to the cloned model.
 		*/
-		virtual std::unique_ptr<FMTModel>clone() const;
+		std::unique_ptr<FMTModel>clone() const override;
 		// DocString: FMTSeModel::getArea
 		/**
 		@brief Get the area of a period based on the solution.
@@ -169,20 +169,20 @@ class FMTEXPORT FMTSeModel : public FMTModel
 		@param[in] beforegrowanddeath if true returns before growth and death.
 		@return the actual developments.
 		*/
-		virtual std::vector<Core::FMTActualDevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const;
+		std::vector<Core::FMTActualDevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const override;
 		// DocString: FMTSeModel::getCopy
 		/**
 		@brief Return a copy of the model for a period, cleaning the constraints and keeping the objective.
 		@param[in] period the period.
 		@return the copied model.
 		*/
-		virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;
+		std::unique_ptr<FMTModel> getCopy(int period = 0) const override;
 		// DocString: FMTModel::getObjectiveValue
 		/**
 		@brief Return the global objective value of the actual solution.
 		@return the objective value.
 		*/
-		virtual double getObjectiveValue() const;
+		double getObjectiveValue() const override;
 		// DocString: FMTSeModel::getSchedules
 		/**
 		@brief Get the schedules of a spatial solution.
@@ -303,7 +303,7 @@ class FMTEXPORT FMTSeModel : public FMTModel
 		@brief Swap this model for the element at the end of the unique pointer.
 		@param[in,out] rhs the unique pointer to swap with.
 		*/
-		virtual void swapPtr(std::unique_ptr<FMTModel>& rhs);
+		void swapPtr(std::unique_ptr<FMTModel>& rhs) override;
 		// DocString: FMTSeModel::_buildArea
 		/**
 		@brief Build the area from a forest.

@@ -45,7 +45,7 @@ namespace Core
 			for (const std::string& yieldName : p_yields)
 			{
 				bool gotYield = false;
-				for (const FMTYieldRequest::const_iterator yield : p_request.getDatas())
+				for (const FMTYieldRequest::const_iterator& yield : p_request.getDatas())
 				{
 					if ((yield->second)->containsYield(yieldName))
 					{

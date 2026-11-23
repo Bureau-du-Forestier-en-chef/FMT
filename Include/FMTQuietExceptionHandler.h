@@ -30,7 +30,7 @@ namespace Exception
 		/**
 		@brief Default destructor for FMTQuietExceptionHandler.
 		*/
-		~FMTQuietExceptionHandler() = default;
+		~FMTQuietExceptionHandler() override = default;
 		// DocString: FMTQuietExceptionHandler::raise
 		/**
 		@brief Override the base class raise function. See FMTExceptionHandler::raise.
@@ -67,7 +67,7 @@ namespace Exception
 		@brief clone the FMTQuietExceptionHandler
 		@return a valid cloned FMTQuietExceptionHandler
 		*/
-		virtual std::unique_ptr <FMTExceptionHandler> clone() const;
+		std::unique_ptr <FMTExceptionHandler> clone() const override;
 	private:
 		// DocString: FMTQuietExceptionHandler::serialize
 		/**

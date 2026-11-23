@@ -1271,12 +1271,15 @@ FMTModel::FMTModel() : Core::FMTObject(), m_generator(),parameters(),area(),them
 }
 
 
-FMTModel::FMTModel(FMTModel&& rhs) : Core::FMTObject(), m_generator(), parameters(), area(), themes(), actions(), transitions(), yields(), lifespan(), outputs(), constraints(), name(), statictransitionthemes()
+FMTModel::FMTModel(FMTModel&& rhs) noexcept :
+	Core::FMTObject(), m_generator(), parameters(), 
+	area(), themes(), actions(), transitions(), yields(), 
+	lifespan(), outputs(), constraints(), name(), statictransitionthemes()
 {
 	*this = std::move(rhs);
 }
 
-FMTModel& FMTModel::operator =(FMTModel&& rhs)
+FMTModel& FMTModel::operator =(FMTModel&& rhs) noexcept
 {
 	if (this != &rhs)
 	{

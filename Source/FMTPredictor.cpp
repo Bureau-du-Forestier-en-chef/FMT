@@ -86,16 +86,9 @@ namespace Graph
 	}
 
 
-	FMTPredictor::FMTPredictor(const FMTPredictor& rhs) :
-		m_source_vertex(rhs.m_source_vertex),
-		m_target_vertex(rhs.m_target_vertex),
-		m_source_yields(rhs.m_source_yields),
-		m_target_yields(rhs.m_target_yields),
-		m_periodgaps(rhs.m_periodgaps),
-		m_sourceactions(rhs.m_sourceactions)
-	{
-
-	}
+	FMTPredictor::FMTPredictor(const FMTPredictor& rhs) 
+		
+	= default;
 	FMTPredictor& FMTPredictor::operator = (const FMTPredictor& rhs)
 	{
 		if (this!=&rhs)

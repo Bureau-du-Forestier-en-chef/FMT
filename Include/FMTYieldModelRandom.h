@@ -48,7 +48,7 @@ namespace Core
 		@param[in] p_request a valid FMTYieldRequest.
 		@return Predicted random values ranging from the distribution lower to upper bound.
 		*/
-		const std::vector<double>predict(const Core::FMTYieldRequest& p_request) const;
+		const std::vector<double>predict(const Core::FMTYieldRequest& p_request) const override;
 		// DocString: FMTYieldModelRandom::preSolve
 		/**
 		@brief If the FMTYieldModelRandom contains Core classes it also need to be presolved when presolved is called on the FMTModel.
@@ -58,7 +58,7 @@ namespace Core
 		@return a pointer to a presolved FMTYieldModel.
 		*/
 		 std::unique_ptr<FMTYieldModel> preSolve(const FMTMaskFilter& p_filter,
-			const std::vector<FMTTheme>& p_newThemes) const;
+			const std::vector<FMTTheme>& p_newThemes) const override;
 		// DocString: FMTYieldModelRandom::postSolve
 		/**
 		@brief Postsolve the yieldmodel by default it will return a clone.
@@ -67,13 +67,13 @@ namespace Core
 		@return a pointer to a postsolved FMTYieldModel.
 		*/
 		std::unique_ptr<FMTYieldModel> postSolve(const FMTMaskFilter& p_filter,
-			const std::vector<FMTTheme>& p_baseThemes) const;
+			const std::vector<FMTTheme>& p_baseThemes) const override;
 		// DocString: FMTYieldModelRandom::clone
 		/**
 		@brief clone this FMTYieldModel
 		@return a cloned FMTYieldModel.
 		*/
-		std::unique_ptr<FMTYieldModel>clone() const;
+		std::unique_ptr<FMTYieldModel>clone() const override;
 		// DocString: FMTYieldModelRandom:: getModelType
 		/**
 		@brief Get the model type.
@@ -85,7 +85,7 @@ namespace Core
 		@brief set The model to the yielmodel and change the seed.!
 		@param[in] p_modelPtr the pointer to the actual model. This can be cast to different type of model...
 		*/
-		virtual void setModel(Models::FMTModel* p_modelPtr);
+		void setModel(Models::FMTModel* p_modelPtr) override;
 	private:
 		// DocString: FMTYieldModelRandom::_getNormalizedYields
 		/**

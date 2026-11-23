@@ -52,16 +52,9 @@ namespace Models
         m_compresstime = std::vector<int>(30,1);
     }
     
-    FMTModelParameters::FMTModelParameters(const FMTModelParameters& rhs):
-        Core::FMTObject(rhs),
-        m_intparameters(rhs.m_intparameters),
-        m_dblparameters(rhs.m_dblparameters),
-        m_boolparameters(rhs.m_boolparameters),
-        m_strparameters(rhs.m_strparameters),
-        m_compresstime(rhs.m_compresstime)
-    {
+    FMTModelParameters::FMTModelParameters(const FMTModelParameters& rhs)
         
-    }
+    = default;
 
     FMTModelParameters& FMTModelParameters::operator = (const FMTModelParameters& rhs)
     {
@@ -241,7 +234,7 @@ namespace Models
         return m_compresstime;
     }
 
-    void FMTModelParameters::swap(FMTModelParameters& rhs)
+    void FMTModelParameters::swap(FMTModelParameters& rhs) noexcept
     {
         m_intparameters.swap(rhs.m_intparameters);
         m_dblparameters.swap(rhs.m_dblparameters);

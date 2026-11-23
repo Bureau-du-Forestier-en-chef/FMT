@@ -64,7 +64,7 @@ public:
     @brief Construct a FMTOperator from a string key.
     @param[in] strkey the string representation of the operator.
     */
-    FMTOperator(std::string strkey);
+    FMTOperator(const std::string& strkey);
 	// DocString: FMTOperator::operator==
 	/**
 	@brief Equality comparison operator of FMTOperator.

@@ -305,7 +305,7 @@ namespace Spatial
         std::array<FMTCoordinate, 4>enveloppe{*m_elements.begin(),*m_elements.begin(),
                                             *m_elements.begin(),*m_elements.begin()};
             
-		for (std::set<FMTCoordinate>::const_iterator border : getBorders())
+		for (const std::set<FMTCoordinate>::const_iterator& border : getBorders())
 			{
 			border->upEnveloppe(enveloppe);
 			}

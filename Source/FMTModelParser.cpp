@@ -27,6 +27,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/range/iterator_range.hpp>
 #include <array>
 #include <streambuf>
+#include <utility>
 
 
 #ifdef FMTWITHGDAL
@@ -43,10 +44,8 @@ namespace Parser {
 
 	}
 
-	FMTModelParser::FMTModelParser(const FMTModelParser& rhs) : FMTParser(rhs)
-	{
-
-	}
+	FMTModelParser::FMTModelParser(const FMTModelParser& rhs)  
+	= default;
 	FMTModelParser& FMTModelParser::operator = (const FMTModelParser& rhs)
 	{
 		if (this != &rhs)
@@ -62,7 +61,7 @@ namespace Parser {
 	{
 		OGRLayer* newlayer = nullptr;
 		try {
-			newlayer = createLayer(dataset, "outputsdrift", creationoptions);
+			newlayer = createLayer(dataset, "outputsdrift", std::move(creationoptions));
 			OGRFieldDefn PeriodField("Period", OFTInteger);
 			PeriodField.SetWidth(32);
 			OGRFieldDefn OutputField("Output", OFTString);
@@ -108,7 +107,7 @@ namespace Parser {
 					for (const double& probability : driftvalues.second)
 					{
 						OGRFeature* newfeature = OGRFeature::CreateFeature(layer->GetLayerDefn());
-						if (newfeature == NULL)
+						if (newfeature == nullptr)
 						{
 							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
 								"Cannote generate new feature ", "FMTModelParser::writeFeatures", __LINE__, __FILE__, m_section);
@@ -143,7 +142,7 @@ namespace Parser {
 		try {
 			OGRFeature* feature;
 			std::map<std::string, std::map<int, std::map<int, double>>> sortedresults;
-			while ((feature = layer->GetNextFeature()) != NULL)
+			while ((feature = layer->GetNextFeature()) != nullptr)
 			{
 				const int iteration = feature->GetFieldAsInteger("Iteration");
 				const int period = feature->GetFieldAsInteger("Period");
@@ -176,7 +175,8 @@ namespace Parser {
 				for (const auto& outperiod : outresult.second)
 				{
 					std::vector<double>values;
-					for (const auto& outvalue : outperiod.second)
+					values.reserve(outperiod.second.size());
+for (const auto& outvalue : outperiod.second)
 					{
 						values.push_back(outvalue.second);
 					}
@@ -198,7 +198,7 @@ namespace Parser {
 	{
 		OGRLayer* newlayer = nullptr;
 		try {
-			newlayer = createLayer(p_dataset, p_modelName, p_creationOptions);
+			newlayer = createLayer(p_dataset, p_modelName, std::move(p_creationOptions));
 			OGRFieldDefn IterationField("Iteration", OFTInteger);
 			IterationField.SetWidth(32);
 			OGRFieldDefn PeriodField("Period", OFTInteger);
@@ -268,7 +268,7 @@ namespace Parser {
 								outputtype = toutputvalues.first.c_str();
 							}
 							OGRFeature* newfeature = OGRFeature::CreateFeature(layer->GetLayerDefn());
-							if (newfeature == NULL)
+							if (newfeature == nullptr)
 							{
 								_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
 									"Cannote generate new feature ", "FMTModelParser::writeFeatures", __LINE__, __FILE__, m_section);
@@ -309,7 +309,7 @@ namespace Parser {
 		std::string gdaldrivername) const
 	{
 		try {
-			GDALDataset* newdataset = createOGRDataset(location, gdaldrivername);
+			GDALDataset* newdataset = createOGRDataset(location, std::move(gdaldrivername));
 			OGRLayer* newlayer = createResultsLayer(model.getName(), newdataset);
 			writeFeatures(newlayer, firstPeriod, 0, theoutputs, model.getOutputsFromPeriods(theoutputs, firstPeriod, lastPeriod, level));
 			GDALClose(newdataset);
@@ -332,7 +332,7 @@ namespace Parser {
 		const std::string& outfile,
 		const std::string& optfile,
 		const std::string& liffile,
-		std::string seqfile) const
+		const std::string& seqfile) const
 	{
 		try {
 			std::ofstream pristream;
@@ -506,7 +506,7 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 			std::map<std::string, std::vector<int>> commons;
 			std::vector<Models::FMTModel>models;
 			return referenceRead(commons, models,
-				con, lan, lif, are, yld, act, trn, out, opt);
+				con, lan, lif, are, yld, act, trn, out, std::move(opt));
 		}
 		catch (...)
 		{
@@ -515,13 +515,13 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 		return Models::FMTModel();
 	}
 
-	std::vector<Core::FMTConstraint>FMTModelParser::getConstraintsFromString(std::string constraintstr, const Models::FMTModel& model, Core::FMTConstants constants)
+	std::vector<Core::FMTConstraint>FMTModelParser::getConstraintsFromString(std::string constraintstr, const Models::FMTModel& model, const Core::FMTConstants& constants)
 	{
 		std::vector<Core::FMTConstraint>constraints;
 		try {
 			FMTOptimizationParser optparser;
 			boost::to_upper(constraintstr);
-			for (Core::FMTConstraint constraint : optparser.getConstraints(constraintstr, constants,model.yields,
+			for (const Core::FMTConstraint& constraint : optparser.getConstraints(constraintstr, constants,model.yields,
 																			model.outputs, model.themes, model.actions))
 			{
 				//constraint.passinobject(model);
@@ -541,7 +541,7 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 		const std::string& con, const std::string& lan,
 		const std::string& lif, const std::string& are, const std::string& yld,
 		const std::string& act, const std::string& tr, const std::string& out,
-		std::string opt, bool allow_mapping)
+		const std::string& opt, bool allow_mapping)
 	{
 		Models::FMTModel returnedmodel;
 		try {
@@ -815,7 +815,7 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 						commonm_sections.erase(tr);
 					}
 				}
-				actions = excluded; //here we go
+				actions = std::move(excluded); //here we go
 			}
 			returnedmodel = Models::FMTModel(areas, themes, actions,
 				transitions, yields, lifespan, modelname, outputs, constraints);
@@ -1090,7 +1090,7 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 				std::vector<std::string> missing_scenarios;
 				if (models.empty())
 				{
-					missing_scenarios = scenarios;
+					missing_scenarios = std::move(scenarios);
 				}
 				else {
 					for (const std::string& scenario : scenarios)
@@ -1139,7 +1139,7 @@ void FMTModelParser::write(const Models::FMTModel& model,const std::string& fold
 			const boost::filesystem::path primary_path(primarym_location);
 			const boost::filesystem::path scenarios_path = (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
 			const std::string scenariofolder = scenarios_path.string();
-			return readFromFolder(primarym_location, scenariofolder, scenarios, true,readarea,readoutputs,readoptimize);
+			return readFromFolder(primarym_location, scenariofolder, std::move(scenarios), true,readarea,readoutputs,readoptimize);
 		}
 		catch (...)
 		{

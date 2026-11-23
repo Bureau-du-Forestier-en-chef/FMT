@@ -30,14 +30,14 @@ class FMTEXPORT FMTActualDevelopment : public FMTDevelopment
 		@brief Move copy constructor
 		@param[in] rhs development to swap
 		*/
-		FMTActualDevelopment(FMTActualDevelopment&& rhs);
+		FMTActualDevelopment(FMTActualDevelopment&& rhs) noexcept ;
 		// DocString: FMTActualDevelopment::operator=(FMTActualDevelopment&& rhs)
 		/**
 		@brief Move assignment operator for FMTActualDevelopment.
 		@param[in] rhs the development to move from.
 		@return a reference to this FMTActualDevelopment.
 		*/
-		FMTActualDevelopment& operator=(FMTActualDevelopment&& rhs);
+		FMTActualDevelopment& operator=(FMTActualDevelopment&& rhs) noexcept ;
 		// DocString: FMTActualDevelopment()
 		/**
 		@brief Default constructor for FMTActualDevelopment.
@@ -47,7 +47,7 @@ class FMTEXPORT FMTActualDevelopment : public FMTDevelopment
 		/**
 		@brief Default destructor for FMTActualDevelopment.
 		*/
-		~FMTActualDevelopment()=default;
+		~FMTActualDevelopment() override=default;
 		// DocString: FMTActualDevelopment(const FMTActualDevelopment&)
 		/**
 		@brief Copy constructor for FMTActualDevelopment.

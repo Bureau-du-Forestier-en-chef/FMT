@@ -63,7 +63,7 @@ namespace Models
 		@brief Postsolve the presolved model back into the original model, also postsolving the FMTGraph of the FMTSrModel.
 		@param[in] originalbasemodel the original base model.
 		*/
-		virtual void postSolve(const FMTModel& originalbasemodel);
+		void postSolve(const FMTModel& originalbasemodel) override;
 		// DocString: FMTSrModel::setParallelLogger
 		/**
 		@brief Pass a logger owned by the thread to the solver so it does not work in concurrency.
@@ -123,7 +123,7 @@ namespace Models
 		/**
 		@brief Default destructor for FMTSrModel.
 		*/
-		~FMTSrModel() = default;
+		~FMTSrModel() override = default;
 		// DocString: FMTSrModel::operator==
 		/**
 		@brief Comparison operator for FMTSrModel.
@@ -227,7 +227,7 @@ namespace Models
 		@param[in] period the period.
 		@return the copied model.
 		*/
-		virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;
+		std::unique_ptr<FMTModel> getCopy(int period = 0) const override;
 		// DocString: FMTSrModel::getOutput
 		/**
 		@brief Get the output value for a period using the matrix solution.
@@ -237,8 +237,8 @@ namespace Models
 		@param[in] level the output level.
 		@return a map of names to values.
 		*/
-		virtual std::map<std::string, double> getOutput(const Core::FMTOutput& output,
-			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
+		std::map<std::string, double> getOutput(const Core::FMTOutput& output,
+			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const override;
 		#if defined FMTWITHR
 		// DocString: FMTSrModel::getOutputsDataFrame
 		/**
@@ -259,7 +259,7 @@ namespace Models
 		@param[in] compressageclassoperability the age class operability compression.
 		@return the graph stats.
 		*/
-		Graph::FMTGraphStats buildPeriod(Core::FMTSchedule schedule = Core::FMTSchedule(),
+		Graph::FMTGraphStats buildPeriod(const Core::FMTSchedule& schedule = Core::FMTSchedule(),
 				bool forcepartialbuild = false, int compressageclassoperability = 1);
 		// DocString: FMTSrModel::getFirstActivePeriod
 		/**
@@ -276,7 +276,7 @@ namespace Models
 		@param[in] beforegrowanddeath if true returns before growth and death.
 		@return the actual developments.
 		*/
-		virtual std::vector<Core::FMTActualDevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const override;
+		std::vector<Core::FMTActualDevelopment>getArea(int period = 0, bool beforegrowanddeath = false) const override;
 		// DocString: FMTSrModel::getPotentialArea
 		/**
 		@brief Compute the potential (maximum) development area for a period by forcing all solver decision variables to 1.0.
@@ -305,7 +305,7 @@ namespace Models
 		@brief Get a clone of the FMTSrModel.
 		@return a unique pointer to the cloned model.
 		*/
-		virtual std::unique_ptr<FMTModel>clone() const override;
+		std::unique_ptr<FMTModel>clone() const override;
 		// DocString: FMTSrModel::passInLogger
 		/**
 		@brief Pass in the logger, overridden for the osisolverinterface.
@@ -318,7 +318,7 @@ namespace Models
 		@param[in] optionaldevelopments the optional developments.
 		@return the presolved model.
 		*/
-		virtual std::unique_ptr<FMTModel>preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const override;
+		std::unique_ptr<FMTModel>preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const override;
 		// DocString: FMTSrModel::boundSolution
 		/**
 		@brief Bound the primal variables to the primal solution present in the matrix for a given period and tolerance.
@@ -358,13 +358,13 @@ namespace Models
 		@brief Return true if the solver considers the solution optimal.
 		@return true if the solution is optimal else false.
 		*/
-		virtual bool isOptimal() const;
+		bool isOptimal() const override;
 		// DocString: FMTSrModel::getObjectiveValue
 		/**
 		@brief Return the value of the solver objective.
 		@return the objective value.
 		*/
-		virtual double getObjectiveValue() const;
+		double getObjectiveValue() const override;
 		// DocString: FMTSrModel::getNoChoice
 		/**
 		@brief Return the period 0 developments of a base mask that have no actions assigned for the whole planning horizon.

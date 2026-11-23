@@ -77,7 +77,7 @@ namespace Core {
 			const boost::filesystem::path dir = modelpath.parent_path();
 			const std::string shortmodelname = dir.stem().string();
 			std::string data(shortmodelname);
-			for (const std::string yield : getModelYields())
+			for (const std::string& yield : getModelYields())
 			{
 				data += ("," + yield);
 			}

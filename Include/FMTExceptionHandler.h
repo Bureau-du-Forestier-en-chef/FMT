@@ -147,7 +147,7 @@ namespace Exception
 		@param[in] file the file where the exception occurred.
 		@param[in] lsection the section in which the exception occurred.
 		*/
-		void raiseFromThreadCatch(std::string text,
+		void raiseFromThreadCatch(const std::string& text,
 			const std::string& method, const int& line, const std::string& file,
 			Core::FMTsection lsection = Core::FMTsection::Empty);
 		// DocString: FMTExceptionHandler::reRaiseIfThreadCrash
@@ -304,7 +304,7 @@ namespace Exception
 		@param[in] lsection the section in which the exception occurred.
 		@param[in] logfirstlevel if true logs the first level.
 		*/
-		void _gutsOfPrintExceptions(std::string text,
+		void _gutsOfPrintExceptions(const std::string& text,
 			const std::string& method, const int& line, const std::string& fil,
 			int& levelreference,Core::FMTsection lsection = Core::FMTsection::Empty,bool logfirstlevel = true);
 		// DocString: FMTExceptionHandler::_gutsOfExceptionLog

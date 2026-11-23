@@ -118,7 +118,7 @@ namespace Models
             /**
             @brief Default destructor for FMTModelParameters.
             */
-            ~FMTModelParameters()=default;
+            ~FMTModelParameters() override=default;
             // DocString: FMTModelParameters(FMTModelParameters&&)
             /**
             @brief Default move constructor for FMTModelParameters.
@@ -137,7 +137,7 @@ namespace Models
             @brief Swap this FMTModelParameters with another.
             @param[in,out] rhs the FMTModelParameters to swap with.
             */
-            void swap(FMTModelParameters& rhs);
+            void swap(FMTModelParameters& rhs) noexcept ;
             //###Setter
             // DocString: FMTModelParameters::setIntParameter
             /**

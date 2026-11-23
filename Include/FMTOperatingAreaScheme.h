@@ -529,7 +529,7 @@ namespace Heuristics
 			/**
 			@brief Default destructor for FMTOperatingAreaScheme.
 			*/
-			~FMTOperatingAreaScheme()=default;
+			~FMTOperatingAreaScheme() override=default;
 			// DocString: FMTOperatingAreaScheme::preSolve
 			/**
 			@brief Return a presolved FMTOperatingAreaScheme using a mask and a subset of the original themes.

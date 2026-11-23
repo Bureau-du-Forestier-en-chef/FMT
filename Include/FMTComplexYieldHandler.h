@@ -49,19 +49,19 @@ namespace Core
 		@brief Set the override index of the handler.
 		@param[in] newindex the override index to set.
 		*/
-		virtual void setOverrideIndex(const size_t& newindex);
+		void setOverrideIndex(const size_t& newindex) override;
 		// DocString: FMTComplexYieldHandler::getOverrideIndex
 		/**
 		@brief Return the override index of the handler.
 		@return the override index.
 		*/
-		virtual size_t  getOverrideIndex() const;
+		size_t  getOverrideIndex() const override;
 		// DocString: FMTComplexYieldHandler::getLastBase
 		/**
 		@brief Return the last base age of the handler.
 		@return the last base age.
 		*/
-		virtual int getLastBase() const;
+		int getLastBase() const override;
 		// DocString: FMTComplexYieldHandler::get
 		/**
 		@brief Get the value of a yield for a request.
@@ -69,7 +69,7 @@ namespace Core
 		@param[in] request the yield request.
 		@return the yield value.
 		*/
-		virtual double get(const std::string& yld, const FMTYieldRequest& request) const;
+		double get(const std::string& yld, const FMTYieldRequest& request) const override;
 		// DocString: FMTComplexYieldHandler::compareSources
 		/**
 		@brief Compare the sources of a yield with those of an overriding handler.
@@ -83,12 +83,12 @@ namespace Core
 		@brief Return the string representation of the complex yield handler.
 		@return the string representation.
 		*/
-		virtual  operator std::string() const;
+		operator std::string() const override;
 		// DocString: ~FMTComplexYieldHandler()
 		/**
 		@brief Destructor for FMTComplexYieldHandler.
 		*/
-		~FMTComplexYieldHandler();
+		~FMTComplexYieldHandler() override;
 		// DocString: FMTComplexYieldHandler()
 		/**
 		@brief Default constructor for FMTComplexYieldHandler.
@@ -125,7 +125,7 @@ namespace Core
 		@param[in] names the names.
 		@return the index names.
 		*/
-		virtual std::vector<std::string> indexes(const std::vector<std::string>& names) const;
+		std::vector<std::string> indexes(const std::vector<std::string>& names) const override;
 		// DocString: FMTComplexYieldHandler::getPeak
 		/**
 		@brief Return the peak value of a yield for a request.
@@ -134,7 +134,7 @@ namespace Core
 		@param[in] targetage the target age.
 		@return the peak value.
 		*/
-		virtual double getPeak(const FMTYieldRequest& request, const std::string& yld, const int& targetage) const;
+		double getPeak(const FMTYieldRequest& request, const std::string& yld, const int& targetage) const override;
 		// DocString: FMTComplexYieldHandler::complexYldToAgeYld
 		/**
 		@brief Convert the complex yield to an age yield handler for a request and specification.
@@ -150,7 +150,7 @@ namespace Core
 		@param[in] value the value.
 		@return true if the value is pushed else false.
 		*/
-		virtual bool pushData(const std::string& yld, const double& value);
+		bool pushData(const std::string& yld, const double& value) override;
 		// DocString: FMTComplexYieldHandler::pushData(const std::string&, const FMTData&)
 		/**
 		@brief Push data for a yield.
@@ -158,13 +158,13 @@ namespace Core
 		@param[in] data the data.
 		@return true if the data is pushed else false.
 		*/
-		virtual bool pushData(const std::string& yld, const FMTData& data);
+		bool pushData(const std::string& yld, const FMTData& data) override;
 		// DocString: FMTComplexYieldHandler::clone
 		/**
 		@brief Clone the complex yield handler.
 		@return a unique pointer to the cloned yield handler.
 		*/
-		virtual std::unique_ptr<FMTYieldHandler>clone() const;
+		std::unique_ptr<FMTYieldHandler>clone() const override;
 		// DocString: FMTComplexYieldHandler::operator==
 		/**
 		@brief Equality comparison operator of FMTComplexYieldHandler.
@@ -177,51 +177,51 @@ namespace Core
 		@brief Return true if the handler is empty.
 		@return true if the handler is empty else false.
 		*/
-		virtual bool empty() const;
+		bool empty() const override;
 		// DocString: FMTComplexYieldHandler::size
 		/**
 		@brief Return the number of yields in the handler.
 		@return the number of yields.
 		*/
-		virtual size_t size() const;
+		size_t size() const override;
 		// DocString: FMTComplexYieldHandler::getType
 		/**
 		@brief Return the type of the yield handler.
 		@return the yield type.
 		*/
-		virtual FMTyldtype getType() const;
+		FMTyldtype getType() const override;
 		// DocString: FMTComplexYieldHandler::operator[]
 		/**
 		@brief Access the data of a yield.
 		@param[in] yldname the yield name.
 		@return a reference to the data of the yield.
 		*/
-		virtual FMTData& operator[](const std::string& yldname);
+		FMTData& operator[](const std::string& yldname) override;
 		// DocString: FMTComplexYieldHandler::at
 		/**
 		@brief Access the data of a yield.
 		@param[in] yldname the yield name.
 		@return a const reference to the data of the yield.
 		*/
-		virtual const FMTData& at(const std::string& yldname) const;
+		const FMTData& at(const std::string& yldname) const override;
 		// DocString: FMTComplexYieldHandler::containsYield
 		/**
 		@brief Return true if the handler contains a given yield.
 		@param[in] yldname the yield name.
 		@return true if the handler contains the yield else false.
 		*/
-		virtual bool containsYield(const std::string& yldname) const;
+		bool containsYield(const std::string& yldname) const override;
 		// DocString: FMTComplexYieldHandler::getYieldNames
 		/**
 		@brief Return the yield names of the handler.
 		@return the yield names.
 		*/
-		virtual std::vector<std::string>getYieldNames() const;
+		std::vector<std::string>getYieldNames() const override;
 		// DocString: FMTComplexYieldHandler::clearCache
 		/**
 		@brief Clear the cache of the handler.
 		*/
-		virtual void clearCache();
+		void clearCache() override;
 		// DocString: FMTComplexYieldHandler::getAge
 		/**
 		@brief Return the age of a development from a request and a specification.
@@ -229,7 +229,7 @@ namespace Core
 		@param[in] spec the specification.
 		@return the age.
 		*/
-		virtual int getAge(const FMTYieldRequest& request, const FMTSpec& spec) const;
+		int getAge(const FMTYieldRequest& request, const FMTSpec& spec) const override;
 		// DocString: FMTComplexYieldHandler::getYieldLinearValue
 		/**
 		@brief Return the linearly interpolated value of a yield for a request.
@@ -238,7 +238,7 @@ namespace Core
 		@param[in] allowoutofrange if true allows out of range values.
 		@return the linear yield value.
 		*/
-		virtual double getYieldLinearValue(const std::string& yldname, const FMTYieldRequest& request, bool allowoutofrange=true) const;
+		double getYieldLinearValue(const std::string& yldname, const FMTYieldRequest& request, bool allowoutofrange=true) const override;
 	private:
 		std::map<std::string, FMTData, cmpYieldString>m_elements;
 		// DocString: FMTComplexYieldHandler::_getSources

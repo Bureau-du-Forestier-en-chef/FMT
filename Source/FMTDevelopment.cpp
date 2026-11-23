@@ -23,16 +23,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core {
 
 FMTDevelopment::FMTDevelopment(FMTDevelopment &&rhs)
-    : FMTObject(std::move(rhs)), m_mask(std::move(rhs.m_mask)),
-      m_age(std::move(rhs.m_age)), m_lock(std::move(rhs.m_lock)),
-      m_period(std::move(rhs.m_period)) {}
+ noexcept     : FMTObject(rhs), m_mask(std::move(rhs.m_mask)),
+      m_age(rhs.m_age), m_lock(rhs.m_lock),
+      m_period(rhs.m_period) {}
 
-FMTDevelopment &FMTDevelopment::operator=(FMTDevelopment &&rhs) {
-  FMTObject::operator=(std::move(rhs));
+FMTDevelopment &FMTDevelopment::operator=(FMTDevelopment &&rhs)  noexcept {
+  FMTObject::operator=(rhs);
   m_mask = std::move(rhs.m_mask);
-  m_age = std::move(rhs.m_age);
-  m_lock = std::move(rhs.m_lock);
-  m_period = std::move(rhs.m_period);
+  m_age = rhs.m_age;
+  m_lock = rhs.m_lock;
+  m_period = rhs.m_period;
   return *this;
 }
 
@@ -79,8 +79,8 @@ FMTDevelopment::FMTDevelopment(const FMTMask &p_mask, const int &p_age,
       m_period(static_cast<uint8_t>(p_period)) {}
 
 FMTDevelopment::FMTDevelopment(const FMTDevelopment &rhs)
-    : FMTObject(rhs), m_mask(rhs.m_mask), m_age(rhs.m_age), m_lock(rhs.m_lock),
-      m_period(rhs.m_period) {}
+    
+      = default;
 
 FMTDevelopment &FMTDevelopment::operator=(const FMTDevelopment &rhs) {
   if (this != &rhs) {
@@ -176,7 +176,7 @@ bool FMTDevelopment::operable(
     const Graph::FMTGraphVertexToYield *graphyieldrequest) const {
   try {
     if (worthTestingOperability(action)) {
-      for (const FMTAction::const_iterator spec : action.findSets(m_mask)) {
+      for (const FMTAction::const_iterator& spec : action.findSets(m_mask)) {
         if (is(spec->second, ylds, graphyieldrequest)) {
           return true;
         }
@@ -267,7 +267,7 @@ FMTDevelopment::operate(const FMTAction &action,
 
     } else {
       std::string yldsStr;
-      for (const FMTTransition::const_iterator fork :
+      for (const FMTTransition::const_iterator& fork :
            Transition.findSets(getMask())) {
         for (const std::string &YLD_NAME : fork->second.getYlds()) {
           if (yldsStr.find(YLD_NAME) == std::string::npos) {

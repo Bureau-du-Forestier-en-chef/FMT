@@ -150,7 +150,7 @@ namespace Parallel
 		}
 	}
 
-	std::unique_ptr<Models::FMTModel>FMTReplanningTask::_copySharedModel(const std::shared_ptr<Models::FMTModel>model)
+	std::unique_ptr<Models::FMTModel>FMTReplanningTask::_copySharedModel(const std::shared_ptr<Models::FMTModel>&model)
 		{
 		try {
 			boost::lock_guard<boost::recursive_mutex> guard(m_taskmutex);
@@ -493,7 +493,7 @@ namespace Parallel
 
 
 	std::unique_ptr<Models::FMTModel>FMTReplanningTask::_doModelPlanning(
-		const std::shared_ptr<Models::FMTModel>model,
+		const std::shared_ptr<Models::FMTModel>&model,
 		const int& replanningperiod,
 		bool getsolutionandlocal,
 		bool applyscheduleweight,

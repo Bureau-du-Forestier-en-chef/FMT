@@ -49,14 +49,14 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		@brief Move copy constructor
 		@param[in] rhs development to swap
 		*/
-		FMTDevelopment(FMTDevelopment&& rhs);
+		FMTDevelopment(FMTDevelopment&& rhs) noexcept ;
 		// DocString: FMTDevelopment::operator=(FMTDevelopment&& rhs)
 		/**
 		@brief Move assignment operator for FMTDevelopment.
 		@param[in] rhs the development to move from.
 		@return a reference to this FMTDevelopment.
 		*/
-		FMTDevelopment& operator=(FMTDevelopment&& rhs);
+		FMTDevelopment& operator=(FMTDevelopment&& rhs) noexcept ;
 		// DocString: FMTDevelopment::getAge
 		/**
 		@brief Get the age of the development.
@@ -144,7 +144,7 @@ class FMTEXPORT FMTDevelopment : public FMTObject
 		/**
 		@brief Default virtual destructor for FMTDevelopment.
 		*/
-		virtual ~FMTDevelopment() = default;
+		~FMTDevelopment() override = default;
 		// DocString: FMTDevelopment(const FMTMask&,const int&,const int&)
 		/**
 		@brief Construct a development from a mask, an age and a lock level.

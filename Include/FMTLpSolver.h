@@ -8,7 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifdef FMTWITHOSI
 #ifndef FMTsolve_Hm_included
 #define FMTsolve_Hm_included
-#include "FMTSolverInterface.h"
+#include "FMTsolverinterface.h"
 #include "FMTMatrixBuild.h"
 #include "FMTExceptionHandler.h"
 #include "FMTObject.h"
@@ -53,7 +53,7 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		@brief Swap this FMTLpSolver with another one.
 		@param[in,out] rhs the FMTLpSolver to swap with.
 		*/
-		void swap(FMTLpSolver& rhs);
+		void swap(FMTLpSolver& rhs) noexcept ;
 		// DocString: FMTLpSolver::passInLogger
 		/**
 		@brief Pass in the logger, overridden for the OsiSolverInterface.
@@ -80,7 +80,7 @@ class FMTEXPORT FMTLpSolver: public Core::FMTObject
 		/**
 		@brief Default virtual destructor for FMTLpSolver.
 		*/
-		virtual ~FMTLpSolver() = default;
+		~FMTLpSolver() override = default;
 		// DocString: FMTLpSolver(const FMTLpSolver&)
 		/**
 		@brief Default copy constructor for FMTLpSolver.

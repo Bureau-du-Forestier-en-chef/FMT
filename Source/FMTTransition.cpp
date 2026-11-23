@@ -6,6 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTTransition.h"
+
+#include <utility>
 #include "FMTYieldRequest.h"
 #include "FMTDevelopment.h"
 #include "FMTMask.h"
@@ -54,10 +56,8 @@ return *this;
 }
 
 
-FMTTransition::FMTTransition(const FMTTransition& rhs) : FMTList<FMTFork>(rhs),name(rhs.name)
-    {
-
-    }
+FMTTransition::FMTTransition(const FMTTransition& rhs) 
+    = default;
 FMTTransition& FMTTransition::operator = (const FMTTransition& rhs)
     {
     if (this!=&rhs)
@@ -186,7 +186,7 @@ const FMTFork* FMTTransition::getFork(const Core::FMTDevelopment& development,co
     {
 	try{
 	const Core::FMTYieldRequest& request = development.getYieldRequest();
-    for(const FMTTransition::const_iterator fork : this->findSets(development.getMask()))
+    for(const FMTTransition::const_iterator& fork : this->findSets(development.getMask()))
        {
 		if (fork->second.allowWithoutYield(development.getPeriod(), development.getAge(), development.getLock()))
 			{
@@ -287,7 +287,7 @@ FMTMask FMTTransition::mainTarget(const std::vector<FMTDevelopment>& devs,
 	 return results;
 	 }
 
- FMTTransitionComparator::FMTTransitionComparator(std::string name) :m_transitionName(name) {}
+ FMTTransitionComparator::FMTTransitionComparator(std::string name) :m_transitionName(std::move(name)) {}
  bool FMTTransitionComparator::operator()(const FMTTransition& transition) const
 	{
 	return (transition.getName()  == m_transitionName);

@@ -60,13 +60,13 @@ namespace Parallel
 		/**
 		@brief Destructor for FMTPlanningTask, taking care of writing the drift probabilities.
 		*/
-		virtual ~FMTPlanningTask()=default;
+		~FMTPlanningTask() override=default;
 		// DocString: FMTPlanningTask::clone
 		/**
 		@brief Clone function for FMTPlanningTask.
 		@return a unique pointer to the cloned task.
 		*/
-		std::unique_ptr<FMTTask>clone() const;
+		std::unique_ptr<FMTTask>clone() const override;
 		// DocString: FMTPlanningTask::setKeepModels
 		/**
 		@brief Force the task to keep the models, which may consume memory.
@@ -81,8 +81,8 @@ namespace Parallel
 		@param[in] louputs the outputs.
 		*/
 		void push_back(const Models::FMTModel& model,
-			std::vector<Core::FMTSchedule>schedules = std::vector<Core::FMTSchedule>(),
-			std::vector<Core::FMTOutput>louputs = std::vector<Core::FMTOutput>());
+			const std::vector<Core::FMTSchedule>&schedules = std::vector<Core::FMTSchedule>(),
+			const std::vector<Core::FMTOutput>&louputs = std::vector<Core::FMTOutput>());
 		// DocString: FMTPlanningTask::FMTPlanningTask(...)
 		/**
 		@brief Construct a FMTPlanningTask, mainly with the output parser parameters.
@@ -97,33 +97,33 @@ namespace Parallel
 		FMTPlanningTask(const int& minoutputperiod,
 					const int& maxoutputperiod,
 					const std::string& outputlocation,
-					std::string gdaldriver = "CSV",
+					const std::string& gdaldriver = "CSV",
 					std::vector<std::string>creationoptions= std::vector<std::string>(),
 					Core::FMToutputlevel outputlevel = Core::FMToutputlevel::standard,
-					std::string primaryfilelocation = std::string());
+					const std::string& primaryfilelocation = std::string());
 		// DocString: FMTPlanningTask::split
 		/**
 		@brief Split the main task into multiple planning tasks.
 		@param[in] numberoftasks the number of tasks.
 		@return the split tasks.
 		*/
-		virtual std::vector<std::unique_ptr<FMTTask>>split(const unsigned int& numberoftasks) const;
+		std::vector<std::unique_ptr<FMTTask>>split(const unsigned int& numberoftasks) const override;
 		// DocString: FMTPlanningTask::spawn
 		/**
 		@brief Spawn a minimal task from the master task.
 		@return a unique pointer to the spawned task.
 		*/
-		virtual std::unique_ptr<FMTTask>spawn();
+		std::unique_ptr<FMTTask>spawn() override;
 		// DocString: FMTPlanningTask::work
 		/**
 		@brief Main function doing the planning task.
 		*/
-		virtual void work();
+		void work() override;
 		// DocString: FMTPlanningTask::finalize
 		/**
 		@brief Do nothing at finalization.
 		*/
-		virtual void finalize();
+		void finalize() override;
 		// DocString: FMTPlanningTask::passInLogger
 		/**
 		@brief Pass in the logger.

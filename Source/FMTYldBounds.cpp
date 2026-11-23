@@ -27,9 +27,8 @@ FMTYldBounds::FMTYldBounds(
 }
 
 FMTYldBounds::FMTYldBounds(const FMTYldBounds& rhs)
-    : FMTBounds<double>(rhs), yield(rhs.yield)
-{
-}
+     
+= default;
 
 FMTYldBounds::FMTYldBounds(const std::string& lyield, const FMTBounds<double>& rhs)
     : FMTBounds(rhs), yield(lyield)

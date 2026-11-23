@@ -12,13 +12,9 @@ FMTSpec::FMTSpec()
 }
 
 FMTSpec::FMTSpec(const FMTSpec& rhs)
-    : per(rhs.per),
-      age(rhs.age),
-      lock(rhs.lock),
-      yieldnames(rhs.yieldnames),
-      yieldbounds(rhs.yieldbounds)
-{
-}
+    
+      
+= default;
 
 FMTSpec& FMTSpec::operator=(const FMTSpec& rhs)
 {

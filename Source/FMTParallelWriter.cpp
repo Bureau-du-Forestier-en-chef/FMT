@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTScheduleParser.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <utility>
 #include "FMTExceptionHandler.h"
 
 #ifdef FMTWITHGDAL
@@ -53,7 +54,7 @@ namespace Parallel
 		m_mtx(),
 		m_resultsminimaldrift(minimaldrift),
 		m_outputslevel(outputlevel),
-		m_alllayeroptions(layersoptions),
+		m_alllayeroptions(std::move(layersoptions)),
 		m_outputfirstperiod(),
 		m_outputlastperiod(),
 		m_projectdirectory(),
@@ -90,7 +91,7 @@ namespace Parallel
 		std::vector<std::string>layersoptions,
 		int firstPeriod,
 		int lastPeriod,
-		std::string primaryfilelocation):
+		const std::string& primaryfilelocation):
 		m_outputstowrite(),
 		#ifdef FMTWITHGDAL
 		m_resultsdataset(createOGRDataset(location, driver)),
@@ -100,7 +101,7 @@ namespace Parallel
 		m_mtx(),
 		m_resultsminimaldrift(),
 		m_outputslevel(outputlevel),
-		m_alllayeroptions(layersoptions),
+		m_alllayeroptions(std::move(layersoptions)),
 		m_outputfirstperiod(firstPeriod),
 		m_outputlastperiod(lastPeriod),
 		m_projectdirectory(),
@@ -374,7 +375,7 @@ namespace Parallel
 			_exhandler->raiseFromCatch("","FMTParallelWriter::getAndWrite", __LINE__, __FILE__);
 			}
 	}
-	void FMTParallelWriter::writeSchedules(const std::string schedulePath, const std::vector<Core::FMTSchedule> scheduleList, bool append) const
+	void FMTParallelWriter::writeSchedules(const std::string& schedulePath, const std::vector<Core::FMTSchedule>& scheduleList, bool append) const
 	{
 		try
 		{

@@ -80,11 +80,8 @@ namespace Core
 		
 	}
 
-	FMTOutputNode::FMTOutputNode(const FMTOutputNode& rhs) :
-		source(rhs.source), factor(rhs.factor), constant(rhs.constant)
-		{
-
-		}
+	FMTOutputNode::FMTOutputNode(const FMTOutputNode& rhs)  
+		= default;
 
 	size_t FMTOutputNode::hash() const
 		{

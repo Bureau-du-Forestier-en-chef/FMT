@@ -41,18 +41,18 @@ namespace Core
 		@param[in] request the yield request.
 		@return the yield value.
 		*/
-		virtual double get(const std::string& yld, const FMTYieldRequest& request) const;
+		double get(const std::string& yld, const FMTYieldRequest& request) const override;
 		// DocString: FMTModelYieldHandler::operator std::string
 		/**
 		@brief Return the string representation of the model yield handler.
 		@return the string representation.
 		*/
-		virtual  operator std::string() const;
+		operator std::string() const override;
 		// DocString: ~FMTModelYieldHandler()
 		/**
 		@brief Default destructor for FMTModelYieldHandler.
 		*/
-		~FMTModelYieldHandler();
+		~FMTModelYieldHandler() override;
 		// DocString: FMTModelYieldHandler()
 		/**
 		@brief Default constructor for FMTModelYieldHandler.
@@ -102,7 +102,7 @@ namespace Core
 		@brief Clone the model yield handler.
 		@return a unique pointer to the cloned yield handler.
 		*/
-		virtual std::unique_ptr<FMTYieldHandler>clone() const;
+		std::unique_ptr<FMTYieldHandler>clone() const override;
 		// DocString: FMTModelYieldHandler::operator==
 		/**
 		@brief Equality comparison operator of FMTModelYieldHandler.
@@ -115,44 +115,44 @@ namespace Core
 		@brief Return true if the handler is empty.
 		@return true if the handler is empty else false.
 		*/
-		virtual bool empty() const;
+		bool empty() const override;
 		// DocString: FMTModelYieldHandler::size
 		/**
 		@brief Return the number of yields in the handler.
 		@return the number of yields.
 		*/
-		virtual size_t size() const;
+		size_t size() const override;
 		// DocString: FMTModelYieldHandler::getType
 		/**
 		@brief Return the type of the yield handler.
 		@return the yield type.
 		*/
-		virtual FMTyldtype getType() const;
+		FMTyldtype getType() const override;
 		// DocString: FMTModelYieldHandler::containsYield
 		/**
 		@brief Return true if the handler contains a given yield.
 		@param[in] yldname the yield name.
 		@return true if the handler contains the yield else false.
 		*/
-		virtual bool containsYield(const std::string& yldname) const;
+		bool containsYield(const std::string& yldname) const override;
 		// DocString: FMTModelYieldHandler::isNullYield
 		/**
 		@brief Return true if a yield is a null yield.
 		@param[in] yldname the yield name.
 		@return true if the yield is null else false.
 		*/
-		virtual bool isNullYield(const std::string& yldname) const;
+		bool isNullYield(const std::string& yldname) const override;
 		// DocString: FMTModelYieldHandler::getYieldNames
 		/**
 		@brief Return the yield names of the handler.
 		@return the yield names.
 		*/
-		virtual std::vector<std::string>getYieldNames() const;
+		std::vector<std::string>getYieldNames() const override;
 		// DocString: FMTModelYieldHandler::clearCache
 		/**
 		@brief Clear the cache of the handler.
 		*/
-		virtual void clearCache();
+		void clearCache() override;
 		// DocString: FMTModelYieldHandler::preSolve
 		/**
 		@brief Return a presolved copy of the handler.
@@ -160,7 +160,7 @@ namespace Core
 		@param[in] newthemes the presolved themes.
 		@return the presolved yield handler.
 		*/
-		virtual std::unique_ptr<FMTYieldHandler> preSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const;
+		std::unique_ptr<FMTYieldHandler> preSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& newthemes) const override;
 		// DocString: FMTModelYieldHandler::postSolve
 		/**
 		@brief Return a postsolved copy of the handler.
@@ -168,7 +168,7 @@ namespace Core
 		@param[in] basethemes the original themes.
 		@return the postsolved yield handler.
 		*/
-		virtual std::unique_ptr<FMTYieldHandler> postSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& basethemes) const;
+		std::unique_ptr<FMTYieldHandler> postSolve(const FMTMaskFilter& filter, const std::vector<FMTTheme>& basethemes) const override;
 		// DocString: FMTModelYieldHandler::clearRandomYieldsCache
 		/**
 		@brief Clear the cache of all random yield models.

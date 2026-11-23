@@ -16,23 +16,23 @@ namespace Core
 
 {
 
-	FMTActualDevelopment::FMTActualDevelopment(FMTActualDevelopment&& rhs):
-		FMTDevelopment(std::move(rhs)),area(std::move(rhs.area))
+	FMTActualDevelopment::FMTActualDevelopment(FMTActualDevelopment&& rhs) noexcept :
+		FMTDevelopment(std::move(rhs)),area(rhs.area)
 	{
 
 	}
 
 	FMTActualDevelopment& FMTActualDevelopment::operator=(FMTActualDevelopment&& rhs)
-	{
+ noexcept 	{
 		FMTDevelopment::operator=(std::move(rhs));
-		area = std::move(rhs.area);
+		area = rhs.area;
 		return *this;
 	}
 
 
 	FMTActualDevelopment::FMTActualDevelopment() :FMTDevelopment(), area() {}
 	FMTActualDevelopment::FMTActualDevelopment(const FMTMask& mask,const int& age, const int& lock, const double& area) : FMTDevelopment(mask, age, lock), area(area) {}
-	FMTActualDevelopment::FMTActualDevelopment(const FMTActualDevelopment& rhs) : FMTDevelopment(rhs), area(rhs.area) {}
+	FMTActualDevelopment::FMTActualDevelopment(const FMTActualDevelopment& rhs)  = default;
 	FMTActualDevelopment& FMTActualDevelopment::operator = (const FMTActualDevelopment& rhs)
 	{
 		if (this != &rhs)

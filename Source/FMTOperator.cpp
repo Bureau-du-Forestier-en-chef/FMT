@@ -22,7 +22,7 @@ FMTOperator::FMTOperator(FMTokey lkey): m_key(lkey)
 
     }
 
-FMTOperator::FMTOperator(std::string strkey): m_key()
+FMTOperator::FMTOperator(const std::string& strkey): m_key()
     {
 	const std::vector<std::string>values = {"*","/","+","-",",","^"};
 	m_key = FMTokey::notvalid;
@@ -81,10 +81,8 @@ double FMTOperator::call(const double& rhs1, const double& rhs2) const
         };
 	return returnval;
     }
-FMTOperator::FMTOperator(const FMTOperator& rhs) : m_key(rhs.m_key)
-    {
-
-    }
+FMTOperator::FMTOperator(const FMTOperator& rhs)  
+    = default;
 FMTOperator& FMTOperator::operator = (const FMTOperator& rhs)
     {
     if (this!=&rhs)

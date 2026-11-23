@@ -47,7 +47,7 @@ class FMTEXPORT FMTYieldParser : public FMTParser
 		/**
 		@brief Default destructor for FMTYieldParser.
 		*/
-		~FMTYieldParser() = default;
+		~FMTYieldParser() override = default;
 		// DocString: FMTYieldParser(const FMTYieldParser&)
 		/**
 		@brief Copy constructor for FMTYieldParser.
@@ -126,7 +126,7 @@ class FMTEXPORT FMTYieldParser : public FMTParser
 		@return the used yield names.
 		*/
 		std::vector<std::string> _getYldUse(Core::FMTYields& yielddata,
-			std::vector<std::pair<Core::FMTMask,std::unique_ptr<Core::FMTYieldHandler>>>::iterator actualyield,
+			const std::vector<std::pair<Core::FMTMask,std::unique_ptr<Core::FMTYieldHandler>>>::iterator& actualyield,
                                    const std::vector<std::string>& values) const;
 		// DocString: FMTYieldParser::_setOveridedYlds
 		/**
@@ -136,7 +136,7 @@ class FMTEXPORT FMTYieldParser : public FMTParser
 		@param[in] yld the yield.
 		*/
 		void _setOveridedYlds(Core::FMTYields& yielddata,
-			std::vector<std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>>::iterator actualyield,
+			const std::vector<std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>>::iterator& actualyield,
 			const std::string& yld) const;
 		// DocString: FMTYieldParser::_checkPreExisting
 		/**

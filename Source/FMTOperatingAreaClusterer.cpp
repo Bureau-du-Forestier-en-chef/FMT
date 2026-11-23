@@ -27,16 +27,9 @@ namespace Heuristics
 		
 	}
 
-	FMTOperatingAreaClusterer::FMTOperatingAreaClusterer(const FMTOperatingAreaClusterer& rhs):
-		FMTLpHeuristic(rhs),
-		m_clusters(rhs.m_clusters),
-		m_numberofsimulationpass(rhs.m_numberofsimulationpass),
-		m_minimalnumberofclusters(rhs.m_minimalnumberofclusters),
-		m_maximalnumberofclusters(rhs.m_maximalnumberofclusters),
-		m_totalarea(rhs.m_totalarea)
-	{
-
-	}
+	FMTOperatingAreaClusterer::FMTOperatingAreaClusterer(const FMTOperatingAreaClusterer& rhs)
+		
+	= default;
 
 	void FMTOperatingAreaClusterer::_setAllInteger()
 		{
@@ -165,7 +158,8 @@ namespace Heuristics
 							probabilities.push_back(difference);
 							}
 						std::vector<int>intprobability;
-						for(const double& probability : probabilities)
+						intprobability.reserve(probabilities.size());
+for(const double& probability : probabilities)
 							{
 							intprobability.push_back(static_cast<int>(probability/totaldifference)*100);
 							}
@@ -393,7 +387,7 @@ namespace Heuristics
 				newclusterswithvariables.push_back(FMTOperatingAreaCluster(FMTOperatingAreaCluster(newcentroid, newbinaries),cluster.getRealMinimalArea(),cluster.getRealMaximalArea()));
 				++clusterid;
 				}
-			m_clusters = newclusterswithvariables;
+			m_clusters = std::move(newclusterswithvariables);
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("", "FMTOperatingAreaClusterer::_buildClustersVariables", __LINE__, __FILE__);
@@ -582,7 +576,8 @@ namespace Heuristics
 	{
 		try {
 			std::vector<int>centroidvariables;
-			for (const FMTOperatingAreaCluster& cluster : m_clusters)
+			centroidvariables.reserve(m_clusters.size());
+for (const FMTOperatingAreaCluster& cluster : m_clusters)
 				{
 				centroidvariables.push_back(cluster.getCentroid().getVariable());
 				}

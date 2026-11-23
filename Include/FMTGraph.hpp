@@ -131,7 +131,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		/**
 		@brief Default virtual destructor for FMTGraph.
 		*/
-		virtual ~FMTGraph() = default;
+		~FMTGraph() override = default;
 
 		// DocString: FMTGraph(const FMTgraphbuild)
 		/**
@@ -625,7 +625,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 					const FMTvertex_descriptor front_vertex = actives.front();
 					actives.pop();
 					FMTBaseVertexProperties front_properties = data[front_vertex];
-					const Core::FMTDevelopment active_development = front_properties.get();
+					const Core::FMTDevelopment& active_development = front_properties.get();
 					const Core::FMTFuturDevelopment grown_up = active_development.grow();
 					FMTvertex_descriptor next_period = this->addDevelopment(grown_up, nextperiods, splitgrowth); //getset
 					int variableindex = statsDiff.cols;
@@ -1587,7 +1587,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		*/
 		std::map<int, double> locateNode(
 			const Models::FMTModel& model,
-			Core::FMTOutputNode output_node,
+			const Core::FMTOutputNode& output_node,
 			int period) const
 		{
 			try {
@@ -4087,7 +4087,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		*/
 		bool _keepForSerie(
 			const FMTvertex_descriptor& targetdescriptor,
-			std::vector<Core::FMTAction>::const_iterator theaction,
+			const std::vector<Core::FMTAction>::const_iterator& theaction,
 			const size_t& seriemaxsize,
 			const Models::FMTModel& p_model,
 			bool& onserie) const
@@ -4214,7 +4214,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		*/
 		bool _isValidSeriePath(
 			const FMTvertex_descriptor& p_target,
-			std::vector<Core::FMTAction>::const_iterator p_ActionSerie,
+			const std::vector<Core::FMTAction>::const_iterator& p_ActionSerie,
 			const Models::FMTModel& p_model) const
 		{
 			try {
@@ -4246,7 +4246,7 @@ class FMTEXPORT FMTGraph : public Core::FMTObject
 		void _setSerieOperabilityNDeath(
 			const FMTvertex_descriptor& p_target,
 			const size_t& p_MaxSerieSize,
-			std::vector<Core::FMTAction>::const_iterator p_ActionSerie,
+			const std::vector<Core::FMTAction>::const_iterator& p_ActionSerie,
 			const Models::FMTModel& p_model,
 			bool& p_grow,
 			bool& p_Operable) const

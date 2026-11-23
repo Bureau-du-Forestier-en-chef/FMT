@@ -38,7 +38,7 @@ namespace Core
 		/**
 		@brief Default destructor for FMTYieldModelPools.
 		*/
-		~FMTYieldModelPools()=default;
+		~FMTYieldModelPools() override=default;
 		// DocString: FMTYieldModelPools::FMTYieldModelPools(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
 		/**
 		@brief Construct a FMTYieldModelPools from a JSON tree and an input yield name list.
@@ -51,14 +51,14 @@ namespace Core
 		@brief clone the yield model.
 		@return a unique pointer to the cloned yield model.
 		*/
-		std::unique_ptr<FMTYieldModel>clone() const;
+		std::unique_ptr<FMTYieldModel>clone() const override;
 		// DocString: FMTYieldModelPools::getInputValues()
 		/**
 		@brief Return the input values for a predictor.
 		@param[in] predictor the predictor.
 		@return the input values.
 		*/
-		const std::vector<double> getInputValues(const Graph::FMTPredictor& predictor) const;
+		const std::vector<double> getInputValues(const Graph::FMTPredictor& predictor) const override;
 		// DocString: FMTYieldModelPools::getModelType()
 		/**
 		@brief Return the model type of the yield model.

@@ -169,7 +169,7 @@ namespace Spatial
 			/**
 			@brief Default virtual destructor for FMTLayer.
 			*/
-            virtual~FMTLayer()=default;
+			~FMTLayer() noexcept override = default;
 			// DocString: FMTLayer(FMTLayer&&)
 			/**
 			@brief Default move constructor for FMTLayer.
@@ -178,10 +178,10 @@ namespace Spatial
 			FMTLayer(FMTLayer&& rhs) noexcept :
 				Core::FMTObject(std::move(rhs)),
 				m_geotransform(std::move(rhs.m_geotransform)),
-				m_maxx(std::move(rhs.m_maxx)),
-				m_maxy(std::move(rhs.m_maxy)),
+				m_maxx(rhs.m_maxx),
+				m_maxy(rhs.m_maxy),
 				m_SRS_WKT(std::move(rhs.m_SRS_WKT)),
-				m_cellsize(std::move(rhs.m_cellsize)),
+				m_cellsize(rhs.m_cellsize),
 				m_mapping(std::move(rhs.m_mapping))
 					{
 			
@@ -416,7 +416,7 @@ namespace Spatial
 			@param[in] first the first iterator.
 			@param[in] last the last iterator.
 			*/
-            void replace(typename std::map<FMTCoordinate,T>::const_iterator first,typename std::map<FMTCoordinate,T>::const_iterator last)
+            void replace(typename std::map<FMTCoordinate,T>::const_iterator first,const typename std::map<FMTCoordinate,T>::const_iterator& last)
                 {
                 while (first!=last)
                     {
@@ -441,7 +441,7 @@ namespace Spatial
 					new_mapping[mit->first] = (mit->second + "-" + rhsit->second);
 				}
 			}
-			m_mapping = new_mapping;
+			m_mapping = std::move(new_mapping);
 			return *this;
 		}
 

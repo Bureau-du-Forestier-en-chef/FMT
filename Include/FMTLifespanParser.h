@@ -37,7 +37,7 @@ class FMTEXPORT FMTLifespanParser : public FMTParser
 		/**
 		@brief Default destructor for FMTLifespanParser.
 		*/
-		~FMTLifespanParser() = default;
+		~FMTLifespanParser() override = default;
 		// DocString: FMTLifespanParser(const FMTLifespanParser&)
 		/**
 		@brief Copy constructor for FMTLifespanParser.

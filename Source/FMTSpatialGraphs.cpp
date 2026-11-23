@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include <map>
+#include <utility>
 #include <vector>
 #include "FMTSpatialGraphs.h"
 #include "FMTLineGraph.h"
@@ -162,7 +163,7 @@ namespace Spatial
 
 	FMTSpatialGraphs::const_iterator FMTSpatialGraphs::getLastPeriodIterator(
 		size_t p_family,
-		FMTSpatialGraphs::const_iterator p_iterator) const
+		const FMTSpatialGraphs::const_iterator& p_iterator) const
 	{
 		FMTSpatialGraphs::const_iterator Iterator = m_AllGraphs.at(p_family).end();
 		try {
@@ -186,7 +187,7 @@ namespace Spatial
 	}
 
 	void FMTSpatialGraphs::swap(FMTSpatialGraphs& p_Other)
-	{
+ noexcept 	{
 		m_AllGraphs.swap(p_Other.m_AllGraphs);
 		m_LastGraphId = p_Other.m_LastGraphId;
 		m_Constraints.swap(p_Other.m_Constraints);
@@ -221,7 +222,7 @@ namespace Spatial
 	}
 
 	bool FMTSpatialGraphs::isNotNull(size_t p_family,
-		FMTSpatialGraphs::const_iterator p_iterator) const
+		const FMTSpatialGraphs::const_iterator& p_iterator) const
 	{
 		return (p_iterator != m_AllGraphs.at(p_family).end());
 	}
@@ -266,7 +267,7 @@ namespace Spatial
 
 	void FMTSpatialGraphs::addToSolution(FMTSolutionTracker& p_solution,
 		size_t p_family,
-		FMTSpatialGraphs::const_iterator p_iterator)
+		const FMTSpatialGraphs::const_iterator& p_iterator)
 	{
 		if (isNotNull(p_family, p_iterator))
 			{
@@ -277,7 +278,7 @@ namespace Spatial
 
 	void FMTSpatialGraphs::removeToSolution(FMTSolutionTracker& p_solution,
 		size_t p_family,
-		FMTSpatialGraphs::const_iterator p_iterator)
+		const FMTSpatialGraphs::const_iterator& p_iterator)
 	{
 		if (isNotNull(p_family, p_iterator))
 		{
@@ -558,7 +559,7 @@ namespace Spatial
 	}
 
 	void FMTSpatialGraphs::_buildConstraintsValues(
-		FMTSpatialGraphs::iterator p_Graph,
+		const FMTSpatialGraphs::iterator& p_Graph,
 		size_t p_family)
 	{
 		//What the catch reports
@@ -702,7 +703,7 @@ namespace Spatial
 		try {
 			if(p_constraintValues.size() > 1)
 			{
-				FMTSpatialGraphs::const_iterator LAST_GRAPH = getLastPeriodIterator(p_family, p_Graph);
+				FMTSpatialGraphs::const_iterator LAST_GRAPH = getLastPeriodIterator(p_family, std::move(p_Graph));
 				if (isNotNull(p_family, LAST_GRAPH))
 				{
 
@@ -725,8 +726,8 @@ namespace Spatial
 
 
 	void FMTSpatialGraphs::_buildConstraintsValues(
-		FMTSpatialGraphs::family_iterator FirstGraphFamily,
-		FMTSpatialGraphs::family_iterator GraphFamilyEnd)
+		const FMTSpatialGraphs::family_iterator& FirstGraphFamily,
+		const FMTSpatialGraphs::family_iterator& GraphFamilyEnd)
 	{
 		size_t Family = 0;
 		try {

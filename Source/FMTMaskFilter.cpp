@@ -14,13 +14,11 @@ namespace Core{
 
 
 FMTMaskFilter::FMTMaskFilter():/*fullset(),*/selection(),flippedselection()/*,index()*/{}
-FMTMaskFilter::FMTMaskFilter(const FMTMaskFilter& rhs) : /*fullset(rhs.fullset),*/selection(rhs.selection), flippedselection(rhs.flippedselection)//,index(rhs.index)
-    {
-
-    }
+FMTMaskFilter::FMTMaskFilter(const FMTMaskFilter& rhs) 
+    = default;
 
 void FMTMaskFilter::swap(FMTMaskFilter& rhs)
-{
+ noexcept {
 	selection.swap(rhs.selection);
 	flippedselection.swap(rhs.flippedselection);
 }

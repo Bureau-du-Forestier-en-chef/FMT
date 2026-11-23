@@ -35,7 +35,7 @@ namespace Parallel
 		/**
 		@brief Default destructor for FMTParallelWriter.
 		*/
-		virtual ~FMTParallelWriter();
+		~FMTParallelWriter() override;
 		// DocString: FMTParallelWriter::FMTParallelWriter(const FMTParallelWriter&)
 		/**
 		@brief Default copy constructor for FMTParallelWriter.
@@ -84,7 +84,7 @@ namespace Parallel
 			std::vector<std::string>layersoptions = std::vector<std::string>(),
 			int firstPeriod=1,
 			int lastPeriod=1,
-			std::string primaryfilelocation = std::string());
+			const std::string& primaryfilelocation = std::string());
 		// DocString: FMTParallelWriter::setLayer
 		/**
 		@brief Add a new layer for a given model.
@@ -110,7 +110,7 @@ namespace Parallel
 		@param[in] scheduleList the schedules.
 		@param[in] append if true appends to the file.
 		*/
-		void writeSchedules(const std::string seqName, const std::vector<Core::FMTSchedule> scheduleList, bool append) const;
+		void writeSchedules(const std::string& seqName, const std::vector<Core::FMTSchedule>& scheduleList, bool append) const;
 		// DocString: FMTParallelWriter::getResults()
 		/**
 		@brief Get the results of a model.

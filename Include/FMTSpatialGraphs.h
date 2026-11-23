@@ -167,7 +167,7 @@ namespace Spatial
 			*/
 			void addToSolution(FMTSolutionTracker& p_solution,
 				size_t p_family,
-				const_iterator p_iterator);
+				const const_iterator& p_iterator);
 			// DocString: FMTSpatialGraphs::removeToSolution
 			/**
 			@brief Remove a graph from a solution for a constraint family.
@@ -177,7 +177,7 @@ namespace Spatial
 			*/
 			void removeToSolution(FMTSolutionTracker& p_solution,
 				size_t p_family,
-				const_iterator p_iterator);
+				const const_iterator& p_iterator);
 			// DocString: FMTSpatialGraphs::isNotNull
 			/**
 			@brief Return true if a graph iterator of a constraint family is not null.
@@ -186,7 +186,7 @@ namespace Spatial
 			@return true if the iterator is not null else false.
 			*/
 			bool isNotNull(size_t p_family,
-				const_iterator p_iterator) const;
+				const const_iterator& p_iterator) const;
 			// DocString: FMTSpatialGraphs::getSchedules
 			/**
 			@brief Return the schedules of a spatial solution.
@@ -212,13 +212,13 @@ namespace Spatial
 			*/
 			const_iterator getLastPeriodIterator(
 				size_t p_family,
-				const_iterator p_iterator) const;
+				const const_iterator& p_iterator) const;
 			// DocString: FMTSpatialGraphs::swap
 			/**
 			@brief Swap this FMTSpatialGraphs with another one.
 			@param[in,out] p_Other the FMTSpatialGraphs to swap with.
 			*/
-			void swap(FMTSpatialGraphs& p_Other);
+			void swap(FMTSpatialGraphs& p_Other) noexcept ;
 			// DocString: FMTSpatialGraphs::getNumberOfCategories
 			/**
 			@brief Return the number of categories of a theme.
@@ -300,8 +300,8 @@ namespace Spatial
 			@param[in] GraphFamilyEnd the end of the graph families.
 			*/
 			void _buildConstraintsValues( 
-				family_iterator FirstGraphFamily,
-				family_iterator GraphFamilyEnd);
+				const family_iterator& FirstGraphFamily,
+				const family_iterator& GraphFamilyEnd);
 			// DocString: FMTSpatialGraphs::_buildConstraintsValues(iterator,size_t)
 			/**
 			@brief Build the constraint values of a graph in a constraint family.
@@ -309,7 +309,7 @@ namespace Spatial
 			@param[in] p_family the constraint family.
 			*/
 			void _buildConstraintsValues(
-				iterator p_Graph,
+				const iterator& p_Graph,
 				size_t p_family);
 			// DocString: FMTSpatialGraphs::_fillValuesFromLastPeriod
 			/**

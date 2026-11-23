@@ -27,7 +27,7 @@ class FMTEXPORT FMTLifespans : public FMTList<int>
 		@brief Swap this FMTLifespans with another.
 		@param[in,out] rhs the FMTLifespans to swap with.
 		*/
-		void swap(FMTLifespans& rhs);
+		void swap(FMTLifespans& rhs) noexcept ;
 		// DocString: FMTLifespans()
 		/**
 		@brief Default constructor for FMTLifespans.
@@ -37,7 +37,7 @@ class FMTEXPORT FMTLifespans : public FMTList<int>
 		/**
 		@brief Default destructor for FMTLifespans.
 		*/
-		~FMTLifespans()=default;
+		~FMTLifespans() override=default;
 		// DocString: FMTLifespans(const FMTLifespans&)
 		/**
 		@brief Copy constructor for FMTLifespans.

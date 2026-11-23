@@ -16,7 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include <map>
 #include "FMTutility.h"
-#include "FMTspec.h"
+#include "FMTSpec.h"
 
 
 
@@ -45,7 +45,7 @@ class FMTEXPORT FMTTransitionMask : public FMTMaskFilter,public FMTSpec
 		/**
 		@brief Default destructor for FMTTransitionMask.
 		*/
-		~FMTTransitionMask()=default;
+		~FMTTransitionMask() override=default;
         // DocString: FMTTransitionMask(const std::string&,const std::vector<FMTTheme>&,const double&)
         /**
         @brief Construct a transition mask from a mask string, the themes and a proportion.

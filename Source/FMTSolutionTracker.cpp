@@ -116,7 +116,7 @@ namespace Spatial
 		return m_Solution.size();
 		}
 
-	void FMTSolutionTracker::swap(FMTSolutionTracker& p_tracker)
+	void FMTSolutionTracker::swap(FMTSolutionTracker& p_tracker) noexcept
 		{
 		m_LastConstraintsEvaluation.swap(p_tracker.m_LastConstraintsEvaluation);
 		m_Solution.swap(p_tracker.m_Solution);

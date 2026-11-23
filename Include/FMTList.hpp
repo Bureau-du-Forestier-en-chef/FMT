@@ -89,7 +89,7 @@ namespace Core
 		@param[in,out] rhs the list to swap with.
 		*/
 		void swap(Core::FMTList<T>& rhs)
-		{
+ noexcept 		{
 			m_data.swap(rhs.m_data);
 			m_filter.swap(rhs.m_filter);
 			m_fastpass.swap(rhs.m_fastpass);
@@ -189,7 +189,7 @@ namespace Core
 		/**
 		@brief Default destructor for FMTList.
 		*/
-		~FMTList() = default;
+		~FMTList() override = default;
 		// DocString: FMTList::empty
 		/**
 		@brief Return true if the list is empty.
@@ -539,7 +539,7 @@ namespace Core
 							}
 						auto DataCopy = baseit->second;
 						newData.erase(newData.begin());
-						for (typename std::list<std::pair<FMTMask, T>>::iterator remove : toRemove)
+						for (const typename std::list<std::pair<FMTMask, T>>::iterator& remove : toRemove)
 							{
 							newData.erase(remove);
 							}

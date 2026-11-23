@@ -623,7 +623,7 @@ std::vector<std::vector<int>> FMTOperatingAreaScheme::schemesToPeriods(const std
 														const Graph::FMTGraph<Graph::FMTVertexProperties,Graph::FMTEdgeProperties>& maingraph) const
 	{
 	std::vector<std::vector<int>>periods;
-	for (const std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>> scheme : schemes)
+	for (const std::vector<std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>>& scheme : schemes)
 		{
 		std::vector<int>periodids;
 		for (const std::vector<Graph::FMTGraph<Graph::FMTVertexProperties, Graph::FMTEdgeProperties>::FMTvertex_descriptor>& block : scheme)

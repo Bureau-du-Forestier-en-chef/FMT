@@ -44,20 +44,20 @@ namespace Core
 		/**
 		@brief Default destructor for FMTYieldModelTsla.
 		*/
-		~FMTYieldModelTsla()=default;
+		~FMTYieldModelTsla() override=default;
 		// DocString: FMTYieldModelTsla::clone()
 		/**
 		@brief clone the yield model.
 		@return a unique pointer to the cloned yield model.
 		*/
-		std::unique_ptr<FMTYieldModel>clone() const;
+		std::unique_ptr<FMTYieldModel>clone() const override;
 		// DocString: FMTYieldModelTsla::predict
 		/**
 		@brief Predict the time since last action for a request.
 		@param[in] request the yield request.
 		@return the predicted values.
 		*/
-		const std::vector<double>predict(const Core::FMTYieldRequest& request) const;
+		const std::vector<double>predict(const Core::FMTYieldRequest& request) const override;
 		// DocString: FMTYieldModelTsla::getModelType()
 		/**
 		@brief Return the model type of the yield model.
@@ -71,8 +71,8 @@ namespace Core
 		@param[in] newthemes the presolved themes.
 		@return the presolved yield model.
 		*/
-		virtual std::unique_ptr<FMTYieldModel> preSolve(const FMTMaskFilter& filter,
-			const std::vector<FMTTheme>& newthemes) const;
+		std::unique_ptr<FMTYieldModel> preSolve(const FMTMaskFilter& filter,
+			const std::vector<FMTTheme>& newthemes) const override;
 		// DocString: FMTYieldModelTsla::postSolve
 		/**
 		@brief Return a postsolved copy of the yield model, restoring the original output and constraint masks.
@@ -80,14 +80,14 @@ namespace Core
 		@param[in] basethemes the original themes.
 		@return the postsolved yield model.
 		*/
-		virtual std::unique_ptr<FMTYieldModel> postSolve(const FMTMaskFilter& filter,
-			const std::vector<FMTTheme>& basethemes) const;
+		std::unique_ptr<FMTYieldModel> postSolve(const FMTMaskFilter& filter,
+			const std::vector<FMTTheme>& basethemes) const override;
 		// DocString: FMTyieldmodelTSLAl::std::string()
 		/**
 		@brief Return the string representation of the yield model.
 		@return the string representation.
 		*/
-		virtual  operator std::string() const;
+		operator std::string() const override;
 	private:
 		friend class boost::serialization::access;
 		template<class Archive>

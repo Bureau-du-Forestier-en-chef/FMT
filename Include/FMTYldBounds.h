@@ -28,7 +28,7 @@ class FMTEXPORT FMTYldBounds : public FMTBounds<double>
 
 public:
     FMTYldBounds();
-    ~FMTYldBounds() = default;
+    ~FMTYldBounds() override = default;
     FMTYldBounds(FMTsection section, const std::string& yield, const double& upper, const double& lower);
     FMTYldBounds(FMTsection section, FMTkwor key, const std::string& yield, const double& upper, const double& lower);
     FMTYldBounds(const std::string& yield, const FMTBounds<double>& rhs);

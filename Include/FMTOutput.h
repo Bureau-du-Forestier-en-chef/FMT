@@ -47,7 +47,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 		/**
 		@brief Default virtual destructor for FMTOutput.
 		*/
-		virtual ~FMTOutput() = default;
+		~FMTOutput() override = default;
 		// DocString: FMTOutput(const std::string&,const std::string&,const int&,std::vector<FMTOutputSource>&,std::vector<FMTOperator>&)
 		/**
 		@brief Complete constructor from a name, a description, a group, sources and operators.
@@ -233,7 +233,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 		@param[in] attribute the targeted theme attribute.
 		@return the bounded output.
 		*/
-		FMTOutput boundTo(const std::vector<FMTTheme>& themes, const FMTPerBounds& bound, const std::string& specialbound, std::string attribute = "") const;
+		FMTOutput boundTo(const std::vector<FMTTheme>& themes, const FMTPerBounds& bound, const std::string& specialbound, const std::string& attribute = "") const;
 		// DocString: FMTOutput::getNodes
 		/**
 		@brief Return the output nodes generated from the output sources and operators, optionally multiplied by a factor.
@@ -451,7 +451,7 @@ class FMTEXPORT FMTOutput: public FMTObject
 		@param[in,out] allequations the equations.
 		*/
 		void fillFromShuntingYard(
-			const std::vector<std::string>baseeq,
+			const std::vector<std::string>&baseeq,
 			std::map<std::string, double>& results,
 			const std::vector<Core::FMTOutputNode>& nodes,
 			std::map<std::string, std::vector<std::string>>& allequations) const;

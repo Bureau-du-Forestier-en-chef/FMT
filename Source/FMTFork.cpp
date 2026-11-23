@@ -55,11 +55,11 @@ FMTFork::FMTFork():FMTSpec(),FMTObject(), m_transitions()
         {
 		std::string line;
         line+=" "+FMTSpec::operator std::string();
-        line+="\n";
+        line+='\n';
         for(const FMTTransitionMask& transition : m_transitions)
             {
             line+= std::string(transition);
-            line+="\n";
+            line+='\n';
             }
         return line;
         }

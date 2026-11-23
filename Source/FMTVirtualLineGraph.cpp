@@ -92,11 +92,8 @@ namespace Spatial{
 
 	}
 
-	FMTVirtualLineGraph::FMTVirtualLineGraph(const FMTVirtualLineGraph& p_LineGraph):
-		m_Iterator(p_LineGraph.m_Iterator), m_GraphFamily(p_LineGraph.m_GraphFamily), m_Graphs(p_LineGraph.m_Graphs)
-	{
-
-	}
+	FMTVirtualLineGraph::FMTVirtualLineGraph(const FMTVirtualLineGraph& p_LineGraph) 
+	= default;
 
 	FMTVirtualLineGraph::FMTVirtualLineGraph(const FMTVirtualLineGraph& p_LineGraph, FMTSpatialGraphs& p_Graphs):
 		m_Iterator(), m_GraphFamily(p_LineGraph.m_GraphFamily), m_Graphs(&p_Graphs)
@@ -105,9 +102,7 @@ namespace Spatial{
 	}
 
 	FMTVirtualLineGraph::~FMTVirtualLineGraph()
-	{
-
-	}
+	= default;
 
 	FMTVirtualLineGraph& FMTVirtualLineGraph::operator = (const FMTVirtualLineGraph& p_LineGraph)
 	{

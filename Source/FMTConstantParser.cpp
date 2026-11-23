@@ -34,7 +34,7 @@ bool FMTConstantParser::_fillConstants(Core::FMTConstants& p_constants,
 		{
 			boost::smatch kmatch;
 			if (!boost::regex_search(p_input, kmatch, m_rxconstant)||
-				p_input.find("*")!=std::string::npos)
+				p_input.find('*')!=std::string::npos)
 			{
 				if (p_allowNonValid)
 					{
@@ -48,7 +48,7 @@ bool FMTConstantParser::_fillConstants(Core::FMTConstants& p_constants,
 			boost::to_upper(key);
 			if (!std::string(kmatch[5]).empty())
 			{
-				key += ")";
+				key += ')';
 			}
 			key.erase(boost::remove_if(key, boost::is_any_of(FMT_STR_SEPARATOR)), key.end());
 			const std::vector<std::string>splited = FMTParser::spliter(std::string(kmatch[8]), FMTParser::m_SEPARATOR);
@@ -56,7 +56,7 @@ bool FMTConstantParser::_fillConstants(Core::FMTConstants& p_constants,
 			for (size_t id = 0; id < splited.size(); ++id)
 			{
 				const int period = static_cast<int>(id);
-				if (splited.at(id).find("#") != std::string::npos)
+				if (splited.at(id).find('#') != std::string::npos)
 				{
 					std::string strid = splited.at(id);
 					strid.erase(0, 1);

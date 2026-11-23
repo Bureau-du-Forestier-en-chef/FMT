@@ -128,8 +128,8 @@ namespace Parser
 					   newoperators.push_back(Core::FMTOperator(lastoperator));
 				   }
 
-				   operators = newoperators;
-				   sources = newsources;
+				   operators = std::move(newoperators);
+				   sources = std::move(newsources);
 				   lastoperator.clear();
 				   if (!stroperators.empty())
 				   {
@@ -489,7 +489,7 @@ namespace Parser
 														stroperators.erase(stroperators.begin());
 													}
 												}
-												else if (strsrc.find("#") != std::string::npos)
+												else if (strsrc.find('#') != std::string::npos)
 												{
 													_exhandler->raise(Exception::FMTexc::FMTundefined_constant, strsrc + " at line " + std::to_string(m_line),"FMTOutputParser::read", __LINE__, __FILE__, m_section);
 												}
@@ -608,7 +608,7 @@ namespace Parser
 															{
 																bool addoperator = false;
 																//only add operators after setting the first source, the number of operators  must be the size of the sources -1
-																for(Core::FMTSpec spec : specs)
+																for(const Core::FMTSpec& spec : specs)
 																{
 																	sources.push_back(Core::FMTOutputSource(spec, Core::FMTMask(mask, themes),
 																		Core::FMTotar::actual, yld, action,outputid,themetarget));
@@ -720,7 +720,7 @@ namespace Parser
 															{
 																bool addoperator = false;
 																//only add operators after setting the first source, the number of operators  must be the size of the sources -1
-																for(Core::FMTSpec spec : specs)
+																for(const Core::FMTSpec& spec : specs)
 																{
 																	sources.push_back(Core::FMTOutputSource(spec, Core::FMTMask(mask, themes),
 																						Core::FMTotar::inventory, yld, action,outputid,themetarget));
@@ -838,12 +838,12 @@ namespace Parser
 				}
             return outputs;
             }
-		std::vector<Core::FMTOutput> FMTOutputParser::addOutputs(const std::vector<Core::FMTOutput> oldoutputs, 
+		std::vector<Core::FMTOutput> FMTOutputParser::addOutputs(const std::vector<Core::FMTOutput>& oldoutputs, 
 																	const std::vector<Core::FMTTheme>& themes,
 																	const std::vector<Core::FMTAction>& actions,
 																	const Core::FMTYields& ylds,const Core::FMTConstants& constants,
 																	const std::string& location,
-																	std::vector<std::string> outputsnames)
+																	const std::vector<std::string>& outputsnames)
 		{
 			std::vector<Core::FMTOutput>outputs = oldoutputs;
 			try {
@@ -878,7 +878,7 @@ namespace Parser
 					{
 						output.changeSourcesId(outputkeptid,themeids);
 					}
-					outputs=returnoutputs;
+					outputs=std::move(returnoutputs);
 				}
 			}catch (...)
 				{

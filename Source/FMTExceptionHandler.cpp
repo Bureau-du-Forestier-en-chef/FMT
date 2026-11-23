@@ -168,8 +168,8 @@ void FMTExceptionHandler::throwNested(const std::exception& texception, int& lev
 		boost::lock_guard<boost::recursive_mutex> guard(m_mtx);
 		_gutsOfExceptionLog(texception, level);
 		try {
-			const auto _Nested = dynamic_cast<const std::nested_exception*>(&texception);
-			if (_Nested && _Nested->nested_ptr())
+			const auto Nested = dynamic_cast<const std::nested_exception*>(&texception);
+			if (Nested && Nested->nested_ptr())
 			{
 				std::rethrow_if_nested(texception);
 				
@@ -336,7 +336,7 @@ void FMTExceptionHandler::_updateStatus(std::unique_ptr<FMTException>& p_excepti
 		}
 }
 
-void FMTExceptionHandler::raiseFromThreadCatch(std::string text,
+void FMTExceptionHandler::raiseFromThreadCatch(const std::string& text,
 	const std::string& method, const int& line, const std::string& file,
 	Core::FMTsection lsection)
 {
@@ -450,7 +450,7 @@ FMTException FMTExceptionHandler::raiseFromCatch(std::string text,
 	return this->raise(lexception,text, method, line, file, lsection);
 }
 
-void FMTExceptionHandler::_gutsOfPrintExceptions(std::string text,
+void FMTExceptionHandler::_gutsOfPrintExceptions(const std::string& text,
 	const std::string& method, const int& line, const std::string& fil,int& levelreference,
 	Core::FMTsection lsection, bool logfirstlevel)
 {

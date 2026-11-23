@@ -6,23 +6,23 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTConstants.h"
+
+#include <utility>
 #include "FMTExceptionHandler.h"
 
 namespace Core{
 
 
 FMTConstants::FMTConstants():FMTObject(),m_data(){}
-FMTConstants::FMTConstants(const FMTConstants& rhs) : FMTObject(rhs),m_data(rhs.m_data)
-    {
-
-    }
+FMTConstants::FMTConstants(const FMTConstants& rhs) 
+    = default;
 void FMTConstants::set(const std::string& key, std::vector<double>values)
     {
-    m_data[key] = values;
+    m_data[key] = std::move(values);
     }
 bool FMTConstants::isConstant(std::string value) const
     {
-    if (value.find("#")!= std::string::npos)
+    if (value.find('#')!= std::string::npos)
         {
         value.erase(0,1);
 		return (m_data.find(value) != m_data.end());
@@ -35,7 +35,7 @@ template<typename T>
 T FMTConstants::get(std::string key, int period) const
 {
 	try {
-		if (key.find("#") != std::string::npos)
+		if (key.find('#') != std::string::npos)
 		{
 			key.erase(0, 1);
 		}
@@ -63,7 +63,7 @@ template int FMTConstants::get<int>(std::string key, int period) const;
 template size_t FMTConstants::get<size_t>(std::string key, int period) const;
 
 template<typename T>
-std::vector<T>FMTConstants::getAll(std::string key) const
+std::vector<T>FMTConstants::getAll(const std::string& key) const
 {
 	std::vector<T>values;
 	try {
@@ -79,9 +79,9 @@ std::vector<T>FMTConstants::getAll(std::string key) const
 	return values;
 }
 
-template std::vector<double>FMTConstants::getAll<double>(std::string key) const;
-template std::vector<int>FMTConstants::getAll<int>(std::string key) const;
-template std::vector<size_t> FMTConstants::getAll<size_t>(std::string key) const;
+template std::vector<double>FMTConstants::getAll<double>(const std::string& key) const;
+template std::vector<int>FMTConstants::getAll<int>(const std::string&  key) const;
+template std::vector<size_t> FMTConstants::getAll<size_t>(const std::string&  key) const;
 
 
 FMTConstants& FMTConstants::operator = (const FMTConstants& rhs)
@@ -104,17 +104,17 @@ FMTConstants::operator std::string() const
             line+=std::to_string(it.second.at(valueid));
             if (valueid + 1 < it.second.size())
                 {
-                line+=" ";
+                line+=' ';
                 }
             }
-        line+="\n";
+        line+='\n';
         }
     return line;
     }
 
 size_t FMTConstants::length(std::string value) const
     {
-    if (value.find("#")!= std::string::npos)
+    if (value.find('#')!= std::string::npos)
         {
         value.erase(0,1);
         if (m_data.find(value)!=m_data.end())

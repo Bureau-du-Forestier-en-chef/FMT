@@ -57,13 +57,9 @@ FMTYields::FMTYields():FMTList<std::unique_ptr<FMTYieldHandler>>(),
 		_updateYieldLocations();
 		_updateHash();
         }
-    FMTYields::FMTYields(const FMTYields& rhs): 
-		FMTList<std::unique_ptr<FMTYieldHandler>>(rhs), 
-		m_yieldsLocations(rhs.m_yieldsLocations),
-		m_yieldsHash(rhs.m_yieldsHash)
-        {
-
-        }
+    FMTYields::FMTYields(const FMTYields& rhs)
+		
+        = default;
 
 	void FMTYields::swap(FMTYields& rhs)
 		{
@@ -120,7 +116,7 @@ FMTYields::FMTYields():FMTList<std::unique_ptr<FMTYieldHandler>>(),
 					{
 					continue;
 					}
-				value += "\n";
+				value += '\n';
 				const size_t canbeoverride = handlerobj.second->getOverrideIndex();
 				std::map<size_t, std::string>::const_iterator overfind = overrided.find(canbeoverride);
 				const bool inoverridesection = (overrided.find(canbeoverride) == overrided.end());
@@ -402,7 +398,7 @@ double FMTYields::get(const FMTYieldRequest& request, const std::string& yld) co
 		{
 			gotYield = true;
 		}else {
-			for (const const_iterator IT : request.getDatas())
+			for (const const_iterator& IT : request.getDatas())
 			{
 				if (IT >= FIRST_IT &&
 					(IT->second)->containsYield(yld))
@@ -610,7 +606,7 @@ int FMTYields::getAge(const FMTYieldRequest& request,const FMTSpec& spec) const
 		request._updateData(*this);
 		if (!request.getDatas().empty())
 		{
-			for (const const_iterator data : request.getDatas())
+			for (const const_iterator& data : request.getDatas())
 			{
 				for (const std::string& yldname : spec.yieldnames)
 				{

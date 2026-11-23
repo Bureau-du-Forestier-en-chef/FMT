@@ -6,6 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTOutputSource.h"
+
+#include <utility>
 #include "FMTGraphVertexToYield.h"
 #include "FMTAction.h"
 #include "FMTYields.h"
@@ -33,8 +35,8 @@ FMTOutputSource::FMTOutputSource() : FMTSpec(), m_mask(),
 FMTOutputSource::FMTOutputSource(const FMTotar ltarget,double lvalue, std::string lyield,
 	std::string laction,int origin,int ttarget) : FMTSpec(),m_mask(),
     m_target(ltarget),
-    m_action(laction),
-    m_yield(lyield),
+    m_action(std::move(laction)),
+    m_yield(std::move(lyield)),
 	m_levelname(),
     m_values(1,lvalue),
 	m_average(),
@@ -54,8 +56,8 @@ FMTOutputSource::FMTOutputSource(const FMTotar ltarget,std::vector<double>lvalue
     m_target(ltarget),
     m_action(),
     m_yield(),
-	m_levelname(llevelname),
-    m_values(lvalues),
+	m_levelname(std::move(llevelname)),
+    m_values(std::move(lvalues)),
 	m_average(),
 	m_sum(),
 	m_outputorigin(origin),
@@ -70,20 +72,14 @@ FMTOutputSource::FMTOutputSource(const FMTSpec& spec,const FMTMask& lmask,
                const FMTotar ltarget,std::string lyield,
 			std::string laction, int origin,int ttarget) :
                 FMTSpec(spec),m_mask(lmask),
-                m_target(ltarget),m_action(laction),m_yield(lyield), m_levelname(), m_values(), m_average(), m_sum(), m_outputorigin(origin), m_themetarget(ttarget)
+                m_target(ltarget),m_action(std::move(laction)),m_yield(std::move(lyield)), m_levelname(), m_values(), m_average(), m_sum(), m_outputorigin(origin), m_themetarget(ttarget)
     {
 
 
     }
 
-FMTOutputSource::FMTOutputSource(const FMTOutputSource& rhs) : 
-	FMTSpec(rhs),m_mask(rhs.m_mask),m_target(rhs.m_target),
-    m_action(rhs.m_action),m_yield(rhs.m_yield), m_levelname(rhs.m_levelname),
-	m_values(rhs.m_values), m_average(rhs.m_average),
-	m_sum(rhs.m_sum), m_outputorigin(rhs.m_outputorigin), m_themetarget(rhs.m_themetarget)
-    {
-
-    }
+FMTOutputSource::FMTOutputSource(const FMTOutputSource& rhs)  
+    = default;
 
 FMTOutputSource& FMTOutputSource::operator = (const FMTOutputSource& rhs)
     {

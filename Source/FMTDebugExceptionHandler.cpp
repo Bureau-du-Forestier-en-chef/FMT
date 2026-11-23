@@ -17,9 +17,7 @@ namespace Exception
 
 
 	FMTDebugExceptionHandler::FMTDebugExceptionHandler()
-	{
-
-	}
+	= default;
 
 
 	FMTException FMTDebugExceptionHandler::raise(FMTexc lexception, std::string text,

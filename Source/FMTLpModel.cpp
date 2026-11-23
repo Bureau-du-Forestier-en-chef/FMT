@@ -142,7 +142,7 @@ namespace Models
 		const size_t TO_RESERVE = (VARIABLES / THE_LENGTH) / FACTOR;
 		const bool QUIET_LOG = parameters.getBoolParameter(QUIET_LOGGING);
 		int id = 0;
-		for (const Core::FMTConstraint CONSTRAINT : constraints)
+		for (const Core::FMTConstraint& CONSTRAINT : constraints)
 		{
 			for (int period = 0; period <= getParameter(FMTintmodelparameters::LENGTH); ++period)
 			{
@@ -428,15 +428,8 @@ namespace Models
 		
 	}
 
-	FMTLpModel::FMTLpModel(const FMTLpModel& rhs) :
-		FMTSrModel(rhs),
-		m_rowsAllocator(rhs.m_rowsAllocator),
-		m_indexAllocator(rhs.m_indexAllocator),
-		m_indexes(rhs.m_indexes)
-		//elements(rhs.elements)
-	{
-
-	}
+	FMTLpModel::FMTLpModel(const FMTLpModel& rhs) 
+	= default;
 
 	bool FMTLpModel::operator == (const FMTLpModel& rhs) const
 	{
@@ -452,7 +445,7 @@ namespace Models
 
 	void FMTLpModel::setStrictlyPositivesOutputsMatrix()
 	{
-		FMTModel::setParameter(STRICTLY_POSITIVE,true);
+		Models::FMTSrModel::setParameter(STRICTLY_POSITIVE,true);
 	}
 
 	FMTLpModel& FMTLpModel::operator = (const FMTLpModel& rhs)
@@ -2189,7 +2182,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 
 	}
 
-	FMTLpModel::FMTLpModel(FMTLpModel&& rhs):
+	FMTLpModel::FMTLpModel(FMTLpModel&& rhs) noexcept :
 		FMTSrModel(),
 		m_rowsAllocator(),
 		m_indexAllocator(),
@@ -2200,7 +2193,7 @@ std::vector<std::map<int, double>> FMTLpModel::locateNodes(const std::vector<Cor
 	}
 	
 	FMTLpModel& FMTLpModel::operator =(FMTLpModel&& rhs)
-	{
+ noexcept 	{
 		if (this!=&rhs) 
 			{
 			FMTSrModel::operator=(std::move(rhs));

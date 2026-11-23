@@ -6,6 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTSchedule.h"
+
+#include <utility>
 #include "FMTConstraint.h"
 #include "FMTExceptionHandler.h"
 #include "FMTSpec.h"
@@ -28,7 +30,7 @@ FMTSchedule::FMTSchedule(const int& lperiod, std::vector<FMTSchedule>& schedules
 		}
 	}
 
-FMTSchedule::FMTSchedule(int lperiod, std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>> mapping) : FMTObject(),m_period(lperiod), m_uselock(false),m_elements(mapping)
+FMTSchedule::FMTSchedule(int lperiod, std::map<FMTAction, std::map<FMTDevelopment, std::vector<double>>> mapping) : FMTObject(),m_period(lperiod), m_uselock(false),m_elements(std::move(mapping))
     {
 
     }
@@ -49,10 +51,8 @@ FMTSchedule::FMTSchedule(int lperiod, const std::map<FMTAction, std::map<FMTDeve
 		}
 	}
 
-FMTSchedule::FMTSchedule(const FMTSchedule& rhs) : FMTObject(rhs),m_period(rhs.m_period), m_uselock(rhs.m_uselock),m_elements(rhs.m_elements)
-    {
-
-    }
+FMTSchedule::FMTSchedule(const FMTSchedule& rhs) 
+    = default;
 
 FMTSchedule& FMTSchedule::operator = (const FMTSchedule& rhs)
     {

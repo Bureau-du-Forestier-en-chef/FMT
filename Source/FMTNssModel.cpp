@@ -29,11 +29,9 @@ namespace Models
 	
 	}
 
-	FMTNssModel::FMTNssModel(const FMTNssModel& rhs) :
-		FMTSrModel(rhs)
-	{
-
-	}
+	FMTNssModel::FMTNssModel(const FMTNssModel& rhs) 
+		
+	= default;
 
 	FMTNssModel::FMTNssModel(const FMTModel& rhs, unsigned int seed):
 		FMTSrModel(rhs,
@@ -44,7 +42,7 @@ namespace Models
 		#endif
 		)
 	{
-		FMTModel::setParameter(SEED,seed);
+		Models::FMTSrModel::setParameter(SEED,seed);
 		FMTModel::setSeed(seed);
 	}
 
@@ -576,7 +574,7 @@ namespace Models
 	bool FMTNssModel::setParameter(const FMTboolmodelparameters& key, const bool& value)
 	{
 		try {
-			return FMTModel::setParameter(key, value);
+			return Models::FMTSrModel::setParameter(key, value);
 		}catch (...)
 			{
 			_exhandler->raiseFromCatch("", "FMTNssModel::setParameter", __LINE__, __FILE__);
@@ -588,7 +586,7 @@ namespace Models
 	{
 		bool parametersetted = false;
 		try{
-			FMTModel::setParameter(key,value);
+			Models::FMTSrModel::setParameter(key,value);
 			if(key==SEED)
 			{
 				m_generator=std::default_random_engine(value);

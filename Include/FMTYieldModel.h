@@ -55,7 +55,7 @@ namespace Core
 		/**
 		@brief Destructor for FMTYieldModel.
 		*/
-		virtual ~FMTYieldModel();
+		~FMTYieldModel() override;
 		// DocString: FMTYieldModel::FMTYieldModel()
 		/**
 		@brief Constructor for FMTYieldModel.

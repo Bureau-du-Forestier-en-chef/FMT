@@ -36,7 +36,7 @@ class FMTEXPORT FMTDefaultExceptionHandler final : public FMTExceptionHandler
 		/**
 		@brief Default destructor for FMTDefaultExceptionHandler.
 		*/
-		~FMTDefaultExceptionHandler() = default;
+		~FMTDefaultExceptionHandler() override = default;
 		// DocString: FMTDefaultExceptionHandler::raise
 		/**
 		@brief Default implementation overriding the base class raise function. See FMTExceptionHandler::raise.
@@ -74,7 +74,7 @@ class FMTEXPORT FMTDefaultExceptionHandler final : public FMTExceptionHandler
 		@brief clone the FMTdefaulexceptionhandler
 		@return a valid cloned FMTdefaulexceptionhandler
 		*/
-		virtual std::unique_ptr <FMTExceptionHandler> clone() const;
+		std::unique_ptr <FMTExceptionHandler> clone() const override;
 	private:
 		// DocString: FMTDefaultExceptionHandler::serialize
 		/**

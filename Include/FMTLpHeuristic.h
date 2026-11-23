@@ -20,7 +20,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
-#include "FMTSolverInterface.h"
+#include "FMTsolverinterface.h"
 
 /// Namespace regrouping all tools for solving LP/MIP problems using an heuristic.
 namespace Heuristics
@@ -106,7 +106,7 @@ namespace Heuristics
 		/**
 		@brief Default virtual destructor for FMTLpHeuristic.
 		*/
-		virtual ~FMTLpHeuristic() = default;
+		~FMTLpHeuristic() override = default;
 
 	protected:
 		// DocString: FMTLpHeuristic::m_generator

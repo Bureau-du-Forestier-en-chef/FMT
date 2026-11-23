@@ -24,7 +24,7 @@ class FMTEXPORT FMTLockBounds : public FMTBounds<int>
 
 public:
     FMTLockBounds();
-    ~FMTLockBounds() = default;
+    ~FMTLockBounds() override = default;
     FMTLockBounds(FMTsection section, FMTkwor key, const int& upper, const int& lower);
     FMTLockBounds(FMTsection section, const int& upper, const int& lower);
     FMTLockBounds(const FMTLockBounds& rhs);

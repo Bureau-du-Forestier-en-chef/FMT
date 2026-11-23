@@ -135,7 +135,7 @@ namespace Parser {
 									uselock = !uselock ? true : true;
 									++id;
 								}
-								const std::string actionname = values[id];
+								const std::string& actionname = values[id];
 								if (!_isAct(Core::FMTsection::Schedule, actions, actionname)) 
 								{
 									_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, 

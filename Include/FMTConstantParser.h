@@ -34,7 +34,7 @@ class FMTEXPORT FMTConstantParser : public FMTParser
 		/**
 		@brief Default destructor for FMTConstantParser.
 		*/
-		~FMTConstantParser() = default;
+		~FMTConstantParser() override = default;
 		// DocString: FMTConstantParser(const FMTConstantParser&)
 		/**
 		@brief Copy constructor for FMTConstantParser.

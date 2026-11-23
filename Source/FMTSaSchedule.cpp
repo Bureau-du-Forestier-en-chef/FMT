@@ -29,7 +29,7 @@ namespace Spatial
     }
 
 
-    FMTSaSchedule::~FMTSaSchedule(){}
+    FMTSaSchedule::~FMTSaSchedule()= default;
 
     void FMTSaSchedule::setInitialTemperature(const double& Temp)
     {

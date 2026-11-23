@@ -73,13 +73,13 @@ namespace Logging
 		/**
 		@brief Default destructor for FMTDebugLogger.
 		*/
-		~FMTDebugLogger() = default;
+		~FMTDebugLogger() override = default;
 		// DocString: FMTDebugLogger::Clone
 		/**
 		@brief clone the FMTDebugLogger
 		@return a valid clonedFMTdebuglogger
 		*/
-		virtual std::unique_ptr <FMTLogger> Clone() const;
+		std::unique_ptr <FMTLogger> Clone() const override;
 	};
 }
 

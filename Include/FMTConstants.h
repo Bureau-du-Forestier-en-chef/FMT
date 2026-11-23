@@ -36,7 +36,7 @@ class FMTEXPORT FMTConstants : public FMTObject
 	/**
 	@brief Default destructor for FMTConstants.
 	*/
-	~FMTConstants()=default;
+	~FMTConstants() override=default;
 	// DocString: FMTConstants(const FMTConstants&)
 	/**
 	@brief Copy constructor for FMTConstants.
@@ -68,7 +68,7 @@ class FMTEXPORT FMTConstants : public FMTObject
 	@return all the values of the constant.
 	*/
     template<typename T>
-	std::vector<T>getAll(std::string key) const;
+	std::vector<T>getAll(const std::string& key) const;
 	// DocString: FMTConstants::isConstant
 	/**
 	@brief Return true if the given value is considered a constant.

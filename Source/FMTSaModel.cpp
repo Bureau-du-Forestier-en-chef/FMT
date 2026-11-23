@@ -77,7 +77,7 @@ namespace Models
         }
     }
 
-    void FMTSaModel::_UpdateFailedMoveCount()
+    void FMTSaModel::UpdateFailedMoveCount()
     {
         try {
             std::vector<bool>increment(FMTsamove::MoveCount,true);
@@ -768,7 +768,7 @@ namespace Models
    }
 
 
-    std::vector<Core::FMTSchedule>FMTSaModel::_GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule, bool withlock) const
+    std::vector<Core::FMTSchedule>FMTSaModel::GetSchedules(const Spatial::FMTSpatialSchedule& p_SpatialSchedule, bool withlock) const
     {
         std::vector<Core::FMTSchedule>newSchedules;
         try {
@@ -800,7 +800,7 @@ namespace Models
     {
         Spatial::FMTSpatialSchedule newsolution;
         try {
-            const std::vector<Core::FMTSchedule>nonspatialschedules = _GetSchedules(actual,true);
+            const std::vector<Core::FMTSchedule>nonspatialschedules = GetSchedules(actual,true);
             if (nonspatialschedules.empty())
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
@@ -1172,7 +1172,7 @@ namespace Models
                     _resetTabouMoves();
 					++m_TotalMoves;
 					}
-                _UpdateFailedMoveCount();
+                UpdateFailedMoveCount();
                 _logCycleStatus();
                 _writeDisturbances();
 				_coolDown();

@@ -41,7 +41,7 @@ class FMTEXPORT FMTTaskLogger final : public FMTLogger
 		/**
 		@brief Default destructor for FMTTaskLogger.
 		*/
-		~FMTTaskLogger()=default;
+		~FMTTaskLogger() override=default;
 		#ifdef FMTWITHOSI
 			// DocString: FMTTaskLogger::print
 			/**
@@ -66,7 +66,7 @@ class FMTEXPORT FMTTaskLogger final : public FMTLogger
 		@brief clone the FMTTaskLogger
 		@return a valid cloned FMTTaskLogger
 		*/
-		virtual std::unique_ptr <FMTLogger> Clone() const;
+		std::unique_ptr <FMTLogger> Clone() const override;
 	private:
 		// DocString: FMTTaskLogger::serialize
 		/**

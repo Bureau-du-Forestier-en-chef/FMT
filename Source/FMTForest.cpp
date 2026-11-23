@@ -15,7 +15,7 @@ namespace Spatial
 {
 FMTForest::FMTForest():FMTLayer<Core::FMTDevelopment>(){}
 FMTForest::FMTForest(const FMTLayer<Core::FMTDevelopment>& rhs):FMTLayer<Core::FMTDevelopment>(rhs){}
-FMTForest::FMTForest(const FMTForest& rhs):FMTLayer<Core::FMTDevelopment>(rhs){}
+FMTForest::FMTForest(const FMTForest& rhs)= default;
 FMTForest& FMTForest::operator = (const FMTForest& rhs)
     {
     if (this!=&rhs)

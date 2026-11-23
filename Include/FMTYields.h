@@ -86,7 +86,7 @@ class FMTEXPORT FMTYields : public FMTList<std::unique_ptr<FMTYieldHandler>>
 		/**
 		@brief Default destructor for FMTYields.
 		*/
-		~FMTYields()=default;
+		~FMTYields() override=default;
 		// DocString: FMTYields(const FMTYields&)
 		/**
 		@brief Copy constructor for FMTYields.

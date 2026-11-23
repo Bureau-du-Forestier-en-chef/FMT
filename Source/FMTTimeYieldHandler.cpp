@@ -37,7 +37,7 @@ namespace Core {
 							value += singlevalue + _getYieldsSeparator();
 						}
 					}
-				value += "\n";
+				value += '\n';
 				++baseid;
 			}
 
@@ -182,7 +182,7 @@ namespace Core {
 					}
 				}
 			}
-			for (std::map<std::string, FMTData, cmpYieldString>::iterator datait : iterators)
+			for (const std::map<std::string, FMTData, cmpYieldString>::iterator& datait : iterators)
 			{
 				if (datait->second.getOp() == FMTyieldparserop::FMTdiscountfactor)
 				{

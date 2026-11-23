@@ -18,9 +18,8 @@ FMTLockBounds::FMTLockBounds(FMTsection section, FMTkwor key, const int& upper, 
 }
 
 FMTLockBounds::FMTLockBounds(const FMTLockBounds& rhs)
-    : FMTBounds<int>(rhs)
-{
-}
+     
+= default;
 
 FMTLockBounds& FMTLockBounds::operator=(const FMTLockBounds& rhs)
 {

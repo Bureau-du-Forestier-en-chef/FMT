@@ -32,18 +32,18 @@ class FMTExponentialSchedule : public FMTSaSchedule
         /**
         @brief Default destructor for FMTExponentialSchedule.
         */
-        ~FMTExponentialSchedule()=default;
+        ~FMTExponentialSchedule() override=default;
         // DocString: FMTExponentialSchedule::reduceTemp
         /**
         @brief Reduce the temperature using the exponential annealing rate.
         */
-        void reduceTemp();
+        void reduceTemp() override;
 		// DocString: FMTExponentialSchedule::clone
 		/**
 		@brief Return a clone of the FMTExponentialSchedule.
 		@return a unique pointer to the cloned schedule.
 		*/
-		std::unique_ptr<FMTSaSchedule> clone()const;
+		std::unique_ptr<FMTSaSchedule> clone()const override;
         // DocString: FMTExponentialSchedule::setAnnealingRate
         /**
         @brief Set the annealing rate.

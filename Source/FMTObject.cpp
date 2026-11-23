@@ -219,7 +219,7 @@ namespace Core
 				if (!TRACEm_line.empty())
 					{
 					*_logger << baseLine << TRACEm_line << "\n";
-					baseLine += "\t";
+					baseLine += '\t';
 					}
 
 

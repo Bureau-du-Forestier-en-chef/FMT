@@ -185,21 +185,10 @@ FMTTheme::FMTTheme(const std::vector<std::string>& p_attributes,
 }
 
 
-FMTTheme::FMTTheme(const FMTTheme& p_rhs) :
-	FMTObject(p_rhs),
-	m_id(p_rhs.m_id),
-	m_start(p_rhs.m_start),
-	m_attributes(p_rhs.m_attributes),
-	m_attributenames(p_rhs.m_attributenames),
-	m_aggregates(p_rhs.m_aggregates),
-	m_aggregatenames(p_rhs.m_aggregatenames),
-	m_indexes(p_rhs.m_indexes),
-	m_attributem_locations(p_rhs.m_attributem_locations),
-	m_name(p_rhs.m_name)
+FMTTheme::FMTTheme(const FMTTheme& p_rhs) 
 	
-{
 	
-}
+= default;
 
 FMTTheme& FMTTheme::operator = (const FMTTheme& p_rhs)
 	{
@@ -610,10 +599,10 @@ FMTTheme::operator std::string() const
 							fulltheme += (mit->first + "=" + std::to_string(mit->second) + ",");
 						}
 						fulltheme.pop_back();
-						fulltheme += ")";
+						fulltheme += ')';
 						}
 					}
-				fulltheme +="\n";
+				fulltheme +='\n';
 				}
 			for (size_t location = 0; location < m_aggregates.size(); ++location)
 			{
@@ -965,7 +954,7 @@ bool FMTTheme::checkMask(const std::vector<Core::FMTTheme>& p_themes,
 	return  returnvalue;
 }
 
-	bool FMTTheme::validate(const std::vector<Core::FMTTheme>& p_themes, std::string& p_mask, std::string p_otherinformation)
+	bool FMTTheme::validate(const std::vector<Core::FMTTheme>& p_themes, std::string& p_mask, const std::string& p_otherinformation)
 	{
 		std::vector<std::string>values;
 		boost::split(values, p_mask, boost::is_any_of(" \t"), boost::token_compress_on);

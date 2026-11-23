@@ -53,7 +53,7 @@ class FMTEXPORT FMTQuietLogger final : public FMTLogger
 		/**
 		@brief Default destructor for FMTQuietLogger.
 		*/
-		~FMTQuietLogger()=default;
+		~FMTQuietLogger() override=default;
 		#ifdef FMTWITHOSI
 			// DocString: FMTQuietLogger::print
 			/**
@@ -84,7 +84,7 @@ class FMTEXPORT FMTQuietLogger final : public FMTLogger
 		@brief clone the FMTQuietLogger
 		@return a valid cloned FMTQuietLogger
 		*/
-		virtual std::unique_ptr <FMTLogger> Clone() const;
+		std::unique_ptr <FMTLogger> Clone() const override;
 
 	
 	};

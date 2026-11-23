@@ -470,7 +470,7 @@ GDALDataset* FMTParser::_createDataset(const std::string& location, const Spatia
 			_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
 				std::string(pszFormat), "FMTParser::_createDataset", __LINE__, __FILE__, m_section);
 		}
-		char **papszOptions = NULL;
+		char **papszOptions = nullptr;
 		if (format== "GTiff")
 		{
 			papszOptions = CSLSetNameValue(papszOptions, "TILED", "YES");
@@ -690,8 +690,8 @@ GDALDataset* FMTParser::_getTransFormMemLayerCopy(OGRLayer* baselayer, const OGR
 			}
 		memds = _createVectorMemoryDs();
 		std::unique_ptr<OGRSpatialReference>nonconstreference(new OGRSpatialReference(*newreference));
-		OGRLayer* memlayer = memds->CreateLayer("Memlayer", nonconstreference.get(), lgeomtype, NULL);
-		if (memlayer == NULL)
+		OGRLayer* memlayer = memds->CreateLayer("Memlayer", nonconstreference.get(), lgeomtype, nullptr);
+		if (memlayer == nullptr)
 			{
 			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
 				"Layer in memory", "FMTParser::_getTransFormMemLayerCopy", __LINE__, __FILE__, m_section);
@@ -717,7 +717,7 @@ GDALDataset* FMTParser::createOGRDataset(
 	try {
 		//GDALAllRegister();
 		GDALDriver* newdriver = GetGDALDriverManager()->GetDriverByName(gdaldrivername.c_str());
-		if (newdriver == NULL)
+		if (newdriver == nullptr)
 			{
 			_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
 				gdaldrivername, "FMTParser::createOGRDataset", __LINE__, __FILE__, m_section);
@@ -731,8 +731,8 @@ GDALDataset* FMTParser::createOGRDataset(
 					"Cannot delete " + location, "FMTParser::createOGRDataset", __LINE__, __FILE__, m_section);
 				}
 			}
-		newdataset = newdriver->Create(location.c_str(), 0, 0, 0, GDT_Unknown,NULL);
-		if (newdataset == NULL)
+		newdataset = newdriver->Create(location.c_str(), 0, 0, 0, GDT_Unknown,nullptr);
+		if (newdataset == nullptr)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvaliddataset,
 				"Can not create new dataset at " + location, "FMTParser::createOGRDataset", __LINE__, __FILE__, m_section);
@@ -757,8 +757,8 @@ OGRLayer* FMTParser::createLayer(GDALDataset* dataset,
 		}
 		optionsstrings.push_back(nullptr);
 		char** alloptions = &optionsstrings[0];
-		newlayer = dataset->CreateLayer(name.c_str(), NULL, wkbNone, alloptions);
-		if (newlayer == NULL)
+		newlayer = dataset->CreateLayer(name.c_str(), nullptr, wkbNone, alloptions);
+		if (newlayer == nullptr)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
 				"Cannote create new layer FMTresults for " + name, "FMTParser::createLayer", __LINE__, __FILE__, m_section);
@@ -1763,7 +1763,7 @@ std::queue<FMTParser::FMTLineInfo> FMTParser::_tryInclude(
 			std::vector<std::vector<std::string>>Data(FIELD_COUNT, std::vector<std::string>(FEATURE_COUNT));
 			OGRFeature* feature;
 			size_t featureId = 0;
-			while ((feature = SUBSET_LAYER->GetNextFeature()) != NULL)
+			while ((feature = SUBSET_LAYER->GetNextFeature()) != nullptr)
 				{
 				for (int iField = 0; iField < FIELD_DEFINITIONS->GetFieldCount(); ++iField)
 					{

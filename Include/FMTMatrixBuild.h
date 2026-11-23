@@ -36,7 +36,7 @@ namespace Models
 		@brief Swap this FMTMatrixBuild with another.
 		@param[in,out] rhs the FMTMatrixBuild to swap with.
 		*/
-		void swap(FMTMatrixBuild& rhs);
+		void swap(FMTMatrixBuild& rhs) noexcept ;
 		// DocString: FMTMatrixBuild::getColumnNames
 		/**
 		@brief Return the cached column names.

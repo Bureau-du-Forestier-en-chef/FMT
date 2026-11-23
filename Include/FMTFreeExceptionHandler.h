@@ -31,7 +31,7 @@ public:
 	/**
 	@brief Default destructor for FMTFreeExceptionHandler.
 	*/
-	~FMTFreeExceptionHandler() = default;
+	~FMTFreeExceptionHandler() override = default;
 	// DocString: FMTFreeExceptionHandler::raise
 	/**
 	@brief Override the base class raise function. See FMTExceptionHandler::raise.
@@ -68,7 +68,7 @@ public:
 	@brief clone the FMTFreeExceptionHandler
 	@return a valid cloned FMTFreeExceptionHandler
 	*/
-	virtual std::unique_ptr <FMTExceptionHandler> clone() const;
+	std::unique_ptr <FMTExceptionHandler> clone() const override;
 private:
 	// DocString: FMTFreeExceptionHandler::serialize
 	/**

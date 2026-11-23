@@ -68,7 +68,7 @@ namespace Heuristics
 			this->clearRowCache();
 			std::vector<int>targeteditems;
 			std::vector<double>bounds;
-			for (std::vector<FMTOperatingAreaScheme>::const_iterator operatingareait : tounbound)
+			for (const std::vector<FMTOperatingAreaScheme>::const_iterator& operatingareait : tounbound)
 				{
 				if (useprimal || atprimal)
 					{
@@ -588,7 +588,8 @@ namespace Heuristics
 			areatarget.source = Core::FMTOutputSource(Core::FMTSpec(), areamask, Core::FMTotar::inventory);
 			const std::vector<const Core::FMTAction*>actions = specifictarget.source.targets(modelactions);
 			std::vector<int>actionids;
-			for (const Core::FMTAction* actptr : actions)
+			actionids.reserve(actions.size());
+for (const Core::FMTAction* actptr : actions)
 			{
 				actionids.push_back(static_cast<int>(std::distance(&modelactions[0], actptr)));
 			}
@@ -733,14 +734,8 @@ namespace Heuristics
 		return rowadded;
 		}
 
-	FMTOperatingAreaScheduler::FMTOperatingAreaScheduler(const FMTOperatingAreaScheduler& rhs) :
-		FMTLpHeuristic(rhs),operatingareas(rhs.operatingareas), adjacencyconstraints(rhs.adjacencyconstraints),
-		proportionofset(rhs.proportionofset),
-		userandomness(rhs.userandomness),useprimal(rhs.useprimal)
-		{
-		
-		
-		}
+	FMTOperatingAreaScheduler::FMTOperatingAreaScheduler(const FMTOperatingAreaScheduler& rhs) 
+		= default;
 
 	FMTOperatingAreaScheduler& FMTOperatingAreaScheduler::operator = (const FMTOperatingAreaScheduler& rhs)
 		{
@@ -978,7 +973,7 @@ namespace Heuristics
 			std::vector<int>ltargeteditems;
 			std::vector<double>lbounds;
 			size_t opat = 0;
-			for (std::vector<FMTOperatingAreaScheme>::const_iterator opit : tobound)
+			for (const std::vector<FMTOperatingAreaScheme>::const_iterator& opit : tobound)
 			{
 				std::vector<FMTOperatingAreaScheme>allneighbors;
 				for (const Core::FMTMask& neighbormask : opit->getNeighbors())

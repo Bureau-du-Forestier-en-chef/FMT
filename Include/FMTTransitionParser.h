@@ -43,7 +43,7 @@ class FMTEXPORT FMTTransitionParser : public FMTParser
 		/**
 		@brief Default destructor for FMTTransitionParser.
 		*/
-		~FMTTransitionParser() = default;
+		~FMTTransitionParser() override = default;
 		// DocString: FMTTransitionParser(const FMTTransitionParser&)
 		/**
 		@brief Copy constructor for FMTTransitionParser.

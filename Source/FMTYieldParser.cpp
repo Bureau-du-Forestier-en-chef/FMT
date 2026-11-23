@@ -189,7 +189,7 @@ Core::FMTyieldparserop FMTYieldParser::_getYldCtype(const std::string& value) co
 	return Core::FMTyieldparserop::FMTnone;
     }
 void FMTYieldParser::_setOveridedYlds(Core::FMTYields& yielddata,
-	std::vector<std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>>::iterator actualyield,
+	const std::vector<std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>>::iterator& actualyield,
 	const std::string& yld) const
 {
 	try {
@@ -233,7 +233,7 @@ void FMTYieldParser::_setOveridedYlds(Core::FMTYields& yielddata,
 
 
 std::vector<std::string> FMTYieldParser::_getYldUse(Core::FMTYields& yielddata,
-	std::vector<std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>>::iterator actualyield,
+	const std::vector<std::pair<Core::FMTMask, std::unique_ptr<Core::FMTYieldHandler>>>::iterator& actualyield,
                                    const std::vector<std::string>& values) const
     {
 	std::vector<std::string>dump;
@@ -652,7 +652,7 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 										const std::string percentage = boost::trim_copy(std::string(discountmatch[3]));
 										double valueper = _getNum<double>(percentage, constants);
 										const std::string dopercentage = std::string(discountmatch[4]);
-										if (dopercentage.find("%") != std::string::npos)
+										if (dopercentage.find('%') != std::string::npos)
 										{
 											valueper /= 100;
 										}
@@ -735,28 +735,28 @@ Core::FMTYields FMTYieldParser::read(const std::vector<Core::FMTTheme>& themes,c
 								}
 								else {
 									std::vector<bool>stacking;
-									for (size_t id = 0; id < values.size(); ++id)
+									for (const auto & id : values)
 									{
-										if (_isNum(values[id]) || constants.isConstant(values[id]))
+										if (_isNum(id) || constants.isConstant(id))
 										{
-											const double value = _getNum<double>(values[id], constants);
+											const double value = _getNum<double>(id, constants);
 											cvalues.push_back(value);
 											stacking.push_back(false);
 										}
-										else if (values[id].find("#") != std::string::npos)
+										else if (id.find('#') != std::string::npos)
 										{
 											_exhandler->raise(Exception::FMTexc::FMTundefined_constant,
-												values[id] + " at line " + std::to_string(m_line), "FMTYieldParser::read", __LINE__, __FILE__, m_section);
+												id + " at line " + std::to_string(m_line), "FMTYieldParser::read", __LINE__, __FILE__, m_section);
 										}
 										else {
-											if (!yields.isYld(values[id], true))
+											if (!yields.isYld(id, true))
 											{
 												_exhandler->raise(Exception::FMTexc::FMTignore,
-													values[id] + " at line " + std::to_string(m_line)+" in " + m_location,
+													id + " at line " + std::to_string(m_line)+" in " + m_location,
 													"FMTYieldParser::read", __LINE__, __FILE__, m_section);
 											}
 											stacking.push_back(true);
-											csource.push_back(values[id]);
+											csource.push_back(id);
 										}
 									}
 									actualyield->second->pushData(yldname, Core::FMTData(cvalues, complextype, csource, stacking));

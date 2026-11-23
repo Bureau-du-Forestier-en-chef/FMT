@@ -41,7 +41,7 @@ class FMTEXPORT FMTSesModel final: public FMTSeModel
 	@brief Swap this model for the element at the end of the unique pointer.
 	@param[in,out] rhs the unique pointer to swap with.
 	*/
-	virtual void swapPtr(std::unique_ptr<FMTModel>& rhs);
+	void swapPtr(std::unique_ptr<FMTModel>& rhs) override;
 	// DocString: FMTSesModel()
 	/**
 	@brief Construct a FMTSesModel from a FMTSeModel, for preSolve use.
@@ -58,7 +58,7 @@ class FMTEXPORT FMTSesModel final: public FMTSeModel
 		/**
 		@brief Default destructor for FMTSesModel.
 		*/
-		~FMTSesModel() = default;
+		~FMTSesModel() override = default;
 		// DocString: FMTSesModel(const FMTSesModel)
 		/**
 		@brief Copy constructor for FMTSesModel.
@@ -123,20 +123,20 @@ class FMTEXPORT FMTSesModel final: public FMTSeModel
 		@brief Get a clone of the FMTSesModel.
 		@return a unique pointer to the cloned model.
 		*/
-		virtual std::unique_ptr<FMTModel>clone() const;
+		std::unique_ptr<FMTModel>clone() const override;
 		// DocString: FMTSesModel::build
 		/**
 		@brief Build the model by calling greedyReferenceBuild over the number of periods set as LENGTH.
 		@param[in] schedules the schedules.
 		@return true if the build succeeded else false.
 		*/
-		virtual bool build(std::vector<Core::FMTSchedule> schedules=std::vector<Core::FMTSchedule>());
+		bool build(std::vector<Core::FMTSchedule> schedules=std::vector<Core::FMTSchedule>()) override;
 		// DocString: FMTSesModel::solve
 		/**
 		@brief Return true; there is no solve since this is a simulation.
 		@return true.
 		*/
-		virtual bool solve()
+		bool solve() override
 		{
 			return true;
 		}
@@ -146,14 +146,14 @@ class FMTEXPORT FMTSesModel final: public FMTSeModel
 		@param[in] optionaldevelopments the optional developments.
 		@return the presolved model.
 		*/
-		virtual std::unique_ptr<FMTModel>preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const;
+		std::unique_ptr<FMTModel>preSolve(std::vector<Core::FMTActualDevelopment> optionaldevelopments = std::vector<Core::FMTActualDevelopment>()) const override;
 		// DocString: FMTSesModel::getCopy
 		/**
 		@brief Return a copy of the model for the selected period.
 		@param[in] period the period.
 		@return the copied model.
 		*/
-		virtual std::unique_ptr<FMTModel> getCopy(int period = 0) const;
+		std::unique_ptr<FMTModel> getCopy(int period = 0) const override;
     };
 
 }

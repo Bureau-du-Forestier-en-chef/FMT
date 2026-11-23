@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/unique_ptr.hpp>
 #include <boost/serialization/vector.hpp>
 #include "FMTObject.h"
-#include "FMTspec.h"
+#include "FMTSpec.h"
 
 namespace Core
 {
@@ -52,7 +52,7 @@ class FMTEXPORT FMTFork : public FMTSpec, public FMTObject
 		/**
 		@brief Destructor for FMTFork.
 		*/
-		~FMTFork();
+		~FMTFork() override;
         // DocString: FMTFork::operator=
         /**
         @brief Copy assignment operator for FMTFork.

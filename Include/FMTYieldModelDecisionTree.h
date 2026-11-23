@@ -53,7 +53,7 @@ namespace Core
 		/**
 		@brief Default destructor for FMTYieldModelDecisionTree.
 		*/
-		~FMTYieldModelDecisionTree()=default;
+		~FMTYieldModelDecisionTree() override=default;
 		// DocString: FMTYieldModelDecisionTree::FMTYieldModelDecisionTree(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
 		/**
 		@brief Construct a decision tree yield model from a JSON tree, an input yield name list and the global mask.
@@ -67,14 +67,14 @@ namespace Core
 		@brief clone the yield model.
 		@return a unique pointer to the cloned yield model.
 		*/
-		std::unique_ptr<FMTYieldModel>clone() const;
+		std::unique_ptr<FMTYieldModel>clone() const override;
 		// DocString: FMTYieldModelDecisionTree::predict
 		/**
 		@brief Run the decision tree, building a natural growth model if needed, and return the predictions.
 		@param[in] request the yield request.
 		@return the predicted values.
 		*/
-		const std::vector<double>predict(const Core::FMTYieldRequest& request) const;
+		const std::vector<double>predict(const Core::FMTYieldRequest& request) const override;
 		// DocString: FMTYieldModelDecisionTree::getModelType()
 		/**
 		@brief Return the model type of the yield model.
@@ -88,8 +88,8 @@ namespace Core
 		@param[in] newthemes the presolved themes.
 		@return the presolved yield model.
 		*/
-		virtual std::unique_ptr<FMTYieldModel> preSolve(const FMTMaskFilter& filter,
-			const std::vector<FMTTheme>& newthemes) const;
+		std::unique_ptr<FMTYieldModel> preSolve(const FMTMaskFilter& filter,
+			const std::vector<FMTTheme>& newthemes) const override;
 		// DocString: FMTYieldModelDecisionTree::postSolve
 		/**
 		@brief Return a postsolved copy of the yield model, restoring the original output and constraint masks.
@@ -97,14 +97,14 @@ namespace Core
 		@param[in] basethemes the original themes.
 		@return the postsolved yield model.
 		*/
-		virtual std::unique_ptr<FMTYieldModel> postSolve(const FMTMaskFilter& filter,
-			const std::vector<FMTTheme>& basethemes) const;
+		std::unique_ptr<FMTYieldModel> postSolve(const FMTMaskFilter& filter,
+			const std::vector<FMTTheme>& basethemes) const override;
 		// DocString: FMTyieldmodeldecisiontreel::getPeriodicValues
 		/**
 		@brief Try to turn the yield model into periodic constant values.
 		@return a vector where the first dimension is the yield id and the second is the periodic values, empty if not possible.
 		*/
-		virtual std::vector<std::vector<double>>getPeriodicValues() const;
+		std::vector<std::vector<double>>getPeriodicValues() const override;
 	private:
 		// DocString: FMTYieldModelDecisionTree::m_mtx
 		///Mutex for naturalGrowth.

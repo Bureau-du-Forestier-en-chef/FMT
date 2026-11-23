@@ -51,7 +51,7 @@ namespace Heuristics
 		 /**
 		 @brief Default destructor for FMTOperatingAreaClusterBinary.
 		 */
-		~FMTOperatingAreaClusterBinary() = default;
+		~FMTOperatingAreaClusterBinary() override = default;
 		// DocString: FMTOperatingAreaClusterBinary::FMTOperatingAreaClusterBinary(const FMTOperatingArea&)
 		/**
 		@brief Construct a FMTOperatingAreaClusterBinary from a base operating area.

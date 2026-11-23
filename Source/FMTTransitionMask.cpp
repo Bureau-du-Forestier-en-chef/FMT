@@ -57,10 +57,8 @@ FMTTransitionMask::FMTTransitionMask(const std::string& lmask,const std::vector<
             }
         return newMask;
         }
-    FMTTransitionMask::FMTTransitionMask(const FMTTransitionMask& rhs) :FMTMaskFilter(rhs),FMTSpec(rhs) , mask(rhs.mask),proportion(rhs.proportion)
-        {
-
-        }
+    FMTTransitionMask::FMTTransitionMask(const FMTTransitionMask& rhs) 
+        = default;
     FMTTransitionMask::FMTTransitionMask(const FMTTransitionMask& rhs,
             const FMTMask& lmask,const std::vector<FMTTheme>& themes):FMTMaskFilter(),
                 FMTSpec(rhs),mask(),proportion(rhs.proportion)

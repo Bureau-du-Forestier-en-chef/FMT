@@ -66,7 +66,7 @@ class FMTEXPORT FMTSchedule : public FMTObject
 		/**
 		@brief Default destructor for FMTSchedule.
 		*/
-		~FMTSchedule() = default;
+		~FMTSchedule() override = default;
 		// DocString: FMTSchedule(const FMTSchedule&)
 		/**
 		@brief Copy constructor for FMTSchedule.

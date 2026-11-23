@@ -56,7 +56,7 @@ class FMTEXPORT FMTModelParser : public FMTParser
 		/**
 		@brief Default virtual destructor for FMTModelParser.
 		*/
-		virtual ~FMTModelParser() = default;
+		~FMTModelParser() override = default;
 		// DocString: FMTModelParser(const FMTModelParser&)
 		/**
 		@brief Copy constructor for FMTModelParser.
@@ -135,7 +135,7 @@ class FMTEXPORT FMTModelParser : public FMTParser
 		@return the constraints.
 		*/
 		std::vector<Core::FMTConstraint>getConstraintsFromString(std::string constraintstr,
-			const Models::FMTModel& model,Core::FMTConstants constants = Core::FMTConstants());
+			const Models::FMTModel& model,const Core::FMTConstants& constants = Core::FMTConstants());
 		// DocString: FMTModelParser::write
 		/**
 		@brief Write a model into a folder, naming the files based on the model name.
@@ -250,7 +250,7 @@ class FMTEXPORT FMTModelParser : public FMTParser
 			const std::string& outfile,
 			const std::string& optfile,
 			const std::string& liffile,
-			std::string seqfile = std::string()) const;
+			const std::string& seqfile = std::string()) const;
 		// DocString: FMTModelParser::writeModel
 		/**
 		@brief Write the sections of a model, and the schedules if the schedule file is not empty.
@@ -298,7 +298,7 @@ class FMTEXPORT FMTModelParser : public FMTParser
 			const std::string& con, const std::string& lan,
 			const std::string& lif, const std::string& are, const std::string& yld,
 			const std::string& act, const std::string& tr, const std::string& out,
-			std::string opt = std::string(), bool allow_mapping = false);
+			const std::string& opt = std::string(), bool allow_mapping = false);
 		// DocString: FMTModelParser::readFromFolder
 		/**
 		@brief Read models from a folder based on a primary location.
