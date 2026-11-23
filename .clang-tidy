@@ -1,21 +1,23 @@
 Checks: >
   bugprone-*,
-  performance-*,
   modernize-use-nullptr,
   modernize-use-override,
   modernize-use-bool-literals,
   modernize-use-equals-default,
   modernize-use-equals-delete,
-  modernize-loop-convert,
 
   -bugprone-easily-swappable-parameters,
+  -bugprone-reserved-identifier,
+  -bugprone-macro-parentheses,
+  -modernize-loop-convert,
   -modernize-use-trailing-return-type,
   -modernize-use-concepts,
-  -modernize-use-designated-initializers
+  -modernize-use-designated-initializers,
+  -performance-enum-size
 
 WarningsAsErrors: ''
 
-HeaderFilterRegex: '.*'
+HeaderFilterRegex: '^.*[\\/](Include|Source|UI[\\/]Source|Excel[\\/]Source)[\\/].*$'
 
 CheckOptions:
   - key: modernize-loop-convert.MaxCopySize

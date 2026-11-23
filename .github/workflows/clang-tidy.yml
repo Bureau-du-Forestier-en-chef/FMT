@@ -1,0 +1,73 @@
+name: Clang-Tidy
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+
+  pull_request:
+    branches:
+      - master
+      - dev
+
+  workflow_dispatch:
+
+jobs:
+  clang-tidy:
+    runs-on: windows-2022
+
+    env:
+      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}\vcpkg-binary-cache,readwrite
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install LLVM
+        uses: KyleMayes/install-llvm-action@v2
+        with:
+          version: "20"
+
+      - name: Check clang-tidy
+        shell: cmd
+        run: |
+          where clang-tidy
+          clang-tidy --version
+
+      - name: Restore vcpkg binary cache
+        uses: actions/cache/restore@v4
+        with:
+          path: vcpkg-binary-cache
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-
+
+      - name: Configure clang build
+        shell: cmd
+        run: |
+          cmake CMakeLists.txt ^
+            -B build\clang ^
+            -G Ninja ^
+            -DCMAKE_BUILD_TYPE=Release ^
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ^
+            -DWITHOUT_TESTS=true ^
+            -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
+            -DVCPKG_TARGET_TRIPLET=x64-windows ^
+            -DVCPKG_MANIFEST_MODE=ON ^
+            -DVCPKG_MANIFEST_FEATURES=onnx
+
+      - name: Run clang-tidy
+        shell: cmd
+        run: |
+          call tools\build\clang-tidy-check.bat
+
+      - name: Save vcpkg binary cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: vcpkg-binary-cache
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}

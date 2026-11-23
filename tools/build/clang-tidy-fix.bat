@@ -26,24 +26,15 @@ for /R Source %%f in (*.cpp *.cxx *.cc) do (
 )
 
 echo.
-echo ==========================================
-echo Fixing header files
-echo ==========================================
-echo.
 
-for /R Include %%f in (*.h *.hpp *.hh) do (
-    echo.
-    echo ===== FIXING %%f =====
-    clang-tidy "%%f" -p "%BUILD_DIR%" --fix --quiet
-)
-
-echo.
 echo ==========================================
 echo Rebuilding project
 echo ==========================================
 echo.
 
+
 cmake --build "%BUILD_DIR%"
+
 
 if errorlevel 1 (
     echo.
