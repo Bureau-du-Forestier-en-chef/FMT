@@ -31,12 +31,17 @@ jobs:
         uses: KyleMayes/install-llvm-action@v2
         with:
           version: "20"
+
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@v5
 
-      - name: Check clang-tidy
+      - name: Check tools
         shell: cmd
         run: |
+          where ninja
+          ninja --version
+          where clang
+          clang --version
           where clang-tidy
           clang-tidy --version
 
@@ -54,6 +59,8 @@ jobs:
           cmake CMakeLists.txt ^
             -B build\clang ^
             -G Ninja ^
+            -DCMAKE_C_COMPILER=clang ^
+            -DCMAKE_CXX_COMPILER=clang++ ^
             -DCMAKE_BUILD_TYPE=Release ^
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ^
             -DWITHOUT_TESTS=true ^
