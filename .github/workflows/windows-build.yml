@@ -10,7 +10,6 @@ on:
 
 jobs:
   build:
-    needs: clang-tidy
     runs-on: windows-2022
 
     env:
