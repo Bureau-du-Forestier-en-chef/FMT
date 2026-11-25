@@ -25,6 +25,18 @@ for /R Source %%f in (*.cpp *.cxx *.cc) do (
     clang-tidy "%%f" -p "%BUILD_DIR%" --fix --quiet
 )
 
+for /R UI\Source %%f in (*.cpp *.cxx *.cc) do (
+    echo.
+    echo ===== FIXING %%f =====
+    clang-tidy "%%f" -p "%BUILD_DIR%" --fix --quiet
+)
+
+for /R Excel\Source %%f in (*.cpp *.cxx *.cc) do (
+    echo.
+    echo ===== FIXING %%f =====
+    clang-tidy "%%f" -p "%BUILD_DIR%" --fix --quiet
+)
+
 echo.
 
 echo ==========================================
