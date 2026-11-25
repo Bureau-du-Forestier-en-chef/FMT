@@ -22,12 +22,14 @@ jobs:
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Restore vcpkg binary cache
+      - name: Restore vcpkg cache
         id: restore-vcpkg-cache
         uses: actions/cache/restore@v4
         with:
-          path: vcpkg-binary-cache
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
+          path: |
+            vcpkg-binary-cache
+            build/release/vcpkg_installed
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
           restore-keys: |
             vcpkg-${{ runner.os }}-
 
@@ -52,7 +54,6 @@ jobs:
           if %ERRORLEVEL% EQU 0 exit /b 0
 
           set /a RETRIES-=1
-
           if %RETRIES% LEQ 0 exit /b 1
 
           echo Configure failed, retrying in 60 seconds...
@@ -66,9 +67,11 @@ jobs:
       - name: Install
         run: cmake --install build/release --config Release
 
-      - name: Save vcpkg binary cache
+      - name: Save vcpkg cache
         if: always()
         uses: actions/cache/save@v4
         with:
-          path: vcpkg-binary-cache
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
+          path: |
+            vcpkg-binary-cache
+            build/release/vcpkg_installed
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
