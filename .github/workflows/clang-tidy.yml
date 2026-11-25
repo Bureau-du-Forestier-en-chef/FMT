@@ -66,9 +66,7 @@ jobs:
             -DWITHOUT_TESTS=true ^
             -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
             -DVCPKG_TARGET_TRIPLET=x64-windows ^
-            -DVCPKG_MANIFEST_MODE=ON ^
-            -DVCPKG_MANIFEST_FEATURES=onnx
-
+            -DVCPKG_MANIFEST_MODE=ON
       - name: Run clang-tidy
         shell: cmd
         run: |

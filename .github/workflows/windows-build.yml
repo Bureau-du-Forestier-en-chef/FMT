@@ -47,7 +47,6 @@ jobs:
             -DVCPKG_MANIFEST_MODE=ON ^
             -DVCPKG_MANIFEST_FEATURES="" ^
             -DWITHOUT_TESTS=true ^
-            -DVCPKG_MANIFEST_FEATURES=onnx ^
             -DGENERATE_RELEASE_PACKAGE=true
 
           if %ERRORLEVEL% EQU 0 exit /b 0
