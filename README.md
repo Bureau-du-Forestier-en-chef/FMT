@@ -153,10 +153,3 @@ if (OPTIMAL)
 FMT is a [LiLiQ-R 1.1](https://github.com/gcyr/FMT/blob/master/LICENSES/EN/LILIQ-R11EN.pdf) licensed library.
 
 [![License](http://img.shields.io/:license-liliqR11-blue.svg?style=flat-square)](https://forge.gouv.qc.ca/licence/liliq-v1-1/#r%C3%A9ciprocit%C3%A9-liliq-r)
-
-
-## 📈 Coverage
-GNU ![](https://img.shields.io/badge/coverage-71%25-orange)<br>
-GNU ![](https://img.shields.io/badge/build-pass-brightgreen)<br>
-MSVC ![](https://img.shields.io/badge/coverage-0%25-red)<br>
-MSVC ![](https://img.shields.io/badge/build-pass-brightgreen)<br>
