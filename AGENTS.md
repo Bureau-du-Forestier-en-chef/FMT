@@ -136,7 +136,7 @@ CMake of Visual Studio 2022, waits for a key, and returns the exit code of ctest
 
 `cmake --install` runs the ctest pass that the cache variable `INSTALL_TEST_SUITE` selects, and
 prints the same summary: `public` by default (everything but the private tests), `all`, or `none`,
-which runs no test and leaves the README badges unchanged. The install first builds and installs the
+which runs no test. The install first builds and installs the
 Python wheel or the R package, without running any test, so that this pass runs their suites with the
 rest. The private campaign runs apart, before a release: `ctest --preset system-private`, or
 `tools\tests\RunPrivateTests.bat [ctest options...]`, which checks that `T:\` is reachable, then
