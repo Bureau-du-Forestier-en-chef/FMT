@@ -37,11 +37,12 @@ jobs:
           rtools-version: "45"
           use-public-rspm: true
 
-      - name: Get R library path and R_HOME
+      - name: Get R Library Path and R_HOME
         id: r-lib
         shell: Rscript {0}
         run: |
           lib_path <- normalizePath(.Library, winslash = "/")
+          r_dir <- paste0(normalizePath(R.home(), winslash = "/"), "/")
           cat(
             paste0("path=", lib_path, "\n"),
             file = Sys.getenv("GITHUB_OUTPUT"),
@@ -49,17 +50,10 @@ jobs:
           )
           cat(
             paste0("R_HOME=", normalizePath(R.home(), winslash = "/"), "\n"),
+            paste0("R_DIR=", r_dir, "\n"),
             file = Sys.getenv("GITHUB_ENV"),
             append = TRUE
           )
-
-      - name: Cache R Packages
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.r-lib.outputs.path }}
-          key: ${{ runner.os }}-r45-${{ hashFiles('**/DESCRIPTION', '.github/workflows/release-rtools.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-r45-
 
       - name: Install Rcpp
         shell: Rscript {0}
