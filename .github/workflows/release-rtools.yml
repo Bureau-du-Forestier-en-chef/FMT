@@ -25,6 +25,11 @@ jobs:
           ref: ${{ github.event.inputs.tag || github.ref }}
           submodules: recursive
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Setup R 4.5
         uses: r-lib/actions/setup-r@v2
         with:
@@ -36,8 +41,7 @@ jobs:
         id: r-lib
         shell: Rscript {0}
         run: |
-          lib_path <- .libPaths()[1]
-          dir.create(lib_path, recursive = TRUE, showWarnings = FALSE)
+          lib_path <- normalizePath(.Library, winslash = "/")
           cat(
             paste0("path=", lib_path, "\n"),
             file = Sys.getenv("GITHUB_OUTPUT"),
@@ -60,10 +64,11 @@ jobs:
       - name: Install Rcpp
         shell: Rscript {0}
         run: |
-          if (!requireNamespace("Rcpp", quietly = TRUE)) {
+          if (!requireNamespace("Rcpp", lib.loc = .Library, quietly = TRUE)) {
             install.packages(
               "Rcpp",
-              repos = "https://cloud.r-project.org"
+              lib = .Library,
+              repos = "https://r-project.org"
             )
           }
 
@@ -71,6 +76,7 @@ jobs:
         env:
           MSYSTEM: MINGW64
           CHERE_INVOKING: 1
+          R_LIBS_USER: ${{ steps.r-lib.outputs.path }}
         shell: C:\rtools45\usr\bin\bash.exe --login -eo pipefail "{0}"
         run: |
           export MINGW_MOUNT_POINT="/x86_64-w64-mingw32.static.posix"
@@ -83,23 +89,15 @@ jobs:
               exit 1
           fi
           R_DIR_PATH=$(cygpath -m "$R_HOME")
-
-          PYTHON_PATH=$(which python || true)
-          PYTHON_ARG=""
-          if [ -n "$PYTHON_PATH" ]; then
-              PYTHON_DIR_PATH=$(cygpath -m "$(dirname "$PYTHON_PATH")")
-              PYTHON_ARG="-DPYTHON_DIR=${PYTHON_DIR_PATH}/"
-              echo "PYTHON_DIR=$PYTHON_DIR_PATH"
-          else
-              echo "PYTHON_DIR=(not found)"
-          fi
+          PYTHON_DIR_PATH=$(cygpath -m "$pythonLocation")
 
           echo "R_DIR=$R_DIR_PATH"
+          echo "PYTHON_DIR=$PYTHON_DIR_PATH"
 
           cmake CMakeLists.txt \
             -B build/release \
             -G "MSYS Makefiles" \
-            ${PYTHON_ARG} \
+            -DPYTHON_DIR="${PYTHON_DIR_PATH}/" \
             -DR_DIR="${R_DIR_PATH}/" \
             -DCMAKE_BUILD_TYPE=Release \
             -DENV_PREFIX="x86_64-w64-mingw32.static.posix" \
