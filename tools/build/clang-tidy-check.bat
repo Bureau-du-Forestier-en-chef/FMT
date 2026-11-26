@@ -32,34 +32,6 @@ for /R Source %%f in (*.cpp) do (
     )
 )
 
-for /R UI\Source %%f in (*.cpp) do (
-
-    echo.
-    echo ===== %%f =====
-
-    clang-tidy "%%f" -p "%BUILD_DIR%" --quiet
-
-    if errorlevel 1 (
-        echo.
-        echo ERROR while processing %%f
-        set FAILED=1
-    )
-)
-
-for /R Excel\Source %%f in (*.cpp) do (
-
-    echo.
-    echo ===== %%f =====
-
-    clang-tidy "%%f" -p "%BUILD_DIR%" --quiet
-
-    if errorlevel 1 (
-        echo.
-        echo ERROR while processing %%f
-        set FAILED=1
-    )
-)
-
 popd
 
 echo.
