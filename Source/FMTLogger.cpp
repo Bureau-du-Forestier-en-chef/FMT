@@ -21,11 +21,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <iostream>
 #include "FMTVersion.h"
 #if defined FMTWITHOSI
-#include "FMTSolverLogger.h"
-#include "CoinMessageHandler.hpp"
-#include "FMTCoinError.h"
-#include "FMTTask.h"
+	#include "FMTSolverLogger.h"
+	#include "CoinMessageHandler.hpp"
+	#include "FMTCoinError.h"
 #endif
+#include "FMTTask.h"
+
 
 
 namespace Logging

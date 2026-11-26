@@ -89,6 +89,16 @@ jobs:
           echo "=== Make ==="
           which make
           make --version
+      - name: Install Rtools Dependencies (OSI, GDAL, GEOS)
+        env:
+          MSYSTEM: MINGW64
+          CHERE_INVOKING: 1
+        shell: C:\rtools45\usr\bin\bash.exe --login -eo pipefail "{0}"
+        run: |
+          pacman -Sy --noconfirm --needed \
+            mingw-w64-x86_64-coin-or-osi \
+            mingw-w64-x86_64-gdal \
+            mingw-w64-x86_64-geos
 
       - name: Configure
         env:
