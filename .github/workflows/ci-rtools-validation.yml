@@ -89,6 +89,12 @@ jobs:
           echo "=== Make ==="
           which make
           make --version
+      - name: Link ENV_PREFIX to Rtools45
+        shell: cmd
+        run: |
+          if not exist "..\..\x86_64-w64-mingw32.static.posix" (
+            mklink /J "..\..\x86_64-w64-mingw32.static.posix" "C:\rtools45\x86_64-w64-mingw32.static.posix"
+          )
       - name: Configure
         env:
           MSYSTEM: MINGW64
@@ -116,8 +122,6 @@ jobs:
             -G "MSYS Makefiles" \
             -DPYTHON_DIR="${PYTHON_DIR_PATH}/" \
             -DR_DIR="${R_DIR_PATH}/" \
-            -DGDAL_DIR="${RTOOLS_PREFIX}" \
-            -DGEOS_DIR="${RTOOLS_PREFIX}" \
             -DCMAKE_BUILD_TYPE=Release \
             -DPARALLEL_TESTS=4 \
             -DENV_PREFIX="x86_64-w64-mingw32.static.posix" \
