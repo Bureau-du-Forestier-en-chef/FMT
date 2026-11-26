@@ -18,6 +18,7 @@ jobs:
     runs-on: windows-2022
 
     env:
+      VCPKG_ROOT: C:\vcpkg
       VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}\vcpkg-binary-cache,readwrite
 
     steps:
@@ -34,6 +35,7 @@ jobs:
           path: vcpkg-binary-cache
           key: vcpkg-msvc-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
           restore-keys: |
+            vcpkg-msvc-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}-
             vcpkg-msvc-${{ runner.os }}-
 
       - name: Configure
@@ -42,6 +44,7 @@ jobs:
           cmake CMakeLists.txt ^
             -B build/tests ^
             -G "Visual Studio 17 2022" ^
+            -A x64 ^
             -DBUILD_TYPE=Release ^
             -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
             -DVCPKG_TARGET_TRIPLET=x64-windows ^
@@ -56,8 +59,8 @@ jobs:
         run: cmake --install build/tests --config Release
 
       - name: Save vcpkg cache
-        if: always()
+        if: always() && steps.restore-vcpkg-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: vcpkg-binary-cache
-          key: vcpkg-msvc-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
+          key: vcpkg-msvc-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}-${{ github.run_id }}

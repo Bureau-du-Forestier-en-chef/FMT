@@ -30,13 +30,18 @@ jobs:
           rtools-version: "45"
           use-public-rspm: true
 
-      - name: Get R Library Path
+      - name: Get R Library Path and R_HOME
         id: r-lib
         shell: Rscript {0}
         run: |
           cat(
-            paste0("path=", .libPaths()[1], "\n"),
+            paste0("path=", .libPaths(), "\n"),
             file = Sys.getenv("GITHUB_OUTPUT"),
+            append = TRUE
+          )
+          cat(
+            paste0("R_HOME=", normalizePath(R.home(), winslash = "/"), "\n"),
+            file = Sys.getenv("GITHUB_ENV"),
             append = TRUE
           )
 
@@ -44,7 +49,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.r-lib.outputs.path }}
-          key: ${{ runner.os }}-r45-${{ hashFiles('**/DESCRIPTION', '.github/workflows/r-package-validation.yml') }}
+          key: ${{ runner.os }}-r45-${{ hashFiles('**/DESCRIPTION', '.github/workflows/ci-rtools-validation.yml') }}
           restore-keys: |
             ${{ runner.os }}-r45-
 
@@ -54,12 +59,12 @@ jobs:
           if (!requireNamespace("Rcpp", quietly = TRUE)) {
             install.packages(
               "Rcpp",
-              repos = "https://cloud.r-project.org"
+              repos = "https://r-project.org"
             )
           }
 
       - name: Verify Rtools Toolchain
-        shell: C:\rtools45\usr\bin\bash.exe --login -c "{0}"
+        shell: C:\rtools45\usr\bin\bash.exe --login -eo pipefail "{0}"
         run: |
           export MINGW_MOUNT_POINT="/x86_64-w64-mingw32.static.posix"
           export PATH="/x86_64-w64-mingw32.static.posix/bin:/usr/local/bin:/usr/bin:$PATH"
@@ -72,24 +77,24 @@ jobs:
           which make
           make --version
 
-          echo "=== Toolchain ==="
-          ls -la /x86_64-w64-mingw32.static.posix/bin/g++.exe
-
       - name: Configure
         env:
           MSYSTEM: MINGW64
           CHERE_INVOKING: 1
-        shell: C:\rtools45\usr\bin\bash.exe --login -c "{0}"
+        shell: C:\rtools45\usr\bin\bash.exe --login -eo pipefail "{0}"
         run: |
           export MINGW_MOUNT_POINT="/x86_64-w64-mingw32.static.posix"
           export PATH="/x86_64-w64-mingw32.static.posix/bin:/usr/local/bin:/usr/bin:$PATH"
           export MANPATH="/x86_64-w64-mingw32.static.posix/man:$MANPATH"
           export INFOPATH="/x86_64-w64-mingw32.static.posix/share/info:$INFOPATH"
 
+          if [ -z "$R_HOME" ]; then
+              echo "R_HOME is not set" >&2
+              exit 1
+          fi
           R_DIR_PATH=$(cygpath -m "$R_HOME")
 
           PYTHON_PATH=$(which python || true)
-
           if [ -n "$PYTHON_PATH" ]; then
               PYTHON_DIR_PATH=$(cygpath -m "$(dirname "$PYTHON_PATH")")
               PYTHON_ARG="-DPYTHON_DIR=${PYTHON_DIR_PATH}/"
@@ -101,43 +106,32 @@ jobs:
           echo "PYTHON_DIR=$PYTHON_DIR_PATH"
 
           cmake CMakeLists.txt \
-            -B build/release \
+            -B build/ci \
             -G "MSYS Makefiles" \
             ${PYTHON_ARG} \
             -DR_DIR="${R_DIR_PATH}/" \
             -DCMAKE_BUILD_TYPE=Release \
             -DPARALLEL_TESTS=4 \
-            -DENV_PREFIX="x86_64-w64-mingw32.static.posix" \
-            -DGENERATE_RELEASE_PACKAGE=true \
-            -DWITHOUT_TESTS=true
+            -DENV_PREFIX="x86_64-w64-mingw32.static.posix" 
 
       - name: Build
         env:
           MSYSTEM: MINGW64
           CHERE_INVOKING: 1
-        shell: C:\rtools45\usr\bin\bash.exe --login -c "{0}"
+        shell: C:\rtools45\usr\bin\bash.exe --login -eo pipefail "{0}"
         run: |
           export MINGW_MOUNT_POINT="/x86_64-w64-mingw32.static.posix"
           export PATH="/x86_64-w64-mingw32.static.posix/bin:/usr/local/bin:/usr/bin:$PATH"
 
-          cmake --build build/release -j4
+          cmake --build build/ci -j4
 
-      - name: Install
+      - name: Run Tests
         env:
           MSYSTEM: MINGW64
           CHERE_INVOKING: 1
-        shell: C:\rtools45\usr\bin\bash.exe --login -c "{0}"
+        shell: C:\rtools45\usr\bin\bash.exe --login -eo pipefail "{0}"
         run: |
           export MINGW_MOUNT_POINT="/x86_64-w64-mingw32.static.posix"
           export PATH="/x86_64-w64-mingw32.static.posix/bin:/usr/local/bin:/usr/bin:$PATH"
 
-          cmake --install build/release
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: FMT-Rtools45
-          path: |
-            build/release/bin/Release/*.zip
-            build/release/bin/Release/*.tar.gz
-          if-no-files-found: warn
+          ctest --test-dir build/ci --output-on-failure -j4
