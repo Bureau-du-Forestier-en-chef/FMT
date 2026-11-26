@@ -1,0 +1,67 @@
+name: Update FMT docs
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: update-docs
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout FMT
+        uses: actions/checkout@v4
+        with:
+          path: FMT
+
+      - name: Checkout FMTdocs
+        uses: actions/checkout@v4
+        with:
+          repository: Bureau-du-Forestier-en-chef/FMTdocs
+          ref: master
+          path: FMTdocs
+          token: ${{ secrets.FMTDOCS_PAT }}
+
+      - name: Install doxygen + graphviz
+        run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
+
+      - name: Setup Go (for Hugo Modules)
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.111.0'
+          extended: true
+
+      - name: Run doxygen
+        working-directory: FMT/Documentation
+        run: doxygen FMTdoxygenconfig
+
+      - name: Copy generated HTML into FMTdocs
+        run: |
+          DEST=FMTdocs/docSiteContent/static/doxygen/html
+          rm -rf "$DEST"
+          mkdir -p "$(dirname "$DEST")"
+          # PLACEHOLDER: adjust to <OUTPUT_DIRECTORY>/<HTML_OUTPUT> from FMTdoxygenconfig
+          cp -r FMT/Documentation/doxygen/html "$DEST"
+
+      - name: Run UpdateDocs.ps1
+        shell: pwsh
+        working-directory: FMTdocs
+        run: ./UpdateDocs.ps1
+
+      - name: Commit and push (publishes via GitHub Pages)
+        working-directory: FMTdocs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Update docs from FMT@${GITHUB_SHA::7}"
+          git push origin master

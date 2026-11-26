@@ -1,0 +1,132 @@
+name: Release Rtools (Internal MOSEK)
+
+on:
+  push:
+    tags: ['v*']
+
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build and upload to (e.g. v1.2.3)"
+        required: true
+
+jobs:
+  rtools-release-mosek:
+    runs-on: self-hosted
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+          submodules: recursive
+
+      - name: Setup R 4.5
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "4.5.0"
+          rtools-version: "45"
+          use-public-rspm: true
+
+      - name: Get R library path and R_HOME
+        id: r-lib
+        shell: Rscript {0}
+        run: |
+          cat(
+            paste0("path=", .libPaths(), "\n"),
+            file = Sys.getenv("GITHUB_OUTPUT"),
+            append = TRUE
+          )
+          cat(
+            paste0("R_HOME=", normalizePath(R.home(), winslash = "/"), "\n"),
+            file = Sys.getenv("GITHUB_ENV"),
+            append = TRUE
+          )
+
+      - name: Install Rcpp
+        shell: Rscript {0}
+        run: |
+          if (!requireNamespace("Rcpp", quietly = TRUE)) {
+            install.packages(
+              "Rcpp",
+              repos = "https://r-project.org"
+            )
+          }
+
+      - name: Clean previous build
+        shell: pwsh
+        run: Remove-Item -Recurse -Force -ErrorAction SilentlyContinue build/release-rtools
+
+      - name: Configure
+        env:
+          MSYSTEM: MINGW64
+          CHERE_INVOKING: 1
+        shell: C:\rtools45\usr\bin\bash.exe --login -eo pipefail "{0}"
+        run: |
+          export MINGW_MOUNT_POINT="/x86_64-w64-mingw32.static.posix"
+          export PATH="/x86_64-w64-mingw32.static.posix/bin:/usr/local/bin:/usr/bin:$PATH"
+          export MANPATH="/x86_64-w64-mingw32.static.posix/man:$MANPATH"
+          export INFOPATH="/x86_64-w64-mingw32.static.posix/share/info:$INFOPATH"
+
+          if [ -z "$R_HOME" ]; then
+              echo "R_HOME is not set" >&2
+              exit 1
+          fi
+          R_DIR_PATH=$(cygpath -m "$R_HOME")
+
+          PYTHON_PATH=$(which python || true)
+          PYTHON_ARG=""
+          if [ -n "$PYTHON_PATH" ]; then
+              PYTHON_DIR_PATH=$(cygpath -m "$(dirname "$PYTHON_PATH")")
+              PYTHON_ARG="-DPYTHON_DIR=${PYTHON_DIR_PATH}/"
+              echo "PYTHON_DIR=$PYTHON_DIR_PATH"
+          else
+              echo "PYTHON_DIR=(not found)"
+          fi
+
+          echo "R_DIR=$R_DIR_PATH"
+
+          cmake CMakeLists.txt \
+            -B build/release-rtools \
+            -G "MSYS Makefiles" \
+            ${PYTHON_ARG} \
+            -DR_DIR="${R_DIR_PATH}/" \
+            -DMosek_DIR="C:/PROGRA~1/Mosek/10.1/" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DENV_PREFIX="x86_64-w64-mingw32.static.posix" \
+            -DGENERATE_RELEASE_PACKAGE=true \
+            -DWITHOUT_TESTS=true
+
+      - name: Build
+        env:
+          MSYSTEM: MINGW64
+          CHERE_INVOKING: 1
+        shell: C:\rtools45\usr\bin\bash.exe --login -eo pipefail "{0}"
+        run: |
+          export MINGW_MOUNT_POINT="/x86_64-w64-mingw32.static.posix"
+          export PATH="/x86_64-w64-mingw32.static.posix/bin:/usr/local/bin:/usr/bin:$PATH"
+
+          cmake --build build/release-rtools --config Release -j4
+
+      - name: Install
+        env:
+          MSYSTEM: MINGW64
+          CHERE_INVOKING: 1
+        shell: C:\rtools45\usr\bin\bash.exe --login -eo pipefail "{0}"
+        run: |
+          export MINGW_MOUNT_POINT="/x86_64-w64-mingw32.static.posix"
+          export PATH="/x86_64-w64-mingw32.static.posix/bin:/usr/local/bin:/usr/bin:$PATH"
+
+          cmake --install build/release-rtools --config Release
+
+      - name: Upload Internal GNU Release Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: your-org/FMT-internal-releases
+          token: ${{ secrets.INTERNAL_RELEASE_TOKEN }}
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          fail_on_unmatched_files: true
+          files: |
+            build/release-rtools/**/FMT-Release-*.7z
+            build/release-rtools/**/FMT_*.tar.gz

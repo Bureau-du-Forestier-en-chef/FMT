@@ -1,0 +1,66 @@
+name: Release MSVC (Internal MOSEK)
+
+on:
+  push:
+    tags: ['v*']
+
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build and upload to (e.g. v1.2.3)"
+        required: true
+
+jobs:
+  build-mosek:
+    runs-on: self-hosted
+    timeout-minutes: 120
+
+    env:
+      VCPKG_ROOT: C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\vcpkg
+      VCPKG_BINARY_SOURCES: clear;files,C:\vcpkg-binary-cache,readwrite
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Configure, Build, and Install with MOSEK
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars64.bat"
+          set MOSEK_DIR=C:/PROGRA~1/Mosek/10.1/
+          set MODULE_PATH=%cd%/Modules
+          set "MODULE_PATH=%MODULE_PATH:\=/%"
+          set VCPKG_KEEP_ENV_VARS=MOSEK_DIR;MODULE_PATH
+
+          cmake CMakeLists.txt ^
+            -B build/release ^
+            -G "Visual Studio 17 2022" ^
+            -A x64 ^
+            -T v143,version=14.36.17.6 ^
+            -DBUILD_TYPE=Release ^
+            -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
+            -DVCPKG_TARGET_TRIPLET=x64-windows ^
+            -DVCPKG_MANIFEST_MODE=ON ^
+            -DVCPKG_MANIFEST_FEATURES=onnx ^
+            -DWITHOUT_TESTS=true ^
+            -DGENERATE_RELEASE_PACKAGE=true
+          if errorlevel 1 exit /b 1
+
+          cmake --build build/release --config Release --parallel
+          if errorlevel 1 exit /b 1
+
+          cmake --install build/release --config Release
+          if errorlevel 1 exit /b 1
+
+      - name: Upload Internal MOSEK Release Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          repository: your-org/FMT-internal-releases
+          token: ${{ secrets.INTERNAL_RELEASE_TOKEN }}
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          fail_on_unmatched_files: true
+          files: |
+            build/release/**/FMT-Release-*.7z
+            build/release/**/FMT-*.whl

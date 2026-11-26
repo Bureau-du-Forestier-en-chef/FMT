@@ -1,0 +1,78 @@
+name: Publish Release
+
+on:
+  push:
+    tags: ['v*']
+
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to publish (e.g. v1.2.3)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Extract Release Notes
+        shell: pwsh
+        env:
+          VERSION: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          $version = $env:VERSION
+          $lines = Get-Content CHANGELOG.md
+
+          $start = -1
+          $end = $lines.Count
+
+          for ($i = 0; $i -lt $lines.Count; $i++) {
+              if ($lines[$i] -match "^## \[$([regex]::Escape($version))\]") {
+                  $start = $i
+                  break
+              }
+          }
+
+          if ($start -lt 0) {
+              Write-Error "Could not find release notes for $version in CHANGELOG.md"
+              exit 1
+          }
+
+          # Stop at the next version heading (any "## [" line, including Unreleased)
+          for ($i = $start + 1; $i -lt $lines.Count; $i++) {
+              if ($lines[$i] -match "^## \[") {
+                  $end = $i
+                  break
+              }
+          }
+
+          # Skip the heading itself, keep only the body
+          $body = @()
+          if ($end -gt $start + 1) {
+              $body = $lines[($start + 1)..($end - 1)]
+          }
+          $notes = ($body -join "`n").Trim()
+
+          if (-not $notes) {
+              Write-Error "Release notes for $version are empty"
+              exit 1
+          }
+
+          Set-Content -Path RELEASE_NOTES.md -Value $notes -Encoding utf8
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          body_path: RELEASE_NOTES.md
+          generate_release_notes: false
+          draft: false
+          prerelease: false

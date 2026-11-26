@@ -1,0 +1,80 @@
+name: Release MSVC
+
+on:
+  push:
+    tags: ['v*']
+
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build and upload to (e.g. v1.2.3)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 120
+
+    env:
+      VCPKG_ROOT: C:\vcpkg
+      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}\vcpkg-binary-cache,readwrite
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Restore vcpkg cache
+        id: restore-vcpkg-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: vcpkg-binary-cache
+          key: vcpkg-msvc-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
+          restore-keys: |
+            vcpkg-msvc-${{ runner.os }}-
+
+      - name: Configure
+        shell: cmd
+        run: |
+          cmake CMakeLists.txt ^
+            -B build/release ^
+            -G "Visual Studio 17 2022" ^
+            -A x64 ^
+            -DBUILD_TYPE=Release ^
+            -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
+            -DVCPKG_TARGET_TRIPLET=x64-windows ^
+            -DVCPKG_MANIFEST_MODE=ON ^
+            -DVCPKG_MANIFEST_FEATURES="" ^
+            -DWITHOUT_TESTS=true ^
+            -DGENERATE_RELEASE_PACKAGE=true
+
+      - name: Build
+        run: cmake --build build/release --config Release --parallel
+
+      - name: Install
+        run: cmake --install build/release --config Release
+
+      # Only save when the exact key was not found, otherwise the save
+      # fails with "cache already exists" and new packages are never stored.
+      - name: Save vcpkg cache
+        if: always() && steps.restore-vcpkg-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: vcpkg-binary-cache
+          key: vcpkg-msvc-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
+
+      - name: Upload MSVC Release Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          fail_on_unmatched_files: true
+          files: |
+            build/release/**/FMT-Release-*.7z
+            build/release/**/FMT-*.whl

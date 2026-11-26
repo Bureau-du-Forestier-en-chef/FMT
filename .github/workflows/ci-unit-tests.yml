@@ -1,0 +1,63 @@
+name: Unit Tests
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+
+  pull_request:
+    branches:
+      - master
+      - dev
+
+  workflow_dispatch:
+
+jobs:
+  unit-tests:
+    runs-on: windows-2022
+
+    env:
+      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}\vcpkg-binary-cache,readwrite
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Restore vcpkg cache
+        id: restore-vcpkg-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: vcpkg-binary-cache
+          key: vcpkg-msvc-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
+          restore-keys: |
+            vcpkg-msvc-${{ runner.os }}-
+
+      - name: Configure
+        shell: cmd
+        run: |
+          cmake CMakeLists.txt ^
+            -B build/tests ^
+            -G "Visual Studio 17 2022" ^
+            -DBUILD_TYPE=Release ^
+            -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
+            -DVCPKG_TARGET_TRIPLET=x64-windows ^
+            -DVCPKG_MANIFEST_MODE=ON ^
+            -DVCPKG_MANIFEST_FEATURES="" ^
+            -DWITHOUT_TESTS=false
+
+      - name: Build
+        run: cmake --build build/tests --config Release --parallel
+
+      - name: Install and Run Tests
+        run: cmake --install build/tests --config Release
+
+      - name: Save vcpkg cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: vcpkg-binary-cache
+          key: vcpkg-msvc-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
