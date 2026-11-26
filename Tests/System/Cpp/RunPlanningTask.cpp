@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -69,13 +69,19 @@ int main(int argc, char *argv[])
 	modelparser.setErrorsToWarnings(errors);
 	std::vector<std::string> layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	//Si on fournit la localisation du fichier primaire à la task il écrira la schedule pour tous les scénarios.
+	//Si on fournit la localisation du fichier primaire ï¿½ la task il ï¿½crira la schedule pour tous les scï¿½narios.
 	Parallel::FMTPlanningTask newplanningtask(0, length, outputlocation, "CSV", layersoptions, Core::FMToutputlevel::totalonly, primlocation);
 	const std::vector<Models::FMTModel> models = modelparser.readproject(primlocation, allscenarios);
 	const std::vector<std::vector<Core::FMTSchedule>> schedules = modelparser.readSchedules(primlocation, models);
 	for (size_t modelid = 0; modelid<models.size(); ++modelid)
 		{
-		Models::FMTLpModel lpmodel(models.at(modelid), Models::FMTSolverInterface::MOSEK);
+		#ifdef FMTWITHMOSEK
+			Models::FMTLpModel lpmodel(models.at(modelid),
+			 Models::FMTSolverInterface::MOSEK);
+		#else
+			Models::FMTLpModel lpmodel(models.at(modelid),
+			 Models::FMTSolverInterface::CLP);
+		#endif
 		lpmodel.setParameter(Models::FMTintmodelparameters::LENGTH, length);
 		lpmodel.setParameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, n_threads);
 		lpmodel.FMTModel::setParameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);

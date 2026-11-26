@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 	std::vector<Exception::FMTexc> errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	//errors.push_back(Exception::FMTexc::FMToutput_too_much_operator); // Pour tester la relecture
-	//errors.push_back(Exception::FMTexc::FMTinvalidyield_number); // à mettre on / off
+	//errors.push_back(Exception::FMTexc::FMTinvalidyield_number); // ï¿½ mettre on / off
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	//modelparser.setErrorsToWarnings(errors);
@@ -53,7 +53,14 @@ int main(int argc, char* argv[])
 	//const std::vector<std::string>scenarios(1, "14_Sc5_Determin_apsp_02751_tmw");
 	//const std::vector<std::string>scenarios(1, "201_UG107_feu");
 	const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
-	Models::FMTLpModel optmodel(models.at(0), Models::FMTSolverInterface::MOSEK);
+
+	#ifdef FMTWITHMOSEK
+			Models::FMTLpModel optmodel(models.at(0),
+			 Models::FMTSolverInterface::MOSEK);
+		#else
+			Models::FMTLpModel optmodel(models.at(0),
+			 Models::FMTSolverInterface::CLP);
+		#endif
 	optmodel.setParameter(Models::FMTintmodelparameters::LENGTH,  3);
 	optmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 	optmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);

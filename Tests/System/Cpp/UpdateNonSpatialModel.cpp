@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -91,7 +91,14 @@ int main(int argc, char *argv[])
 		modelparser.setErrorsToWarnings(errors);
 		const std::vector<std::string>scenarios(1,scenario);
 		const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTLpModel optimizationmodel(models.at(0), Models::FMTSolverInterface::MOSEK);
+		#ifdef FMTWITHMOSEK
+			Models::FMTLpModel optimizationmodel(models.at(0),
+			 Models::FMTSolverInterface::MOSEK);
+		#else
+			Models::FMTLpModel loptimizationmodel(models.at(0),
+			 Models::FMTSolverInterface::CLP);
+		#endif
+		
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::LENGTH,length);
 		optimizationmodel.FMTModel::setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 		optimizationmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);

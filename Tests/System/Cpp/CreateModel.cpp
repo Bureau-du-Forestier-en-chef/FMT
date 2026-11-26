@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -172,7 +172,11 @@ int main()
 		const bool SOLVED = model.doPlanning(true);
 		const Models::FMTModel REREAD = mparser.readproject((OUTPUT_FOLDER / (model.getName() + ".pri")).string(),
 			std::vector<std::string>(1, "ROOT")).at(0);
-		Models::FMTLpModel rereadModel(REREAD, Models::FMTSolverInterface::MOSEK);
+		#ifdef FMTWITHMOSEK
+			Models::FMTLpModel rereadModel(REREAD, Models::FMTSolverInterface::MOSEK);
+		#else
+			Models::FMTLpModel rereadModel(REREAD, Models::FMTSolverInterface::CLP);
+		#endif
 		rereadModel.setParameter(Models::FMTintmodelparameters::LENGTH, 10);
 		const bool REREAD_SOLVED = rereadModel.doPlanning(true);
 
