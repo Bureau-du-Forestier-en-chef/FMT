@@ -40,15 +40,18 @@ jobs:
         shell: Rscript {0}
         run: |
           lib_path <- normalizePath(.Library, winslash = "/")
-          r_dir <- paste0(normalizePath(R.home(), winslash = "/"), "/")
+          r_home <- normalizePath(R.home(), winslash = "/")
+          r_dir <- paste0(r_home, "/")
           cat(
             paste0("path=", lib_path, "\n"),
+            sep = "",
             file = Sys.getenv("GITHUB_OUTPUT"),
             append = TRUE
           )
           cat(
-            paste0("R_HOME=", normalizePath(R.home(), winslash = "/"), "\n"),
+            paste0("R_HOME=", r_home, "\n"),
             paste0("R_DIR=", r_dir, "\n"),
+            sep = "",
             file = Sys.getenv("GITHUB_ENV"),
             append = TRUE
           )
@@ -68,9 +71,10 @@ jobs:
             install.packages(
               "Rcpp",
               lib = .Library,
-              repos = "https://r-project.org"
+              repos = "https://cloud.r-project.org"
             )
           }
+          stopifnot(file.exists(file.path(.Library, "Rcpp", "include", "Rcpp.h")))
 
       - name: Verify Rtools Toolchain
         shell: C:\rtools45\usr\bin\bash.exe --login -eo pipefail "{0}"
@@ -105,7 +109,7 @@ jobs:
           R_DIR_PATH=$(cygpath -m "$R_HOME")
           PYTHON_DIR_PATH=$(cygpath -m "$pythonLocation")
 
-          echo "R_DIR=$R_DIR_PATH"
+          echo "R_DIR=$R_DIR"
           echo "PYTHON_DIR=$PYTHON_DIR_PATH"
 
           cmake CMakeLists.txt \
@@ -140,3 +144,4 @@ jobs:
           export PATH="/x86_64-w64-mingw32.static.posix/bin:/usr/local/bin:/usr/bin:$PATH"
 
           ctest --test-dir build/ci --output-on-failure -j4
+
