@@ -1,0 +1,167 @@
+name: CI Coverage
+
+on:
+  push:
+    branches: [master, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-coverage-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  coverage:
+    runs-on: windows-2022
+
+    # contents: write is only used to push the badge to the coverage-badge branch.
+    permissions:
+      contents: write
+
+    env:
+      VCPKG_ROOT: C:\vcpkg
+      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}\vcpkg-binary-cache,readwrite
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Restore vcpkg cache
+        id: restore-vcpkg-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: vcpkg-binary-cache
+          key: vcpkg-coverage-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
+          restore-keys: |
+            vcpkg-coverage-${{ runner.os }}-
+            vcpkg-msvc-${{ runner.os }}-
+
+      # Options from the header of Measure-Coverage.ps1. Tests must be built,
+      # so WITHOUT_TESTS is not set. Adjust the common options (vcpkg, triplet,
+      # ...) to match tools\build\CMakeFMTVS2022vcpkg_GL.bat if they differ.
+      - name: Configure (coverage build)
+        shell: cmd
+        run: |
+          cmake -S . -B build/coverage ^
+            -G "Visual Studio 17 2022" ^
+            -A x64 ^
+            -DBUILD_TYPE=Release ^
+            -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
+            -DVCPKG_TARGET_TRIPLET=x64-windows ^
+            -DVCPKG_MANIFEST_MODE=ON ^
+            -DVCPKG_MANIFEST_FEATURES="" ^
+            "-DCMAKE_CXX_FLAGS_RELEASE=/Od /Ob0 /Zi /DNDEBUG" ^
+            "-DCMAKE_SHARED_LINKER_FLAGS_RELEASE=/INCREMENTAL:NO /DEBUG:FULL /PROFILE" ^
+            "-DCMAKE_EXE_LINKER_FLAGS_RELEASE=/INCREMENTAL:NO /DEBUG:FULL /PROFILE" ^
+            -DINSTALL_TEST_SUITE=none
+
+      - name: Build
+        run: cmake --build build/coverage --config Release --parallel
+
+      # setup.py would make the install build and pip-install the Python wheel.
+      - name: Remove setup.py and install
+        run: |
+          Remove-Item build/coverage/bin/Release/setup.py -ErrorAction SilentlyContinue
+          cmake --install build/coverage --config Release
+
+      - name: Save vcpkg cache
+        if: always() && steps.restore-vcpkg-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: vcpkg-binary-cache
+          key: vcpkg-coverage-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
+
+      - name: Measure coverage
+        id: measure
+        shell: pwsh
+        run: |
+          $script = Join-Path $env:GITHUB_WORKSPACE "tools/tests/Measure-Coverage.ps1"
+          if (-not (Test-Path $script)) { throw "$script not found" }
+
+          $out = Join-Path $env:GITHUB_WORKSPACE "coverage-reports"
+          & $script -Root $env:GITHUB_WORKSPACE -Output $out -Levels unit,integration,system
+          $code = $LASTEXITCODE
+
+          $run = Get-ChildItem $out -Directory -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if ($run) {
+            "run_dir=$($run.FullName)" | Add-Content $env:GITHUB_OUTPUT
+            "``````" | Add-Content $env:GITHUB_STEP_SUMMARY
+            Get-Content (Join-Path $run.FullName "summary.txt") |
+              Add-Content $env:GITHUB_STEP_SUMMARY
+            "``````" | Add-Content $env:GITHUB_STEP_SUMMARY
+          }
+          exit $code
+
+      - name: Install ReportGenerator
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          Add-Content $env:GITHUB_PATH "$env:USERPROFILE\.dotnet\tools"
+
+      - name: Build HTML report and badge
+        shell: pwsh
+        env:
+          RUN_DIR: ${{ steps.measure.outputs.run_dir }}
+        run: |
+          $total = Join-Path $env:RUN_DIR "total.cobertura.xml"
+          if (-not (Test-Path $total)) { throw "total.cobertura.xml not found in $env:RUN_DIR" }
+
+          reportgenerator "-reports:$total" "-targetdir:site" "-reporttypes:Html;Badges" "-title:FMTlib coverage"
+          if ($LASTEXITCODE -ne 0) { throw "ReportGenerator failed" }
+
+          Copy-Item (Join-Path $env:RUN_DIR "summary.txt") site/summary.txt
+
+          if (-not (Test-Path site/badge_linecoverage.svg)) {
+            Get-ChildItem site -Filter "badge*" | Out-Host
+            throw "badge_linecoverage.svg was not generated"
+          }
+
+      - name: Upload coverage reports (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: coverage-reports
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Upload HTML report (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: site
+          retention-days: 30
+
+      # Only master publishes the badge, and only to the separate
+      # coverage-badge branch: the source branches never get a commit.
+      - name: Publish badge to the coverage-badge branch
+        if: github.ref == 'refs/heads/master'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          if git ls-remote --exit-code --heads "$REMOTE" coverage-badge >/dev/null 2>&1; then
+            git clone --quiet --depth 1 --branch coverage-badge "$REMOTE" badge-branch
+          else
+            git init --quiet -b coverage-badge badge-branch
+            git -C badge-branch remote add origin "$REMOTE"
+          fi
+
+          cp site/badge_linecoverage.svg badge-branch/
+          cp site/summary.txt badge-branch/
+
+          git -C badge-branch config user.name "github-actions[bot]"
+          git -C badge-branch config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C badge-branch add -A
+          if ! git -C badge-branch diff --cached --quiet; then
+            git -C badge-branch commit --quiet -m "Coverage badge for ${GITHUB_SHA::7}"
+            git -C badge-branch push origin coverage-badge
+          fi

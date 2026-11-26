@@ -151,6 +151,18 @@ if (OPTIMAL)
     }
 ```
 
+## 🏗️ État de la compilation
+
+| Plateforme | État | Ce qui est vérifié |
+|------------|------|--------------------|
+| MSVC (Visual Studio 2022) | [![Compilation et tests MSVC](https://github.com/Bureau-du-Forestier-en-chef/FMT/actions/workflows/ci-unit-tests.yml/badge.svg?branch=master)](https://github.com/Bureau-du-Forestier-en-chef/FMT/actions/workflows/ci-unit-tests.yml) | Configuration, compilation et exécution des tests publics avec MSVC |
+| MinGW (Rtools 4.5) | [![Compilation et tests MinGW](https://github.com/Bureau-du-Forestier-en-chef/FMT/actions/workflows/ci-rtools-validation.yml/badge.svg?branch=master)](https://github.com/Bureau-du-Forestier-en-chef/FMT/actions/workflows/ci-rtools-validation.yml) | Configuration, compilation et exécution des tests publics avec la chaîne d'outils GNU utilisée pour le paquet R |
+
+
+## 🧪 Couverture de code
+
+[![Coverage](https://raw.githubusercontent.com/Bureau-du-Forestier-en-chef/FMT/coverage-badge/badge_linecoverage.svg)](https://github.com/Bureau-du-Forestier-en-chef/FMT/actions/workflows/ci-coverage.yml)
+
 # 🔑 License 
 
 FMT utilise la license [LiLiQ-R 1.1](https://github.com/gcyr/FMT/blob/master/LICENSES/EN/LILIQ-R11EN.pdf).

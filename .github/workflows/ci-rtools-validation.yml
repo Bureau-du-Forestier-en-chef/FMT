@@ -13,6 +13,13 @@ on:
 
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-rtools-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   r-package:
     runs-on: windows-2022
@@ -89,12 +96,14 @@ jobs:
           echo "=== Make ==="
           which make
           make --version
+
       - name: Link ENV_PREFIX to Rtools45
         shell: cmd
         run: |
           if not exist "..\..\x86_64-w64-mingw32.static.posix" (
             mklink /J "..\..\x86_64-w64-mingw32.static.posix" "C:\rtools45\x86_64-w64-mingw32.static.posix"
           )
+
       - name: Configure
         env:
           MSYSTEM: MINGW64
@@ -114,7 +123,7 @@ jobs:
           R_DIR_PATH=$(cygpath -m "$R_HOME")
           PYTHON_DIR_PATH=$(cygpath -m "$pythonLocation")
 
-          echo "R_DIR=$R_DIR"
+          echo "R_DIR=$R_DIR_PATH"
           echo "PYTHON_DIR=$PYTHON_DIR_PATH"
 
           cmake CMakeLists.txt \
@@ -139,14 +148,25 @@ jobs:
 
           cmake --build build/ci --config Release -j4
 
-      - name: Run Tests
+      # The CMake install step runs the test suite (INSTALL_TEST_SUITE), so
+      # this step is the test step: it must fail when a test fails.
+      - name: Install and Run Tests
         env:
           MSYSTEM: MINGW64
           CHERE_INVOKING: 1
+          R_LIBS_USER: ${{ steps.r-lib.outputs.path }}
         shell: C:\rtools45\usr\bin\bash.exe --login -eo pipefail "{0}"
         run: |
           export MINGW_MOUNT_POINT="/x86_64-w64-mingw32.static.posix"
           export PATH="/x86_64-w64-mingw32.static.posix/bin:/usr/local/bin:/usr/bin:$PATH"
 
-          ctest --test-dir build/ci --output-on-failure -j4
+          cmake --install build/ci --config Release -j4
 
+      - name: Upload test logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctest-logs-rtools
+          path: build/ci/Testing
+          if-no-files-found: ignore
+          retention-days: 14

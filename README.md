@@ -148,7 +148,19 @@ if (OPTIMAL)
     }
 ```
 
-## 🔑 License 
+## 🏗️ Build status
+
+| Platform | Status | What it checks |
+|----------|--------|----------------|
+| MSVC (Visual Studio 2022) | [![MSVC build and tests](https://github.com/Bureau-du-Forestier-en-chef/FMT/actions/workflows/ci-unit-tests.yml/badge.svg?branch=master)](https://github.com/Bureau-du-Forestier-en-chef/FMT/actions/workflows/ci-unit-tests.yml) | Configure, compile and run the public tests with MSVC |
+| MinGW (Rtools 4.5) | [![MinGW build and tests](https://github.com/Bureau-du-Forestier-en-chef/FMT/actions/workflows/ci-rtools-validation.yml/badge.svg?branch=master)](https://github.com/Bureau-du-Forestier-en-chef/FMT/actions/workflows/ci-rtools-validation.yml) | Configure, compile and run the public tests with the GNU toolchain used for the R package |
+
+
+## 🧪 Code coverage
+
+[![Coverage](https://raw.githubusercontent.com/Bureau-du-Forestier-en-chef/FMT/coverage-badge/badge_linecoverage.svg)](https://github.com/Bureau-du-Forestier-en-chef/FMT/actions/workflows/ci-coverage.yml)
+
+## 🔑 License
 
 FMT is a [LiLiQ-R 1.1](https://github.com/gcyr/FMT/blob/master/LICENSES/EN/LILIQ-R11EN.pdf) licensed library.
 

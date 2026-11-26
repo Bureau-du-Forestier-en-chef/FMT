@@ -1,10 +1,10 @@
-name: Unit Tests
+name: MSVC Build and Tests
 
 on:
-#  push:
-#    branches:
-#      - master
-#      - dev
+  push:
+    branches:
+      - master
+      - dev
 
   pull_request:
     branches:
@@ -12,6 +12,13 @@ on:
       - dev
 
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-msvc-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   unit-tests:
@@ -55,8 +62,19 @@ jobs:
       - name: Build
         run: cmake --build build/tests --config Release --parallel
 
+      # The CMake install step runs the test suite, so this step is the test
+      # step: it must fail the job when a test fails.
       - name: Install and Run Tests
         run: cmake --install build/tests --config Release
+
+      - name: Upload test logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctest-logs-msvc
+          path: build/tests/Testing
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Save vcpkg cache
         if: always() && steps.restore-vcpkg-cache.outputs.cache-hit != 'true'

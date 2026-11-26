@@ -61,7 +61,12 @@ jobs:
       - name: Clean previous build
         shell: pwsh
         run: Remove-Item -Recurse -Force -ErrorAction SilentlyContinue build/release-rtools
-
+      - name: Link ENV_PREFIX to Rtools45
+        shell: cmd
+        run: |
+          if not exist "..\..\x86_64-w64-mingw32.static.posix" (
+            mklink /J "..\..\x86_64-w64-mingw32.static.posix" "C:\rtools45\x86_64-w64-mingw32.static.posix"
+          )
       - name: Configure
         env:
           MSYSTEM: MINGW64
