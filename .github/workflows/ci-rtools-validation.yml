@@ -146,7 +146,7 @@ jobs:
           export MINGW_MOUNT_POINT="/x86_64-w64-mingw32.static.posix"
           export PATH="/x86_64-w64-mingw32.static.posix/bin:/usr/local/bin:/usr/bin:$PATH"
 
-          cmake --build build/ci --config Release -j4
+          cmake --build build/ci --config Release -j 4
 
       # The CMake install step runs the test suite (INSTALL_TEST_SUITE), so
       # this step is the test step: it must fail when a test fails.
@@ -160,7 +160,7 @@ jobs:
           export MINGW_MOUNT_POINT="/x86_64-w64-mingw32.static.posix"
           export PATH="/x86_64-w64-mingw32.static.posix/bin:/usr/local/bin:/usr/bin:$PATH"
 
-          cmake --install build/ci --config Release -j4
+          cmake --install build/ci --config Release -j 4
 
       - name: Upload test logs on failure
         if: failure()
