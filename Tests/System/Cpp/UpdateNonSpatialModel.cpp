@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 			Models::FMTLpModel optimizationmodel(models.at(0),
 			 Models::FMTSolverInterface::MOSEK);
 		#else
-			Models::FMTLpModel loptimizationmodel(models.at(0),
+			Models::FMTLpModel optimizationmodel(models.at(0),
 			 Models::FMTSolverInterface::CLP);
 		#endif
 		
