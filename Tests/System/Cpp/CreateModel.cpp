@@ -152,9 +152,11 @@ int main()
 		///////////////////////////////////////////////////////////
 		//Create Model
 		#ifdef FMTWITHMOSEK
-			Models::FMTLpModel model(REREAD, Models::FMTSolverInterface::MOSEK);
+			Models::FMTLpModel model(Models::FMTModel(),
+			Models::FMTSolverInterface::MOSEK);
 		#else
-			Models::FMTLpModel model(REREAD, Models::FMTSolverInterface::CLP);
+			Models::FMTLpModel model(Models::FMTModel(),
+			Models::FMTSolverInterface::CLP);
 		#endif
 		model.setName("TEST");
 		model.setThemes(themes);
