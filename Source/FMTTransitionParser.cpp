@@ -62,7 +62,26 @@ Core::FMTMask FMTTransitionParser::getSource(std::string& line, Core::FMTSpec& s
 			Core::FMTTheme::validate(themes, mask, " at line " + std::to_string(m_line));
 			const Core::FMTMask newmask(mask, themes);
 			rest += ' ';
-			rest = _setSpec(Core::FMTsection::Transition, Core::FMTkwor::Source, ylds, constants, spec, rest);
+			rest = _setSpec(
+				Core::FMTsection::Transition,
+				Core::FMTkwor::Source,
+				ylds,
+				constants,
+				spec,
+				rest);
+
+			boost::trim(rest);
+
+			if (!rest.empty())
+			{
+				_exhandler->raise(
+					Exception::FMTexc::FMTunsupported_transition,
+					rest,
+					"at line " + std::to_string(m_line),
+					__LINE__,
+					__FILE__,
+					m_section);
+			}			
 			return newmask;
 		}
 	}catch (...)

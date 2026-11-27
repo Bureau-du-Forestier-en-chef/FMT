@@ -230,3 +230,6 @@ Presolve;../../../../Examples/Models/TWD_land/TWD_land.pri;Shift;5;AnObjectiveOn
 Presolve;../../../../Examples/Models/TWD_land/TWD_land.pri;TSLA;5;AnOperabilityOnTheTimeSinceTheLastAction;FindsTheSameOptimumAsWithoutPresolve
 ReportSesFailures;../../../../Examples/Models/TWD_land/TWD_land.pri|SES_failingoutput|constraint;;;AYieldMissingForAConstraintOfTheSes;DescribesTheGraphsInItsError
 ReportSesFailures;../../../../Examples/Models/TWD_land/TWD_land.pri|SES_failingoutput|output;;;AYieldMissingForAnOutputOfTheSes;DescribesTheGraphsInItsError
+ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|defaultdeath|OPERATE|_DEATH|UNITE1 PEUPLEMENT1 UTR1|25;UNITE1 PEUPLEMENT1 UTR1|0|0|100;;ADefaultDeathOverALifespanOnANegatedAggregate;KeepsTheThemesOfTheDeadStand
+DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|defaultdeath;2;10;ADefaultDeathOverALifespanOnANegatedAggregate;FindsTheKnownOptimum
+ReadInvalidScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_sourcecondition;31;;ATransitionSourceConditionInTheActionForm;RejectsIt
