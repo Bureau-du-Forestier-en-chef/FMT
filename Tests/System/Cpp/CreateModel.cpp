@@ -151,7 +151,11 @@ int main()
 		constraints.push_back(evenflow);
 		///////////////////////////////////////////////////////////
 		//Create Model
-		Models::FMTLpModel model(Models::FMTModel(),Models::FMTSolverInterface::MOSEK);
+		#ifdef FMTWITHMOSEK
+			Models::FMTLpModel model(REREAD, Models::FMTSolverInterface::MOSEK);
+		#else
+			Models::FMTLpModel model(REREAD, Models::FMTSolverInterface::CLP);
+		#endif
 		model.setName("TEST");
 		model.setThemes(themes);
 		model.setYields(yields);

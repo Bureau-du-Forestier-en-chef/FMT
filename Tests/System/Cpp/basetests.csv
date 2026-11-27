@@ -3,7 +3,6 @@ SolveAndWriteSchedules;../../../../Examples/Models/TWD_land/TWD_land.pri;LP;;AMa
 SimulateSpatially;;;;ASpatialScheduleOnRasters;EndsWithoutError
 SimulateSpatiallyWithActionSeries;../../../../Examples/Models/TWD_land/TWD_land.pri|Spatial_actionseries|COUPETOTALE|PLANTATION|PLANTATIONCC;10;;AnActionSeriesInASpatialSimulation;NeverBreaksTheSeries
 DoSpatiallyExplicitPlanning;;;;ASpatialScheduleOnAVectorMap;CountsTheWholeHarvestInItsStandTypes
-GetCarbonPredictors;;;;AnOptimalScheduleSpreadOnAVectorMap;EndsWithoutError
 MapToForest;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|1420;../../../../Examples/Models/TWD_land/Carte/TWD_land.shp;../../tests/MapToForest/;TheRootVectorMap;EndsWithoutError
 SimulateWithYieldModel;;;;ASpatialScheduleWithAYieldModel;EndsWithoutError
 ClusterOperatingAreas;;;;OperatingAreasOnAVectorMap;FindsASolution
@@ -32,7 +31,6 @@ WriteAndReadProject;../../../../Examples/Models/TWD_land/TWD_land.pri;LP|LP2|LP4
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|infinitforloops;5;363;OutputsFromNestedForEachLoops;FindsTheKnownOptimum
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|ndywlevel;5;363;ANonDecliningYieldOnALevel;FindsTheKnownOptimum
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|actionseries;5;363;AnActionSeries;FindsTheKnownOptimum
-DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|fullcarbon;5;8276831;AnObjectiveSummingCarbonPools;FindsTheKnownOptimum
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|division;5;349540;AConstraintOnARatioOfOutputs;FindsTheKnownOptimum
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|mai;2;0;AnObjectiveOnAMeanAnnualIncrement;FindsTheKnownOptimum
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|equation;2;26665;AnObjectiveOnAnEquationYield;FindsTheKnownOptimum
@@ -168,7 +166,6 @@ ReadScenariosTogether;../../../../Examples/Models/TWD_land/TWD_land.pri|LP|LP2|L
 ReadScenariosTogether;../../../../Examples/Models/TWD_land/TWD_land.pri|levelopt1|levelopt2|levelopt3|levelopt4|levelopt5|levelopt6|levelopt7|levelopt8|levelopt9;;;ScenariosOptimizingLevels;ReadsTheSameModelsAsOneAtATime
 ReadScenariosTogether;../../../../Examples/Models/TWD_land/TWD_land.pri|Globalreplanning|Globalfire|Localreplanning;;;TheModelsOfAReplanning;ReadsTheSameModelsAsOneAtATime
 ReadScenariosTogether;../../../../Examples/Models/TWD_land/TWD_land.pri|NOCHOICE|LP|ACT_DEATH;;;ScenariosWithAndWithoutTheirOwnActions;ReadsTheSameModelsAsOneAtATime
-ReadScenariosTogether;../../../../Examples/Models/TWD_land/TWD_land.pri|fullcarbon|division|equation|mai|COS;;;ScenariosWithTheirOwnYields;ReadsTheSameModelsAsOneAtATime
 ReadScenariosTogether;../../../../Examples/Models/TWD_land/TWD_land.pri|DB_test|DB_test_const|randomYield|randomYieldUnit|UNIT_COVERAGE|COMPLEX_NSS|DECISION;;;ScenariosWithDatabaseAndModelYields;ReadsTheSameModelsAsOneAtATime
 ReadScenariosTogether;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|LP3;;;TheRootAndAScenarioWithItsOwnLandscape;ReadsTheSameModelsAsOneAtATime
 ReadInvalidScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_undefinedoutput;34;;AnObjectiveOnAnUndefinedOutput;RejectsIt

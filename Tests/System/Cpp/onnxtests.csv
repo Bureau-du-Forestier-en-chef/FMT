@@ -1,0 +1,4 @@
+TEST;primarylocation;scenario;doublevalue;given;then
+GetCarbonPredictors;;;;AnOptimalScheduleSpreadOnAVectorMap;EndsWithoutError
+DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|fullcarbon;5;8276831;AnObjectiveSummingCarbonPools;FindsTheKnownOptimum
+ReadScenariosTogether;../../../../Examples/Models/TWD_land/TWD_land.pri|fullcarbon|division|equation|mai|COS;;;ScenariosWithTheirOwnYields;ReadsTheSameModelsAsOneAtATime
