@@ -1,0 +1,28 @@
+; Invalid scenario for Integration/FMTActionParser.
+; Woodstock refuses the strict operator < in operability conditions.
+; FMT should reject it during parsing rather than silently dropping the bound.
+
+*ACTION aFire N
+*OPERABLE AFire
+? prod ? _AGE >= 1
+
+*ACTION arecup Y
+*OPERABLE arecup
+? feu ? volumetotal >= 100
+
+*ACTION COUPEtotale Y CT
+*OPERABLE COUPEtotale
+? prod ? volumetotal >= 100
+
+*ACTION aCaribou N Massif protection du caribou
+*OPERABLE aCaribou
+UC prod ? _AGE >= 8
+
+*ACTION plantation Y _LOCKEXEMPT
+*OPERABLE plantation
+? prod ? _AGE >= 1 AND _AGE <= 3
+
+; Invalid action under test
+*ACTION aYoungerThan Y
+*OPERABLE aYoungerThan
+? prod ? _AGE < 5

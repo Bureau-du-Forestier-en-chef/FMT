@@ -426,6 +426,10 @@ Core::FMTBounds<T> FMTParser::bounds(const Core::FMTConstants& constants, const 
 			{
 				lupper = std::numeric_limits<T>::max();
 				llower = intvalue;
+			}else{
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_action,
+					"for value " + value, 
+					"FMTParser::bounds", __LINE__, __FILE__, m_section);
 			}
 		}
 		catch (...)

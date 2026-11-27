@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -73,31 +73,24 @@ TEST(FMTActionParser, GivenAMaximumAgeWrittenWithLessOrEqualWhenReadThenTheActio
     EXPECT_EQ(operableAges, std::vector<int>({ 0, 4 }));
 }
 
-// Disabled: FMTParser::bounds gives no bound to the operators > and <, which getBaseOperators lists: the condition is
-// dropped without a message, and the action is operable at every age (#393, defect 18 of section 2.7 of Tests/ETAT.md).
-// Woodstock refuses both operators (messages 142 and 143 of Wk.msg): if the correction refuses them too, this case
-// becomes a test of the exception.
-TEST(FMTActionParser, DISABLED_GivenAMinimumAgeWrittenWithGreaterThanWhenReadThenTheActionIsOperableAboveThatAgeOnly)
+TEST(FMTActionParser, GivenAMinimumAgeWrittenWithGreaterThanWhenReadThenThrow)
 {
-    // Arrange: *ACTION aOlderThan Y, ? prod ? _AGE > 10
-    const Models::FMTModel model = Testing::readScenario("strictbounds");
-
-    // Act
-    const std::vector<int> operableAges = getOperableAges(model, "AOLDERTHAN");
-
-    // Assert
-    EXPECT_EQ(operableAges, std::vector<int>({ 11, 20 }));
+    EXPECT_THROW(
+        Testing::readScenario("strictbounds"),
+        std::exception);
 }
 
-// Disabled: the operator < is dropped as > is (#393, defect 18 of section 2.7 of Tests/ETAT.md).
-TEST(FMTActionParser, DISABLED_GivenAMaximumAgeWrittenWithLessThanWhenReadThenTheActionIsOperableBelowThatAgeOnly)
+TEST(FMTActionParser, GivenGreaterThanOperatorWhenReadThenThrowFMTunsupportedOperator)
 {
-    // Arrange: *ACTION aYoungerThan Y, ? prod ? _AGE < 5
-    const Models::FMTModel model = Testing::readScenario("strictbounds");
-
-    // Act
-    const std::vector<int> operableAges = getOperableAges(model, "AYOUNGERTHAN");
-
-    // Assert
-    EXPECT_EQ(operableAges, std::vector<int>({ 0, 4 }));
+    EXPECT_THROW(
+        Testing::readScenario("INVALID_greaterthan"),
+        std::exception);
 }
+
+TEST(FMTActionParser, GivenLessThanOperatorWhenReadThenThrowFMTunsupportedOperator)
+{
+    EXPECT_THROW(
+        Testing::readScenario("INVALID_lessthan"),
+        std::exception);
+}
+
