@@ -170,7 +170,8 @@ endfunction(registersystemtest testname origin)
 #  same time.
 #- The rows of knownbugs.csv reveal a known bug: they are registered, but not run until it is fixed.
 #- Each registered target gets its output folder, tests/<target> in the build folder.
-#- The rows of onnxtests.csv need the ONNX models: they are registered, but not run without FMTWITHONNXR.function(registercsvtests csvfiles sharedoutputs)
+#- The rows of onnxtests.csv need the ONNX models: they are registered, but not run without FMTWITHONNXR.
+function(registercsvtests csvfiles sharedoutputs)
 	getrenamedtests(formernames newnames)
 	foreach(testfile IN LISTS csvfiles)
 		get_filename_component(testfilename "${testfile}" NAME)
