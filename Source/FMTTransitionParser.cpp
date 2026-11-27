@@ -75,7 +75,7 @@ Core::FMTMask FMTTransitionParser::getSource(std::string& line, Core::FMTSpec& s
 			if (!rest.empty())
 			{
 				_exhandler->raise(
-					Exception::FMTexc::FMTunsupported_transition,
+					Exception::FMTexc::FMTinvalid_transition,
 					rest,
 					"at line " + std::to_string(m_line),
 					__LINE__,

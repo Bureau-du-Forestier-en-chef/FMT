@@ -232,4 +232,4 @@ ReportSesFailures;../../../../Examples/Models/TWD_land/TWD_land.pri|SES_failingo
 ReportSesFailures;../../../../Examples/Models/TWD_land/TWD_land.pri|SES_failingoutput|output;;;AYieldMissingForAnOutputOfTheSes;DescribesTheGraphsInItsError
 ReadScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|defaultdeath|OPERATE|_DEATH|UNITE1 PEUPLEMENT1 UTR1|25;UNITE1 PEUPLEMENT1 UTR1|0|0|100;;ADefaultDeathOverALifespanOnANegatedAggregate;KeepsTheThemesOfTheDeadStand
 DoPlanning;../../../../Examples/Models/TWD_land/TWD_land.pri|defaultdeath;2;10;ADefaultDeathOverALifespanOnANegatedAggregate;FindsTheKnownOptimum
-ReadInvalidScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_sourcecondition;31;;ATransitionSourceConditionInTheActionForm;RejectsIt
+ReadInvalidScenario;../../../../Examples/Models/TWD_land/TWD_land.pri|INVALID_sourcecondition;10;;ATransitionSourceConditionInTheActionForm;RejectsIt
