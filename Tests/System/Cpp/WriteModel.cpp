@@ -55,12 +55,12 @@ int main(int argc, char* argv[])
 	const std::vector<Models::FMTModel> models = modelparser.readproject(primarylocation, scenarios);
 
 	#ifdef FMTWITHMOSEK
-			Models::FMTLpModel optmodel(models.at(0),
-			 Models::FMTSolverInterface::MOSEK);
-		#else
-			Models::FMTLpModel optmodel(models.at(0),
-			 Models::FMTSolverInterface::CLP);
-		#endif
+		Models::FMTLpModel optmodel(models.at(0),
+		Models::FMTSolverInterface::MOSEK);
+	#else
+		Models::FMTLpModel optmodel(models.at(0),
+		Models::FMTSolverInterface::CLP);
+	#endif
 	optmodel.setParameter(Models::FMTintmodelparameters::LENGTH,  3);
 	optmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 	optmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
@@ -71,7 +71,11 @@ int main(int argc, char* argv[])
 	modelparser.write(optmodel, outdir);
 	const double initobjvalue = optmodel.getObjValue();
 	const std::vector<Models::FMTModel> rereadmodels = modelparser.readproject(outdir + optmodel.getName() + ".pri", std::vector<std::string>(1, "ROOT"));
-	optmodel = Models::FMTLpModel(rereadmodels.at(0), Models::FMTSolverInterface::MOSEK);
+	#ifdef FMTWITHMOSEK
+		optmodel = Models::FMTLpModel(rereadmodels.at(0), Models::FMTSolverInterface::MOSEK);
+	#else
+		optmodel = Models::FMTLpModel(rereadmodels.at(0), Models::FMTSolverInterface::CLP);
+	#endif
 	optmodel.setParameter(Models::FMTintmodelparameters::LENGTH,3);
 	optmodel.setParameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 3);
 	optmodel.setParameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
