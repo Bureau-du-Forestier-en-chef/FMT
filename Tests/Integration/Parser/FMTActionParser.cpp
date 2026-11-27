@@ -52,7 +52,7 @@ namespace
 TEST(FMTActionParser, GivenAMinimumAgeWrittenWithGreaterOrEqualWhenReadThenTheActionIsOperableFromThatAge)
 {
     // Arrange: *ACTION aFromAge Y, ? prod ? _AGE >= 11
-    const Models::FMTModel model = Testing::readScenario("strictbounds");
+    const Models::FMTModel model = Testing::readScenario("validBounds");
 
     // Act
     const std::vector<int> operableAges = getOperableAges(model, "AFROMAGE");
@@ -64,7 +64,7 @@ TEST(FMTActionParser, GivenAMinimumAgeWrittenWithGreaterOrEqualWhenReadThenTheAc
 TEST(FMTActionParser, GivenAMaximumAgeWrittenWithLessOrEqualWhenReadThenTheActionIsOperableUpToThatAge)
 {
     // Arrange: *ACTION aUpToAge Y, ? prod ? _AGE <= 4
-    const Models::FMTModel model = Testing::readScenario("strictbounds");
+    const Models::FMTModel model = Testing::readScenario("validBounds");
 
     // Act
     const std::vector<int> operableAges = getOperableAges(model, "AUPTOAGE");
@@ -76,7 +76,7 @@ TEST(FMTActionParser, GivenAMaximumAgeWrittenWithLessOrEqualWhenReadThenTheActio
 TEST(FMTActionParser, GivenAMinimumAgeWrittenWithGreaterThanWhenReadThenThrow)
 {
     EXPECT_THROW(
-        Testing::readScenario("strictbounds"),
+        Testing::readScenario("INVALID_strictbounds"),
         std::exception);
 }
 

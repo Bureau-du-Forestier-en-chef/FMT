@@ -20,6 +20,7 @@ jobs:
     env:
       VCPKG_ROOT: C:\vcpkg
       VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}\vcpkg-binary-cache,readwrite
+      SCCACHE_GHA_ENABLED: "true"
 
     steps:
       - name: Checkout
@@ -35,6 +36,15 @@ jobs:
 
       - name: Install Ninja
         uses: seanmiddleditch/gha-setup-ninja@v5
+
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@v0.0.7
+
+      - name: Verify sccache
+        shell: cmd
+        run: |
+          where sccache
+          sccache --version
 
       - name: Restore vcpkg cache
         id: restore-vcpkg-cache
@@ -54,6 +64,8 @@ jobs:
             -G Ninja ^
             -DCMAKE_C_COMPILER=clang ^
             -DCMAKE_CXX_COMPILER=clang++ ^
+            -DCMAKE_C_COMPILER_LAUNCHER=sccache ^
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ^
             -DCMAKE_BUILD_TYPE=Release ^
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ^
             -DWITHOUT_TESTS=true ^
@@ -67,9 +79,14 @@ jobs:
         run: |
           call tools\build\clang-tidy-check.bat
 
+      - name: Show sccache stats
+        if: always()
+        shell: cmd
+        run: sccache --show-stats
+
       - name: Save vcpkg cache
         if: always() && steps.restore-vcpkg-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: vcpkg-binary-cache
-          key: vcpkg-clang-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}-${{ github.run_id }}
+          key: vcpkg-clang-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'vcpkg-overlays/**', 'vcpkg-custom-ports/**') }}
