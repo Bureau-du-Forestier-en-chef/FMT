@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -147,40 +147,134 @@ int main(int argc, char* argv[])
 		}
 		const Spatial::FMTSpatialSchedule SOLUTION = simulation.getSpSchedule();
 		const std::vector<Core::FMTAction> ACTIONS = simulation.getActions();
-		Testing::Checker checker;
-		bool bugVisible = false;
-		//One classifier at a time, as BFECGCBM does with THEME5: the key then ignores the other themes
-		for (const Core::FMTTheme& theme : simulation.getThemes())
-		{
-			const std::vector<Core::FMTTheme> CLASSIFIERS(1, theme);
-			for (int period = 1; period <= PERIODS; ++period)
-			{
-				const std::string CASE_NAME = "THEME" + std::to_string(theme.getId() + 1) + " period " + std::to_string(period);
-				Spatial::FMTLayer<std::string> keys(SOLUTION.copyExtent<std::string>());
-				const std::vector<Core::FMTGCBMTransition> TRANSITIONS = SOLUTION.getGCBMtransitions(keys, ACTIONS, CLASSIFIERS, period);
-				const AttributesCount COUNTS = countFinalAttributes(SOLUTION, keys, CLASSIFIERS, period);
-				checker.check(TRANSITIONS.size() == COUNTS.size(), CASE_NAME + ": one transition by key");
-				for (const Core::FMTGCBMTransition& transition : TRANSITIONS)
-				{
-					const AttributesCount::const_iterator KEY_COUNTS = COUNTS.find(transition.name);
-					if (!checker.check(KEY_COUNTS != COUNTS.end(), CASE_NAME + " " + transition.name + ": key found on the cells"))
-					{
-						continue;
-					}
-					for (const std::pair<const std::string, std::map<std::string, int>>& themeCounts : KEY_COUNTS->second)
-					{
-						const std::string EXPECTED = getMostPresent(themeCounts.second);
-						const std::map<std::string, std::string>::const_iterator ACTUAL = transition.themes.find(themeCounts.first);
-						const std::string ACTUAL_VALUE = ACTUAL == transition.themes.end() ? "<missing>" : ACTUAL->second;
-						checker.check(ACTUAL_VALUE == EXPECTED, CASE_NAME + " " + transition.name + ": "
-							+ ACTUAL_VALUE + " (expected " + EXPECTED + describeCounts(themeCounts.second) + ")");
-						bugVisible = bugVisible || EXPECTED != themeCounts.second.begin()->first;
-					}
-				}
-			}
-		}
-		checker.check(bugVisible, "a key whose most present final attribute is not the first in alphabetical order");
-		return checker.exitCode();
+        Testing::Checker checker;
+        bool bugVisible = false;
+        std::string bugVisibleReason;
+        std::vector<std::string> candidates;
+
+        // One classifier at a time, as BFECGCBM does with THEME5:
+        // the key then ignores the other themes.
+        for (const Core::FMTTheme& theme : simulation.getThemes())
+        {
+            const std::vector<Core::FMTTheme> CLASSIFIERS(1, theme);
+
+            for (int period = 1; period <= PERIODS; ++period)
+            {
+                const std::string CASE_NAME =
+                    "THEME" + std::to_string(theme.getId() + 1) +
+                    " period " + std::to_string(period);
+
+                Spatial::FMTLayer<std::string> keys(
+                    SOLUTION.copyExtent<std::string>());
+
+                const std::vector<Core::FMTGCBMTransition> TRANSITIONS =
+                    SOLUTION.getGCBMtransitions(
+                        keys,
+                        ACTIONS,
+                        CLASSIFIERS,
+                        period);
+
+                const AttributesCount COUNTS =
+                    countFinalAttributes(
+                        SOLUTION,
+                        keys,
+                        CLASSIFIERS,
+                        period);
+
+                checker.check(
+                    TRANSITIONS.size() == COUNTS.size(),
+                    CASE_NAME + ": one transition by key");
+
+                for (const Core::FMTGCBMTransition& transition : TRANSITIONS)
+                {
+                    const auto KEY_COUNTS =
+                        COUNTS.find(transition.name);
+
+                    if (!checker.check(
+                        KEY_COUNTS != COUNTS.end(),
+                        CASE_NAME + " " +
+                        transition.name +
+                        ": key found on the cells"))
+                    {
+                        continue;
+                    }
+
+                    for (const auto& themeCounts : KEY_COUNTS->second)
+                    {
+                        const std::string EXPECTED =
+                            getMostPresent(themeCounts.second);
+
+                        const auto ACTUAL =
+                            transition.themes.find(themeCounts.first);
+
+                        const std::string ACTUAL_VALUE =
+                            ACTUAL == transition.themes.end()
+                                ? "<missing>"
+                                : ACTUAL->second;
+
+                        checker.check(
+                            ACTUAL_VALUE == EXPECTED,
+                            CASE_NAME + " " +
+                            transition.name +
+                            ": " +
+                            ACTUAL_VALUE +
+                            " (expected " +
+                            EXPECTED +
+                            describeCounts(themeCounts.second) +
+                            ")");
+
+                        if (themeCounts.second.size() > 1)
+                        {
+                            const std::string candidate =
+                                CASE_NAME + " " +
+                                transition.name +
+                                ": majority=" + EXPECTED +
+                                ", first=" +
+                                themeCounts.second.begin()->first +
+                                describeCounts(themeCounts.second);
+
+                            candidates.push_back(candidate);
+
+                            if (EXPECTED != themeCounts.second.begin()->first)
+                            {
+                                bugVisible = true;
+                                bugVisibleReason = candidate;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!bugVisible)
+        {
+            std::cout
+                << "\nNo key had a majority attribute different from the "
+                   "first alphabetical attribute.\n";
+
+            if (!candidates.empty())
+            {
+                std::cout << "Candidates examined:\n";
+
+                for (const std::string& candidate : candidates)
+                {
+                    std::cout << "  " << candidate << '\n';
+                }
+            }
+        }
+        else
+        {
+            std::cout
+                << "\nBug-visibility case found:\n  "
+                << bugVisibleReason
+                << '\n';
+        }
+
+        checker.check(
+            bugVisible,
+            "a key whose most present final attribute is not the first in alphabetical order");
+
+        return checker.exitCode();
 		});
 #else
 	return Testing::skip("FMT is compiled without GDAL");
